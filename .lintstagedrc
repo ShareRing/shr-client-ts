@@ -1,7 +1,7 @@
 {
   "src/**/*.ts": [
-     "prettier --write",
-     "eslint --fix",
+     "prettier --write --loglevel warn",
+     "eslint . --ext .ts --max-warnings 0",
      "git add"
    ]
 }

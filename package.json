@@ -15,7 +15,7 @@
     "test": "yarn test:unit && yarn test:coverage",
     "test:unit": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' env NODE_ENV=test mocha",
     "test:coverage": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' env NODE_ENV=test nyc mocha",
-    "lint": "eslint . --ext .ts,.json --max-warnings 0",
+    "lint": "eslint . --ext .ts --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "prettier": "prettier --write --loglevel warn"
   },
@@ -41,8 +41,8 @@
     "@cosmjs/crypto": "^0.25.4",
     "@types/chai": "^4.2.19",
     "@types/chai-as-promised": "^7.1.4",
-    "@types/mocha": "^8.2.2",
     "@types/long": "^4.0.1",
+    "@types/mocha": "^8.2.2",
     "@types/node": "^15.12.4",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
@@ -54,15 +54,24 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
     "mocha": "^9.0.1",
     "nyc": "^15.1.0",
     "prettier": "^2.3.1",
     "stream-browserify": "^3.0.0",
     "ts-node": "^10.0.0",
+    "ts-proto": "^1.81.3",
     "tslib": "^2.3.0",
     "typescript": "^4.3.4"
   },
   "repository": "https://bitbucket.org/shareringvietnam/shr-cosmos-client",
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
-  "private": true
+  "private": true,
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "post-commit": "git update-index --again"
+    }
+  }
 }
