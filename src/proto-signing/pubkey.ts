@@ -5,31 +5,31 @@ import {
   isSecp256k1Pubkey,
   MultisigThresholdPubkey,
   Pubkey,
-  SinglePubkey,
+  SinglePubkey
 } from "@cosmjs/amino";
-import { fromBase64 } from "@cosmjs/encoding";
-import { Uint53 } from "@cosmjs/math";
-import { LegacyAminoPubKey } from "../codec/cosmos/crypto/multisig/keys";
-import { PubKey } from "../codec/cosmos/crypto/secp256k1/keys";
-import { Any } from "../codec/google/protobuf/any";
+import {fromBase64} from "@cosmjs/encoding";
+import {Uint53} from "@cosmjs/math";
+import {LegacyAminoPubKey} from "../codec/cosmos/crypto/multisig/keys";
+import {PubKey} from "../codec/cosmos/crypto/secp256k1/keys";
+import {Any} from "../codec/google/protobuf/any";
 
 export function encodePubkey(pubkey: Pubkey): Any {
   if (isSecp256k1Pubkey(pubkey)) {
     const pubkeyProto = PubKey.fromPartial({
-      key: fromBase64(pubkey.value),
+      key: fromBase64(pubkey.value)
     });
     return Any.fromPartial({
       typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-      value: Uint8Array.from(PubKey.encode(pubkeyProto).finish()),
+      value: Uint8Array.from(PubKey.encode(pubkeyProto).finish())
     });
   } else if (isMultisigThresholdPubkey(pubkey)) {
     const pubkeyProto = LegacyAminoPubKey.fromPartial({
       threshold: Uint53.fromString(pubkey.value.threshold).toNumber(),
-      publicKeys: pubkey.value.pubkeys.map(encodePubkey),
+      publicKeys: pubkey.value.pubkeys.map(encodePubkey)
     });
     return Any.fromPartial({
       typeUrl: "/cosmos.crypto.multisig.LegacyAminoPubKey",
-      value: Uint8Array.from(LegacyAminoPubKey.encode(pubkeyProto).finish()),
+      value: Uint8Array.from(LegacyAminoPubKey.encode(pubkeyProto).finish())
     });
   } else {
     throw new Error(`Pubkey type ${pubkey.type} not recognized`);
@@ -39,7 +39,7 @@ export function encodePubkey(pubkey: Pubkey): Any {
 function decodeSinglePubkey(pubkey: Any): SinglePubkey {
   switch (pubkey.typeUrl) {
     case "/cosmos.crypto.secp256k1.PubKey": {
-      const { key } = PubKey.decode(pubkey.value);
+      const {key} = PubKey.decode(pubkey.value);
       return encodeSecp256k1Pubkey(key);
     }
     default:
@@ -57,13 +57,13 @@ export function decodePubkey(pubkey?: Any | null): Pubkey | null {
       return decodeSinglePubkey(pubkey);
     }
     case "/cosmos.crypto.multisig.LegacyAminoPubKey": {
-      const { threshold, publicKeys } = LegacyAminoPubKey.decode(pubkey.value);
+      const {threshold, publicKeys} = LegacyAminoPubKey.decode(pubkey.value);
       const out: MultisigThresholdPubkey = {
         type: "tendermint/PubKeyMultisigThreshold",
         value: {
           threshold: threshold.toString(),
-          pubkeys: publicKeys.map(decodeSinglePubkey),
-        },
+          pubkeys: publicKeys.map(decodeSinglePubkey)
+        }
       };
       return out;
     }

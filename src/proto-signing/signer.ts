@@ -1,5 +1,5 @@
-import { StdSignature } from "@cosmjs/amino";
-import { SignDoc } from "../codec/cosmos/tx/v1beta1/tx";
+import {StdSignature} from "@cosmjs/amino";
+import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 
 /**
  * This is the same as Algo from @cosmjs/launchpad but those might diverge in the future.

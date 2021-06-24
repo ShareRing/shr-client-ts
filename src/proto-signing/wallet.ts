@@ -1,11 +1,5 @@
-import {
-  Argon2id,
-  isArgon2idOptions,
-  Random,
-  xchacha20NonceLength,
-  Xchacha20poly1305Ietf,
-} from "@cosmjs/crypto";
-import { toAscii } from "@cosmjs/encoding";
+import {Argon2id, isArgon2idOptions, Random, xchacha20NonceLength, Xchacha20poly1305Ietf} from "@cosmjs/crypto";
+import {toAscii} from "@cosmjs/encoding";
 
 /**
  * A fixed salt is chosen to archive a deterministic password to key derivation.
@@ -49,33 +43,22 @@ export interface EncryptionConfiguration {
 }
 
 export const supportedAlgorithms = {
-  xchacha20poly1305Ietf: "xchacha20poly1305-ietf",
+  xchacha20poly1305Ietf: "xchacha20poly1305-ietf"
 };
 
-export async function encrypt(
-  plaintext: Uint8Array,
-  encryptionKey: Uint8Array,
-  config: EncryptionConfiguration,
-): Promise<Uint8Array> {
+export async function encrypt(plaintext: Uint8Array, encryptionKey: Uint8Array, config: EncryptionConfiguration): Promise<Uint8Array> {
   switch (config.algorithm) {
     case supportedAlgorithms.xchacha20poly1305Ietf: {
       const nonce = Random.getBytes(xchacha20NonceLength);
       // Prepend fixed-length nonce to ciphertext as suggested in the example from https://github.com/jedisct1/libsodium.js#api
-      return new Uint8Array([
-        ...nonce,
-        ...(await Xchacha20poly1305Ietf.encrypt(plaintext, encryptionKey, nonce)),
-      ]);
+      return new Uint8Array([...nonce, ...(await Xchacha20poly1305Ietf.encrypt(plaintext, encryptionKey, nonce))]);
     }
     default:
       throw new Error(`Unsupported encryption algorithm: '${config.algorithm}'`);
   }
 }
 
-export async function decrypt(
-  ciphertext: Uint8Array,
-  encryptionKey: Uint8Array,
-  config: EncryptionConfiguration,
-): Promise<Uint8Array> {
+export async function decrypt(ciphertext: Uint8Array, encryptionKey: Uint8Array, config: EncryptionConfiguration): Promise<Uint8Array> {
   switch (config.algorithm) {
     case supportedAlgorithms.xchacha20poly1305Ietf: {
       const nonce = ciphertext.slice(0, xchacha20NonceLength);

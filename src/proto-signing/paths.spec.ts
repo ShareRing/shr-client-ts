@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import { Slip10RawIndex } from "@cosmjs/crypto";
-import { makeCosmoshubPath } from "./paths";
+import {expect} from "chai";
+import {Slip10RawIndex} from "@cosmjs/crypto";
+import {makeCosmoshubPath} from "./paths";
 
 describe("paths", () => {
   describe("makeCosmoshubPath", () => {
@@ -11,7 +11,7 @@ describe("paths", () => {
         Slip10RawIndex.hardened(118),
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(0),
-        Slip10RawIndex.normal(0),
+        Slip10RawIndex.normal(0)
       ]);
       // m/44'/118'/0'/0/123
       expect(makeCosmoshubPath(123)).to.deep.equal([
@@ -19,7 +19,7 @@ describe("paths", () => {
         Slip10RawIndex.hardened(118),
         Slip10RawIndex.hardened(0),
         Slip10RawIndex.normal(0),
-        Slip10RawIndex.normal(123),
+        Slip10RawIndex.normal(123)
       ]);
     });
   });

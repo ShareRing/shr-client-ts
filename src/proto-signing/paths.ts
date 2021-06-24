@@ -1,4 +1,4 @@
-import { HdPath, Slip10RawIndex } from "@cosmjs/crypto";
+import {HdPath, Slip10RawIndex} from "@cosmjs/crypto";
 
 /**
  * The derivation path in the form `m/44'/118'/0'/0/a`
@@ -10,6 +10,6 @@ export function makeCosmoshubPath(a: number): HdPath {
     Slip10RawIndex.hardened(118),
     Slip10RawIndex.hardened(0),
     Slip10RawIndex.normal(0),
-    Slip10RawIndex.normal(a),
+    Slip10RawIndex.normal(a)
   ];
 }

@@ -1,4 +1,4 @@
-import { AuthInfo, TxBody, TxRaw } from "../codec/cosmos/tx/v1beta1/tx";
+import {AuthInfo, TxBody, TxRaw} from "../codec/cosmos/tx/v1beta1/tx";
 
 export interface DecodedTxRaw {
   readonly authInfo: AuthInfo;
@@ -14,6 +14,6 @@ export function decodeTxRaw(tx: Uint8Array): DecodedTxRaw {
   return {
     authInfo: AuthInfo.decode(txRaw.authInfoBytes),
     body: TxBody.decode(txRaw.bodyBytes),
-    signatures: txRaw.signatures,
+    signatures: txRaw.signatures
   };
 }

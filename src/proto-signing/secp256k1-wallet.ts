@@ -1,11 +1,10 @@
+import {encodeSecp256k1Signature, rawSecp256k1PubkeyToRawAddress} from "@cosmjs/amino";
+import {Secp256k1, sha256} from "@cosmjs/crypto";
+import {Bech32} from "@cosmjs/encoding";
+import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 
-import { encodeSecp256k1Signature, rawSecp256k1PubkeyToRawAddress } from "@cosmjs/amino";
-import { Secp256k1, sha256 } from "@cosmjs/crypto";
-import { Bech32 } from "@cosmjs/encoding";
-import { SignDoc } from "../codec/cosmos/tx/v1beta1/tx";
-
-import { AccountData, SignResponse, OfflineSigner } from "./signer";
-import { makeSignBytes } from "./signing";
+import {AccountData, SignResponse, OfflineSigner} from "./signer";
+import {makeSignBytes} from "./signing";
 
 /**
  * A wallet that holds a single secp256k1 keypair.
@@ -43,8 +42,8 @@ export class Secp256k1Wallet implements OfflineSigner {
       {
         algo: "secp256k1",
         address: this.address,
-        pubkey: this.pubkey,
-      },
+        pubkey: this.pubkey
+      }
     ];
   }
 
@@ -59,7 +58,7 @@ export class Secp256k1Wallet implements OfflineSigner {
     const stdSignature = encodeSecp256k1Signature(this.pubkey, signatureBytes);
     return {
       signed: signDoc,
-      signature: stdSignature,
+      signature: stdSignature
     };
   }
 }

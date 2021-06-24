@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { expect } from "chai";
-import { fromBase64 } from "@cosmjs/encoding";
-import { Any } from "../codec/google/protobuf/any";
+import {expect} from "chai";
+import {fromBase64} from "@cosmjs/encoding";
+import {Any} from "../codec/google/protobuf/any";
 
-import { decodePubkey, encodePubkey } from "./pubkey";
+import {decodePubkey, encodePubkey} from "./pubkey";
 
 describe("pubkey", () => {
   const defaultPubkeyBase64 = "AtQaCqFnshaZQp6rIkvAPyzThvCvXSDO+9AzbxVErqJP";
@@ -12,19 +12,19 @@ describe("pubkey", () => {
 
   describe("encodePubkey", () => {
     it("works for secp256k1", () => {
-      const pubkey = { type: "tendermint/PubKeySecp256k1", value: defaultPubkeyBase64 };
+      const pubkey = {type: "tendermint/PubKeySecp256k1", value: defaultPubkeyBase64};
       expect(encodePubkey(pubkey)).to.deep.equal(
         Any.fromPartial({
           typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-          value: defaultPubkeyProtoBytes,
-        }),
+          value: defaultPubkeyProtoBytes
+        })
       );
     });
 
     it("throws for unsupported pubkey types", () => {
       const pubkey = {
         type: "tendermint/PubKeyUnknown",
-        value: defaultPubkeyBase64,
+        value: defaultPubkeyBase64
       };
       expect(() => encodePubkey(pubkey)).to.throw(/not recognized/i);
     });
@@ -34,18 +34,18 @@ describe("pubkey", () => {
     it("works for secp256k1", () => {
       const pubkey = {
         typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-        value: defaultPubkeyProtoBytes,
+        value: defaultPubkeyProtoBytes
       };
       expect(decodePubkey(pubkey)).to.deep.equal({
         type: "tendermint/PubKeySecp256k1",
-        value: defaultPubkeyBase64,
+        value: defaultPubkeyBase64
       });
     });
 
     it("throws for unsupported pubkey types", () => {
       const pubkey = {
         typeUrl: "/cosmos.crypto.unknown.PubKey",
-        value: defaultPubkeyProtoBytes,
+        value: defaultPubkeyProtoBytes
       };
       expect(() => decodePubkey(pubkey)).to.throw(/not recognized/i);
     });
