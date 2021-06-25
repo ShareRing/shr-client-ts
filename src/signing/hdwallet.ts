@@ -18,7 +18,7 @@ import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 
 import {AccountData, SignResponse, OfflineSigner} from "./signer";
 import {makeSignBytes} from "./signing";
-import {decrypt, encrypt, EncryptionConfiguration, executeKdf, KdfConfiguration, supportedAlgorithms} from "./wallet";
+import {decrypt, encrypt, EncryptionConfiguration, executeKdf, KdfConfiguration, supportedAlgorithms} from "./encryption";
 import {makeCosmoshubPath} from "./paths";
 
 interface AccountDataWithPrivkey extends AccountData {
