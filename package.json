@@ -1,5 +1,5 @@
 {
-  "name": "shr-cosmos-client",
+  "name": "shr-client-ts",
   "version": "1.0.0",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -63,7 +63,7 @@
     "tslib": "^2.3.0",
     "typescript": "^4.3.4"
   },
-  "repository": "https://bitbucket.org/shareringvietnam/shr-cosmos-client",
+  "repository": "https://bitbucket.org/shareringvietnam/shr-client-ts",
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
   "private": true,
   "husky": {
