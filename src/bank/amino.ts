@@ -1,7 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { AminoMsg, Coin } from "@cosmjs/amino";
-import type { AminoConverter } from "../amino";
-import { MsgMultiSend, MsgSend } from "../codec/cosmos/bank/v1beta1/tx";
+/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
+
+import {AminoMsg, Coin} from "@cosmjs/amino";
+import type {AminoConverter} from "../amino";
+import {MsgMultiSend, MsgSend} from "../codec/cosmos/bank/v1beta1/tx";
+import {EncodeObject} from "../signing";
 
 export interface AminoMsgSend extends AminoMsg {
   readonly type: "cosmos-sdk/MsgSend";
@@ -43,43 +45,52 @@ export function isAminoMsgMultiSend(msg: AminoMsg): msg is AminoMsgMultiSend {
   return msg.type === "cosmos-sdk/MsgMultiSend";
 }
 
+export interface MsgSendEncodeObject extends EncodeObject {
+  readonly typeUrl: "/cosmos.bank.v1beta1.MsgSend";
+  readonly value: Partial<MsgSend>;
+}
+
+export function isMsgSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendEncodeObject {
+  return (encodeObject as MsgSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgSend";
+}
+
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
   return {
     "/cosmos.bank.v1beta1.MsgSend": {
       aminoType: "cosmos-sdk/MsgSend",
-      toAmino: ({ fromAddress, toAddress, amount }: MsgSend): AminoMsgSend["value"] => ({
+      toAmino: ({fromAddress, toAddress, amount}: MsgSend): AminoMsgSend["value"] => ({
         from_address: fromAddress,
         to_address: toAddress,
-        amount: [...amount],
+        amount: [...amount]
       }),
-      fromAmino: ({ from_address, to_address, amount }: AminoMsgSend["value"]): MsgSend => ({
+      fromAmino: ({from_address, to_address, amount}: AminoMsgSend["value"]): MsgSend => ({
         fromAddress: from_address,
         toAddress: to_address,
-        amount: [...amount],
-      }),
+        amount: [...amount]
+      })
     },
     "/cosmos.bank.v1beta1.MsgMultiSend": {
       aminoType: "cosmos-sdk/MsgMultiSend",
-      toAmino: ({ inputs, outputs }: MsgMultiSend): AminoMsgMultiSend["value"] => ({
+      toAmino: ({inputs, outputs}: MsgMultiSend): AminoMsgMultiSend["value"] => ({
         inputs: inputs.map((input) => ({
           address: input.address,
-          coins: [...input.coins],
+          coins: [...input.coins]
         })),
         outputs: outputs.map((output) => ({
           address: output.address,
-          coins: [...output.coins],
-        })),
+          coins: [...output.coins]
+        }))
       }),
-      fromAmino: ({ inputs, outputs }: AminoMsgMultiSend["value"]): MsgMultiSend => ({
+      fromAmino: ({inputs, outputs}: AminoMsgMultiSend["value"]): MsgMultiSend => ({
         inputs: inputs.map((input) => ({
           address: input.address,
-          coins: [...input.coins],
+          coins: [...input.coins]
         })),
         outputs: outputs.map((output) => ({
           address: output.address,
-          coins: [...output.coins],
-        })),
-      }),
-    },
-  }
+          coins: [...output.coins]
+        }))
+      })
+    }
+  };
 }

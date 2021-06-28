@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { toAscii } from "@cosmjs/encoding";
-import { assert } from "@cosmjs/utils";
-import { QueryClientImpl } from "../codec/cosmos/bank/v1beta1/query";
-import { Coin } from "../codec/cosmos/base/v1beta1/coin";
-import { QueryClient } from "../queryclient";
-import { createProtobufRpcClient, toAccAddress } from "../utils";
+
+import {toAscii} from "@cosmjs/encoding";
+import {assert} from "@cosmjs/utils";
+import {QueryClientImpl} from "../codec/cosmos/bank/v1beta1/query";
+import {Coin} from "../codec/cosmos/base/v1beta1/coin";
+import type {QueryClient} from "../queryclient";
+import {createProtobufRpcClient, toAccAddress} from "../utils";
 
 export interface BankExtension {
   readonly bank: {
@@ -27,20 +28,20 @@ export function setupBankExtension(base: QueryClient): BankExtension {
   return {
     bank: {
       balance: async (address: string, denom: string) => {
-        const { balance } = await queryService.Balance({ address: address, denom: denom });
+        const {balance} = await queryService.Balance({address: address, denom: denom});
         assert(balance);
         return balance;
       },
       allBalances: async (address: string) => {
-        const { balances } = await queryService.AllBalances({ address: address });
+        const {balances} = await queryService.AllBalances({address: address});
         return balances;
       },
       totalSupply: async () => {
-        const { supply } = await queryService.TotalSupply({});
+        const {supply} = await queryService.TotalSupply({});
         return supply;
       },
       supplyOf: async (denom: string) => {
-        const { amount } = await queryService.SupplyOf({ denom: denom });
+        const {amount} = await queryService.SupplyOf({denom: denom});
         assert(amount);
         return amount;
       },
@@ -55,8 +56,8 @@ export function setupBankExtension(base: QueryClient): BankExtension {
           const key = Uint8Array.from([...toAscii("balances"), ...toAccAddress(address), ...toAscii(denom)]);
           const responseData = await base.queryVerified("bank", key);
           return responseData.length ? Coin.decode(responseData) : null;
-        },
-      },
-    },
+        }
+      }
+    }
   };
 }
