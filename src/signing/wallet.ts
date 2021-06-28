@@ -3,7 +3,7 @@ import {Secp256k1, sha256} from "@cosmjs/crypto";
 import {Bech32} from "@cosmjs/encoding";
 import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 
-import {AccountData, SignResponse, OfflineSigner} from "./signer";
+import {AccountData, DirectSignResponse, OfflineDirectSigner} from "./signer";
 import {makeSignBytes} from "./signing";
 
 /**
@@ -11,7 +11,7 @@ import {makeSignBytes} from "./signing";
  *
  * If you want to work with BIP39 mnemonics and multiple accounts, use Secp256k1HdWallet.
  */
-export class Secp256k1Wallet implements OfflineSigner {
+export class Secp256k1Wallet implements OfflineDirectSigner {
   /**
    * Creates a Secp256k1Wallet from the given private key
    *
@@ -47,7 +47,7 @@ export class Secp256k1Wallet implements OfflineSigner {
     ];
   }
 
-  public async sign(address: string, signDoc: SignDoc): Promise<SignResponse> {
+  public async signDirect(address: string, signDoc: SignDoc): Promise<DirectSignResponse> {
     const signBytes = makeSignBytes(signDoc);
     if (address !== this.address) {
       throw new Error(`Address ${address} not found in wallet`);
