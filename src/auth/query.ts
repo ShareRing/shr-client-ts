@@ -1,8 +1,8 @@
-import { QueryClientImpl } from "../codec/cosmos/auth/v1beta1/query";
-import { Any } from "../codec/google/protobuf/any";
+import {QueryClientImpl} from "../codec/cosmos/auth/v1beta1/query";
+import {Any} from "../codec/google/protobuf/any";
 
-import { QueryClient } from "../queryclient";
-import { createProtobufRpcClient, toAccAddress } from "../utils";
+import type {QueryClient} from "../queryclient";
+import {createProtobufRpcClient, toAccAddress} from "../utils";
 
 export interface AuthExtension {
   readonly auth: {
@@ -36,7 +36,7 @@ export function setupAuthExtension(base: QueryClient): AuthExtension {
   return {
     auth: {
       account: async (address: string) => {
-        const { account } = await queryService.Account({ address: address });
+        const {account} = await queryService.Account({address: address});
         return account ?? null;
       },
       verified: {
@@ -46,8 +46,8 @@ export function setupAuthExtension(base: QueryClient): AuthExtension {
           const responseData = await base.queryVerified("acc", key);
           if (responseData.length === 0) return null;
           return Any.decode(responseData);
-        },
-      },
-    },
+        }
+      }
+    }
   };
 }
