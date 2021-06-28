@@ -17,6 +17,6 @@ export {extractKdfConfiguration, Secp256k1HdWallet, Secp256k1HdWalletOptions} fr
 export {Secp256k1Wallet} from "./wallet";
 export {makeCosmoshubPath} from "./paths";
 export {decodePubkey, encodePubkey} from "./pubkey";
-export {AccountData, Algo, SignResponse, OfflineSigner} from "./signer";
+export {AccountData, Algo, DirectSignResponse, isOfflineDirectSigner, OfflineDirectSigner, OfflineSigner} from "./signer";
 export {makeAuthInfoBytes, makeSignBytes, makeSignDoc} from "./signing";
 export {executeKdf, KdfConfiguration} from "./encryption";

@@ -1,4 +1,4 @@
-import {StdSignature} from "@cosmjs/amino";
+import {OfflineAminoSigner, StdSignature} from "@cosmjs/amino";
 import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 
 /**
@@ -16,7 +16,7 @@ export interface AccountData {
   readonly pubkey: Uint8Array;
 }
 
-export interface SignResponse {
+export interface DirectSignResponse {
   /**
    * The sign doc that was signed.
    * This may be different from the input signDoc when the signer modifies it as part of the signing process.
@@ -25,7 +25,13 @@ export interface SignResponse {
   readonly signature: StdSignature;
 }
 
-export interface OfflineSigner {
+export interface OfflineDirectSigner {
   readonly getAccounts: () => Promise<readonly AccountData[]>;
-  readonly sign: (signerAddress: string, signDoc: SignDoc) => Promise<SignResponse>;
+  readonly signDirect: (signerAddress: string, signDoc: SignDoc) => Promise<DirectSignResponse>;
+}
+
+export type OfflineSigner = OfflineAminoSigner | OfflineDirectSigner;
+
+export function isOfflineDirectSigner(signer: OfflineSigner): signer is OfflineDirectSigner {
+  return (signer as OfflineDirectSigner).signDirect !== undefined;
 }
