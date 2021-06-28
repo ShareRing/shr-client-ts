@@ -16,7 +16,7 @@ import {Bech32, fromBase64, fromUtf8, toBase64, toUtf8} from "@cosmjs/encoding";
 import {assert, isNonNullObject} from "@cosmjs/utils/build";
 import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 
-import {AccountData, SignResponse, OfflineSigner} from "./signer";
+import {AccountData, DirectSignResponse, OfflineDirectSigner} from "./signer";
 import {makeSignBytes} from "./signing";
 import {decrypt, encrypt, EncryptionConfiguration, executeKdf, KdfConfiguration, supportedAlgorithms} from "./encryption";
 import {makeCosmoshubPath} from "./paths";
@@ -124,7 +124,7 @@ const defaultOptions: Secp256k1HdWalletOptions = {
 };
 
 /** A wallet for protobuf based signing using SIGN_MODE_DIRECT */
-export class Secp256k1HdWallet implements OfflineSigner {
+export class Secp256k1HdWallet implements OfflineDirectSigner {
   /**
    * Restores a wallet from the given BIP39 mnemonic.
    *
@@ -248,7 +248,7 @@ export class Secp256k1HdWallet implements OfflineSigner {
     }));
   }
 
-  public async sign(signerAddress: string, signDoc: SignDoc): Promise<SignResponse> {
+  public async signDirect(signerAddress: string, signDoc: SignDoc): Promise<DirectSignResponse> {
     const accounts = await this.getAccountsWithPrivkeys();
     const account = accounts.find(({address}) => address === signerAddress);
     if (account === undefined) {
