@@ -1,8 +1,8 @@
 import {QueryClientImpl} from "../codec/cosmos/auth/v1beta1/query";
 import {Any} from "../codec/google/protobuf/any";
 
-import type {QueryClient} from "../queryclient";
-import {createProtobufRpcClient, toAccAddress} from "../utils";
+import type {QueryClient} from "./client";
+import {createProtobufRpcClient, toAccAddress} from "./utils";
 
 export interface AuthExtension {
   readonly auth: {

@@ -1,8 +1,8 @@
-import { Bech32 } from "@cosmjs/encoding";
-import { PageRequest } from "./codec/cosmos/base/query/v1beta1/pagination";
+import {Bech32} from "@cosmjs/encoding";
+import {PageRequest} from "../codec/cosmos/base/query/v1beta1/pagination";
 import Long from "long";
 
-import type { QueryClient } from "./queryclient";
+import type {QueryClient} from "./client";
 
 /**
  * Takes a bech32 encoded address and returns the data part. The prefix is ignored and discarded.
@@ -19,7 +19,7 @@ export function createPagination(paginationKey?: Uint8Array): PageRequest | unde
         key: paginationKey,
         offset: Long.fromNumber(0, true),
         limit: Long.fromNumber(0, true),
-        countTotal: false,
+        countTotal: false
       }
     : undefined;
 }
@@ -33,6 +33,6 @@ export function createProtobufRpcClient(base: QueryClient): ProtobufRpcClient {
     request: (service: string, method: string, data: Uint8Array): Promise<Uint8Array> => {
       const path = `/${service}/${method}`;
       return base.queryUnverified(path, data);
-    },
+    }
   };
 }

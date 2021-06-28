@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
 
 import {AminoMsg, Coin} from "@cosmjs/amino";
-import type {AminoConverter} from "../amino";
+import {AminoConverter} from "./interfaces";
 import {MsgMultiSend, MsgSend} from "../codec/cosmos/bank/v1beta1/tx";
 import {EncodeObject} from "../signing";
 

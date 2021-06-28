@@ -1,11 +1,11 @@
 /* eslint-disable no-dupe-class-members, @typescript-eslint/ban-types, @typescript-eslint/naming-convention */
-import { iavlSpec, ics23, tendermintSpec, verifyExistence, verifyNonExistence } from "@confio/ics23";
-import { toAscii, toHex } from "@cosmjs/encoding";
-import { firstEvent } from "@cosmjs/stream";
-import { tendermint34, Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { arrayContentEquals, assert, assertDefined, isNonNullObject, sleep } from "@cosmjs/utils";
-import { ProofOps } from "./codec/tendermint/crypto/proof";
-import { Stream } from "xstream";
+import {iavlSpec, ics23, tendermintSpec, verifyExistence, verifyNonExistence} from "@confio/ics23";
+import {toAscii, toHex} from "@cosmjs/encoding";
+import {firstEvent} from "@cosmjs/stream";
+import {tendermint34, Tendermint34Client} from "@cosmjs/tendermint-rpc";
+import {arrayContentEquals, assert, assertDefined, isNonNullObject, sleep} from "@cosmjs/utils";
+import {ProofOps} from "../codec/tendermint/crypto/proof";
+import {Stream} from "xstream";
 
 type QueryExtensionSetup<P> = (base: QueryClient) => P;
 
@@ -31,16 +31,13 @@ export class QueryClient {
   public static withExtensions(tmClient: Tendermint34Client): QueryClient;
 
   /** Constructs a QueryClient with 1 extension */
-  public static withExtensions<A extends object>(
-    tmClient: Tendermint34Client,
-    setupExtensionA: QueryExtensionSetup<A>,
-  ): QueryClient & A;
+  public static withExtensions<A extends object>(tmClient: Tendermint34Client, setupExtensionA: QueryExtensionSetup<A>): QueryClient & A;
 
   /** Constructs a QueryClient with 2 extensions */
   public static withExtensions<A extends object, B extends object>(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
-    setupExtensionB: QueryExtensionSetup<B>,
+    setupExtensionB: QueryExtensionSetup<B>
   ): QueryClient & A & B;
 
   /** Constructs a QueryClient with 3 extensions */
@@ -48,7 +45,7 @@ export class QueryClient {
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
     setupExtensionB: QueryExtensionSetup<B>,
-    setupExtensionC: QueryExtensionSetup<C>,
+    setupExtensionC: QueryExtensionSetup<C>
   ): QueryClient & A & B & C;
 
   /** Constructs a QueryClient with 4 extensions */
@@ -57,41 +54,28 @@ export class QueryClient {
     setupExtensionA: QueryExtensionSetup<A>,
     setupExtensionB: QueryExtensionSetup<B>,
     setupExtensionC: QueryExtensionSetup<C>,
-    setupExtensionD: QueryExtensionSetup<D>,
+    setupExtensionD: QueryExtensionSetup<D>
   ): QueryClient & A & B & C & D;
 
   /** Constructs a QueryClient with 5 extensions */
-  public static withExtensions<
-    A extends object,
-    B extends object,
-    C extends object,
-    D extends object,
-    E extends object,
-  >(
+  public static withExtensions<A extends object, B extends object, C extends object, D extends object, E extends object>(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
     setupExtensionB: QueryExtensionSetup<B>,
     setupExtensionC: QueryExtensionSetup<C>,
     setupExtensionD: QueryExtensionSetup<D>,
-    setupExtensionE: QueryExtensionSetup<E>,
+    setupExtensionE: QueryExtensionSetup<E>
   ): QueryClient & A & B & C & D & E;
 
   /** Constructs a QueryClient with 6 extensions */
-  public static withExtensions<
-    A extends object,
-    B extends object,
-    C extends object,
-    D extends object,
-    E extends object,
-    F extends object,
-  >(
+  public static withExtensions<A extends object, B extends object, C extends object, D extends object, E extends object, F extends object>(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
     setupExtensionB: QueryExtensionSetup<B>,
     setupExtensionC: QueryExtensionSetup<C>,
     setupExtensionD: QueryExtensionSetup<D>,
     setupExtensionE: QueryExtensionSetup<E>,
-    setupExtensionF: QueryExtensionSetup<F>,
+    setupExtensionF: QueryExtensionSetup<F>
   ): QueryClient & A & B & C & D & E & F;
 
   /** Constructs a QueryClient with 7 extensions */
@@ -102,7 +86,7 @@ export class QueryClient {
     D extends object,
     E extends object,
     F extends object,
-    G extends object,
+    G extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -111,7 +95,7 @@ export class QueryClient {
     setupExtensionD: QueryExtensionSetup<D>,
     setupExtensionE: QueryExtensionSetup<E>,
     setupExtensionF: QueryExtensionSetup<F>,
-    setupExtensionG: QueryExtensionSetup<G>,
+    setupExtensionG: QueryExtensionSetup<G>
   ): QueryClient & A & B & C & D & E & F & G;
 
   /** Constructs a QueryClient with 8 extensions */
@@ -123,7 +107,7 @@ export class QueryClient {
     E extends object,
     F extends object,
     G extends object,
-    H extends object,
+    H extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -133,7 +117,7 @@ export class QueryClient {
     setupExtensionE: QueryExtensionSetup<E>,
     setupExtensionF: QueryExtensionSetup<F>,
     setupExtensionG: QueryExtensionSetup<G>,
-    setupExtensionH: QueryExtensionSetup<H>,
+    setupExtensionH: QueryExtensionSetup<H>
   ): QueryClient & A & B & C & D & E & F & G & H;
 
   /** Constructs a QueryClient with 9 extensions */
@@ -146,7 +130,7 @@ export class QueryClient {
     F extends object,
     G extends object,
     H extends object,
-    I extends object,
+    I extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -157,7 +141,7 @@ export class QueryClient {
     setupExtensionF: QueryExtensionSetup<F>,
     setupExtensionG: QueryExtensionSetup<G>,
     setupExtensionH: QueryExtensionSetup<H>,
-    setupExtensionI: QueryExtensionSetup<I>,
+    setupExtensionI: QueryExtensionSetup<I>
   ): QueryClient & A & B & C & D & E & F & G & H & I;
 
   /** Constructs a QueryClient with 10 extensions */
@@ -171,7 +155,7 @@ export class QueryClient {
     G extends object,
     H extends object,
     I extends object,
-    J extends object,
+    J extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -183,7 +167,7 @@ export class QueryClient {
     setupExtensionG: QueryExtensionSetup<G>,
     setupExtensionH: QueryExtensionSetup<H>,
     setupExtensionI: QueryExtensionSetup<I>,
-    setupExtensionJ: QueryExtensionSetup<J>,
+    setupExtensionJ: QueryExtensionSetup<J>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J;
 
   /** Constructs a QueryClient with 11 extensions */
@@ -198,7 +182,7 @@ export class QueryClient {
     H extends object,
     I extends object,
     J extends object,
-    K extends object,
+    K extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -211,7 +195,7 @@ export class QueryClient {
     setupExtensionH: QueryExtensionSetup<H>,
     setupExtensionI: QueryExtensionSetup<I>,
     setupExtensionJ: QueryExtensionSetup<J>,
-    setupExtensionK: QueryExtensionSetup<K>,
+    setupExtensionK: QueryExtensionSetup<K>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K;
 
   /** Constructs a QueryClient with 12 extensions */
@@ -227,7 +211,7 @@ export class QueryClient {
     I extends object,
     J extends object,
     K extends object,
-    L extends object,
+    L extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -241,7 +225,7 @@ export class QueryClient {
     setupExtensionI: QueryExtensionSetup<I>,
     setupExtensionJ: QueryExtensionSetup<J>,
     setupExtensionK: QueryExtensionSetup<K>,
-    setupExtensionL: QueryExtensionSetup<L>,
+    setupExtensionL: QueryExtensionSetup<L>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L;
 
   /** Constructs a QueryClient with 13 extensions */
@@ -258,7 +242,7 @@ export class QueryClient {
     J extends object,
     K extends object,
     L extends object,
-    M extends object,
+    M extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -273,7 +257,7 @@ export class QueryClient {
     setupExtensionJ: QueryExtensionSetup<J>,
     setupExtensionK: QueryExtensionSetup<K>,
     setupExtensionL: QueryExtensionSetup<L>,
-    setupExtensionM: QueryExtensionSetup<M>,
+    setupExtensionM: QueryExtensionSetup<M>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L & M;
 
   /** Constructs a QueryClient with 14 extensions */
@@ -291,7 +275,7 @@ export class QueryClient {
     K extends object,
     L extends object,
     M extends object,
-    N extends object,
+    N extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -307,7 +291,7 @@ export class QueryClient {
     setupExtensionK: QueryExtensionSetup<K>,
     setupExtensionL: QueryExtensionSetup<L>,
     setupExtensionM: QueryExtensionSetup<M>,
-    setupExtensionN: QueryExtensionSetup<N>,
+    setupExtensionN: QueryExtensionSetup<N>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L & M & N;
 
   /** Constructs a QueryClient with 15 extensions */
@@ -326,7 +310,7 @@ export class QueryClient {
     L extends object,
     M extends object,
     N extends object,
-    O extends object,
+    O extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -343,7 +327,7 @@ export class QueryClient {
     setupExtensionL: QueryExtensionSetup<L>,
     setupExtensionM: QueryExtensionSetup<M>,
     setupExtensionN: QueryExtensionSetup<N>,
-    setupExtensionO: QueryExtensionSetup<O>,
+    setupExtensionO: QueryExtensionSetup<O>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L & M & N & O;
 
   /** Constructs a QueryClient with 16 extensions */
@@ -363,7 +347,7 @@ export class QueryClient {
     M extends object,
     N extends object,
     O extends object,
-    P extends object,
+    P extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -381,7 +365,7 @@ export class QueryClient {
     setupExtensionM: QueryExtensionSetup<M>,
     setupExtensionN: QueryExtensionSetup<N>,
     setupExtensionO: QueryExtensionSetup<O>,
-    setupExtensionP: QueryExtensionSetup<P>,
+    setupExtensionP: QueryExtensionSetup<P>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L & M & N & O & P;
 
   /** Constructs a QueryClient with 17 extensions */
@@ -402,7 +386,7 @@ export class QueryClient {
     N extends object,
     O extends object,
     P extends object,
-    Q extends object,
+    Q extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -421,7 +405,7 @@ export class QueryClient {
     setupExtensionN: QueryExtensionSetup<N>,
     setupExtensionO: QueryExtensionSetup<O>,
     setupExtensionP: QueryExtensionSetup<P>,
-    setupExtensionQ: QueryExtensionSetup<Q>,
+    setupExtensionQ: QueryExtensionSetup<Q>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L & M & N & O & P & Q;
 
   /** Constructs a QueryClient with 18 extensions */
@@ -443,7 +427,7 @@ export class QueryClient {
     O extends object,
     P extends object,
     Q extends object,
-    R extends object,
+    R extends object
   >(
     tmClient: Tendermint34Client,
     setupExtensionA: QueryExtensionSetup<A>,
@@ -463,13 +447,10 @@ export class QueryClient {
     setupExtensionO: QueryExtensionSetup<O>,
     setupExtensionP: QueryExtensionSetup<P>,
     setupExtensionQ: QueryExtensionSetup<Q>,
-    setupExtensionR: QueryExtensionSetup<R>,
+    setupExtensionR: QueryExtensionSetup<R>
   ): QueryClient & A & B & C & D & E & F & G & H & I & J & K & L & M & N & O & P & Q & R;
 
-  public static withExtensions(
-    tmClient: Tendermint34Client,
-    ...extensionSetups: Array<QueryExtensionSetup<object>>
-  ): any {
+  public static withExtensions(tmClient: Tendermint34Client, ...extensionSetups: Array<QueryExtensionSetup<object>>): any {
     const client = new QueryClient(tmClient);
     const extensions = extensionSetups.map((setupExtension) => setupExtension(client));
     for (const extension of extensions) {
@@ -477,12 +458,12 @@ export class QueryClient {
       for (const [moduleKey, moduleValue] of Object.entries(extension)) {
         assert(
           isNonNullObject(moduleValue),
-          `Module must be a non-null object. Found type ${typeof moduleValue} for module "${moduleKey}".`,
+          `Module must be a non-null object. Found type ${typeof moduleValue} for module "${moduleKey}".`
         );
         const current = (client as any)[moduleKey] || {};
         (client as any)[moduleKey] = {
           ...current,
-          ...moduleValue,
+          ...moduleValue
         };
       }
     }
@@ -496,7 +477,7 @@ export class QueryClient {
   }
 
   public async queryVerified(store: string, key: Uint8Array, desiredHeight?: number): Promise<Uint8Array> {
-    const { height, proof, value } = await this.queryRawProof(store, key, desiredHeight);
+    const {height, proof, value} = await this.queryRawProof(store, key, desiredHeight);
 
     const subProof = checkAndParseOp(proof.ops[0], "ics23:iavl", key);
     const storeProof = checkAndParseOp(proof.ops[1], "ics23:simple", toAscii(store));
@@ -526,18 +507,14 @@ export class QueryClient {
     return value;
   }
 
-  public async queryRawProof(
-    store: string,
-    queryKey: Uint8Array,
-    desiredHeight?: number,
-  ): Promise<ProvenQuery> {
-    const { key, value, height, proof, code, log } = await this.tmClient.abciQuery({
+  public async queryRawProof(store: string, queryKey: Uint8Array, desiredHeight?: number): Promise<ProvenQuery> {
+    const {key, value, height, proof, code, log} = await this.tmClient.abciQuery({
       // we need the StoreKey for the module, not the module name
       // https://github.com/cosmos/cosmos-sdk/blob/8cab43c8120fec5200c3459cbf4a92017bb6f287/x/auth/types/keys.go#L12
       path: `/store/${store}/key`,
       data: queryKey,
       prove: true,
-      height: desiredHeight,
+      height: desiredHeight
     });
 
     if (code) {
@@ -565,8 +542,8 @@ export class QueryClient {
       height: height,
       // need to clone this: readonly input / writeable output
       proof: {
-        ops: [...proof.ops],
-      },
+        ops: [...proof.ops]
+      }
     };
   }
 
@@ -574,7 +551,7 @@ export class QueryClient {
     const response = await this.tmClient.abciQuery({
       path: path,
       data: request,
-      prove: false,
+      prove: false
     });
 
     if (response.code) {

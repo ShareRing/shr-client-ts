@@ -4,8 +4,8 @@ import {toAscii} from "@cosmjs/encoding";
 import {assert} from "@cosmjs/utils";
 import {QueryClientImpl} from "../codec/cosmos/bank/v1beta1/query";
 import {Coin} from "../codec/cosmos/base/v1beta1/coin";
-import type {QueryClient} from "../queryclient";
-import {createProtobufRpcClient, toAccAddress} from "../utils";
+import type {QueryClient} from "./client";
+import {createProtobufRpcClient, toAccAddress} from "./utils";
 
 export interface BankExtension {
   readonly bank: {

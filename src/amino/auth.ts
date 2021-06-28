@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import type {AminoConverter} from "../amino";
+import {AminoConverter} from "./interfaces";
 
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
   return {};
