@@ -23,8 +23,8 @@
     "skipLibCheck": true,
     "lib": ["es2019"],
     "typeRoots": [
-      "./node_modules",
       "./node_modules/@types",
+      "./@types"
     ]
   },
   "include": [
