@@ -19,7 +19,7 @@ import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
 import {AccountData, DirectSignResponse, OfflineDirectSigner} from "./signer";
 import {makeSignBytes} from "./signing";
 import {decrypt, encrypt, EncryptionConfiguration, executeKdf, KdfConfiguration, supportedAlgorithms} from "./encryption";
-import {makeCosmoshubPath} from "./paths";
+import {makeShareledgerPath} from "./paths";
 
 interface AccountDataWithPrivkey extends AccountData {
   readonly privkey: Uint8Array;
@@ -119,7 +119,7 @@ interface Secp256k1HdWalletConstructorOptions extends Partial<Secp256k1HdWalletO
 
 const defaultOptions: Secp256k1HdWalletOptions = {
   bip39Password: "",
-  hdPaths: [makeCosmoshubPath(0)],
+  hdPaths: [makeShareledgerPath(0)],
   prefix: "shareledger"
 };
 
