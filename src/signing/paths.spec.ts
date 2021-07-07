@@ -1,12 +1,12 @@
 import {expect} from "chai";
 import {Slip10RawIndex} from "@cosmjs/crypto";
-import {makeCosmoshubPath} from "./paths";
+import {makeShareledgerPath} from "./paths";
 
 describe("paths", () => {
-  describe("makeCosmoshubPath", () => {
+  describe("makeShareledgerPath", () => {
     it("works", () => {
       // m/44'/118'/0'/0/0
-      expect(makeCosmoshubPath(0)).to.deep.equal([
+      expect(makeShareledgerPath(0)).to.deep.equal([
         Slip10RawIndex.hardened(44),
         Slip10RawIndex.hardened(118),
         Slip10RawIndex.hardened(0),
@@ -14,7 +14,7 @@ describe("paths", () => {
         Slip10RawIndex.normal(0)
       ]);
       // m/44'/118'/0'/0/123
-      expect(makeCosmoshubPath(123)).to.deep.equal([
+      expect(makeShareledgerPath(123)).to.deep.equal([
         Slip10RawIndex.hardened(44),
         Slip10RawIndex.hardened(118),
         Slip10RawIndex.hardened(0),
