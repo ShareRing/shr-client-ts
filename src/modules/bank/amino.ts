@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
 
 import {AminoMsg, Coin} from "@cosmjs/amino";
-import {AminoConverter} from "./interfaces";
-import {MsgMultiSend, MsgSend} from "../codec/cosmos/bank/v1beta1/tx";
-import {EncodeObject} from "../signing";
+import {AminoConverter} from "../../amino/types";
+import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
+import {EncodeObject} from "../../signing";
 
 export interface AminoMsgSend extends AminoMsg {
   readonly type: "cosmos-sdk/MsgSend";

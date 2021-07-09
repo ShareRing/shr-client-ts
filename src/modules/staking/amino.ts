@@ -1,9 +1,9 @@
 import {AminoMsg, Coin, decodeBech32Pubkey, encodeBech32Pubkey} from "@cosmjs/amino";
 import {fromBase64, toBase64} from "@cosmjs/encoding";
 import {assertDefinedAndNotNull} from "@cosmjs/utils";
-import {MsgBeginRedelegate, MsgCreateValidator, MsgDelegate, MsgEditValidator, MsgUndelegate} from "../codec/cosmos/staking/v1beta1/tx";
-import {AminoConverter} from "./interfaces";
-import {EncodeObject} from "../signing";
+import {MsgBeginRedelegate, MsgCreateValidator, MsgDelegate, MsgEditValidator, MsgUndelegate} from "../../codec/cosmos/staking/v1beta1/tx";
+import {AminoConverter} from "../../amino/types";
+import {EncodeObject} from "../../signing";
 
 /** The initial commission rates to be used for creating a validator */
 interface CommissionRates {

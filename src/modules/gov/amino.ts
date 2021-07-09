@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
 
 import {AminoMsg} from "@cosmjs/amino";
-import {Coin} from "../codec/cosmos/base/v1beta1/coin";
-import {Any} from "../codec/google/protobuf/any";
-import {VoteOption} from "../codec/cosmos/gov/v1beta1/gov";
-import {EncodeObject} from "../signing";
-import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../codec/cosmos/gov/v1beta1/tx";
-import {AminoConverter} from "./interfaces";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {Any} from "../../codec/google/protobuf/any";
+import {VoteOption} from "../../codec/cosmos/gov/v1beta1/gov";
+import {EncodeObject} from "../../signing";
+import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../../codec/cosmos/gov/v1beta1/tx";
+import {AminoConverter} from "../../amino/types";
 import Long from "long";
 
 export {VoteOption};

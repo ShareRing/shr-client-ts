@@ -23,7 +23,7 @@ export {
   isBroadcastTxFailure,
   isBroadcastTxSuccess,
   SequenceResponse,
-  ShareledgerClient,
   TimeoutError
 } from "./client";
-export {defaultRegistryTypes, SignerData, SigningShareledgerClient, SigningShareledgerClientOptions} from "./signingclient";
+export {ShareledgerClient} from "./shareledgerclient";
+//export {defaultRegistryTypes, SignerData, ShareledgerSigningClient, ShareledgerSigningClientOptions} from "./shareledgersigningclient.ts.bak";

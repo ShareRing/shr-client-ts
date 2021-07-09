@@ -1,8 +1,7 @@
-import {QueryClientImpl} from "../codec/cosmos/auth/v1beta1/query";
-import {Any} from "../codec/google/protobuf/any";
-
-import type {QueryClient} from "./client";
-import {createProtobufRpcClient, toAccAddress} from "./utils";
+import {Client} from "../../client";
+import {QueryClientImpl} from "../../codec/cosmos/auth/v1beta1/query";
+import {Any} from "../../codec/google/protobuf/any";
+import {createProtobufRpcClient, toAccAddress} from "../../query";
 
 export interface AuthExtension {
   readonly auth: {
@@ -27,14 +26,16 @@ export interface AuthExtension {
   };
 }
 
-export function setupAuthExtension(base: QueryClient): AuthExtension {
-  const rpc = createProtobufRpcClient(base);
-  // Use this service to get easy typed access to query methods
-  // This cannot be used for proof verification
-  const queryService = new QueryClientImpl(rpc);
-
-  return {
-    auth: {
+export function AuthExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+  let queryService: QueryClientImpl;
+  return class Client extends constructor {
+    constructor(...args: any[]) {
+      super(...args);
+      // Use this service to get easy typed access to query methods
+      // This cannot be used for proof verification
+      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+    }
+    auth = {
       account: async (address: string) => {
         const {account} = await queryService.Account({address: address});
         return account ?? null;
@@ -43,11 +44,11 @@ export function setupAuthExtension(base: QueryClient): AuthExtension {
         account: async (address: string) => {
           // https://github.com/cosmos/cosmos-sdk/blob/8cab43c8120fec5200c3459cbf4a92017bb6f287/x/auth/types/keys.go#L29-L32
           const key = Uint8Array.from([0x01, ...toAccAddress(address)]);
-          const responseData = await base.queryVerified("acc", key);
+          const responseData = await this.forceGetQueryClient().queryVerified("acc", key);
           if (responseData.length === 0) return null;
           return Any.decode(responseData);
         }
       }
-    }
+    };
   };
 }

@@ -5,10 +5,8 @@ import {Uint53} from "@cosmjs/math";
 import {Tendermint34Client, toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
 import {sleep} from "@cosmjs/utils";
 import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
-import {Coin} from "./codec/cosmos/base/v1beta1/coin";
-import {Account, accountFromAny} from "./account";
-import {QueryClient, AuthExtension, BankExtension, setupAuthExtension, setupBankExtension} from "./query";
 import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery, SearchTxFilter, SearchTxQuery} from "./search";
+import {QueryClient} from "./query";
 
 export class TimeoutError extends Error {
   public readonly txId: string;
@@ -123,25 +121,15 @@ export function assertIsBroadcastTxSuccess(result: BroadcastTxResponse): asserts
   }
 }
 
-/** Use for testing only */
-export interface PrivateShareledgerClient {
-  readonly tmClient: Tendermint34Client | undefined;
-}
-
-export class ShareledgerClient {
+export abstract class Client {
   private readonly tmClient: Tendermint34Client | undefined;
-  private readonly queryClient: (QueryClient & AuthExtension & BankExtension) | undefined;
+  protected readonly queryClient: QueryClient | undefined;
   private chainId: string | undefined;
 
-  public static async connect(endpoint: string): Promise<ShareledgerClient> {
-    const tmClient = await Tendermint34Client.connect(endpoint);
-    return new ShareledgerClient(tmClient);
-  }
-
-  protected constructor(tmClient: Tendermint34Client | undefined) {
+  public constructor(tmClient: Tendermint34Client | undefined) {
     if (tmClient) {
       this.tmClient = tmClient;
-      this.queryClient = QueryClient.withExtensions(tmClient, setupAuthExtension, setupBankExtension);
+      this.queryClient = new QueryClient(tmClient);
     }
   }
 
@@ -156,11 +144,11 @@ export class ShareledgerClient {
     return this.tmClient;
   }
 
-  protected getQueryClient(): (QueryClient & AuthExtension & BankExtension) | undefined {
+  protected getQueryClient(): QueryClient | undefined {
     return this.queryClient;
   }
 
-  protected forceGetQueryClient(): QueryClient & AuthExtension & BankExtension {
+  protected forceGetQueryClient(): QueryClient {
     if (!this.queryClient) {
       throw new Error("Query client not available. You cannot use online functionality in offline mode.");
     }
@@ -183,34 +171,6 @@ export class ShareledgerClient {
     return status.syncInfo.latestBlockHeight;
   }
 
-  public async getAccount(searchAddress: string): Promise<Account | null> {
-    try {
-      const account = await this.forceGetQueryClient().auth.account(searchAddress);
-      return account ? accountFromAny(account) : null;
-    } catch (error) {
-      if (/rpc error: code = NotFound/i.test(error)) {
-        return null;
-      }
-      throw error;
-    }
-  }
-
-  public async getAccountVerified(searchAddress: string): Promise<Account | null> {
-    const account = await this.forceGetQueryClient().auth.verified.account(searchAddress);
-    return account ? accountFromAny(account) : null;
-  }
-
-  public async getSequence(address: string): Promise<SequenceResponse> {
-    const account = await this.getAccount(address);
-    if (!account) {
-      throw new Error("Account does not exist on chain. Send some tokens there before trying to query sequence.");
-    }
-    return {
-      accountNumber: account.accountNumber,
-      sequence: account.sequence
-    };
-  }
-
   public async getBlock(height?: number): Promise<Block> {
     const response = await this.forceGetTmClient().block(height);
     return {
@@ -226,20 +186,6 @@ export class ShareledgerClient {
       },
       txs: response.block.txs
     };
-  }
-
-  public async getBalance(address: string, searchDenom: string): Promise<Coin> {
-    return this.forceGetQueryClient().bank.balance(address, searchDenom);
-  }
-
-  /**
-   * Queries all balances for all denoms that belong to this address.
-   *
-   * Uses the grpc queries (which iterates over the store internally), and we cannot get
-   * proofs from such a method.
-   */
-  public async getAllBalances(address: string): Promise<readonly Coin[]> {
-    return this.forceGetQueryClient().bank.allBalances(address);
   }
 
   public async getTx(id: string): Promise<IndexedTx | null> {
@@ -354,19 +300,5 @@ export class ShareledgerClient {
         gasWanted: tx.result.gasWanted
       };
     });
-  }
-
-  /**
-   * Queries all supply for all denoms.
-   *
-   * Uses the grpc queries (which iterates over the store internally), and we cannot get
-   * proofs from such a method.
-   */
-  public async getTotalSupply(): Promise<readonly Coin[]> {
-    return this.forceGetQueryClient().bank.totalSupply();
-  }
-
-  public async getSupplyOf(denom: string): Promise<Coin> {
-    return this.forceGetQueryClient().bank.supplyOf(denom);
   }
 }

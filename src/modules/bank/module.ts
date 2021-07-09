@@ -2,10 +2,10 @@
 
 import {toAscii} from "@cosmjs/encoding";
 import {assert} from "@cosmjs/utils";
-import {QueryClientImpl} from "../codec/cosmos/bank/v1beta1/query";
-import {Coin} from "../codec/cosmos/base/v1beta1/coin";
-import type {QueryClient} from "./client";
-import {createProtobufRpcClient, toAccAddress} from "./utils";
+import {Client} from "../../client";
+import {QueryClientImpl} from "../../codec/cosmos/bank/v1beta1/query";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {createProtobufRpcClient, toAccAddress} from "../../query";
 
 export interface BankExtension {
   readonly bank: {
@@ -16,17 +16,22 @@ export interface BankExtension {
     readonly verified: {
       readonly balance: (address: string, denom: string) => Promise<Coin | null>;
     };
+    readonly tx: {
+      [prop: string]: any;
+    };
   };
 }
 
-export function setupBankExtension(base: QueryClient): BankExtension {
-  const rpc = createProtobufRpcClient(base);
-  // Use this service to get easy typed access to query methods
-  // This cannot be used for proof verification
-  const queryService = new QueryClientImpl(rpc);
-
-  return {
-    bank: {
+export function BankExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+  let queryService: QueryClientImpl;
+  return class extends constructor {
+    constructor(...args: any[]) {
+      super(...args);
+      // Use this service to get easy typed access to query methods
+      // This cannot be used for proof verification
+      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+    }
+    bank = {
       balance: async (address: string, denom: string) => {
         const {balance} = await queryService.Balance({address: address, denom: denom});
         assert(balance);
@@ -54,10 +59,11 @@ export function setupBankExtension(base: QueryClient): BankExtension {
           // https://github.com/cosmos/cosmos-sdk/blob/2879c0702c87dc9dd828a8c42b9224dc054e28ad/store/prefix/store.go#L61-L64
           // https://github.com/cosmos/cosmos-sdk/blob/2879c0702c87dc9dd828a8c42b9224dc054e28ad/store/prefix/store.go#L37-L43
           const key = Uint8Array.from([...toAscii("balances"), ...toAccAddress(address), ...toAscii(denom)]);
-          const responseData = await base.queryVerified("bank", key);
+          const responseData = await this.forceGetQueryClient().queryVerified("bank", key);
           return responseData.length ? Coin.decode(responseData) : null;
         }
-      }
-    }
+      },
+      tx: {}
+    };
   };
 }

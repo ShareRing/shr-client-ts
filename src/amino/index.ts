@@ -2,50 +2,18 @@
 
 import {AminoMsg} from "@cosmjs/amino";
 import {EncodeObject} from "../signing";
-import {AminoConverter, AminoTypesOptions} from "./interfaces";
+import {AminoConverter, AminoTypesOptions} from "./types";
 
-import {createAminoTypes as createAminoTypesAuth} from "./auth";
-import {createAminoTypes as createAminoTypesBank} from "./bank";
-import {createAminoTypes as createAminoTypesDistribution} from "./distribution";
-import {createAminoTypes as createAminoTypesStaking} from "./staking";
+import {createAminoTypes as A} from "../modules/auth";
+import {createAminoTypes as B} from "../modules/bank";
+import {createAminoTypes as C} from "../modules/distribution";
+import {createAminoTypes as D} from "../modules/staking";
+import {createAminoTypes as E} from "../modules/gov";
 
-export {AminoMsgSend, AminoMsgMultiSend, MsgSendEncodeObject, isAminoMsgSend, isAminoMsgMultiSend, isMsgSendEncodeObject} from "./bank";
-export {
-  AminoMsgFundCommunityPool,
-  AminoMsgSetWithdrawAddress,
-  AminoMsgWithdrawDelegatorReward,
-  AminoMsgWithdrawValidatorCommission,
-  MsgWithdrawDelegatorRewardEncodeObject,
-  isAminoMsgFundCommunityPool,
-  isAminoMsgSetWithdrawAddress,
-  isAminoMsgWithdrawDelegatorReward,
-  isAminoMsgWithdrawValidatorCommission,
-  isMsgWithdrawDelegatorRewardEncodeObject
-} from "./distribution";
-export {
-  AminoMsgBeginRedelegate,
-  AminoMsgCreateValidator,
-  AminoMsgDelegate,
-  AminoMsgEditValidator,
-  AminoMsgUndelegate,
-  MsgDelegateEncodeObject,
-  MsgUndelegateEncodeObject,
-  isAminoMsgBeginRedelegate,
-  isAminoMsgCreateValidator,
-  isAminoMsgDelegate,
-  isAminoMsgEditValidator,
-  isAminoMsgUndelegate,
-  isMsgDelegateEncodeObject,
-  isMsgUndelegateEncodeObject
-} from "./staking";
+const defaultAminoTypes = [A, B, C, D, E];
 
 function createDefaultAminoTypes(prefix: string): Record<string, AminoConverter> {
-  return {
-    ...createAminoTypesAuth(prefix),
-    ...createAminoTypesBank(prefix),
-    ...createAminoTypesDistribution(prefix),
-    ...createAminoTypesStaking(prefix)
-  };
+  return defaultAminoTypes.reduce((prev, curr) => ({...prev, ...curr(prefix)}), {});
 }
 
 /**

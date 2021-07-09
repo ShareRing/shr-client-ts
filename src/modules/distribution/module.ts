@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+
 import {
   QueryClientImpl,
   QueryCommunityPoolResponse,
@@ -10,39 +11,44 @@ import {
   QueryValidatorCommissionResponse,
   QueryValidatorOutstandingRewardsResponse,
   QueryValidatorSlashesResponse
-} from "../codec/cosmos/distribution/v1beta1/query";
+} from "../../codec/cosmos/distribution/v1beta1/query";
 import Long from "long";
 
-import type {QueryClient} from "./client";
-import {createPagination, createProtobufRpcClient} from "./utils";
+import {createProtobufRpcClient, createPagination} from "../../query";
+import {Client} from "../../client";
 
 export interface DistributionExtension {
   readonly distribution: {
-    communityPool: () => Promise<QueryCommunityPoolResponse>;
-    delegationRewards: (delegatorAddress: string, validatorAddress: string) => Promise<QueryDelegationRewardsResponse>;
-    delegationTotalRewards: (delegatorAddress: string) => Promise<QueryDelegationTotalRewardsResponse>;
-    delegatorValidators: (delegatorAddress: string) => Promise<QueryDelegatorValidatorsResponse>;
-    delegatorWithdrawAddress: (delegatorAddress: string) => Promise<QueryDelegatorWithdrawAddressResponse>;
-    params: () => Promise<QueryParamsResponse>;
-    validatorCommission: (validatorAddress: string) => Promise<QueryValidatorCommissionResponse>;
-    validatorOutstandingRewards: (validatorAddress: string) => Promise<QueryValidatorOutstandingRewardsResponse>;
-    validatorSlashes: (
+    readonly communityPool: () => Promise<QueryCommunityPoolResponse>;
+    readonly delegationRewards: (delegatorAddress: string, validatorAddress: string) => Promise<QueryDelegationRewardsResponse>;
+    readonly delegationTotalRewards: (delegatorAddress: string) => Promise<QueryDelegationTotalRewardsResponse>;
+    readonly delegatorValidators: (delegatorAddress: string) => Promise<QueryDelegatorValidatorsResponse>;
+    readonly delegatorWithdrawAddress: (delegatorAddress: string) => Promise<QueryDelegatorWithdrawAddressResponse>;
+    readonly params: () => Promise<QueryParamsResponse>;
+    readonly validatorCommission: (validatorAddress: string) => Promise<QueryValidatorCommissionResponse>;
+    readonly validatorOutstandingRewards: (validatorAddress: string) => Promise<QueryValidatorOutstandingRewardsResponse>;
+    readonly validatorSlashes: (
       validatorAddress: string,
       startingHeight: number,
       endingHeight: number,
       paginationKey?: Uint8Array
     ) => Promise<QueryValidatorSlashesResponse>;
+    readonly tx: {
+      [prop: string]: any;
+    };
   };
 }
 
-export function setupDistributionExtension(base: QueryClient): DistributionExtension {
-  const rpc = createProtobufRpcClient(base);
-  // Use this service to get easy typed access to query methods
-  // This cannot be used for proof verification
-  const queryService = new QueryClientImpl(rpc);
-
-  return {
-    distribution: {
+export function DistributionExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+  let queryService: QueryClientImpl;
+  return class extends constructor {
+    constructor(...args: any[]) {
+      super(...args);
+      // Use this service to get easy typed access to query methods
+      // This cannot be used for proof verification
+      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+    }
+    distribution = {
       communityPool: async () => {
         const response = await queryService.CommunityPool({});
         return response;
@@ -96,7 +102,8 @@ export function setupDistributionExtension(base: QueryClient): DistributionExten
           pagination: createPagination(paginationKey)
         });
         return response;
-      }
-    }
+      },
+      tx: {}
+    };
   };
 }

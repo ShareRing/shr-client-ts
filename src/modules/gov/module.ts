@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import {QueryClient} from "./client";
-import {createPagination, createProtobufRpcClient} from "./utils";
 import {
   QueryClientImpl,
   QueryDepositResponse,
@@ -12,36 +10,43 @@ import {
   QueryTallyResultResponse,
   QueryVoteResponse,
   QueryVotesResponse
-} from "../codec/cosmos/gov/v1beta1/query";
-import {ProposalStatus} from "../codec/cosmos/gov/v1beta1/gov";
+} from "../../codec/cosmos/gov/v1beta1/query";
+import {ProposalStatus} from "../../codec/cosmos/gov/v1beta1/gov";
+import {createPagination, createProtobufRpcClient} from "../../query";
 import Long from "long";
+import {Client} from "../../client";
 
 export interface GovExtension {
   readonly gov: {
-    deposit: (proposalId: number, depositor: string) => Promise<QueryDepositResponse>;
-    deposits: (proposalId: number, paginationKey?: Uint8Array) => Promise<QueryDepositsResponse>;
-    params: (paramsType: "voting" | "tallying" | "deposit") => Promise<QueryParamsResponse>;
-    proposal: (proposalId: number) => Promise<QueryProposalResponse>;
-    proposals: (
+    readonly deposit: (proposalId: number, depositor: string) => Promise<QueryDepositResponse>;
+    readonly deposits: (proposalId: number, paginationKey?: Uint8Array) => Promise<QueryDepositsResponse>;
+    readonly params: (paramsType: "voting" | "tallying" | "deposit") => Promise<QueryParamsResponse>;
+    readonly proposal: (proposalId: number) => Promise<QueryProposalResponse>;
+    readonly proposals: (
       proposalStatus: ProposalStatus,
       voter: string,
       depositor: string,
       paginationKey?: Uint8Array
     ) => Promise<QueryProposalsResponse>;
-    tallyResult: (proposalId: number) => Promise<QueryTallyResultResponse>;
-    vote: (proposalId: number, voter: string) => Promise<QueryVoteResponse>;
-    votes: (proposalId: number, paginationKey?: Uint8Array) => Promise<QueryVotesResponse>;
+    readonly tallyResult: (proposalId: number) => Promise<QueryTallyResultResponse>;
+    readonly vote: (proposalId: number, voter: string) => Promise<QueryVoteResponse>;
+    readonly votes: (proposalId: number, paginationKey?: Uint8Array) => Promise<QueryVotesResponse>;
+    readonly tx: {
+      [prop: string]: any;
+    };
   };
 }
 
-export function setupGovExtension(base: QueryClient): GovExtension {
-  const rpc = createProtobufRpcClient(base);
-  // Use this service to get easy typed access to query methods
-  // This cannot be used for proof verification
-  const queryService = new QueryClientImpl(rpc);
-
-  return {
-    gov: {
+export function GovExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+  let queryService: QueryClientImpl;
+  return class extends constructor {
+    constructor(...args: any[]) {
+      super(...args);
+      // Use this service to get easy typed access to query methods
+      // This cannot be used for proof verification
+      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+    }
+    gov = {
       deposit: async (proposalId: number, depositor: string) => {
         const response = await queryService.Deposit({
           proposalId: Long.fromNumber(proposalId, true),
@@ -94,7 +99,8 @@ export function setupGovExtension(base: QueryClient): GovExtension {
           pagination: createPagination(paginationKey)
         });
         return response;
-      }
-    }
+      },
+      tx: {}
+    };
   };
 }

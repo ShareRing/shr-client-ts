@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {AminoMsg, Coin} from "@cosmjs/amino";
-import {AminoConverter} from "./interfaces";
-import {MsgSetWithdrawAddress, MsgWithdrawDelegatorReward, MsgWithdrawValidatorCommission} from "../codec/cosmos/distribution/v1beta1/tx";
-import {EncodeObject} from "../signing";
+import {AminoConverter} from "../../amino/types";
+import {
+  MsgSetWithdrawAddress,
+  MsgWithdrawDelegatorReward,
+  MsgWithdrawValidatorCommission
+} from "../../codec/cosmos/distribution/v1beta1/tx";
+import {EncodeObject} from "../../signing";
 
 /** Changes the withdraw address for a delegator (or validator self-delegation) */
 export interface AminoMsgSetWithdrawAddress extends AminoMsg {

@@ -1,6 +1,21 @@
-import {encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
-import {fromBase64, toHex} from "@cosmjs/encoding";
+import {encodeSecp256k1Pubkey, StdFee, makeSignDoc as makeSignDocAmino} from "@cosmjs/amino";
+import {fromBase64} from "@cosmjs/encoding";
 import {Int53} from "@cosmjs/math";
+import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
+import {assert} from "@cosmjs/utils";
+import {AminoTypes} from "./amino";
+import {BroadcastTxResponse} from "./client";
+import {MsgMultiSend} from "./codec/cosmos/bank/v1beta1/tx";
+import {
+  MsgFundCommunityPool,
+  MsgSetWithdrawAddress,
+  MsgWithdrawDelegatorReward,
+  MsgWithdrawValidatorCommission
+} from "./codec/cosmos/distribution/v1beta1/tx";
+import {MsgBeginRedelegate, MsgCreateValidator, MsgDelegate, MsgEditValidator, MsgUndelegate} from "./codec/cosmos/staking/v1beta1/tx";
+import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
+import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
+import {ShareledgerClient} from "./shareledgerclient";
 import {
   EncodeObject,
   encodePubkey,
@@ -12,46 +27,6 @@ import {
   Registry,
   TxBodyEncodeObject
 } from "./signing";
-import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
-import {assert} from "@cosmjs/utils";
-import {MsgMultiSend} from "./codec/cosmos/bank/v1beta1/tx";
-import {Coin} from "./codec/cosmos/base/v1beta1/coin";
-import {
-  MsgFundCommunityPool,
-  MsgSetWithdrawAddress,
-  MsgWithdrawDelegatorReward,
-  MsgWithdrawValidatorCommission
-} from "./codec/cosmos/distribution/v1beta1/tx";
-import {MsgBeginRedelegate, MsgCreateValidator, MsgDelegate, MsgEditValidator, MsgUndelegate} from "./codec/cosmos/staking/v1beta1/tx";
-import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
-import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
-
-import {
-  AminoTypes,
-  MsgSendEncodeObject,
-  MsgDelegateEncodeObject,
-  MsgUndelegateEncodeObject,
-  MsgWithdrawDelegatorRewardEncodeObject
-} from "./amino";
-import {BroadcastTxResponse, ShareledgerClient} from "./client";
-import {makeSignBytes} from "./signing/signing";
-
-export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
-  ["/cosmos.bank.v1beta1.MsgMultiSend", MsgMultiSend],
-  ["/cosmos.distribution.v1beta1.MsgFundCommunityPool", MsgFundCommunityPool],
-  ["/cosmos.distribution.v1beta1.MsgSetWithdrawAddress", MsgSetWithdrawAddress],
-  ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", MsgWithdrawDelegatorReward],
-  ["/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission", MsgWithdrawValidatorCommission],
-  ["/cosmos.staking.v1beta1.MsgBeginRedelegate", MsgBeginRedelegate],
-  ["/cosmos.staking.v1beta1.MsgCreateValidator", MsgCreateValidator],
-  ["/cosmos.staking.v1beta1.MsgDelegate", MsgDelegate],
-  ["/cosmos.staking.v1beta1.MsgEditValidator", MsgEditValidator],
-  ["/cosmos.staking.v1beta1.MsgUndelegate", MsgUndelegate]
-];
-
-function createDefaultRegistry(): Registry {
-  return new Registry(defaultRegistryTypes);
-}
 
 /**
  * Signing information for a single signer that is not included in the transaction.
@@ -64,12 +39,7 @@ export interface SignerData {
   readonly chainId: string;
 }
 
-/** Use for testing only */
-export interface PrivateSigningShareledgerClient {
-  readonly registry: Registry;
-}
-
-export interface SigningShareledgerClientOptions {
+export interface SigningOptions {
   readonly registry?: Registry;
   readonly aminoTypes?: AminoTypes;
   readonly prefix?: string;
@@ -77,7 +47,43 @@ export interface SigningShareledgerClientOptions {
   readonly broadcastPollIntervalMs?: number;
 }
 
-export class SigningShareledgerClient extends ShareledgerClient {
+export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
+  ["/cosmos.bank.v1beta1.MsgMultiSend", MsgMultiSend],
+  ["/cosmos.distribution.v1beta1.MsgFundCommunityPool", MsgFundCommunityPool],
+  ["/cosmos.distribution.v1beta1.MsgSetWithdrawAddress", MsgSetWithdrawAddress],
+  ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", MsgWithdrawDelegatorReward],
+  ["/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission", MsgWithdrawValidatorCommission],
+  ["/cosmos.staking.v1beta1.MsgBeginRedelegate", MsgBeginRedelegate],
+  ["/cosmos.staking.v1beta1.MsgCreateValidator", MsgCreateValidator],
+  ["/cosmos.staking.v1beta1.MsgDelegate", MsgDelegate],
+  ["/cosmos.staking.v1beta1.MsgEditValidator", MsgEditValidator],
+  ["/cosmos.staking.v1beta1.MsgUndelegate", MsgUndelegate]
+  // ["/ibc.core.channel.v1.MsgChannelOpenInit", MsgChannelOpenInit],
+  // ["/ibc.core.channel.v1.MsgChannelOpenTry", MsgChannelOpenTry],
+  // ["/ibc.core.channel.v1.MsgChannelOpenAck", MsgChannelOpenAck],
+  // ["/ibc.core.channel.v1.MsgChannelOpenConfirm", MsgChannelOpenConfirm],
+  // ["/ibc.core.channel.v1.MsgChannelCloseInit", MsgChannelCloseInit],
+  // ["/ibc.core.channel.v1.MsgChannelCloseConfirm", MsgChannelCloseConfirm],
+  // ["/ibc.core.channel.v1.MsgRecvPacket", MsgRecvPacket],
+  // ["/ibc.core.channel.v1.MsgTimeout ", MsgTimeout],
+  // ["/ibc.core.channel.v1.MsgTimeoutOnClose", MsgTimeoutOnClose],
+  // ["/ibc.core.channel.v1.MsgAcknowledgement", MsgAcknowledgement],
+  // ["/ibc.core.client.v1.MsgCreateClient", MsgCreateClient],
+  // ["/ibc.core.client.v1.MsgUpdateClient", MsgUpdateClient],
+  // ["/ibc.core.client.v1.MsgUpgradeClient", MsgUpgradeClient],
+  // ["/ibc.core.client.v1.MsgSubmitMisbehaviour", MsgSubmitMisbehaviour],
+  // ["/ibc.core.connection.v1.MsgConnectionOpenInit", MsgConnectionOpenInit],
+  // ["/ibc.core.connection.v1.MsgConnectionOpenTry", MsgConnectionOpenTry],
+  // ["/ibc.core.connection.v1.MsgConnectionOpenAck", MsgConnectionOpenAck],
+  // ["/ibc.core.connection.v1.MsgConnectionOpenConfirm", MsgConnectionOpenConfirm],
+  // ["/ibc.applications.transfer.v1.MsgTransfer", MsgTransfer],
+];
+
+function createDefaultRegistry(): Registry {
+  return new Registry(defaultRegistryTypes);
+}
+
+export class ShareledgerSigningClient extends ShareledgerClient {
   public readonly registry: Registry;
   public readonly broadcastTimeoutMs: number | undefined;
   public readonly broadcastPollIntervalMs: number | undefined;
@@ -88,10 +94,10 @@ export class SigningShareledgerClient extends ShareledgerClient {
   public static async connectWithSigner(
     endpoint: string,
     signer: OfflineSigner,
-    options: SigningShareledgerClientOptions = {}
-  ): Promise<SigningShareledgerClient> {
+    options: SigningOptions = {}
+  ): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    return new SigningShareledgerClient(tmClient, signer, options);
+    return new ShareledgerSigningClient(tmClient, signer, options);
   }
 
   /**
@@ -103,11 +109,11 @@ export class SigningShareledgerClient extends ShareledgerClient {
    * When you try to use online functionality with such a signer, an
    * exception will be raised.
    */
-  public static async offline(signer: OfflineSigner, options: SigningShareledgerClientOptions = {}): Promise<SigningShareledgerClient> {
-    return new SigningShareledgerClient(undefined, signer, options);
+  public static async offline(signer: OfflineSigner, options: SigningOptions = {}): Promise<ShareledgerSigningClient> {
+    return new ShareledgerSigningClient(undefined, signer, options);
   }
 
-  protected constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningShareledgerClientOptions) {
+  protected constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
     super(tmClient);
     const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix})} = options;
     this.registry = registry;
@@ -115,71 +121,6 @@ export class SigningShareledgerClient extends ShareledgerClient {
     this.signer = signer;
     this.broadcastTimeoutMs = options.broadcastTimeoutMs;
     this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
-  }
-
-  public async sendTokens(
-    senderAddress: string,
-    recipientAddress: string,
-    amount: readonly Coin[],
-    fee: StdFee,
-    memo = ""
-  ): Promise<BroadcastTxResponse> {
-    const sendMsg: MsgSendEncodeObject = {
-      typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-      value: {
-        fromAddress: senderAddress,
-        toAddress: recipientAddress,
-        amount: [...amount]
-      }
-    };
-    return this.signAndBroadcast(senderAddress, [sendMsg], fee, memo);
-  }
-
-  public async delegateTokens(
-    delegatorAddress: string,
-    validatorAddress: string,
-    amount: Coin,
-    fee: StdFee,
-    memo = ""
-  ): Promise<BroadcastTxResponse> {
-    const delegateMsg: MsgDelegateEncodeObject = {
-      typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-      value: MsgDelegate.fromPartial({
-        delegatorAddress: delegatorAddress,
-        validatorAddress: validatorAddress,
-        amount: amount
-      })
-    };
-    return this.signAndBroadcast(delegatorAddress, [delegateMsg], fee, memo);
-  }
-
-  public async undelegateTokens(
-    delegatorAddress: string,
-    validatorAddress: string,
-    amount: Coin,
-    fee: StdFee,
-    memo = ""
-  ): Promise<BroadcastTxResponse> {
-    const undelegateMsg: MsgUndelegateEncodeObject = {
-      typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
-      value: MsgUndelegate.fromPartial({
-        delegatorAddress: delegatorAddress,
-        validatorAddress: validatorAddress,
-        amount: amount
-      })
-    };
-    return this.signAndBroadcast(delegatorAddress, [undelegateMsg], fee, memo);
-  }
-
-  public async withdrawRewards(delegatorAddress: string, validatorAddress: string, fee: StdFee, memo = ""): Promise<BroadcastTxResponse> {
-    const withdrawMsg: MsgWithdrawDelegatorRewardEncodeObject = {
-      typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-      value: MsgWithdrawDelegatorReward.fromPartial({
-        delegatorAddress: delegatorAddress,
-        validatorAddress: validatorAddress
-      })
-    };
-    return this.signAndBroadcast(delegatorAddress, [withdrawMsg], fee, memo);
   }
 
   public async signAndBroadcast(
@@ -201,7 +142,7 @@ export class SigningShareledgerClient extends ShareledgerClient {
    *
    * You can pass signer data (account number, sequence and chain ID) explicitly instead of querying them
    * from the chain. This is needed when signing for a multisig account, but it also allows for offline signing
-   * (See the SigningShareledgerClient.offline constructor).
+   * (See the SigningStargateClient.offline constructor).
    */
   public async sign(
     signerAddress: string,
@@ -287,19 +228,12 @@ export class SigningShareledgerClient extends ShareledgerClient {
     const txBodyBytes = this.registry.encode(txBodyEncodeObject);
     const gasLimit = Int53.fromString(fee.gas).toNumber();
     const authInfoBytes = makeAuthInfoBytes([pubkey], fee.amount, gasLimit, sequence);
-    console.log("[signer data]", {accountNumber, sequence, chainId});
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
-    console.log("[body bytes]", toHex(signDoc.bodyBytes));
-    console.log("[auth info bytes]", toHex(signDoc.authInfoBytes));
     const {signature, signed} = await this.signer.signDirect(signerAddress, signDoc);
-    console.log("[signature]", toHex(fromBase64(signature.signature)));
-    console.log("[sign bytes", toHex(makeSignBytes(signDoc)));
-    const txRaw = TxRaw.fromPartial({
+    return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
       signatures: [fromBase64(signature.signature)]
     });
-    console.log("[signed tx bytes]", toHex(TxRaw.encode(txRaw).finish()));
-    return txRaw;
   }
 }
