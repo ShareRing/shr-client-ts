@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import {StdFee} from "@cosmjs/amino";
 import {toAscii} from "@cosmjs/encoding";
 import {assert} from "@cosmjs/utils";
 import {Client} from "../../client";
+import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
 import {QueryClientImpl} from "../../codec/cosmos/bank/v1beta1/query";
+import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {createProtobufRpcClient, toAccAddress} from "../../query";
+import {MsgMultiSendEncodeObject, MsgSendEncodeObject} from "./amino";
 
 export interface BankExtension {
   readonly bank: {
@@ -17,7 +21,8 @@ export interface BankExtension {
       readonly balance: (address: string, denom: string) => Promise<Coin | null>;
     };
     readonly tx: {
-      [prop: string]: any;
+      readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[], fee: StdFee) => MsgSendEncodeObject;
+      readonly multiSend: (inputs: Input[], outputs: Output[]) => MsgMultiSendEncodeObject;
     };
   };
 }
@@ -63,7 +68,33 @@ export function BankExtension<T extends {new (...args: any[]): Client}>(construc
           return responseData.length ? Coin.decode(responseData) : null;
         }
       },
-      tx: {}
+      tx: {
+        send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]): MsgSendEncodeObject => {
+          return {
+            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+            value: MsgSend.fromPartial({
+              fromAddress: senderAddress,
+              toAddress: recipientAddress,
+              amount: [...amount]
+            })
+          };
+        },
+        multiSend: (inputs: Input[], outputs: Output[]): MsgMultiSendEncodeObject => {
+          return {
+            typeUrl: "/cosmos.bank.v1beta1.MsgMuliSend",
+            value: MsgMultiSend.fromPartial({
+              inputs: inputs.map((input) => ({
+                address: input.address,
+                coins: [...input.coins]
+              })),
+              outputs: outputs.map((output) => ({
+                address: output.address,
+                coins: [...output.coins]
+              }))
+            })
+          };
+        }
+      }
     };
   };
 }

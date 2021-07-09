@@ -20,6 +20,9 @@ import {BondStatus} from "../../codec/cosmos/staking/v1beta1/staking";
 import Long from "long";
 import {createPagination, createProtobufRpcClient} from "../../query";
 import {Client} from "../../client";
+import {MsgBeginRedelegateEncodeObject, MsgDelegateEncodeObject, MsgUndelegateEncodeObject} from "./amino";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {MsgBeginRedelegate, MsgDelegate, MsgUndelegate} from "../../codec/cosmos/staking/v1beta1/tx";
 
 export type BondStatusString = Exclude<keyof typeof BondStatus, "BOND_STATUS_UNSPECIFIED">;
 
@@ -51,7 +54,14 @@ export interface StakingExtension {
       paginationKey?: Uint8Array
     ) => Promise<QueryValidatorUnbondingDelegationsResponse>;
     readonly tx: {
-      [prop: string]: any;
+      delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgDelegateEncodeObject;
+      undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgUndelegateEncodeObject;
+      beginRedelegate: (
+        delegatorAddress: string,
+        validatorSrcAddress: string,
+        validatorDstAddress: string,
+        amount: Coin
+      ) => MsgBeginRedelegateEncodeObject;
     };
   };
 }
@@ -161,7 +171,44 @@ export function StakingExtension<T extends {new (...args: any[]): Client}>(const
         });
         return response;
       },
-      tx: {}
+      tx: {
+        delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgDelegateEncodeObject => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+            value: MsgDelegate.fromPartial({
+              delegatorAddress,
+              validatorAddress,
+              amount
+            })
+          };
+        },
+        undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgUndelegateEncodeObject => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
+            value: MsgUndelegate.fromPartial({
+              delegatorAddress,
+              validatorAddress,
+              amount
+            })
+          };
+        },
+        beginRedelegate: (
+          delegatorAddress: string,
+          validatorSrcAddress: string,
+          validatorDstAddress: string,
+          amount: Coin
+        ): MsgBeginRedelegateEncodeObject => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+            value: MsgBeginRedelegate.fromPartial({
+              delegatorAddress,
+              validatorSrcAddress,
+              validatorDstAddress,
+              amount
+            })
+          };
+        }
+      }
     };
   };
 }

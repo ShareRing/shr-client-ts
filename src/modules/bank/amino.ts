@@ -2,8 +2,9 @@
 
 import {AminoMsg, Coin} from "@cosmjs/amino";
 import {AminoConverter} from "../../amino/types";
+import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
 import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
-import {EncodeObject} from "../../signing";
+import {EncodeObject, GeneratedType} from "../../signing";
 
 export interface AminoMsgSend extends AminoMsg {
   readonly type: "cosmos-sdk/MsgSend";
@@ -20,16 +21,13 @@ export function isAminoMsgSend(msg: AminoMsg): msg is AminoMsgSend {
   return msg.type === "cosmos-sdk/MsgSend";
 }
 
-interface Input {
-  /** Bech32 account address */
-  readonly address: string;
-  readonly coins: readonly Coin[];
+export interface MsgSendEncodeObject extends EncodeObject {
+  readonly typeUrl: "/cosmos.bank.v1beta1.MsgSend";
+  readonly value: Partial<MsgSend>;
 }
 
-interface Output {
-  /** Bech32 account address */
-  readonly address: string;
-  readonly coins: readonly Coin[];
+export function isMsgSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendEncodeObject {
+  return (encodeObject as MsgSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgSend";
 }
 
 /** A high level transaction of the coin module */
@@ -45,13 +43,13 @@ export function isAminoMsgMultiSend(msg: AminoMsg): msg is AminoMsgMultiSend {
   return msg.type === "cosmos-sdk/MsgMultiSend";
 }
 
-export interface MsgSendEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.bank.v1beta1.MsgSend";
-  readonly value: Partial<MsgSend>;
+export interface MsgMultiSendEncodeObject extends EncodeObject {
+  readonly typeUrl: "/cosmos.bank.v1beta1.MsgMuliSend";
+  readonly value: Partial<MsgMultiSend>;
 }
 
-export function isMsgSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendEncodeObject {
-  return (encodeObject as MsgSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgSend";
+export function isMsgMultiSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgMultiSendEncodeObject {
+  return (encodeObject as MsgMultiSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgMuliSend";
 }
 
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
@@ -93,4 +91,11 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       })
     }
   };
+}
+
+export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
+  return [
+    ["/cosmos.bank.v1beta1.MsgSend", MsgSend],
+    ["/cosmos.bank.v1beta1.MsgMultiSend", MsgMultiSend]
+  ];
 }

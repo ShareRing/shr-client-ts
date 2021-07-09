@@ -15,6 +15,10 @@ import {ProposalStatus} from "../../codec/cosmos/gov/v1beta1/gov";
 import {createPagination, createProtobufRpcClient} from "../../query";
 import Long from "long";
 import {Client} from "../../client";
+import {MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, MsgVoteEncodeObject, VoteOption} from "./amino";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../../codec/cosmos/gov/v1beta1/tx";
+import {Any} from "../../codec/google/protobuf/any";
 
 export interface GovExtension {
   readonly gov: {
@@ -32,7 +36,13 @@ export interface GovExtension {
     readonly vote: (proposalId: number, voter: string) => Promise<QueryVoteResponse>;
     readonly votes: (proposalId: number, paginationKey?: Uint8Array) => Promise<QueryVotesResponse>;
     readonly tx: {
-      [prop: string]: any;
+      readonly submitProposal: (
+        initialDeposit: Coin[],
+        proposer: string,
+        content?: {title: string; description: string}
+      ) => MsgSubmitProposalEncodeObject;
+      readonly vote: (proposalId: number, voter: string, option: VoteOption) => MsgVoteEncodeObject;
+      readonly deposit: (proposalId: number, depositor: string, amount: Coin[]) => MsgDepositEncodeObject;
     };
   };
 }
@@ -100,7 +110,50 @@ export function GovExtension<T extends {new (...args: any[]): Client}>(construct
         });
         return response;
       },
-      tx: {}
+      tx: {
+        submitProposal: (
+          proposer: string,
+          initialDeposit: Coin[],
+          content?: {title: string; description: string}
+        ): MsgSubmitProposalEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: MsgSubmitProposal.fromPartial({
+              proposer,
+              initialDeposit: [...initialDeposit],
+              content: content
+                ? Any.fromJSON({
+                    typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+                    value: {
+                      title: content.title,
+                      description: content.description
+                    }
+                  })
+                : undefined
+            })
+          };
+        },
+        vote: (proposalId: number, voter: string, option: VoteOption): MsgVoteEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgVote",
+            value: MsgVote.fromPartial({
+              proposalId: Long.fromNumber(proposalId),
+              voter,
+              option
+            })
+          };
+        },
+        deposit: (proposalId: number, depositor: string, amount: Coin[]): MsgDepositEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgDeposit",
+            value: MsgDeposit.fromPartial({
+              proposalId: Long.fromNumber(proposalId),
+              depositor,
+              amount: [...amount]
+            })
+          };
+        }
+      }
     };
   };
 }

@@ -16,6 +16,19 @@ import Long from "long";
 
 import {createProtobufRpcClient, createPagination} from "../../query";
 import {Client} from "../../client";
+import {
+  MsgSetWithdrawAddressEncodeObject,
+  MsgWithdrawDelegatorRewardEncodeObject,
+  MsgWithdrawValidatorCommissionEncodeObject,
+  MsgFundCommunityPoolEncodeObject
+} from "./amino";
+import {
+  MsgFundCommunityPool,
+  MsgSetWithdrawAddress,
+  MsgWithdrawDelegatorReward,
+  MsgWithdrawValidatorCommission
+} from "../../codec/cosmos/distribution/v1beta1/tx";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 
 export interface DistributionExtension {
   readonly distribution: {
@@ -34,7 +47,10 @@ export interface DistributionExtension {
       paginationKey?: Uint8Array
     ) => Promise<QueryValidatorSlashesResponse>;
     readonly tx: {
-      [prop: string]: any;
+      readonly setWithdrawAddress: (delegatorAddress: string, withdrawAdress: string) => MsgSetWithdrawAddressEncodeObject;
+      readonly withdrawRewards: (delegatorAddress: string, validatorAddress: string) => MsgWithdrawDelegatorRewardEncodeObject;
+      readonly withdrawCommissions: (validatorAddress: string) => MsgWithdrawValidatorCommissionEncodeObject;
+      readonly fundCommunityPool: (depositor: string, amount: Coin[]) => MsgFundCommunityPoolEncodeObject;
     };
   };
 }
@@ -103,7 +119,43 @@ export function DistributionExtension<T extends {new (...args: any[]): Client}>(
         });
         return response;
       },
-      tx: {}
+      tx: {
+        setWithdrawAddress: (delegatorAddress: string, withdrawAddress: string): MsgSetWithdrawAddressEncodeObject => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress",
+            value: MsgSetWithdrawAddress.fromPartial({
+              delegatorAddress,
+              withdrawAddress
+            })
+          };
+        },
+        withdrawRewards: (delegatorAddress: string, validatorAddress: string): MsgWithdrawDelegatorRewardEncodeObject => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+            value: MsgWithdrawDelegatorReward.fromPartial({
+              delegatorAddress,
+              validatorAddress
+            })
+          };
+        },
+        withdrawCommissions: (validatorAddress: string): MsgWithdrawValidatorCommissionEncodeObject => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission",
+            value: MsgWithdrawValidatorCommission.fromPartial({
+              validatorAddress
+            })
+          };
+        },
+        fundCommunityPool: (depositor: string, amount: Coin[]): MsgFundCommunityPoolEncodeObject => {
+          return {
+            typeUrl: "/cosmos.distribution.v1beta1.MsgFundCommunityPool",
+            value: MsgFundCommunityPool.fromPartial({
+              depositor,
+              amount: [...amount]
+            })
+          };
+        }
+      }
     };
   };
 }

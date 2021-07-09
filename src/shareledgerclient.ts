@@ -6,13 +6,15 @@ import {AuthExtension} from "./modules/auth/module";
 import {BankExtension} from "./modules/bank";
 import {GovExtension} from "./modules/gov";
 import {StakingExtension} from "./modules/staking";
+import {SlashingExtension} from "./modules/slashing";
 
-export interface ShareledgerClient extends AuthExtension, BankExtension, GovExtension, StakingExtension {}
+export interface ShareledgerClient extends AuthExtension, BankExtension, GovExtension, StakingExtension, SlashingExtension {}
 
 @AuthExtension
 @BankExtension
 @GovExtension
 @StakingExtension
+@SlashingExtension
 export class ShareledgerClient extends Client {
   public static async connect(endpoint: string): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
