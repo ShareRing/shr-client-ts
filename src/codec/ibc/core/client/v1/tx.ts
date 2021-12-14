@@ -37,13 +37,19 @@ export interface MsgUpdateClient {
 /** MsgUpdateClientResponse defines the Msg/UpdateClient response type. */
 export interface MsgUpdateClientResponse {}
 
-/** MsgUpgradeClient defines an sdk.Msg to upgrade an IBC client to a new client state */
+/**
+ * MsgUpgradeClient defines an sdk.Msg to upgrade an IBC client to a new client
+ * state
+ */
 export interface MsgUpgradeClient {
   /** client unique identifier */
   clientId: string;
   /** upgraded client state */
   clientState?: Any;
-  /** upgraded consensus state, only contains enough information to serve as a basis of trust in update logic */
+  /**
+   * upgraded consensus state, only contains enough information to serve as a
+   * basis of trust in update logic
+   */
   consensusState?: Any;
   /** proof that old chain committed to new client */
   proofUpgradeClient: Uint8Array;
@@ -69,7 +75,10 @@ export interface MsgSubmitMisbehaviour {
   signer: string;
 }
 
-/** MsgSubmitMisbehaviourResponse defines the Msg/SubmitMisbehaviour response type. */
+/**
+ * MsgSubmitMisbehaviourResponse defines the Msg/SubmitMisbehaviour response
+ * type.
+ */
 export interface MsgSubmitMisbehaviourResponse {}
 
 const baseMsgCreateClient: object = {signer: ""};
@@ -114,21 +123,10 @@ export const MsgCreateClient = {
 
   fromJSON(object: any): MsgCreateClient {
     const message = {...baseMsgCreateClient} as MsgCreateClient;
-    if (object.clientState !== undefined && object.clientState !== null) {
-      message.clientState = Any.fromJSON(object.clientState);
-    } else {
-      message.clientState = undefined;
-    }
-    if (object.consensusState !== undefined && object.consensusState !== null) {
-      message.consensusState = Any.fromJSON(object.consensusState);
-    } else {
-      message.consensusState = undefined;
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
+    message.clientState = object.clientState !== undefined && object.clientState !== null ? Any.fromJSON(object.clientState) : undefined;
+    message.consensusState =
+      object.consensusState !== undefined && object.consensusState !== null ? Any.fromJSON(object.consensusState) : undefined;
+    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
     return message;
   },
 
@@ -140,23 +138,12 @@ export const MsgCreateClient = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCreateClient>): MsgCreateClient {
+  fromPartial<I extends Exact<DeepPartial<MsgCreateClient>, I>>(object: I): MsgCreateClient {
     const message = {...baseMsgCreateClient} as MsgCreateClient;
-    if (object.clientState !== undefined && object.clientState !== null) {
-      message.clientState = Any.fromPartial(object.clientState);
-    } else {
-      message.clientState = undefined;
-    }
-    if (object.consensusState !== undefined && object.consensusState !== null) {
-      message.consensusState = Any.fromPartial(object.consensusState);
-    } else {
-      message.consensusState = undefined;
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
+    message.clientState = object.clientState !== undefined && object.clientState !== null ? Any.fromPartial(object.clientState) : undefined;
+    message.consensusState =
+      object.consensusState !== undefined && object.consensusState !== null ? Any.fromPartial(object.consensusState) : undefined;
+    message.signer = object.signer ?? "";
     return message;
   }
 };
@@ -193,7 +180,7 @@ export const MsgCreateClientResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCreateClientResponse>): MsgCreateClientResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgCreateClientResponse>, I>>(_: I): MsgCreateClientResponse {
     const message = {...baseMsgCreateClientResponse} as MsgCreateClientResponse;
     return message;
   }
@@ -241,21 +228,9 @@ export const MsgUpdateClient = {
 
   fromJSON(object: any): MsgUpdateClient {
     const message = {...baseMsgUpdateClient} as MsgUpdateClient;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = String(object.clientId);
-    } else {
-      message.clientId = "";
-    }
-    if (object.header !== undefined && object.header !== null) {
-      message.header = Any.fromJSON(object.header);
-    } else {
-      message.header = undefined;
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
+    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
+    message.header = object.header !== undefined && object.header !== null ? Any.fromJSON(object.header) : undefined;
+    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
     return message;
   },
 
@@ -267,23 +242,11 @@ export const MsgUpdateClient = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgUpdateClient>): MsgUpdateClient {
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateClient>, I>>(object: I): MsgUpdateClient {
     const message = {...baseMsgUpdateClient} as MsgUpdateClient;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = object.clientId;
-    } else {
-      message.clientId = "";
-    }
-    if (object.header !== undefined && object.header !== null) {
-      message.header = Any.fromPartial(object.header);
-    } else {
-      message.header = undefined;
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
+    message.clientId = object.clientId ?? "";
+    message.header = object.header !== undefined && object.header !== null ? Any.fromPartial(object.header) : undefined;
+    message.signer = object.signer ?? "";
     return message;
   }
 };
@@ -320,7 +283,7 @@ export const MsgUpdateClientResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgUpdateClientResponse>): MsgUpdateClientResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateClientResponse>, I>>(_: I): MsgUpdateClientResponse {
     const message = {...baseMsgUpdateClientResponse} as MsgUpdateClientResponse;
     return message;
   }
@@ -388,34 +351,19 @@ export const MsgUpgradeClient = {
 
   fromJSON(object: any): MsgUpgradeClient {
     const message = {...baseMsgUpgradeClient} as MsgUpgradeClient;
-    message.proofUpgradeClient = new Uint8Array();
-    message.proofUpgradeConsensusState = new Uint8Array();
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = String(object.clientId);
-    } else {
-      message.clientId = "";
-    }
-    if (object.clientState !== undefined && object.clientState !== null) {
-      message.clientState = Any.fromJSON(object.clientState);
-    } else {
-      message.clientState = undefined;
-    }
-    if (object.consensusState !== undefined && object.consensusState !== null) {
-      message.consensusState = Any.fromJSON(object.consensusState);
-    } else {
-      message.consensusState = undefined;
-    }
-    if (object.proofUpgradeClient !== undefined && object.proofUpgradeClient !== null) {
-      message.proofUpgradeClient = bytesFromBase64(object.proofUpgradeClient);
-    }
-    if (object.proofUpgradeConsensusState !== undefined && object.proofUpgradeConsensusState !== null) {
-      message.proofUpgradeConsensusState = bytesFromBase64(object.proofUpgradeConsensusState);
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
+    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
+    message.clientState = object.clientState !== undefined && object.clientState !== null ? Any.fromJSON(object.clientState) : undefined;
+    message.consensusState =
+      object.consensusState !== undefined && object.consensusState !== null ? Any.fromJSON(object.consensusState) : undefined;
+    message.proofUpgradeClient =
+      object.proofUpgradeClient !== undefined && object.proofUpgradeClient !== null
+        ? bytesFromBase64(object.proofUpgradeClient)
+        : new Uint8Array();
+    message.proofUpgradeConsensusState =
+      object.proofUpgradeConsensusState !== undefined && object.proofUpgradeConsensusState !== null
+        ? bytesFromBase64(object.proofUpgradeConsensusState)
+        : new Uint8Array();
+    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
     return message;
   },
 
@@ -434,38 +382,15 @@ export const MsgUpgradeClient = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgUpgradeClient>): MsgUpgradeClient {
+  fromPartial<I extends Exact<DeepPartial<MsgUpgradeClient>, I>>(object: I): MsgUpgradeClient {
     const message = {...baseMsgUpgradeClient} as MsgUpgradeClient;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = object.clientId;
-    } else {
-      message.clientId = "";
-    }
-    if (object.clientState !== undefined && object.clientState !== null) {
-      message.clientState = Any.fromPartial(object.clientState);
-    } else {
-      message.clientState = undefined;
-    }
-    if (object.consensusState !== undefined && object.consensusState !== null) {
-      message.consensusState = Any.fromPartial(object.consensusState);
-    } else {
-      message.consensusState = undefined;
-    }
-    if (object.proofUpgradeClient !== undefined && object.proofUpgradeClient !== null) {
-      message.proofUpgradeClient = object.proofUpgradeClient;
-    } else {
-      message.proofUpgradeClient = new Uint8Array();
-    }
-    if (object.proofUpgradeConsensusState !== undefined && object.proofUpgradeConsensusState !== null) {
-      message.proofUpgradeConsensusState = object.proofUpgradeConsensusState;
-    } else {
-      message.proofUpgradeConsensusState = new Uint8Array();
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
+    message.clientId = object.clientId ?? "";
+    message.clientState = object.clientState !== undefined && object.clientState !== null ? Any.fromPartial(object.clientState) : undefined;
+    message.consensusState =
+      object.consensusState !== undefined && object.consensusState !== null ? Any.fromPartial(object.consensusState) : undefined;
+    message.proofUpgradeClient = object.proofUpgradeClient ?? new Uint8Array();
+    message.proofUpgradeConsensusState = object.proofUpgradeConsensusState ?? new Uint8Array();
+    message.signer = object.signer ?? "";
     return message;
   }
 };
@@ -502,7 +427,7 @@ export const MsgUpgradeClientResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgUpgradeClientResponse>): MsgUpgradeClientResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgUpgradeClientResponse>, I>>(_: I): MsgUpgradeClientResponse {
     const message = {...baseMsgUpgradeClientResponse} as MsgUpgradeClientResponse;
     return message;
   }
@@ -550,21 +475,10 @@ export const MsgSubmitMisbehaviour = {
 
   fromJSON(object: any): MsgSubmitMisbehaviour {
     const message = {...baseMsgSubmitMisbehaviour} as MsgSubmitMisbehaviour;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = String(object.clientId);
-    } else {
-      message.clientId = "";
-    }
-    if (object.misbehaviour !== undefined && object.misbehaviour !== null) {
-      message.misbehaviour = Any.fromJSON(object.misbehaviour);
-    } else {
-      message.misbehaviour = undefined;
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = String(object.signer);
-    } else {
-      message.signer = "";
-    }
+    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
+    message.misbehaviour =
+      object.misbehaviour !== undefined && object.misbehaviour !== null ? Any.fromJSON(object.misbehaviour) : undefined;
+    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
     return message;
   },
 
@@ -576,23 +490,12 @@ export const MsgSubmitMisbehaviour = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgSubmitMisbehaviour>): MsgSubmitMisbehaviour {
+  fromPartial<I extends Exact<DeepPartial<MsgSubmitMisbehaviour>, I>>(object: I): MsgSubmitMisbehaviour {
     const message = {...baseMsgSubmitMisbehaviour} as MsgSubmitMisbehaviour;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = object.clientId;
-    } else {
-      message.clientId = "";
-    }
-    if (object.misbehaviour !== undefined && object.misbehaviour !== null) {
-      message.misbehaviour = Any.fromPartial(object.misbehaviour);
-    } else {
-      message.misbehaviour = undefined;
-    }
-    if (object.signer !== undefined && object.signer !== null) {
-      message.signer = object.signer;
-    } else {
-      message.signer = "";
-    }
+    message.clientId = object.clientId ?? "";
+    message.misbehaviour =
+      object.misbehaviour !== undefined && object.misbehaviour !== null ? Any.fromPartial(object.misbehaviour) : undefined;
+    message.signer = object.signer ?? "";
     return message;
   }
 };
@@ -629,7 +532,7 @@ export const MsgSubmitMisbehaviourResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgSubmitMisbehaviourResponse>): MsgSubmitMisbehaviourResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgSubmitMisbehaviourResponse>, I>>(_: I): MsgSubmitMisbehaviourResponse {
     const message = {...baseMsgSubmitMisbehaviourResponse} as MsgSubmitMisbehaviourResponse;
     return message;
   }
@@ -687,6 +590,7 @@ interface Rpc {
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -714,9 +618,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -724,6 +631,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

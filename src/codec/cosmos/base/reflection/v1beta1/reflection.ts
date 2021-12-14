@@ -62,7 +62,7 @@ export const ListAllInterfacesRequest = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<ListAllInterfacesRequest>): ListAllInterfacesRequest {
+  fromPartial<I extends Exact<DeepPartial<ListAllInterfacesRequest>, I>>(_: I): ListAllInterfacesRequest {
     const message = {...baseListAllInterfacesRequest} as ListAllInterfacesRequest;
     return message;
   }
@@ -99,12 +99,7 @@ export const ListAllInterfacesResponse = {
 
   fromJSON(object: any): ListAllInterfacesResponse {
     const message = {...baseListAllInterfacesResponse} as ListAllInterfacesResponse;
-    message.interfaceNames = [];
-    if (object.interfaceNames !== undefined && object.interfaceNames !== null) {
-      for (const e of object.interfaceNames) {
-        message.interfaceNames.push(String(e));
-      }
-    }
+    message.interfaceNames = (object.interfaceNames ?? []).map((e: any) => String(e));
     return message;
   },
 
@@ -118,14 +113,9 @@ export const ListAllInterfacesResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ListAllInterfacesResponse>): ListAllInterfacesResponse {
+  fromPartial<I extends Exact<DeepPartial<ListAllInterfacesResponse>, I>>(object: I): ListAllInterfacesResponse {
     const message = {...baseListAllInterfacesResponse} as ListAllInterfacesResponse;
-    message.interfaceNames = [];
-    if (object.interfaceNames !== undefined && object.interfaceNames !== null) {
-      for (const e of object.interfaceNames) {
-        message.interfaceNames.push(e);
-      }
-    }
+    message.interfaceNames = object.interfaceNames?.map((e) => e) || [];
     return message;
   }
 };
@@ -160,11 +150,7 @@ export const ListImplementationsRequest = {
 
   fromJSON(object: any): ListImplementationsRequest {
     const message = {...baseListImplementationsRequest} as ListImplementationsRequest;
-    if (object.interfaceName !== undefined && object.interfaceName !== null) {
-      message.interfaceName = String(object.interfaceName);
-    } else {
-      message.interfaceName = "";
-    }
+    message.interfaceName = object.interfaceName !== undefined && object.interfaceName !== null ? String(object.interfaceName) : "";
     return message;
   },
 
@@ -174,13 +160,9 @@ export const ListImplementationsRequest = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ListImplementationsRequest>): ListImplementationsRequest {
+  fromPartial<I extends Exact<DeepPartial<ListImplementationsRequest>, I>>(object: I): ListImplementationsRequest {
     const message = {...baseListImplementationsRequest} as ListImplementationsRequest;
-    if (object.interfaceName !== undefined && object.interfaceName !== null) {
-      message.interfaceName = object.interfaceName;
-    } else {
-      message.interfaceName = "";
-    }
+    message.interfaceName = object.interfaceName ?? "";
     return message;
   }
 };
@@ -216,12 +198,7 @@ export const ListImplementationsResponse = {
 
   fromJSON(object: any): ListImplementationsResponse {
     const message = {...baseListImplementationsResponse} as ListImplementationsResponse;
-    message.implementationMessageNames = [];
-    if (object.implementationMessageNames !== undefined && object.implementationMessageNames !== null) {
-      for (const e of object.implementationMessageNames) {
-        message.implementationMessageNames.push(String(e));
-      }
-    }
+    message.implementationMessageNames = (object.implementationMessageNames ?? []).map((e: any) => String(e));
     return message;
   },
 
@@ -235,14 +212,9 @@ export const ListImplementationsResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ListImplementationsResponse>): ListImplementationsResponse {
+  fromPartial<I extends Exact<DeepPartial<ListImplementationsResponse>, I>>(object: I): ListImplementationsResponse {
     const message = {...baseListImplementationsResponse} as ListImplementationsResponse;
-    message.implementationMessageNames = [];
-    if (object.implementationMessageNames !== undefined && object.implementationMessageNames !== null) {
-      for (const e of object.implementationMessageNames) {
-        message.implementationMessageNames.push(e);
-      }
-    }
+    message.implementationMessageNames = object.implementationMessageNames?.map((e) => e) || [];
     return message;
   }
 };
@@ -285,9 +257,12 @@ interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -295,6 +270,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

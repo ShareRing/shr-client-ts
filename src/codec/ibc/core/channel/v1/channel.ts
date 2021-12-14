@@ -216,7 +216,7 @@ export interface PacketState {
  * conflicts with other protobuf message formats used for acknowledgements.
  * The first byte of any message with this format will be the non-ASCII values
  * `0xaa` (result) or `0xb2` (error). Implemented as defined by ICS:
- * https://github.com/cosmos/ics/tree/master/spec/ics-004-channel-and-packet-semantics#acknowledgement-envelope
+ * https://github.com/cosmos/ibc/tree/master/spec/core/ics-004-channel-and-packet-semantics#acknowledgement-envelope
  */
 export interface Acknowledgement {
   result: Uint8Array | undefined;
@@ -278,32 +278,12 @@ export const Channel = {
 
   fromJSON(object: any): Channel {
     const message = {...baseChannel} as Channel;
-    message.connectionHops = [];
-    if (object.state !== undefined && object.state !== null) {
-      message.state = stateFromJSON(object.state);
-    } else {
-      message.state = 0;
-    }
-    if (object.ordering !== undefined && object.ordering !== null) {
-      message.ordering = orderFromJSON(object.ordering);
-    } else {
-      message.ordering = 0;
-    }
-    if (object.counterparty !== undefined && object.counterparty !== null) {
-      message.counterparty = Counterparty.fromJSON(object.counterparty);
-    } else {
-      message.counterparty = undefined;
-    }
-    if (object.connectionHops !== undefined && object.connectionHops !== null) {
-      for (const e of object.connectionHops) {
-        message.connectionHops.push(String(e));
-      }
-    }
-    if (object.version !== undefined && object.version !== null) {
-      message.version = String(object.version);
-    } else {
-      message.version = "";
-    }
+    message.state = object.state !== undefined && object.state !== null ? stateFromJSON(object.state) : 0;
+    message.ordering = object.ordering !== undefined && object.ordering !== null ? orderFromJSON(object.ordering) : 0;
+    message.counterparty =
+      object.counterparty !== undefined && object.counterparty !== null ? Counterparty.fromJSON(object.counterparty) : undefined;
+    message.connectionHops = (object.connectionHops ?? []).map((e: any) => String(e));
+    message.version = object.version !== undefined && object.version !== null ? String(object.version) : "";
     return message;
   },
 
@@ -321,34 +301,14 @@ export const Channel = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Channel>): Channel {
+  fromPartial<I extends Exact<DeepPartial<Channel>, I>>(object: I): Channel {
     const message = {...baseChannel} as Channel;
-    message.connectionHops = [];
-    if (object.state !== undefined && object.state !== null) {
-      message.state = object.state;
-    } else {
-      message.state = 0;
-    }
-    if (object.ordering !== undefined && object.ordering !== null) {
-      message.ordering = object.ordering;
-    } else {
-      message.ordering = 0;
-    }
-    if (object.counterparty !== undefined && object.counterparty !== null) {
-      message.counterparty = Counterparty.fromPartial(object.counterparty);
-    } else {
-      message.counterparty = undefined;
-    }
-    if (object.connectionHops !== undefined && object.connectionHops !== null) {
-      for (const e of object.connectionHops) {
-        message.connectionHops.push(e);
-      }
-    }
-    if (object.version !== undefined && object.version !== null) {
-      message.version = object.version;
-    } else {
-      message.version = "";
-    }
+    message.state = object.state ?? 0;
+    message.ordering = object.ordering ?? 0;
+    message.counterparty =
+      object.counterparty !== undefined && object.counterparty !== null ? Counterparty.fromPartial(object.counterparty) : undefined;
+    message.connectionHops = object.connectionHops?.map((e) => e) || [];
+    message.version = object.version ?? "";
     return message;
   }
 };
@@ -420,42 +380,14 @@ export const IdentifiedChannel = {
 
   fromJSON(object: any): IdentifiedChannel {
     const message = {...baseIdentifiedChannel} as IdentifiedChannel;
-    message.connectionHops = [];
-    if (object.state !== undefined && object.state !== null) {
-      message.state = stateFromJSON(object.state);
-    } else {
-      message.state = 0;
-    }
-    if (object.ordering !== undefined && object.ordering !== null) {
-      message.ordering = orderFromJSON(object.ordering);
-    } else {
-      message.ordering = 0;
-    }
-    if (object.counterparty !== undefined && object.counterparty !== null) {
-      message.counterparty = Counterparty.fromJSON(object.counterparty);
-    } else {
-      message.counterparty = undefined;
-    }
-    if (object.connectionHops !== undefined && object.connectionHops !== null) {
-      for (const e of object.connectionHops) {
-        message.connectionHops.push(String(e));
-      }
-    }
-    if (object.version !== undefined && object.version !== null) {
-      message.version = String(object.version);
-    } else {
-      message.version = "";
-    }
-    if (object.portId !== undefined && object.portId !== null) {
-      message.portId = String(object.portId);
-    } else {
-      message.portId = "";
-    }
-    if (object.channelId !== undefined && object.channelId !== null) {
-      message.channelId = String(object.channelId);
-    } else {
-      message.channelId = "";
-    }
+    message.state = object.state !== undefined && object.state !== null ? stateFromJSON(object.state) : 0;
+    message.ordering = object.ordering !== undefined && object.ordering !== null ? orderFromJSON(object.ordering) : 0;
+    message.counterparty =
+      object.counterparty !== undefined && object.counterparty !== null ? Counterparty.fromJSON(object.counterparty) : undefined;
+    message.connectionHops = (object.connectionHops ?? []).map((e: any) => String(e));
+    message.version = object.version !== undefined && object.version !== null ? String(object.version) : "";
+    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
+    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
     return message;
   },
 
@@ -475,44 +407,16 @@ export const IdentifiedChannel = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<IdentifiedChannel>): IdentifiedChannel {
+  fromPartial<I extends Exact<DeepPartial<IdentifiedChannel>, I>>(object: I): IdentifiedChannel {
     const message = {...baseIdentifiedChannel} as IdentifiedChannel;
-    message.connectionHops = [];
-    if (object.state !== undefined && object.state !== null) {
-      message.state = object.state;
-    } else {
-      message.state = 0;
-    }
-    if (object.ordering !== undefined && object.ordering !== null) {
-      message.ordering = object.ordering;
-    } else {
-      message.ordering = 0;
-    }
-    if (object.counterparty !== undefined && object.counterparty !== null) {
-      message.counterparty = Counterparty.fromPartial(object.counterparty);
-    } else {
-      message.counterparty = undefined;
-    }
-    if (object.connectionHops !== undefined && object.connectionHops !== null) {
-      for (const e of object.connectionHops) {
-        message.connectionHops.push(e);
-      }
-    }
-    if (object.version !== undefined && object.version !== null) {
-      message.version = object.version;
-    } else {
-      message.version = "";
-    }
-    if (object.portId !== undefined && object.portId !== null) {
-      message.portId = object.portId;
-    } else {
-      message.portId = "";
-    }
-    if (object.channelId !== undefined && object.channelId !== null) {
-      message.channelId = object.channelId;
-    } else {
-      message.channelId = "";
-    }
+    message.state = object.state ?? 0;
+    message.ordering = object.ordering ?? 0;
+    message.counterparty =
+      object.counterparty !== undefined && object.counterparty !== null ? Counterparty.fromPartial(object.counterparty) : undefined;
+    message.connectionHops = object.connectionHops?.map((e) => e) || [];
+    message.version = object.version ?? "";
+    message.portId = object.portId ?? "";
+    message.channelId = object.channelId ?? "";
     return message;
   }
 };
@@ -553,16 +457,8 @@ export const Counterparty = {
 
   fromJSON(object: any): Counterparty {
     const message = {...baseCounterparty} as Counterparty;
-    if (object.portId !== undefined && object.portId !== null) {
-      message.portId = String(object.portId);
-    } else {
-      message.portId = "";
-    }
-    if (object.channelId !== undefined && object.channelId !== null) {
-      message.channelId = String(object.channelId);
-    } else {
-      message.channelId = "";
-    }
+    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
+    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
     return message;
   },
 
@@ -573,18 +469,10 @@ export const Counterparty = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Counterparty>): Counterparty {
+  fromPartial<I extends Exact<DeepPartial<Counterparty>, I>>(object: I): Counterparty {
     const message = {...baseCounterparty} as Counterparty;
-    if (object.portId !== undefined && object.portId !== null) {
-      message.portId = object.portId;
-    } else {
-      message.portId = "";
-    }
-    if (object.channelId !== undefined && object.channelId !== null) {
-      message.channelId = object.channelId;
-    } else {
-      message.channelId = "";
-    }
+    message.portId = object.portId ?? "";
+    message.channelId = object.channelId ?? "";
     return message;
   }
 };
@@ -669,45 +557,17 @@ export const Packet = {
 
   fromJSON(object: any): Packet {
     const message = {...basePacket} as Packet;
-    message.data = new Uint8Array();
-    if (object.sequence !== undefined && object.sequence !== null) {
-      message.sequence = Long.fromString(object.sequence);
-    } else {
-      message.sequence = Long.UZERO;
-    }
-    if (object.sourcePort !== undefined && object.sourcePort !== null) {
-      message.sourcePort = String(object.sourcePort);
-    } else {
-      message.sourcePort = "";
-    }
-    if (object.sourceChannel !== undefined && object.sourceChannel !== null) {
-      message.sourceChannel = String(object.sourceChannel);
-    } else {
-      message.sourceChannel = "";
-    }
-    if (object.destinationPort !== undefined && object.destinationPort !== null) {
-      message.destinationPort = String(object.destinationPort);
-    } else {
-      message.destinationPort = "";
-    }
-    if (object.destinationChannel !== undefined && object.destinationChannel !== null) {
-      message.destinationChannel = String(object.destinationChannel);
-    } else {
-      message.destinationChannel = "";
-    }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = bytesFromBase64(object.data);
-    }
-    if (object.timeoutHeight !== undefined && object.timeoutHeight !== null) {
-      message.timeoutHeight = Height.fromJSON(object.timeoutHeight);
-    } else {
-      message.timeoutHeight = undefined;
-    }
-    if (object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null) {
-      message.timeoutTimestamp = Long.fromString(object.timeoutTimestamp);
-    } else {
-      message.timeoutTimestamp = Long.UZERO;
-    }
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromString(object.sequence) : Long.UZERO;
+    message.sourcePort = object.sourcePort !== undefined && object.sourcePort !== null ? String(object.sourcePort) : "";
+    message.sourceChannel = object.sourceChannel !== undefined && object.sourceChannel !== null ? String(object.sourceChannel) : "";
+    message.destinationPort = object.destinationPort !== undefined && object.destinationPort !== null ? String(object.destinationPort) : "";
+    message.destinationChannel =
+      object.destinationChannel !== undefined && object.destinationChannel !== null ? String(object.destinationChannel) : "";
+    message.data = object.data !== undefined && object.data !== null ? bytesFromBase64(object.data) : new Uint8Array();
+    message.timeoutHeight =
+      object.timeoutHeight !== undefined && object.timeoutHeight !== null ? Height.fromJSON(object.timeoutHeight) : undefined;
+    message.timeoutTimestamp =
+      object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null ? Long.fromString(object.timeoutTimestamp) : Long.UZERO;
     return message;
   },
 
@@ -724,48 +584,18 @@ export const Packet = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Packet>): Packet {
+  fromPartial<I extends Exact<DeepPartial<Packet>, I>>(object: I): Packet {
     const message = {...basePacket} as Packet;
-    if (object.sequence !== undefined && object.sequence !== null) {
-      message.sequence = object.sequence as Long;
-    } else {
-      message.sequence = Long.UZERO;
-    }
-    if (object.sourcePort !== undefined && object.sourcePort !== null) {
-      message.sourcePort = object.sourcePort;
-    } else {
-      message.sourcePort = "";
-    }
-    if (object.sourceChannel !== undefined && object.sourceChannel !== null) {
-      message.sourceChannel = object.sourceChannel;
-    } else {
-      message.sourceChannel = "";
-    }
-    if (object.destinationPort !== undefined && object.destinationPort !== null) {
-      message.destinationPort = object.destinationPort;
-    } else {
-      message.destinationPort = "";
-    }
-    if (object.destinationChannel !== undefined && object.destinationChannel !== null) {
-      message.destinationChannel = object.destinationChannel;
-    } else {
-      message.destinationChannel = "";
-    }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = object.data;
-    } else {
-      message.data = new Uint8Array();
-    }
-    if (object.timeoutHeight !== undefined && object.timeoutHeight !== null) {
-      message.timeoutHeight = Height.fromPartial(object.timeoutHeight);
-    } else {
-      message.timeoutHeight = undefined;
-    }
-    if (object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null) {
-      message.timeoutTimestamp = object.timeoutTimestamp as Long;
-    } else {
-      message.timeoutTimestamp = Long.UZERO;
-    }
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromValue(object.sequence) : Long.UZERO;
+    message.sourcePort = object.sourcePort ?? "";
+    message.sourceChannel = object.sourceChannel ?? "";
+    message.destinationPort = object.destinationPort ?? "";
+    message.destinationChannel = object.destinationChannel ?? "";
+    message.data = object.data ?? new Uint8Array();
+    message.timeoutHeight =
+      object.timeoutHeight !== undefined && object.timeoutHeight !== null ? Height.fromPartial(object.timeoutHeight) : undefined;
+    message.timeoutTimestamp =
+      object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null ? Long.fromValue(object.timeoutTimestamp) : Long.UZERO;
     return message;
   }
 };
@@ -819,25 +649,10 @@ export const PacketState = {
 
   fromJSON(object: any): PacketState {
     const message = {...basePacketState} as PacketState;
-    message.data = new Uint8Array();
-    if (object.portId !== undefined && object.portId !== null) {
-      message.portId = String(object.portId);
-    } else {
-      message.portId = "";
-    }
-    if (object.channelId !== undefined && object.channelId !== null) {
-      message.channelId = String(object.channelId);
-    } else {
-      message.channelId = "";
-    }
-    if (object.sequence !== undefined && object.sequence !== null) {
-      message.sequence = Long.fromString(object.sequence);
-    } else {
-      message.sequence = Long.UZERO;
-    }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = bytesFromBase64(object.data);
-    }
+    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
+    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromString(object.sequence) : Long.UZERO;
+    message.data = object.data !== undefined && object.data !== null ? bytesFromBase64(object.data) : new Uint8Array();
     return message;
   },
 
@@ -850,28 +665,12 @@ export const PacketState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<PacketState>): PacketState {
+  fromPartial<I extends Exact<DeepPartial<PacketState>, I>>(object: I): PacketState {
     const message = {...basePacketState} as PacketState;
-    if (object.portId !== undefined && object.portId !== null) {
-      message.portId = object.portId;
-    } else {
-      message.portId = "";
-    }
-    if (object.channelId !== undefined && object.channelId !== null) {
-      message.channelId = object.channelId;
-    } else {
-      message.channelId = "";
-    }
-    if (object.sequence !== undefined && object.sequence !== null) {
-      message.sequence = object.sequence as Long;
-    } else {
-      message.sequence = Long.UZERO;
-    }
-    if (object.data !== undefined && object.data !== null) {
-      message.data = object.data;
-    } else {
-      message.data = new Uint8Array();
-    }
+    message.portId = object.portId ?? "";
+    message.channelId = object.channelId ?? "";
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromValue(object.sequence) : Long.UZERO;
+    message.data = object.data ?? new Uint8Array();
     return message;
   }
 };
@@ -912,14 +711,8 @@ export const Acknowledgement = {
 
   fromJSON(object: any): Acknowledgement {
     const message = {...baseAcknowledgement} as Acknowledgement;
-    if (object.result !== undefined && object.result !== null) {
-      message.result = bytesFromBase64(object.result);
-    }
-    if (object.error !== undefined && object.error !== null) {
-      message.error = String(object.error);
-    } else {
-      message.error = undefined;
-    }
+    message.result = object.result !== undefined && object.result !== null ? bytesFromBase64(object.result) : undefined;
+    message.error = object.error !== undefined && object.error !== null ? String(object.error) : undefined;
     return message;
   },
 
@@ -930,24 +723,17 @@ export const Acknowledgement = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Acknowledgement>): Acknowledgement {
+  fromPartial<I extends Exact<DeepPartial<Acknowledgement>, I>>(object: I): Acknowledgement {
     const message = {...baseAcknowledgement} as Acknowledgement;
-    if (object.result !== undefined && object.result !== null) {
-      message.result = object.result;
-    } else {
-      message.result = undefined;
-    }
-    if (object.error !== undefined && object.error !== null) {
-      message.error = object.error;
-    } else {
-      message.error = undefined;
-    }
+    message.result = object.result ?? undefined;
+    message.error = object.error ?? undefined;
     return message;
   }
 };
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -975,9 +761,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -985,6 +774,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

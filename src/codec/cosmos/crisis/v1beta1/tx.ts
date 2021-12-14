@@ -56,21 +56,10 @@ export const MsgVerifyInvariant = {
 
   fromJSON(object: any): MsgVerifyInvariant {
     const message = {...baseMsgVerifyInvariant} as MsgVerifyInvariant;
-    if (object.sender !== undefined && object.sender !== null) {
-      message.sender = String(object.sender);
-    } else {
-      message.sender = "";
-    }
-    if (object.invariantModuleName !== undefined && object.invariantModuleName !== null) {
-      message.invariantModuleName = String(object.invariantModuleName);
-    } else {
-      message.invariantModuleName = "";
-    }
-    if (object.invariantRoute !== undefined && object.invariantRoute !== null) {
-      message.invariantRoute = String(object.invariantRoute);
-    } else {
-      message.invariantRoute = "";
-    }
+    message.sender = object.sender !== undefined && object.sender !== null ? String(object.sender) : "";
+    message.invariantModuleName =
+      object.invariantModuleName !== undefined && object.invariantModuleName !== null ? String(object.invariantModuleName) : "";
+    message.invariantRoute = object.invariantRoute !== undefined && object.invariantRoute !== null ? String(object.invariantRoute) : "";
     return message;
   },
 
@@ -82,23 +71,11 @@ export const MsgVerifyInvariant = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgVerifyInvariant>): MsgVerifyInvariant {
+  fromPartial<I extends Exact<DeepPartial<MsgVerifyInvariant>, I>>(object: I): MsgVerifyInvariant {
     const message = {...baseMsgVerifyInvariant} as MsgVerifyInvariant;
-    if (object.sender !== undefined && object.sender !== null) {
-      message.sender = object.sender;
-    } else {
-      message.sender = "";
-    }
-    if (object.invariantModuleName !== undefined && object.invariantModuleName !== null) {
-      message.invariantModuleName = object.invariantModuleName;
-    } else {
-      message.invariantModuleName = "";
-    }
-    if (object.invariantRoute !== undefined && object.invariantRoute !== null) {
-      message.invariantRoute = object.invariantRoute;
-    } else {
-      message.invariantRoute = "";
-    }
+    message.sender = object.sender ?? "";
+    message.invariantModuleName = object.invariantModuleName ?? "";
+    message.invariantRoute = object.invariantRoute ?? "";
     return message;
   }
 };
@@ -135,7 +112,7 @@ export const MsgVerifyInvariantResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgVerifyInvariantResponse>): MsgVerifyInvariantResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgVerifyInvariantResponse>, I>>(_: I): MsgVerifyInvariantResponse {
     const message = {...baseMsgVerifyInvariantResponse} as MsgVerifyInvariantResponse;
     return message;
   }
@@ -164,9 +141,12 @@ interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -174,6 +154,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

@@ -75,32 +75,11 @@ export const MsgCreateVestingAccount = {
 
   fromJSON(object: any): MsgCreateVestingAccount {
     const message = {...baseMsgCreateVestingAccount} as MsgCreateVestingAccount;
-    message.amount = [];
-    if (object.fromAddress !== undefined && object.fromAddress !== null) {
-      message.fromAddress = String(object.fromAddress);
-    } else {
-      message.fromAddress = "";
-    }
-    if (object.toAddress !== undefined && object.toAddress !== null) {
-      message.toAddress = String(object.toAddress);
-    } else {
-      message.toAddress = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      for (const e of object.amount) {
-        message.amount.push(Coin.fromJSON(e));
-      }
-    }
-    if (object.endTime !== undefined && object.endTime !== null) {
-      message.endTime = Long.fromString(object.endTime);
-    } else {
-      message.endTime = Long.ZERO;
-    }
-    if (object.delayed !== undefined && object.delayed !== null) {
-      message.delayed = Boolean(object.delayed);
-    } else {
-      message.delayed = false;
-    }
+    message.fromAddress = object.fromAddress !== undefined && object.fromAddress !== null ? String(object.fromAddress) : "";
+    message.toAddress = object.toAddress !== undefined && object.toAddress !== null ? String(object.toAddress) : "";
+    message.amount = (object.amount ?? []).map((e: any) => Coin.fromJSON(e));
+    message.endTime = object.endTime !== undefined && object.endTime !== null ? Long.fromString(object.endTime) : Long.ZERO;
+    message.delayed = object.delayed !== undefined && object.delayed !== null ? Boolean(object.delayed) : false;
     return message;
   },
 
@@ -118,34 +97,13 @@ export const MsgCreateVestingAccount = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgCreateVestingAccount>): MsgCreateVestingAccount {
+  fromPartial<I extends Exact<DeepPartial<MsgCreateVestingAccount>, I>>(object: I): MsgCreateVestingAccount {
     const message = {...baseMsgCreateVestingAccount} as MsgCreateVestingAccount;
-    message.amount = [];
-    if (object.fromAddress !== undefined && object.fromAddress !== null) {
-      message.fromAddress = object.fromAddress;
-    } else {
-      message.fromAddress = "";
-    }
-    if (object.toAddress !== undefined && object.toAddress !== null) {
-      message.toAddress = object.toAddress;
-    } else {
-      message.toAddress = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      for (const e of object.amount) {
-        message.amount.push(Coin.fromPartial(e));
-      }
-    }
-    if (object.endTime !== undefined && object.endTime !== null) {
-      message.endTime = object.endTime as Long;
-    } else {
-      message.endTime = Long.ZERO;
-    }
-    if (object.delayed !== undefined && object.delayed !== null) {
-      message.delayed = object.delayed;
-    } else {
-      message.delayed = false;
-    }
+    message.fromAddress = object.fromAddress ?? "";
+    message.toAddress = object.toAddress ?? "";
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
+    message.endTime = object.endTime !== undefined && object.endTime !== null ? Long.fromValue(object.endTime) : Long.ZERO;
+    message.delayed = object.delayed ?? false;
     return message;
   }
 };
@@ -182,7 +140,7 @@ export const MsgCreateVestingAccountResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgCreateVestingAccountResponse>): MsgCreateVestingAccountResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgCreateVestingAccountResponse>, I>>(_: I): MsgCreateVestingAccountResponse {
     const message = {...baseMsgCreateVestingAccountResponse} as MsgCreateVestingAccountResponse;
     return message;
   }
@@ -214,9 +172,12 @@ interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -224,6 +185,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

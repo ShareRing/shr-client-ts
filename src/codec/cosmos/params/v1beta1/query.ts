@@ -55,16 +55,8 @@ export const QueryParamsRequest = {
 
   fromJSON(object: any): QueryParamsRequest {
     const message = {...baseQueryParamsRequest} as QueryParamsRequest;
-    if (object.subspace !== undefined && object.subspace !== null) {
-      message.subspace = String(object.subspace);
-    } else {
-      message.subspace = "";
-    }
-    if (object.key !== undefined && object.key !== null) {
-      message.key = String(object.key);
-    } else {
-      message.key = "";
-    }
+    message.subspace = object.subspace !== undefined && object.subspace !== null ? String(object.subspace) : "";
+    message.key = object.key !== undefined && object.key !== null ? String(object.key) : "";
     return message;
   },
 
@@ -75,18 +67,10 @@ export const QueryParamsRequest = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryParamsRequest>): QueryParamsRequest {
+  fromPartial<I extends Exact<DeepPartial<QueryParamsRequest>, I>>(object: I): QueryParamsRequest {
     const message = {...baseQueryParamsRequest} as QueryParamsRequest;
-    if (object.subspace !== undefined && object.subspace !== null) {
-      message.subspace = object.subspace;
-    } else {
-      message.subspace = "";
-    }
-    if (object.key !== undefined && object.key !== null) {
-      message.key = object.key;
-    } else {
-      message.key = "";
-    }
+    message.subspace = object.subspace ?? "";
+    message.key = object.key ?? "";
     return message;
   }
 };
@@ -121,11 +105,7 @@ export const QueryParamsResponse = {
 
   fromJSON(object: any): QueryParamsResponse {
     const message = {...baseQueryParamsResponse} as QueryParamsResponse;
-    if (object.param !== undefined && object.param !== null) {
-      message.param = ParamChange.fromJSON(object.param);
-    } else {
-      message.param = undefined;
-    }
+    message.param = object.param !== undefined && object.param !== null ? ParamChange.fromJSON(object.param) : undefined;
     return message;
   },
 
@@ -135,13 +115,9 @@ export const QueryParamsResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryParamsResponse>): QueryParamsResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryParamsResponse>, I>>(object: I): QueryParamsResponse {
     const message = {...baseQueryParamsResponse} as QueryParamsResponse;
-    if (object.param !== undefined && object.param !== null) {
-      message.param = ParamChange.fromPartial(object.param);
-    } else {
-      message.param = undefined;
-    }
+    message.param = object.param !== undefined && object.param !== null ? ParamChange.fromPartial(object.param) : undefined;
     return message;
   }
 };
@@ -172,9 +148,12 @@ interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -182,6 +161,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

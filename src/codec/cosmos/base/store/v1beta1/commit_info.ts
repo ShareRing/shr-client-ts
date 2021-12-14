@@ -68,17 +68,8 @@ export const CommitInfo = {
 
   fromJSON(object: any): CommitInfo {
     const message = {...baseCommitInfo} as CommitInfo;
-    message.storeInfos = [];
-    if (object.version !== undefined && object.version !== null) {
-      message.version = Long.fromString(object.version);
-    } else {
-      message.version = Long.ZERO;
-    }
-    if (object.storeInfos !== undefined && object.storeInfos !== null) {
-      for (const e of object.storeInfos) {
-        message.storeInfos.push(StoreInfo.fromJSON(e));
-      }
-    }
+    message.version = object.version !== undefined && object.version !== null ? Long.fromString(object.version) : Long.ZERO;
+    message.storeInfos = (object.storeInfos ?? []).map((e: any) => StoreInfo.fromJSON(e));
     return message;
   },
 
@@ -93,19 +84,10 @@ export const CommitInfo = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<CommitInfo>): CommitInfo {
+  fromPartial<I extends Exact<DeepPartial<CommitInfo>, I>>(object: I): CommitInfo {
     const message = {...baseCommitInfo} as CommitInfo;
-    message.storeInfos = [];
-    if (object.version !== undefined && object.version !== null) {
-      message.version = object.version as Long;
-    } else {
-      message.version = Long.ZERO;
-    }
-    if (object.storeInfos !== undefined && object.storeInfos !== null) {
-      for (const e of object.storeInfos) {
-        message.storeInfos.push(StoreInfo.fromPartial(e));
-      }
-    }
+    message.version = object.version !== undefined && object.version !== null ? Long.fromValue(object.version) : Long.ZERO;
+    message.storeInfos = object.storeInfos?.map((e) => StoreInfo.fromPartial(e)) || [];
     return message;
   }
 };
@@ -146,16 +128,8 @@ export const StoreInfo = {
 
   fromJSON(object: any): StoreInfo {
     const message = {...baseStoreInfo} as StoreInfo;
-    if (object.name !== undefined && object.name !== null) {
-      message.name = String(object.name);
-    } else {
-      message.name = "";
-    }
-    if (object.commitId !== undefined && object.commitId !== null) {
-      message.commitId = CommitID.fromJSON(object.commitId);
-    } else {
-      message.commitId = undefined;
-    }
+    message.name = object.name !== undefined && object.name !== null ? String(object.name) : "";
+    message.commitId = object.commitId !== undefined && object.commitId !== null ? CommitID.fromJSON(object.commitId) : undefined;
     return message;
   },
 
@@ -166,18 +140,10 @@ export const StoreInfo = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<StoreInfo>): StoreInfo {
+  fromPartial<I extends Exact<DeepPartial<StoreInfo>, I>>(object: I): StoreInfo {
     const message = {...baseStoreInfo} as StoreInfo;
-    if (object.name !== undefined && object.name !== null) {
-      message.name = object.name;
-    } else {
-      message.name = "";
-    }
-    if (object.commitId !== undefined && object.commitId !== null) {
-      message.commitId = CommitID.fromPartial(object.commitId);
-    } else {
-      message.commitId = undefined;
-    }
+    message.name = object.name ?? "";
+    message.commitId = object.commitId !== undefined && object.commitId !== null ? CommitID.fromPartial(object.commitId) : undefined;
     return message;
   }
 };
@@ -219,15 +185,8 @@ export const CommitID = {
 
   fromJSON(object: any): CommitID {
     const message = {...baseCommitID} as CommitID;
-    message.hash = new Uint8Array();
-    if (object.version !== undefined && object.version !== null) {
-      message.version = Long.fromString(object.version);
-    } else {
-      message.version = Long.ZERO;
-    }
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = bytesFromBase64(object.hash);
-    }
+    message.version = object.version !== undefined && object.version !== null ? Long.fromString(object.version) : Long.ZERO;
+    message.hash = object.hash !== undefined && object.hash !== null ? bytesFromBase64(object.hash) : new Uint8Array();
     return message;
   },
 
@@ -238,24 +197,17 @@ export const CommitID = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<CommitID>): CommitID {
+  fromPartial<I extends Exact<DeepPartial<CommitID>, I>>(object: I): CommitID {
     const message = {...baseCommitID} as CommitID;
-    if (object.version !== undefined && object.version !== null) {
-      message.version = object.version as Long;
-    } else {
-      message.version = Long.ZERO;
-    }
-    if (object.hash !== undefined && object.hash !== null) {
-      message.hash = object.hash;
-    } else {
-      message.hash = new Uint8Array();
-    }
+    message.version = object.version !== undefined && object.version !== null ? Long.fromValue(object.version) : Long.ZERO;
+    message.hash = object.hash ?? new Uint8Array();
     return message;
   }
 };
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -283,9 +235,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -293,6 +248,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

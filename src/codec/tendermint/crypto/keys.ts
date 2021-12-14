@@ -46,12 +46,8 @@ export const PublicKey = {
 
   fromJSON(object: any): PublicKey {
     const message = {...basePublicKey} as PublicKey;
-    if (object.ed25519 !== undefined && object.ed25519 !== null) {
-      message.ed25519 = bytesFromBase64(object.ed25519);
-    }
-    if (object.secp256k1 !== undefined && object.secp256k1 !== null) {
-      message.secp256k1 = bytesFromBase64(object.secp256k1);
-    }
+    message.ed25519 = object.ed25519 !== undefined && object.ed25519 !== null ? bytesFromBase64(object.ed25519) : undefined;
+    message.secp256k1 = object.secp256k1 !== undefined && object.secp256k1 !== null ? bytesFromBase64(object.secp256k1) : undefined;
     return message;
   },
 
@@ -62,24 +58,17 @@ export const PublicKey = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<PublicKey>): PublicKey {
+  fromPartial<I extends Exact<DeepPartial<PublicKey>, I>>(object: I): PublicKey {
     const message = {...basePublicKey} as PublicKey;
-    if (object.ed25519 !== undefined && object.ed25519 !== null) {
-      message.ed25519 = object.ed25519;
-    } else {
-      message.ed25519 = undefined;
-    }
-    if (object.secp256k1 !== undefined && object.secp256k1 !== null) {
-      message.secp256k1 = object.secp256k1;
-    } else {
-      message.secp256k1 = undefined;
-    }
+    message.ed25519 = object.ed25519 ?? undefined;
+    message.secp256k1 = object.secp256k1 ?? undefined;
     return message;
   }
 };
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -107,9 +96,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -117,6 +109,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

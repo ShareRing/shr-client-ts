@@ -6,7 +6,7 @@ PROTO_DIR="./proto"
 COSMOS_DIR="$PROTO_DIR/cosmos"
 COSMOS_SDK_DIR="$COSMOS_DIR/cosmos-sdk"
 ZIP_FILE="$COSMOS_DIR/tmp.zip"
-COSMOS_SDK_REF=${COSMOS_SDK_REF:-"v0.42.6"}
+COSMOS_SDK_REF=${COSMOS_SDK_REF:-"v0.44.5"}
 SUFFIX=${COSMOS_SDK_REF}
 
 [[ $SUFFIX =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-.+)?$ ]] && SUFFIX=${SUFFIX#v}
@@ -18,13 +18,15 @@ unzip "$ZIP_FILE" "*.proto" -d "$COSMOS_DIR"
 mv "$COSMOS_SDK_DIR-$SUFFIX" "$COSMOS_SDK_DIR"
 rm "$ZIP_FILE"
 
-# IBC_DIR="$PROTO_DIR/ibc"
-# IBC_SDK_REF=${IBC_SDK_REF:-"main"}
-# SUFFIX=${IBC_SDK_REF}
-# [[ $SUFFIX =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-.+)?$ ]] && SUFFIX=${SUFFIX#v}
+IBC_DIR="$PROTO_DIR/ibc"
+IBC_SDK_REF=${IBC_SDK_REF:-"v2.0.1"}
+SUFFIX=${IBC_SDK_REF}
 
-# wget -qO "$ZIP_FILE" "https://github.com/cosmos/ibc-go/archive/$IBC_SDK_REF.zip"
-# unzip "$ZIP_FILE" "*.proto" -d "$IBC_DIR"
-# mv "$IBC_DIR/ibc-go-$SUFFIX/proto/ibc" "$COSMOS_SDK_DIR/proto/ibc"
-# rm "$ZIP_FILE"
-# rm -rf "$IBC_DIR"
+[[ $SUFFIX =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-.+)?$ ]] && SUFFIX=${SUFFIX#v}
+
+wget -qO "$ZIP_FILE" "https://github.com/cosmos/ibc-go/archive/$IBC_SDK_REF.zip"
+unzip "$ZIP_FILE" "*.proto" -d "$IBC_DIR"
+cp -r "$IBC_DIR/ibc-go-$SUFFIX/proto/ibc" "$COSMOS_SDK_DIR/proto/ibc"
+cp -r "$IBC_DIR/ibc-go-$SUFFIX/third_party/proto" "$COSMOS_SDK_DIR/third_party"
+rm "$ZIP_FILE"
+rm -rf "$IBC_DIR"

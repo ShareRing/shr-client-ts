@@ -73,7 +73,7 @@ export const QueryParamsRequest = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<QueryParamsRequest>): QueryParamsRequest {
+  fromPartial<I extends Exact<DeepPartial<QueryParamsRequest>, I>>(_: I): QueryParamsRequest {
     const message = {...baseQueryParamsRequest} as QueryParamsRequest;
     return message;
   }
@@ -109,11 +109,7 @@ export const QueryParamsResponse = {
 
   fromJSON(object: any): QueryParamsResponse {
     const message = {...baseQueryParamsResponse} as QueryParamsResponse;
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromJSON(object.params);
-    } else {
-      message.params = undefined;
-    }
+    message.params = object.params !== undefined && object.params !== null ? Params.fromJSON(object.params) : undefined;
     return message;
   },
 
@@ -123,13 +119,9 @@ export const QueryParamsResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryParamsResponse>): QueryParamsResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryParamsResponse>, I>>(object: I): QueryParamsResponse {
     const message = {...baseQueryParamsResponse} as QueryParamsResponse;
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromPartial(object.params);
-    } else {
-      message.params = undefined;
-    }
+    message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
   }
 };
@@ -166,7 +158,7 @@ export const QueryInflationRequest = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<QueryInflationRequest>): QueryInflationRequest {
+  fromPartial<I extends Exact<DeepPartial<QueryInflationRequest>, I>>(_: I): QueryInflationRequest {
     const message = {...baseQueryInflationRequest} as QueryInflationRequest;
     return message;
   }
@@ -203,10 +195,7 @@ export const QueryInflationResponse = {
 
   fromJSON(object: any): QueryInflationResponse {
     const message = {...baseQueryInflationResponse} as QueryInflationResponse;
-    message.inflation = new Uint8Array();
-    if (object.inflation !== undefined && object.inflation !== null) {
-      message.inflation = bytesFromBase64(object.inflation);
-    }
+    message.inflation = object.inflation !== undefined && object.inflation !== null ? bytesFromBase64(object.inflation) : new Uint8Array();
     return message;
   },
 
@@ -217,13 +206,9 @@ export const QueryInflationResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryInflationResponse>): QueryInflationResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryInflationResponse>, I>>(object: I): QueryInflationResponse {
     const message = {...baseQueryInflationResponse} as QueryInflationResponse;
-    if (object.inflation !== undefined && object.inflation !== null) {
-      message.inflation = object.inflation;
-    } else {
-      message.inflation = new Uint8Array();
-    }
+    message.inflation = object.inflation ?? new Uint8Array();
     return message;
   }
 };
@@ -260,7 +245,7 @@ export const QueryAnnualProvisionsRequest = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<QueryAnnualProvisionsRequest>): QueryAnnualProvisionsRequest {
+  fromPartial<I extends Exact<DeepPartial<QueryAnnualProvisionsRequest>, I>>(_: I): QueryAnnualProvisionsRequest {
     const message = {...baseQueryAnnualProvisionsRequest} as QueryAnnualProvisionsRequest;
     return message;
   }
@@ -297,10 +282,10 @@ export const QueryAnnualProvisionsResponse = {
 
   fromJSON(object: any): QueryAnnualProvisionsResponse {
     const message = {...baseQueryAnnualProvisionsResponse} as QueryAnnualProvisionsResponse;
-    message.annualProvisions = new Uint8Array();
-    if (object.annualProvisions !== undefined && object.annualProvisions !== null) {
-      message.annualProvisions = bytesFromBase64(object.annualProvisions);
-    }
+    message.annualProvisions =
+      object.annualProvisions !== undefined && object.annualProvisions !== null
+        ? bytesFromBase64(object.annualProvisions)
+        : new Uint8Array();
     return message;
   },
 
@@ -311,13 +296,9 @@ export const QueryAnnualProvisionsResponse = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<QueryAnnualProvisionsResponse>): QueryAnnualProvisionsResponse {
+  fromPartial<I extends Exact<DeepPartial<QueryAnnualProvisionsResponse>, I>>(object: I): QueryAnnualProvisionsResponse {
     const message = {...baseQueryAnnualProvisionsResponse} as QueryAnnualProvisionsResponse;
-    if (object.annualProvisions !== undefined && object.annualProvisions !== null) {
-      message.annualProvisions = object.annualProvisions;
-    } else {
-      message.annualProvisions = new Uint8Array();
-    }
+    message.annualProvisions = object.annualProvisions ?? new Uint8Array();
     return message;
   }
 };
@@ -365,6 +346,7 @@ interface Rpc {
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -392,9 +374,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -402,6 +387,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

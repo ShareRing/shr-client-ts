@@ -68,22 +68,9 @@ export const MsgSend = {
 
   fromJSON(object: any): MsgSend {
     const message = {...baseMsgSend} as MsgSend;
-    message.amount = [];
-    if (object.fromAddress !== undefined && object.fromAddress !== null) {
-      message.fromAddress = String(object.fromAddress);
-    } else {
-      message.fromAddress = "";
-    }
-    if (object.toAddress !== undefined && object.toAddress !== null) {
-      message.toAddress = String(object.toAddress);
-    } else {
-      message.toAddress = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      for (const e of object.amount) {
-        message.amount.push(Coin.fromJSON(e));
-      }
-    }
+    message.fromAddress = object.fromAddress !== undefined && object.fromAddress !== null ? String(object.fromAddress) : "";
+    message.toAddress = object.toAddress !== undefined && object.toAddress !== null ? String(object.toAddress) : "";
+    message.amount = (object.amount ?? []).map((e: any) => Coin.fromJSON(e));
     return message;
   },
 
@@ -99,24 +86,11 @@ export const MsgSend = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgSend>): MsgSend {
+  fromPartial<I extends Exact<DeepPartial<MsgSend>, I>>(object: I): MsgSend {
     const message = {...baseMsgSend} as MsgSend;
-    message.amount = [];
-    if (object.fromAddress !== undefined && object.fromAddress !== null) {
-      message.fromAddress = object.fromAddress;
-    } else {
-      message.fromAddress = "";
-    }
-    if (object.toAddress !== undefined && object.toAddress !== null) {
-      message.toAddress = object.toAddress;
-    } else {
-      message.toAddress = "";
-    }
-    if (object.amount !== undefined && object.amount !== null) {
-      for (const e of object.amount) {
-        message.amount.push(Coin.fromPartial(e));
-      }
-    }
+    message.fromAddress = object.fromAddress ?? "";
+    message.toAddress = object.toAddress ?? "";
+    message.amount = object.amount?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   }
 };
@@ -153,7 +127,7 @@ export const MsgSendResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgSendResponse>): MsgSendResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgSendResponse>, I>>(_: I): MsgSendResponse {
     const message = {...baseMsgSendResponse} as MsgSendResponse;
     return message;
   }
@@ -197,18 +171,8 @@ export const MsgMultiSend = {
 
   fromJSON(object: any): MsgMultiSend {
     const message = {...baseMsgMultiSend} as MsgMultiSend;
-    message.inputs = [];
-    message.outputs = [];
-    if (object.inputs !== undefined && object.inputs !== null) {
-      for (const e of object.inputs) {
-        message.inputs.push(Input.fromJSON(e));
-      }
-    }
-    if (object.outputs !== undefined && object.outputs !== null) {
-      for (const e of object.outputs) {
-        message.outputs.push(Output.fromJSON(e));
-      }
-    }
+    message.inputs = (object.inputs ?? []).map((e: any) => Input.fromJSON(e));
+    message.outputs = (object.outputs ?? []).map((e: any) => Output.fromJSON(e));
     return message;
   },
 
@@ -227,20 +191,10 @@ export const MsgMultiSend = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<MsgMultiSend>): MsgMultiSend {
+  fromPartial<I extends Exact<DeepPartial<MsgMultiSend>, I>>(object: I): MsgMultiSend {
     const message = {...baseMsgMultiSend} as MsgMultiSend;
-    message.inputs = [];
-    message.outputs = [];
-    if (object.inputs !== undefined && object.inputs !== null) {
-      for (const e of object.inputs) {
-        message.inputs.push(Input.fromPartial(e));
-      }
-    }
-    if (object.outputs !== undefined && object.outputs !== null) {
-      for (const e of object.outputs) {
-        message.outputs.push(Output.fromPartial(e));
-      }
-    }
+    message.inputs = object.inputs?.map((e) => Input.fromPartial(e)) || [];
+    message.outputs = object.outputs?.map((e) => Output.fromPartial(e)) || [];
     return message;
   }
 };
@@ -277,7 +231,7 @@ export const MsgMultiSendResponse = {
     return obj;
   },
 
-  fromPartial(_: DeepPartial<MsgMultiSendResponse>): MsgMultiSendResponse {
+  fromPartial<I extends Exact<DeepPartial<MsgMultiSendResponse>, I>>(_: I): MsgMultiSendResponse {
     const message = {...baseMsgMultiSendResponse} as MsgMultiSendResponse;
     return message;
   }
@@ -315,9 +269,12 @@ interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -325,6 +282,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

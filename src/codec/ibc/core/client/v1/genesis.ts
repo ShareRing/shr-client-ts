@@ -31,7 +31,10 @@ export interface GenesisMetadata {
   value: Uint8Array;
 }
 
-/** IdentifiedGenesisMetadata has the client metadata with the corresponding client id. */
+/**
+ * IdentifiedGenesisMetadata has the client metadata with the corresponding
+ * client id.
+ */
 export interface IdentifiedGenesisMetadata {
   clientId: string;
   clientMetadata: GenesisMetadata[];
@@ -100,39 +103,16 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = {...baseGenesisState} as GenesisState;
-    message.clients = [];
-    message.clientsConsensus = [];
-    message.clientsMetadata = [];
-    if (object.clients !== undefined && object.clients !== null) {
-      for (const e of object.clients) {
-        message.clients.push(IdentifiedClientState.fromJSON(e));
-      }
-    }
-    if (object.clientsConsensus !== undefined && object.clientsConsensus !== null) {
-      for (const e of object.clientsConsensus) {
-        message.clientsConsensus.push(ClientConsensusStates.fromJSON(e));
-      }
-    }
-    if (object.clientsMetadata !== undefined && object.clientsMetadata !== null) {
-      for (const e of object.clientsMetadata) {
-        message.clientsMetadata.push(IdentifiedGenesisMetadata.fromJSON(e));
-      }
-    }
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromJSON(object.params);
-    } else {
-      message.params = undefined;
-    }
-    if (object.createLocalhost !== undefined && object.createLocalhost !== null) {
-      message.createLocalhost = Boolean(object.createLocalhost);
-    } else {
-      message.createLocalhost = false;
-    }
-    if (object.nextClientSequence !== undefined && object.nextClientSequence !== null) {
-      message.nextClientSequence = Long.fromString(object.nextClientSequence);
-    } else {
-      message.nextClientSequence = Long.UZERO;
-    }
+    message.clients = (object.clients ?? []).map((e: any) => IdentifiedClientState.fromJSON(e));
+    message.clientsConsensus = (object.clientsConsensus ?? []).map((e: any) => ClientConsensusStates.fromJSON(e));
+    message.clientsMetadata = (object.clientsMetadata ?? []).map((e: any) => IdentifiedGenesisMetadata.fromJSON(e));
+    message.params = object.params !== undefined && object.params !== null ? Params.fromJSON(object.params) : undefined;
+    message.createLocalhost =
+      object.createLocalhost !== undefined && object.createLocalhost !== null ? Boolean(object.createLocalhost) : false;
+    message.nextClientSequence =
+      object.nextClientSequence !== undefined && object.nextClientSequence !== null
+        ? Long.fromString(object.nextClientSequence)
+        : Long.UZERO;
     return message;
   },
 
@@ -159,41 +139,17 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
     const message = {...baseGenesisState} as GenesisState;
-    message.clients = [];
-    message.clientsConsensus = [];
-    message.clientsMetadata = [];
-    if (object.clients !== undefined && object.clients !== null) {
-      for (const e of object.clients) {
-        message.clients.push(IdentifiedClientState.fromPartial(e));
-      }
-    }
-    if (object.clientsConsensus !== undefined && object.clientsConsensus !== null) {
-      for (const e of object.clientsConsensus) {
-        message.clientsConsensus.push(ClientConsensusStates.fromPartial(e));
-      }
-    }
-    if (object.clientsMetadata !== undefined && object.clientsMetadata !== null) {
-      for (const e of object.clientsMetadata) {
-        message.clientsMetadata.push(IdentifiedGenesisMetadata.fromPartial(e));
-      }
-    }
-    if (object.params !== undefined && object.params !== null) {
-      message.params = Params.fromPartial(object.params);
-    } else {
-      message.params = undefined;
-    }
-    if (object.createLocalhost !== undefined && object.createLocalhost !== null) {
-      message.createLocalhost = object.createLocalhost;
-    } else {
-      message.createLocalhost = false;
-    }
-    if (object.nextClientSequence !== undefined && object.nextClientSequence !== null) {
-      message.nextClientSequence = object.nextClientSequence as Long;
-    } else {
-      message.nextClientSequence = Long.UZERO;
-    }
+    message.clients = object.clients?.map((e) => IdentifiedClientState.fromPartial(e)) || [];
+    message.clientsConsensus = object.clientsConsensus?.map((e) => ClientConsensusStates.fromPartial(e)) || [];
+    message.clientsMetadata = object.clientsMetadata?.map((e) => IdentifiedGenesisMetadata.fromPartial(e)) || [];
+    message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
+    message.createLocalhost = object.createLocalhost ?? false;
+    message.nextClientSequence =
+      object.nextClientSequence !== undefined && object.nextClientSequence !== null
+        ? Long.fromValue(object.nextClientSequence)
+        : Long.UZERO;
     return message;
   }
 };
@@ -236,14 +192,8 @@ export const GenesisMetadata = {
 
   fromJSON(object: any): GenesisMetadata {
     const message = {...baseGenesisMetadata} as GenesisMetadata;
-    message.key = new Uint8Array();
-    message.value = new Uint8Array();
-    if (object.key !== undefined && object.key !== null) {
-      message.key = bytesFromBase64(object.key);
-    }
-    if (object.value !== undefined && object.value !== null) {
-      message.value = bytesFromBase64(object.value);
-    }
+    message.key = object.key !== undefined && object.key !== null ? bytesFromBase64(object.key) : new Uint8Array();
+    message.value = object.value !== undefined && object.value !== null ? bytesFromBase64(object.value) : new Uint8Array();
     return message;
   },
 
@@ -254,18 +204,10 @@ export const GenesisMetadata = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisMetadata>): GenesisMetadata {
+  fromPartial<I extends Exact<DeepPartial<GenesisMetadata>, I>>(object: I): GenesisMetadata {
     const message = {...baseGenesisMetadata} as GenesisMetadata;
-    if (object.key !== undefined && object.key !== null) {
-      message.key = object.key;
-    } else {
-      message.key = new Uint8Array();
-    }
-    if (object.value !== undefined && object.value !== null) {
-      message.value = object.value;
-    } else {
-      message.value = new Uint8Array();
-    }
+    message.key = object.key ?? new Uint8Array();
+    message.value = object.value ?? new Uint8Array();
     return message;
   }
 };
@@ -307,17 +249,8 @@ export const IdentifiedGenesisMetadata = {
 
   fromJSON(object: any): IdentifiedGenesisMetadata {
     const message = {...baseIdentifiedGenesisMetadata} as IdentifiedGenesisMetadata;
-    message.clientMetadata = [];
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = String(object.clientId);
-    } else {
-      message.clientId = "";
-    }
-    if (object.clientMetadata !== undefined && object.clientMetadata !== null) {
-      for (const e of object.clientMetadata) {
-        message.clientMetadata.push(GenesisMetadata.fromJSON(e));
-      }
-    }
+    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
+    message.clientMetadata = (object.clientMetadata ?? []).map((e: any) => GenesisMetadata.fromJSON(e));
     return message;
   },
 
@@ -332,25 +265,17 @@ export const IdentifiedGenesisMetadata = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<IdentifiedGenesisMetadata>): IdentifiedGenesisMetadata {
+  fromPartial<I extends Exact<DeepPartial<IdentifiedGenesisMetadata>, I>>(object: I): IdentifiedGenesisMetadata {
     const message = {...baseIdentifiedGenesisMetadata} as IdentifiedGenesisMetadata;
-    message.clientMetadata = [];
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = object.clientId;
-    } else {
-      message.clientId = "";
-    }
-    if (object.clientMetadata !== undefined && object.clientMetadata !== null) {
-      for (const e of object.clientMetadata) {
-        message.clientMetadata.push(GenesisMetadata.fromPartial(e));
-      }
-    }
+    message.clientId = object.clientId ?? "";
+    message.clientMetadata = object.clientMetadata?.map((e) => GenesisMetadata.fromPartial(e)) || [];
     return message;
   }
 };
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -378,9 +303,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -388,6 +316,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

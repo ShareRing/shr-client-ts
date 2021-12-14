@@ -5,17 +5,20 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "cosmos.crypto.ed25519";
 
 /**
- * PubKey defines a ed25519 public key
- * Key is the compressed form of the pubkey. The first byte depends is a 0x02 byte
- * if the y-coordinate is the lexicographically largest of the two associated with
- * the x-coordinate. Otherwise the first byte is a 0x03.
- * This prefix is followed with the x-coordinate.
+ * PubKey is an ed25519 public key for handling Tendermint keys in SDK.
+ * It's needed for Any serialization and SDK compatibility.
+ * It must not be used in a non Tendermint key context because it doesn't implement
+ * ADR-28. Nevertheless, you will like to use ed25519 in app user level
+ * then you must create a new proto message and follow ADR-28 for Address construction.
  */
 export interface PubKey {
   key: Uint8Array;
 }
 
-/** PrivKey defines a ed25519 private key. */
+/**
+ * Deprecated: PrivKey defines a ed25519 private key.
+ * NOTE: ed25519 keys must not be used in SDK apps except in a tendermint validator context.
+ */
 export interface PrivKey {
   key: Uint8Array;
 }
@@ -51,10 +54,7 @@ export const PubKey = {
 
   fromJSON(object: any): PubKey {
     const message = {...basePubKey} as PubKey;
-    message.key = new Uint8Array();
-    if (object.key !== undefined && object.key !== null) {
-      message.key = bytesFromBase64(object.key);
-    }
+    message.key = object.key !== undefined && object.key !== null ? bytesFromBase64(object.key) : new Uint8Array();
     return message;
   },
 
@@ -64,13 +64,9 @@ export const PubKey = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<PubKey>): PubKey {
+  fromPartial<I extends Exact<DeepPartial<PubKey>, I>>(object: I): PubKey {
     const message = {...basePubKey} as PubKey;
-    if (object.key !== undefined && object.key !== null) {
-      message.key = object.key;
-    } else {
-      message.key = new Uint8Array();
-    }
+    message.key = object.key ?? new Uint8Array();
     return message;
   }
 };
@@ -106,10 +102,7 @@ export const PrivKey = {
 
   fromJSON(object: any): PrivKey {
     const message = {...basePrivKey} as PrivKey;
-    message.key = new Uint8Array();
-    if (object.key !== undefined && object.key !== null) {
-      message.key = bytesFromBase64(object.key);
-    }
+    message.key = object.key !== undefined && object.key !== null ? bytesFromBase64(object.key) : new Uint8Array();
     return message;
   },
 
@@ -119,19 +112,16 @@ export const PrivKey = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<PrivKey>): PrivKey {
+  fromPartial<I extends Exact<DeepPartial<PrivKey>, I>>(object: I): PrivKey {
     const message = {...basePrivKey} as PrivKey;
-    if (object.key !== undefined && object.key !== null) {
-      message.key = object.key;
-    } else {
-      message.key = new Uint8Array();
-    }
+    message.key = object.key ?? new Uint8Array();
     return message;
   }
 };
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -159,9 +149,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -169,6 +162,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

@@ -81,26 +81,11 @@ export const BaseAccount = {
 
   fromJSON(object: any): BaseAccount {
     const message = {...baseBaseAccount} as BaseAccount;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = String(object.address);
-    } else {
-      message.address = "";
-    }
-    if (object.pubKey !== undefined && object.pubKey !== null) {
-      message.pubKey = Any.fromJSON(object.pubKey);
-    } else {
-      message.pubKey = undefined;
-    }
-    if (object.accountNumber !== undefined && object.accountNumber !== null) {
-      message.accountNumber = Long.fromString(object.accountNumber);
-    } else {
-      message.accountNumber = Long.UZERO;
-    }
-    if (object.sequence !== undefined && object.sequence !== null) {
-      message.sequence = Long.fromString(object.sequence);
-    } else {
-      message.sequence = Long.UZERO;
-    }
+    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
+    message.pubKey = object.pubKey !== undefined && object.pubKey !== null ? Any.fromJSON(object.pubKey) : undefined;
+    message.accountNumber =
+      object.accountNumber !== undefined && object.accountNumber !== null ? Long.fromString(object.accountNumber) : Long.UZERO;
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromString(object.sequence) : Long.UZERO;
     return message;
   },
 
@@ -113,28 +98,13 @@ export const BaseAccount = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<BaseAccount>): BaseAccount {
+  fromPartial<I extends Exact<DeepPartial<BaseAccount>, I>>(object: I): BaseAccount {
     const message = {...baseBaseAccount} as BaseAccount;
-    if (object.address !== undefined && object.address !== null) {
-      message.address = object.address;
-    } else {
-      message.address = "";
-    }
-    if (object.pubKey !== undefined && object.pubKey !== null) {
-      message.pubKey = Any.fromPartial(object.pubKey);
-    } else {
-      message.pubKey = undefined;
-    }
-    if (object.accountNumber !== undefined && object.accountNumber !== null) {
-      message.accountNumber = object.accountNumber as Long;
-    } else {
-      message.accountNumber = Long.UZERO;
-    }
-    if (object.sequence !== undefined && object.sequence !== null) {
-      message.sequence = object.sequence as Long;
-    } else {
-      message.sequence = Long.UZERO;
-    }
+    message.address = object.address ?? "";
+    message.pubKey = object.pubKey !== undefined && object.pubKey !== null ? Any.fromPartial(object.pubKey) : undefined;
+    message.accountNumber =
+      object.accountNumber !== undefined && object.accountNumber !== null ? Long.fromValue(object.accountNumber) : Long.UZERO;
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromValue(object.sequence) : Long.UZERO;
     return message;
   }
 };
@@ -182,22 +152,10 @@ export const ModuleAccount = {
 
   fromJSON(object: any): ModuleAccount {
     const message = {...baseModuleAccount} as ModuleAccount;
-    message.permissions = [];
-    if (object.baseAccount !== undefined && object.baseAccount !== null) {
-      message.baseAccount = BaseAccount.fromJSON(object.baseAccount);
-    } else {
-      message.baseAccount = undefined;
-    }
-    if (object.name !== undefined && object.name !== null) {
-      message.name = String(object.name);
-    } else {
-      message.name = "";
-    }
-    if (object.permissions !== undefined && object.permissions !== null) {
-      for (const e of object.permissions) {
-        message.permissions.push(String(e));
-      }
-    }
+    message.baseAccount =
+      object.baseAccount !== undefined && object.baseAccount !== null ? BaseAccount.fromJSON(object.baseAccount) : undefined;
+    message.name = object.name !== undefined && object.name !== null ? String(object.name) : "";
+    message.permissions = (object.permissions ?? []).map((e: any) => String(e));
     return message;
   },
 
@@ -213,24 +171,12 @@ export const ModuleAccount = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ModuleAccount>): ModuleAccount {
+  fromPartial<I extends Exact<DeepPartial<ModuleAccount>, I>>(object: I): ModuleAccount {
     const message = {...baseModuleAccount} as ModuleAccount;
-    message.permissions = [];
-    if (object.baseAccount !== undefined && object.baseAccount !== null) {
-      message.baseAccount = BaseAccount.fromPartial(object.baseAccount);
-    } else {
-      message.baseAccount = undefined;
-    }
-    if (object.name !== undefined && object.name !== null) {
-      message.name = object.name;
-    } else {
-      message.name = "";
-    }
-    if (object.permissions !== undefined && object.permissions !== null) {
-      for (const e of object.permissions) {
-        message.permissions.push(e);
-      }
-    }
+    message.baseAccount =
+      object.baseAccount !== undefined && object.baseAccount !== null ? BaseAccount.fromPartial(object.baseAccount) : undefined;
+    message.name = object.name ?? "";
+    message.permissions = object.permissions?.map((e) => e) || [];
     return message;
   }
 };
@@ -295,31 +241,19 @@ export const Params = {
 
   fromJSON(object: any): Params {
     const message = {...baseParams} as Params;
-    if (object.maxMemoCharacters !== undefined && object.maxMemoCharacters !== null) {
-      message.maxMemoCharacters = Long.fromString(object.maxMemoCharacters);
-    } else {
-      message.maxMemoCharacters = Long.UZERO;
-    }
-    if (object.txSigLimit !== undefined && object.txSigLimit !== null) {
-      message.txSigLimit = Long.fromString(object.txSigLimit);
-    } else {
-      message.txSigLimit = Long.UZERO;
-    }
-    if (object.txSizeCostPerByte !== undefined && object.txSizeCostPerByte !== null) {
-      message.txSizeCostPerByte = Long.fromString(object.txSizeCostPerByte);
-    } else {
-      message.txSizeCostPerByte = Long.UZERO;
-    }
-    if (object.sigVerifyCostEd25519 !== undefined && object.sigVerifyCostEd25519 !== null) {
-      message.sigVerifyCostEd25519 = Long.fromString(object.sigVerifyCostEd25519);
-    } else {
-      message.sigVerifyCostEd25519 = Long.UZERO;
-    }
-    if (object.sigVerifyCostSecp256k1 !== undefined && object.sigVerifyCostSecp256k1 !== null) {
-      message.sigVerifyCostSecp256k1 = Long.fromString(object.sigVerifyCostSecp256k1);
-    } else {
-      message.sigVerifyCostSecp256k1 = Long.UZERO;
-    }
+    message.maxMemoCharacters =
+      object.maxMemoCharacters !== undefined && object.maxMemoCharacters !== null ? Long.fromString(object.maxMemoCharacters) : Long.UZERO;
+    message.txSigLimit = object.txSigLimit !== undefined && object.txSigLimit !== null ? Long.fromString(object.txSigLimit) : Long.UZERO;
+    message.txSizeCostPerByte =
+      object.txSizeCostPerByte !== undefined && object.txSizeCostPerByte !== null ? Long.fromString(object.txSizeCostPerByte) : Long.UZERO;
+    message.sigVerifyCostEd25519 =
+      object.sigVerifyCostEd25519 !== undefined && object.sigVerifyCostEd25519 !== null
+        ? Long.fromString(object.sigVerifyCostEd25519)
+        : Long.UZERO;
+    message.sigVerifyCostSecp256k1 =
+      object.sigVerifyCostSecp256k1 !== undefined && object.sigVerifyCostSecp256k1 !== null
+        ? Long.fromString(object.sigVerifyCostSecp256k1)
+        : Long.UZERO;
     return message;
   },
 
@@ -334,40 +268,31 @@ export const Params = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Params>): Params {
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
     const message = {...baseParams} as Params;
-    if (object.maxMemoCharacters !== undefined && object.maxMemoCharacters !== null) {
-      message.maxMemoCharacters = object.maxMemoCharacters as Long;
-    } else {
-      message.maxMemoCharacters = Long.UZERO;
-    }
-    if (object.txSigLimit !== undefined && object.txSigLimit !== null) {
-      message.txSigLimit = object.txSigLimit as Long;
-    } else {
-      message.txSigLimit = Long.UZERO;
-    }
-    if (object.txSizeCostPerByte !== undefined && object.txSizeCostPerByte !== null) {
-      message.txSizeCostPerByte = object.txSizeCostPerByte as Long;
-    } else {
-      message.txSizeCostPerByte = Long.UZERO;
-    }
-    if (object.sigVerifyCostEd25519 !== undefined && object.sigVerifyCostEd25519 !== null) {
-      message.sigVerifyCostEd25519 = object.sigVerifyCostEd25519 as Long;
-    } else {
-      message.sigVerifyCostEd25519 = Long.UZERO;
-    }
-    if (object.sigVerifyCostSecp256k1 !== undefined && object.sigVerifyCostSecp256k1 !== null) {
-      message.sigVerifyCostSecp256k1 = object.sigVerifyCostSecp256k1 as Long;
-    } else {
-      message.sigVerifyCostSecp256k1 = Long.UZERO;
-    }
+    message.maxMemoCharacters =
+      object.maxMemoCharacters !== undefined && object.maxMemoCharacters !== null ? Long.fromValue(object.maxMemoCharacters) : Long.UZERO;
+    message.txSigLimit = object.txSigLimit !== undefined && object.txSigLimit !== null ? Long.fromValue(object.txSigLimit) : Long.UZERO;
+    message.txSizeCostPerByte =
+      object.txSizeCostPerByte !== undefined && object.txSizeCostPerByte !== null ? Long.fromValue(object.txSizeCostPerByte) : Long.UZERO;
+    message.sigVerifyCostEd25519 =
+      object.sigVerifyCostEd25519 !== undefined && object.sigVerifyCostEd25519 !== null
+        ? Long.fromValue(object.sigVerifyCostEd25519)
+        : Long.UZERO;
+    message.sigVerifyCostSecp256k1 =
+      object.sigVerifyCostSecp256k1 !== undefined && object.sigVerifyCostSecp256k1 !== null
+        ? Long.fromValue(object.sigVerifyCostSecp256k1)
+        : Long.UZERO;
     return message;
   }
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -375,6 +300,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

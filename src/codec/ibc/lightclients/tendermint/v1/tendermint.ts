@@ -7,7 +7,7 @@ import {MerkleRoot} from "../../../../ibc/core/commitment/v1/commitment";
 import {SignedHeader} from "../../../../tendermint/types/types";
 import {ValidatorSet} from "../../../../tendermint/types/validator";
 import {Timestamp} from "../../../../google/protobuf/timestamp";
-import {ProofSpec} from "../../../../confio/proofs";
+import {ProofSpec} from "../../../../proofs";
 
 export const protobufPackage = "ibc.lightclients.tendermint.v1";
 
@@ -35,10 +35,12 @@ export interface ClientState {
   proofSpecs: ProofSpec[];
   /**
    * Path at which next upgraded client will be committed.
-   * Each element corresponds to the key for a single CommitmentProof in the chained proof.
-   * NOTE: ClientState must stored under `{upgradePath}/{upgradeHeight}/clientState`
-   * ConsensusState must be stored under `{upgradepath}/{upgradeHeight}/consensusState`
-   * For SDK chains using the default upgrade module, upgrade_path should be []string{"upgrade", "upgradedIBCState"}`
+   * Each element corresponds to the key for a single CommitmentProof in the
+   * chained proof. NOTE: ClientState must stored under
+   * `{upgradePath}/{upgradeHeight}/clientState` ConsensusState must be stored
+   * under `{upgradepath}/{upgradeHeight}/consensusState` For SDK chains using
+   * the default upgrade module, upgrade_path should be []string{"upgrade",
+   * "upgradedIBCState"}`
    */
   upgradePath: string[];
   /**
@@ -96,7 +98,10 @@ export interface Header {
   trustedValidators?: ValidatorSet;
 }
 
-/** Fraction defines the protobuf message type for tmmath.Fraction that only supports positive values. */
+/**
+ * Fraction defines the protobuf message type for tmmath.Fraction that only
+ * supports positive values.
+ */
 export interface Fraction {
   numerator: Long;
   denominator: Long;
@@ -194,63 +199,28 @@ export const ClientState = {
 
   fromJSON(object: any): ClientState {
     const message = {...baseClientState} as ClientState;
-    message.proofSpecs = [];
-    message.upgradePath = [];
-    if (object.chainId !== undefined && object.chainId !== null) {
-      message.chainId = String(object.chainId);
-    } else {
-      message.chainId = "";
-    }
-    if (object.trustLevel !== undefined && object.trustLevel !== null) {
-      message.trustLevel = Fraction.fromJSON(object.trustLevel);
-    } else {
-      message.trustLevel = undefined;
-    }
-    if (object.trustingPeriod !== undefined && object.trustingPeriod !== null) {
-      message.trustingPeriod = Duration.fromJSON(object.trustingPeriod);
-    } else {
-      message.trustingPeriod = undefined;
-    }
-    if (object.unbondingPeriod !== undefined && object.unbondingPeriod !== null) {
-      message.unbondingPeriod = Duration.fromJSON(object.unbondingPeriod);
-    } else {
-      message.unbondingPeriod = undefined;
-    }
-    if (object.maxClockDrift !== undefined && object.maxClockDrift !== null) {
-      message.maxClockDrift = Duration.fromJSON(object.maxClockDrift);
-    } else {
-      message.maxClockDrift = undefined;
-    }
-    if (object.frozenHeight !== undefined && object.frozenHeight !== null) {
-      message.frozenHeight = Height.fromJSON(object.frozenHeight);
-    } else {
-      message.frozenHeight = undefined;
-    }
-    if (object.latestHeight !== undefined && object.latestHeight !== null) {
-      message.latestHeight = Height.fromJSON(object.latestHeight);
-    } else {
-      message.latestHeight = undefined;
-    }
-    if (object.proofSpecs !== undefined && object.proofSpecs !== null) {
-      for (const e of object.proofSpecs) {
-        message.proofSpecs.push(ProofSpec.fromJSON(e));
-      }
-    }
-    if (object.upgradePath !== undefined && object.upgradePath !== null) {
-      for (const e of object.upgradePath) {
-        message.upgradePath.push(String(e));
-      }
-    }
-    if (object.allowUpdateAfterExpiry !== undefined && object.allowUpdateAfterExpiry !== null) {
-      message.allowUpdateAfterExpiry = Boolean(object.allowUpdateAfterExpiry);
-    } else {
-      message.allowUpdateAfterExpiry = false;
-    }
-    if (object.allowUpdateAfterMisbehaviour !== undefined && object.allowUpdateAfterMisbehaviour !== null) {
-      message.allowUpdateAfterMisbehaviour = Boolean(object.allowUpdateAfterMisbehaviour);
-    } else {
-      message.allowUpdateAfterMisbehaviour = false;
-    }
+    message.chainId = object.chainId !== undefined && object.chainId !== null ? String(object.chainId) : "";
+    message.trustLevel = object.trustLevel !== undefined && object.trustLevel !== null ? Fraction.fromJSON(object.trustLevel) : undefined;
+    message.trustingPeriod =
+      object.trustingPeriod !== undefined && object.trustingPeriod !== null ? Duration.fromJSON(object.trustingPeriod) : undefined;
+    message.unbondingPeriod =
+      object.unbondingPeriod !== undefined && object.unbondingPeriod !== null ? Duration.fromJSON(object.unbondingPeriod) : undefined;
+    message.maxClockDrift =
+      object.maxClockDrift !== undefined && object.maxClockDrift !== null ? Duration.fromJSON(object.maxClockDrift) : undefined;
+    message.frozenHeight =
+      object.frozenHeight !== undefined && object.frozenHeight !== null ? Height.fromJSON(object.frozenHeight) : undefined;
+    message.latestHeight =
+      object.latestHeight !== undefined && object.latestHeight !== null ? Height.fromJSON(object.latestHeight) : undefined;
+    message.proofSpecs = (object.proofSpecs ?? []).map((e: any) => ProofSpec.fromJSON(e));
+    message.upgradePath = (object.upgradePath ?? []).map((e: any) => String(e));
+    message.allowUpdateAfterExpiry =
+      object.allowUpdateAfterExpiry !== undefined && object.allowUpdateAfterExpiry !== null
+        ? Boolean(object.allowUpdateAfterExpiry)
+        : false;
+    message.allowUpdateAfterMisbehaviour =
+      object.allowUpdateAfterMisbehaviour !== undefined && object.allowUpdateAfterMisbehaviour !== null
+        ? Boolean(object.allowUpdateAfterMisbehaviour)
+        : false;
     return message;
   },
 
@@ -280,65 +250,25 @@ export const ClientState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ClientState>): ClientState {
+  fromPartial<I extends Exact<DeepPartial<ClientState>, I>>(object: I): ClientState {
     const message = {...baseClientState} as ClientState;
-    message.proofSpecs = [];
-    message.upgradePath = [];
-    if (object.chainId !== undefined && object.chainId !== null) {
-      message.chainId = object.chainId;
-    } else {
-      message.chainId = "";
-    }
-    if (object.trustLevel !== undefined && object.trustLevel !== null) {
-      message.trustLevel = Fraction.fromPartial(object.trustLevel);
-    } else {
-      message.trustLevel = undefined;
-    }
-    if (object.trustingPeriod !== undefined && object.trustingPeriod !== null) {
-      message.trustingPeriod = Duration.fromPartial(object.trustingPeriod);
-    } else {
-      message.trustingPeriod = undefined;
-    }
-    if (object.unbondingPeriod !== undefined && object.unbondingPeriod !== null) {
-      message.unbondingPeriod = Duration.fromPartial(object.unbondingPeriod);
-    } else {
-      message.unbondingPeriod = undefined;
-    }
-    if (object.maxClockDrift !== undefined && object.maxClockDrift !== null) {
-      message.maxClockDrift = Duration.fromPartial(object.maxClockDrift);
-    } else {
-      message.maxClockDrift = undefined;
-    }
-    if (object.frozenHeight !== undefined && object.frozenHeight !== null) {
-      message.frozenHeight = Height.fromPartial(object.frozenHeight);
-    } else {
-      message.frozenHeight = undefined;
-    }
-    if (object.latestHeight !== undefined && object.latestHeight !== null) {
-      message.latestHeight = Height.fromPartial(object.latestHeight);
-    } else {
-      message.latestHeight = undefined;
-    }
-    if (object.proofSpecs !== undefined && object.proofSpecs !== null) {
-      for (const e of object.proofSpecs) {
-        message.proofSpecs.push(ProofSpec.fromPartial(e));
-      }
-    }
-    if (object.upgradePath !== undefined && object.upgradePath !== null) {
-      for (const e of object.upgradePath) {
-        message.upgradePath.push(e);
-      }
-    }
-    if (object.allowUpdateAfterExpiry !== undefined && object.allowUpdateAfterExpiry !== null) {
-      message.allowUpdateAfterExpiry = object.allowUpdateAfterExpiry;
-    } else {
-      message.allowUpdateAfterExpiry = false;
-    }
-    if (object.allowUpdateAfterMisbehaviour !== undefined && object.allowUpdateAfterMisbehaviour !== null) {
-      message.allowUpdateAfterMisbehaviour = object.allowUpdateAfterMisbehaviour;
-    } else {
-      message.allowUpdateAfterMisbehaviour = false;
-    }
+    message.chainId = object.chainId ?? "";
+    message.trustLevel =
+      object.trustLevel !== undefined && object.trustLevel !== null ? Fraction.fromPartial(object.trustLevel) : undefined;
+    message.trustingPeriod =
+      object.trustingPeriod !== undefined && object.trustingPeriod !== null ? Duration.fromPartial(object.trustingPeriod) : undefined;
+    message.unbondingPeriod =
+      object.unbondingPeriod !== undefined && object.unbondingPeriod !== null ? Duration.fromPartial(object.unbondingPeriod) : undefined;
+    message.maxClockDrift =
+      object.maxClockDrift !== undefined && object.maxClockDrift !== null ? Duration.fromPartial(object.maxClockDrift) : undefined;
+    message.frozenHeight =
+      object.frozenHeight !== undefined && object.frozenHeight !== null ? Height.fromPartial(object.frozenHeight) : undefined;
+    message.latestHeight =
+      object.latestHeight !== undefined && object.latestHeight !== null ? Height.fromPartial(object.latestHeight) : undefined;
+    message.proofSpecs = object.proofSpecs?.map((e) => ProofSpec.fromPartial(e)) || [];
+    message.upgradePath = object.upgradePath?.map((e) => e) || [];
+    message.allowUpdateAfterExpiry = object.allowUpdateAfterExpiry ?? false;
+    message.allowUpdateAfterMisbehaviour = object.allowUpdateAfterMisbehaviour ?? false;
     return message;
   }
 };
@@ -386,20 +316,12 @@ export const ConsensusState = {
 
   fromJSON(object: any): ConsensusState {
     const message = {...baseConsensusState} as ConsensusState;
-    message.nextValidatorsHash = new Uint8Array();
-    if (object.timestamp !== undefined && object.timestamp !== null) {
-      message.timestamp = fromJsonTimestamp(object.timestamp);
-    } else {
-      message.timestamp = undefined;
-    }
-    if (object.root !== undefined && object.root !== null) {
-      message.root = MerkleRoot.fromJSON(object.root);
-    } else {
-      message.root = undefined;
-    }
-    if (object.nextValidatorsHash !== undefined && object.nextValidatorsHash !== null) {
-      message.nextValidatorsHash = bytesFromBase64(object.nextValidatorsHash);
-    }
+    message.timestamp = object.timestamp !== undefined && object.timestamp !== null ? fromJsonTimestamp(object.timestamp) : undefined;
+    message.root = object.root !== undefined && object.root !== null ? MerkleRoot.fromJSON(object.root) : undefined;
+    message.nextValidatorsHash =
+      object.nextValidatorsHash !== undefined && object.nextValidatorsHash !== null
+        ? bytesFromBase64(object.nextValidatorsHash)
+        : new Uint8Array();
     return message;
   },
 
@@ -412,23 +334,11 @@ export const ConsensusState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ConsensusState>): ConsensusState {
+  fromPartial<I extends Exact<DeepPartial<ConsensusState>, I>>(object: I): ConsensusState {
     const message = {...baseConsensusState} as ConsensusState;
-    if (object.timestamp !== undefined && object.timestamp !== null) {
-      message.timestamp = object.timestamp;
-    } else {
-      message.timestamp = undefined;
-    }
-    if (object.root !== undefined && object.root !== null) {
-      message.root = MerkleRoot.fromPartial(object.root);
-    } else {
-      message.root = undefined;
-    }
-    if (object.nextValidatorsHash !== undefined && object.nextValidatorsHash !== null) {
-      message.nextValidatorsHash = object.nextValidatorsHash;
-    } else {
-      message.nextValidatorsHash = new Uint8Array();
-    }
+    message.timestamp = object.timestamp ?? undefined;
+    message.root = object.root !== undefined && object.root !== null ? MerkleRoot.fromPartial(object.root) : undefined;
+    message.nextValidatorsHash = object.nextValidatorsHash ?? new Uint8Array();
     return message;
   }
 };
@@ -475,21 +385,9 @@ export const Misbehaviour = {
 
   fromJSON(object: any): Misbehaviour {
     const message = {...baseMisbehaviour} as Misbehaviour;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = String(object.clientId);
-    } else {
-      message.clientId = "";
-    }
-    if (object.header1 !== undefined && object.header1 !== null) {
-      message.header1 = Header.fromJSON(object.header1);
-    } else {
-      message.header1 = undefined;
-    }
-    if (object.header2 !== undefined && object.header2 !== null) {
-      message.header2 = Header.fromJSON(object.header2);
-    } else {
-      message.header2 = undefined;
-    }
+    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
+    message.header1 = object.header1 !== undefined && object.header1 !== null ? Header.fromJSON(object.header1) : undefined;
+    message.header2 = object.header2 !== undefined && object.header2 !== null ? Header.fromJSON(object.header2) : undefined;
     return message;
   },
 
@@ -501,23 +399,11 @@ export const Misbehaviour = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Misbehaviour>): Misbehaviour {
+  fromPartial<I extends Exact<DeepPartial<Misbehaviour>, I>>(object: I): Misbehaviour {
     const message = {...baseMisbehaviour} as Misbehaviour;
-    if (object.clientId !== undefined && object.clientId !== null) {
-      message.clientId = object.clientId;
-    } else {
-      message.clientId = "";
-    }
-    if (object.header1 !== undefined && object.header1 !== null) {
-      message.header1 = Header.fromPartial(object.header1);
-    } else {
-      message.header1 = undefined;
-    }
-    if (object.header2 !== undefined && object.header2 !== null) {
-      message.header2 = Header.fromPartial(object.header2);
-    } else {
-      message.header2 = undefined;
-    }
+    message.clientId = object.clientId ?? "";
+    message.header1 = object.header1 !== undefined && object.header1 !== null ? Header.fromPartial(object.header1) : undefined;
+    message.header2 = object.header2 !== undefined && object.header2 !== null ? Header.fromPartial(object.header2) : undefined;
     return message;
   }
 };
@@ -570,26 +456,16 @@ export const Header = {
 
   fromJSON(object: any): Header {
     const message = {...baseHeader} as Header;
-    if (object.signedHeader !== undefined && object.signedHeader !== null) {
-      message.signedHeader = SignedHeader.fromJSON(object.signedHeader);
-    } else {
-      message.signedHeader = undefined;
-    }
-    if (object.validatorSet !== undefined && object.validatorSet !== null) {
-      message.validatorSet = ValidatorSet.fromJSON(object.validatorSet);
-    } else {
-      message.validatorSet = undefined;
-    }
-    if (object.trustedHeight !== undefined && object.trustedHeight !== null) {
-      message.trustedHeight = Height.fromJSON(object.trustedHeight);
-    } else {
-      message.trustedHeight = undefined;
-    }
-    if (object.trustedValidators !== undefined && object.trustedValidators !== null) {
-      message.trustedValidators = ValidatorSet.fromJSON(object.trustedValidators);
-    } else {
-      message.trustedValidators = undefined;
-    }
+    message.signedHeader =
+      object.signedHeader !== undefined && object.signedHeader !== null ? SignedHeader.fromJSON(object.signedHeader) : undefined;
+    message.validatorSet =
+      object.validatorSet !== undefined && object.validatorSet !== null ? ValidatorSet.fromJSON(object.validatorSet) : undefined;
+    message.trustedHeight =
+      object.trustedHeight !== undefined && object.trustedHeight !== null ? Height.fromJSON(object.trustedHeight) : undefined;
+    message.trustedValidators =
+      object.trustedValidators !== undefined && object.trustedValidators !== null
+        ? ValidatorSet.fromJSON(object.trustedValidators)
+        : undefined;
     return message;
   },
 
@@ -603,28 +479,18 @@ export const Header = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Header>): Header {
+  fromPartial<I extends Exact<DeepPartial<Header>, I>>(object: I): Header {
     const message = {...baseHeader} as Header;
-    if (object.signedHeader !== undefined && object.signedHeader !== null) {
-      message.signedHeader = SignedHeader.fromPartial(object.signedHeader);
-    } else {
-      message.signedHeader = undefined;
-    }
-    if (object.validatorSet !== undefined && object.validatorSet !== null) {
-      message.validatorSet = ValidatorSet.fromPartial(object.validatorSet);
-    } else {
-      message.validatorSet = undefined;
-    }
-    if (object.trustedHeight !== undefined && object.trustedHeight !== null) {
-      message.trustedHeight = Height.fromPartial(object.trustedHeight);
-    } else {
-      message.trustedHeight = undefined;
-    }
-    if (object.trustedValidators !== undefined && object.trustedValidators !== null) {
-      message.trustedValidators = ValidatorSet.fromPartial(object.trustedValidators);
-    } else {
-      message.trustedValidators = undefined;
-    }
+    message.signedHeader =
+      object.signedHeader !== undefined && object.signedHeader !== null ? SignedHeader.fromPartial(object.signedHeader) : undefined;
+    message.validatorSet =
+      object.validatorSet !== undefined && object.validatorSet !== null ? ValidatorSet.fromPartial(object.validatorSet) : undefined;
+    message.trustedHeight =
+      object.trustedHeight !== undefined && object.trustedHeight !== null ? Height.fromPartial(object.trustedHeight) : undefined;
+    message.trustedValidators =
+      object.trustedValidators !== undefined && object.trustedValidators !== null
+        ? ValidatorSet.fromPartial(object.trustedValidators)
+        : undefined;
     return message;
   }
 };
@@ -665,16 +531,9 @@ export const Fraction = {
 
   fromJSON(object: any): Fraction {
     const message = {...baseFraction} as Fraction;
-    if (object.numerator !== undefined && object.numerator !== null) {
-      message.numerator = Long.fromString(object.numerator);
-    } else {
-      message.numerator = Long.UZERO;
-    }
-    if (object.denominator !== undefined && object.denominator !== null) {
-      message.denominator = Long.fromString(object.denominator);
-    } else {
-      message.denominator = Long.UZERO;
-    }
+    message.numerator = object.numerator !== undefined && object.numerator !== null ? Long.fromString(object.numerator) : Long.UZERO;
+    message.denominator =
+      object.denominator !== undefined && object.denominator !== null ? Long.fromString(object.denominator) : Long.UZERO;
     return message;
   },
 
@@ -685,24 +544,17 @@ export const Fraction = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<Fraction>): Fraction {
+  fromPartial<I extends Exact<DeepPartial<Fraction>, I>>(object: I): Fraction {
     const message = {...baseFraction} as Fraction;
-    if (object.numerator !== undefined && object.numerator !== null) {
-      message.numerator = object.numerator as Long;
-    } else {
-      message.numerator = Long.UZERO;
-    }
-    if (object.denominator !== undefined && object.denominator !== null) {
-      message.denominator = object.denominator as Long;
-    } else {
-      message.denominator = Long.UZERO;
-    }
+    message.numerator = object.numerator !== undefined && object.numerator !== null ? Long.fromValue(object.numerator) : Long.UZERO;
+    message.denominator = object.denominator !== undefined && object.denominator !== null ? Long.fromValue(object.denominator) : Long.UZERO;
     return message;
   }
 };
 
 declare var self: any | undefined;
 declare var window: any | undefined;
+declare var global: any | undefined;
 var globalThis: any = (() => {
   if (typeof globalThis !== "undefined") return globalThis;
   if (typeof self !== "undefined") return self;
@@ -730,9 +582,12 @@ function base64FromBytes(arr: Uint8Array): string {
   return btoa(bin.join(""));
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -740,6 +595,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = numberToLong(date.getTime() / 1_000);

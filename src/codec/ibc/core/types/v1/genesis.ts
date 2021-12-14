@@ -59,21 +59,14 @@ export const GenesisState = {
 
   fromJSON(object: any): GenesisState {
     const message = {...baseGenesisState} as GenesisState;
-    if (object.clientGenesis !== undefined && object.clientGenesis !== null) {
-      message.clientGenesis = GenesisState1.fromJSON(object.clientGenesis);
-    } else {
-      message.clientGenesis = undefined;
-    }
-    if (object.connectionGenesis !== undefined && object.connectionGenesis !== null) {
-      message.connectionGenesis = GenesisState2.fromJSON(object.connectionGenesis);
-    } else {
-      message.connectionGenesis = undefined;
-    }
-    if (object.channelGenesis !== undefined && object.channelGenesis !== null) {
-      message.channelGenesis = GenesisState3.fromJSON(object.channelGenesis);
-    } else {
-      message.channelGenesis = undefined;
-    }
+    message.clientGenesis =
+      object.clientGenesis !== undefined && object.clientGenesis !== null ? GenesisState1.fromJSON(object.clientGenesis) : undefined;
+    message.connectionGenesis =
+      object.connectionGenesis !== undefined && object.connectionGenesis !== null
+        ? GenesisState2.fromJSON(object.connectionGenesis)
+        : undefined;
+    message.channelGenesis =
+      object.channelGenesis !== undefined && object.channelGenesis !== null ? GenesisState3.fromJSON(object.channelGenesis) : undefined;
     return message;
   },
 
@@ -88,30 +81,26 @@ export const GenesisState = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
+  fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
     const message = {...baseGenesisState} as GenesisState;
-    if (object.clientGenesis !== undefined && object.clientGenesis !== null) {
-      message.clientGenesis = GenesisState1.fromPartial(object.clientGenesis);
-    } else {
-      message.clientGenesis = undefined;
-    }
-    if (object.connectionGenesis !== undefined && object.connectionGenesis !== null) {
-      message.connectionGenesis = GenesisState2.fromPartial(object.connectionGenesis);
-    } else {
-      message.connectionGenesis = undefined;
-    }
-    if (object.channelGenesis !== undefined && object.channelGenesis !== null) {
-      message.channelGenesis = GenesisState3.fromPartial(object.channelGenesis);
-    } else {
-      message.channelGenesis = undefined;
-    }
+    message.clientGenesis =
+      object.clientGenesis !== undefined && object.clientGenesis !== null ? GenesisState1.fromPartial(object.clientGenesis) : undefined;
+    message.connectionGenesis =
+      object.connectionGenesis !== undefined && object.connectionGenesis !== null
+        ? GenesisState2.fromPartial(object.connectionGenesis)
+        : undefined;
+    message.channelGenesis =
+      object.channelGenesis !== undefined && object.channelGenesis !== null ? GenesisState3.fromPartial(object.channelGenesis) : undefined;
     return message;
   }
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined | Long;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
 export type DeepPartial<T> = T extends Builtin
   ? T
+  : T extends Long
+  ? string | number | Long
   : T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
@@ -119,6 +108,11 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? {[K in keyof T]?: DeepPartial<T[K]>}
   : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
