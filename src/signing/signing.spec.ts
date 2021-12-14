@@ -2,6 +2,7 @@
 
 import {expect} from "chai";
 import {fromBase64, fromHex, toHex} from "@cosmjs/encoding";
+import {PubKey} from "../codec/cosmos/crypto/secp256k1/keys";
 import {SignMode} from "../codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "../codec/cosmos/tx/v1beta1/tx";
 
@@ -22,13 +23,13 @@ describe("signing", () => {
   it("correctly parses signed transactions from test vectors", async () => {
     const wallet = await Secp256k1HdWallet.fromMnemonic(testAccounts[0].mnemonic);
     const [{address, pubkey: pubkeyBytes}] = await wallet.getAccounts();
-    const prefixedPubkeyBytes = Uint8Array.from([0x0a, pubkeyBytes.length, ...pubkeyBytes]);
+    const prefixedPubkeyBytes = Uint8Array.from(PubKey.encode({ key: pubkeyBytes }).finish());
 
     testVectors.forEach(({outputs: {signedTxBytes}}) => {
       const parsedTestTx = decodeTxRaw(fromHex(signedTxBytes));
       expect(parsedTestTx.signatures.length).to.equal(1);
       expect(parsedTestTx.authInfo.signerInfos.length).to.equal(1);
-      expect(Uint8Array.from(parsedTestTx.authInfo.signerInfos[0].publicKey!.value ?? [])).to.equalBytes(prefixedPubkeyBytes);
+      expect(Uint8Array.from(parsedTestTx.authInfo.signerInfos[0].publicKey!.value)).to.equalBytes(prefixedPubkeyBytes);
       expect(parsedTestTx.authInfo.signerInfos[0].modeInfo!.single!.mode).to.equal(SignMode.SIGN_MODE_DIRECT);
       expect({...parsedTestTx.authInfo.fee!.amount[0]}).to.deep.equal({denom: "stake", amount: "180000"});
       expect(parsedTestTx.authInfo.fee!.gasLimit.toString()).to.equal(gasLimit.toString());
