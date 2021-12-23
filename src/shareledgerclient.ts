@@ -32,12 +32,7 @@ export class ShareledgerClient extends Client {
       throw error;
     }
   }
-
-  public async getAccountVerified(searchAddress: string): Promise<Account | null> {
-    const account = await this.auth.verified.account(searchAddress);
-    return account ? accountFromAny(account) : null;
-  }
-
+  
   public async getSequence(address: string): Promise<SequenceResponse> {
     const account = await this.getAccount(address);
     if (!account) {
