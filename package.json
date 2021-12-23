@@ -6,11 +6,11 @@
   "browser": "dist/index.umd.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
-    "build": "yarn clean && yarn build:cjs && yarn build:esm && yarn build:type",
+    "build": "yarn clean && yarn build:cjs && yarn build:esm && yarn build:type && yarn build:umd",
     "build:cjs": "tsc --module commonjs --outDir dist/cjs --project ./tsconfig.compile.json",
     "build:esm": "tsc --module es2015 --outDir dist/esm --project ./tsconfig.compile.json",
     "build:type": "tsc -d --emitDeclarationOnly --outDir dist/types --project ./tsconfig.compile.json",
-    "build:umd": "rollup -c",
+    "build:umd": "webpack --config webpack.config.js",
     "clean": "rm -rf dist/",
     "test": "yarn test:unit && yarn test:coverage",
     "test:unit": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' env NODE_ENV=test mocha",
@@ -26,6 +26,7 @@
   "dependencies": {
     "@confio/ics23": "^0.6.5",
     "@cosmjs/amino": "^0.26.5",
+    "@cosmjs/crypto": "^0.26.5",
     "@cosmjs/encoding": "^0.26.5",
     "@cosmjs/math": "^0.26.5",
     "@cosmjs/stream": "^0.26.5",
@@ -36,7 +37,6 @@
     "xstream": "^11.14.0"
   },
   "devDependencies": {
-    "@cosmjs/crypto": "^0.26.5",
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.4",
     "@types/long": "^4.0.1",
@@ -54,13 +54,18 @@
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
     "mocha": "^9.0.1",
+    "node-polyfill-webpack-plugin": "^1.1.4",
     "nyc": "^15.1.0",
     "prettier": "^2.5.1",
     "stream-browserify": "^3.0.0",
+    "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
     "ts-proto": "^1.93.3",
+    "tsconfig-paths-webpack-plugin": "^3.5.2",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
   },
   "repository": "https://bitbucket.org/shareringvietnam/shr-client-ts",
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
