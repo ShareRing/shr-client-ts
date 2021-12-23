@@ -1,8 +1,9 @@
-import {Bech32} from "@cosmjs/encoding";
-import {PageRequest} from "../codec/cosmos/base/query/v1beta1/pagination";
+import { Bech32 } from "@cosmjs/encoding";
+import { Uint64 } from "@cosmjs/math";
 import Long from "long";
+import { PageRequest } from "../codec/cosmos/base/query/v1beta1/pagination";
+import type { QueryClient } from "./client";
 
-import type {QueryClient} from "./client";
 
 /**
  * Takes a bech32 encoded address and returns the data part. The prefix is ignored and discarded.
@@ -19,7 +20,8 @@ export function createPagination(paginationKey?: Uint8Array): PageRequest | unde
         key: paginationKey,
         offset: Long.fromNumber(0, true),
         limit: Long.fromNumber(0, true),
-        countTotal: false
+        countTotal: false,
+        reverse: false
       }
     : undefined;
 }
