@@ -26,7 +26,7 @@ SUFFIX=${IBC_SDK_REF}
 
 wget -qO "$ZIP_FILE" "https://github.com/cosmos/ibc-go/archive/$IBC_SDK_REF.zip"
 unzip "$ZIP_FILE" "*.proto" -d "$IBC_DIR"
-cp -r "$IBC_DIR/ibc-go-$SUFFIX/proto/ibc" "$COSMOS_SDK_DIR/proto/ibc"
+cp -r "$IBC_DIR/ibc-go-$SUFFIX/proto/ibc" "$COSMOS_SDK_DIR/proto"
 cp -r "$IBC_DIR/ibc-go-$SUFFIX/third_party/proto" "$COSMOS_SDK_DIR/third_party"
 rm "$ZIP_FILE"
 rm -rf "$IBC_DIR"
