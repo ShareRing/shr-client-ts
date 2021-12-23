@@ -1,17 +1,5 @@
-export {StdFee} from "@cosmjs/amino";
-export {Coin, coin, coins, makeShareledgerPath, parseCoins} from "./signing";
-export {Account, accountFromAny} from "./account";
-export {calculateFee, GasPrice} from "./fee";
-export {
-  SearchByHeightQuery,
-  SearchBySentFromOrToQuery,
-  SearchByTagsQuery,
-  SearchTxQuery,
-  SearchTxFilter,
-  isSearchByHeightQuery,
-  isSearchBySentFromOrToQuery,
-  isSearchByTagsQuery
-} from "./search";
+export { StdFee } from "@cosmjs/amino";
+export { Account, accountFromAny } from "./account";
 export {
   assertIsBroadcastTxSuccess,
   Block,
@@ -25,5 +13,15 @@ export {
   SequenceResponse,
   TimeoutError
 } from "./client";
-export {ShareledgerClient} from "./shareledgerclient";
-//export {defaultRegistryTypes, SignerData, ShareledgerSigningClient, ShareledgerSigningClientOptions} from "./shareledgersigningclient.ts.bak";
+export { calculateFee, GasPrice } from "./fee";
+export {
+  isSearchByHeightQuery,
+  isSearchBySentFromOrToQuery,
+  isSearchByTagsQuery, SearchByHeightQuery,
+  SearchBySentFromOrToQuery,
+  SearchByTagsQuery, SearchTxFilter, SearchTxQuery
+} from "./search";
+export { ShareledgerClient } from "./shareledgerclient";
+export { defaultRegistryTypes, ShareledgerSigningClient, SignerData, SigningOptions } from "./shareledgersigningclient";
+export { Coin, coin, coins, makeShareledgerPath, parseCoins, Registry, Secp256k1HdWallet, Secp256k1HdWalletOptions, Secp256k1Wallet } from "./signing";
+
