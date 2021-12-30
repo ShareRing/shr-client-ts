@@ -5,6 +5,7 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 ROOT_PROTO_DIR="./proto/cosmos/cosmos-sdk"
 COSMOS_PROTO_DIR="$ROOT_PROTO_DIR/proto"
 THIRD_PARTY_PROTO_DIR="$ROOT_PROTO_DIR/third_party/proto"
+SHARELEDGER_PROTO_DIR="./proto/shareledger/proto/shareledger"
 OUT_DIR="./src/codec/"
 
 mkdir -p "$OUT_DIR"
@@ -122,9 +123,48 @@ protoc \
   "$THIRD_PARTY_PROTO_DIR/tendermint/types/validator.proto" \
   "$THIRD_PARTY_PROTO_DIR/tendermint/version/types.proto"
 
+protoc \
+  --plugin="$(yarn bin protoc-gen-ts_proto)" \
+  --ts_proto_out="$OUT_DIR/shareledger" \
+  --proto_path="$THIRD_PARTY_PROTO_DIR" \
+  --proto_path="$SHARELEDGER_PROTO_DIR" \
+  --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=true" \
+  "$SHARELEDGER_PROTO_DIR/asset/asset.proto" \
+  "$SHARELEDGER_PROTO_DIR/asset/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/asset/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/asset/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/booking/booking.proto" \
+  "$SHARELEDGER_PROTO_DIR/booking/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/booking/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/booking/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/document/doc_basic_state.proto" \
+  "$SHARELEDGER_PROTO_DIR/document/doc_detail_state.proto" \
+  "$SHARELEDGER_PROTO_DIR/document/document.proto" \
+  "$SHARELEDGER_PROTO_DIR/document/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/document/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/document/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/electoral/acc_state.proto" \
+  "$SHARELEDGER_PROTO_DIR/electoral/authority.proto" \
+  "$SHARELEDGER_PROTO_DIR/electoral/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/electoral/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/electoral/treasurer.proto" \
+  "$SHARELEDGER_PROTO_DIR/electoral/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/gentlemint/exchange_rate.proto" \
+  "$SHARELEDGER_PROTO_DIR/gentlemint/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/gentlemint/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/gentlemint/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/id/base_id.proto" \
+  "$SHARELEDGER_PROTO_DIR/id/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/id/id.proto" \
+  "$SHARELEDGER_PROTO_DIR/id/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/id/tx.proto" \
+
 # Remove unnecessary codec files
 rm -rf \
   src/codec/cosmos_proto/ \
   src/codec/gogoproto/ \
   src/codec/google/api/ \
-  src/codec/google/protobuf/descriptor.ts
+  src/codec/google/protobuf/descriptor.ts \
+  src/codec/shareledger/cosmos_proto/ \
+  src/codec/shareledger/gogoproto/ \
+  src/codec/shareledger/google/
