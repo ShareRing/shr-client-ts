@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import { fromBase64, fromHex } from "@cosmjs/encoding";
+import { fromHex } from "@cosmjs/encoding";
 import { MsgSend } from "../codec/cosmos/bank/v1beta1/tx";
 import { PubKey } from "../codec/cosmos/crypto/secp256k1/keys";
 import { SignMode } from "../codec/cosmos/tx/signing/v1beta1/signing";
@@ -12,7 +12,7 @@ import { testAccounts, testVectors } from "./testdata.spec";
 describe("decode", () => {
   describe("decodeTxRaw", () => {
     it("works", () => {
-      const pubkeyBytes = fromBase64(testAccounts[0].pubkey);
+      const pubkeyBytes = fromHex(testAccounts[0].pubkey);
       const prefixedPubkeyBytes = Uint8Array.from(PubKey.encode({ key: pubkeyBytes }).finish());
       const testVector = testVectors[0];
 
@@ -20,12 +20,12 @@ describe("decode", () => {
         typeUrl: "/cosmos.bank.v1beta1.MsgSend",
         value: Uint8Array.from(
           MsgSend.encode({
-            fromAddress: "cosmos1pkptre7fdkl6gfrzlesjjvhxhlc3r4gmmk8rs6",
-            toAddress: "cosmos1qypqxpq9qcrsszg2pvxq6rs0zqg3yyc5lzv7xu",
+            fromAddress: "shareledger19x0cxrsdcfgxdeukdq4lctuhlsu9qzerkr3dy0",
+            toAddress: "shareledger1tfraj88al8j6mms73fqxzswpwyn7eue2uy2xnk",
             amount: [
               {
-                denom: "ucosm",
-                amount: "1234567",
+                denom: "shr",
+                amount: "1000",
               },
             ],
           }).finish(),
@@ -53,7 +53,7 @@ describe("decode", () => {
             gasLimit: Long.fromNumber(200000, true),
             payer: "",
             granter: "",
-            amount: [{ amount: "2000", denom: "ucosm" }],
+            amount: [{ amount: "5", denom: "shr" }],
           },
         },
         body: {

@@ -13,12 +13,12 @@ import {makeSignBytes, makeSignDoc} from "./signing";
 import {testAccounts, testVectors} from "./testdata.spec";
 
 describe("signing", () => {
-  const chainId = "planet";
+  const chainId = "ShareRing-Lifestyle";
   const toAddress = testAccounts[1].address;
 
   const sendAmount = "1000";
-  const sendDenom = "token";
-  const gasLimit = 180000;
+  const sendDenom = "shr";
+  const gasLimit = 200000;
 
   it("correctly parses signed transactions from test vectors", async () => {
     const wallet = await Secp256k1HdWallet.fromMnemonic(testAccounts[0].mnemonic);
@@ -31,7 +31,7 @@ describe("signing", () => {
       expect(parsedTestTx.authInfo.signerInfos.length).to.equal(1);
       expect(Uint8Array.from(parsedTestTx.authInfo.signerInfos[0].publicKey!.value)).to.equalBytes(prefixedPubkeyBytes);
       expect(parsedTestTx.authInfo.signerInfos[0].modeInfo!.single!.mode).to.equal(SignMode.SIGN_MODE_DIRECT);
-      expect({...parsedTestTx.authInfo.fee!.amount[0]}).to.deep.equal({denom: "stake", amount: "180000"});
+      expect({...parsedTestTx.authInfo.fee!.amount[0]}).to.deep.equal({denom: "shr", amount: "5"});
       expect(parsedTestTx.authInfo.fee!.gasLimit.toString()).to.equal(gasLimit.toString());
       expect(parsedTestTx.body.extensionOptions).to.deep.equal([]);
       expect(parsedTestTx.body.nonCriticalExtensionOptions).to.deep.equal([]);
@@ -61,6 +61,8 @@ describe("signing", () => {
         expect(toHex(signDocBytes)).to.equal(outputs.signBytes);
 
         const {signature} = await wallet.signDirect(address, signDoc);
+        expect(toHex(fromBase64(signature.signature))).to.equal(outputs.signature);
+
         const txRaw = TxRaw.fromPartial({
           bodyBytes: fromHex(inputs.bodyBytes),
           authInfoBytes: fromHex(inputs.authInfoBytes),
