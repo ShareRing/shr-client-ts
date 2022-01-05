@@ -13,14 +13,14 @@ export interface MsgCreateDocument {
 
 export interface MsgCreateDocumentResponse {}
 
-export interface MsgCreateDocumentInBatch {
+export interface MsgCreateDocuments {
   data: string[];
   holder: string[];
   issuer: string;
   proof: string[];
 }
 
-export interface MsgCreateDocumentInBatchResponse {}
+export interface MsgCreateDocumentsResponse {}
 
 export interface MsgRevokeDocument {
   holder: string;
@@ -151,10 +151,10 @@ export const MsgCreateDocumentResponse = {
   }
 };
 
-const baseMsgCreateDocumentInBatch: object = {data: "", holder: "", issuer: "", proof: ""};
+const baseMsgCreateDocuments: object = {data: "", holder: "", issuer: "", proof: ""};
 
-export const MsgCreateDocumentInBatch = {
-  encode(message: MsgCreateDocumentInBatch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateDocuments = {
+  encode(message: MsgCreateDocuments, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.data) {
       writer.uint32(10).string(v!);
     }
@@ -170,10 +170,10 @@ export const MsgCreateDocumentInBatch = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocumentInBatch {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocuments {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateDocumentInBatch} as MsgCreateDocumentInBatch;
+    const message = {...baseMsgCreateDocuments} as MsgCreateDocuments;
     message.data = [];
     message.holder = [];
     message.proof = [];
@@ -200,8 +200,8 @@ export const MsgCreateDocumentInBatch = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateDocumentInBatch {
-    const message = {...baseMsgCreateDocumentInBatch} as MsgCreateDocumentInBatch;
+  fromJSON(object: any): MsgCreateDocuments {
+    const message = {...baseMsgCreateDocuments} as MsgCreateDocuments;
     message.data = (object.data ?? []).map((e: any) => String(e));
     message.holder = (object.holder ?? []).map((e: any) => String(e));
     message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
@@ -209,7 +209,7 @@ export const MsgCreateDocumentInBatch = {
     return message;
   },
 
-  toJSON(message: MsgCreateDocumentInBatch): unknown {
+  toJSON(message: MsgCreateDocuments): unknown {
     const obj: any = {};
     if (message.data) {
       obj.data = message.data.map((e) => e);
@@ -230,8 +230,8 @@ export const MsgCreateDocumentInBatch = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCreateDocumentInBatch>, I>>(object: I): MsgCreateDocumentInBatch {
-    const message = {...baseMsgCreateDocumentInBatch} as MsgCreateDocumentInBatch;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateDocuments>, I>>(object: I): MsgCreateDocuments {
+    const message = {...baseMsgCreateDocuments} as MsgCreateDocuments;
     message.data = object.data?.map((e) => e) || [];
     message.holder = object.holder?.map((e) => e) || [];
     message.issuer = object.issuer ?? "";
@@ -240,17 +240,17 @@ export const MsgCreateDocumentInBatch = {
   }
 };
 
-const baseMsgCreateDocumentInBatchResponse: object = {};
+const baseMsgCreateDocumentsResponse: object = {};
 
-export const MsgCreateDocumentInBatchResponse = {
-  encode(_: MsgCreateDocumentInBatchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateDocumentsResponse = {
+  encode(_: MsgCreateDocumentsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocumentInBatchResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocumentsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateDocumentInBatchResponse} as MsgCreateDocumentInBatchResponse;
+    const message = {...baseMsgCreateDocumentsResponse} as MsgCreateDocumentsResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -262,18 +262,18 @@ export const MsgCreateDocumentInBatchResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCreateDocumentInBatchResponse {
-    const message = {...baseMsgCreateDocumentInBatchResponse} as MsgCreateDocumentInBatchResponse;
+  fromJSON(_: any): MsgCreateDocumentsResponse {
+    const message = {...baseMsgCreateDocumentsResponse} as MsgCreateDocumentsResponse;
     return message;
   },
 
-  toJSON(_: MsgCreateDocumentInBatchResponse): unknown {
+  toJSON(_: MsgCreateDocumentsResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCreateDocumentInBatchResponse>, I>>(_: I): MsgCreateDocumentInBatchResponse {
-    const message = {...baseMsgCreateDocumentInBatchResponse} as MsgCreateDocumentInBatchResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateDocumentsResponse>, I>>(_: I): MsgCreateDocumentsResponse {
+    const message = {...baseMsgCreateDocumentsResponse} as MsgCreateDocumentsResponse;
     return message;
   }
 };
@@ -496,7 +496,7 @@ export const MsgUpdateDocumentResponse = {
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateDocument(request: MsgCreateDocument): Promise<MsgCreateDocumentResponse>;
-  CreateDocumentInBatch(request: MsgCreateDocumentInBatch): Promise<MsgCreateDocumentInBatchResponse>;
+  CreateDocuments(request: MsgCreateDocuments): Promise<MsgCreateDocumentsResponse>;
   RevokeDocument(request: MsgRevokeDocument): Promise<MsgRevokeDocumentResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
   UpdateDocument(request: MsgUpdateDocument): Promise<MsgUpdateDocumentResponse>;
@@ -507,7 +507,7 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.CreateDocument = this.CreateDocument.bind(this);
-    this.CreateDocumentInBatch = this.CreateDocumentInBatch.bind(this);
+    this.CreateDocuments = this.CreateDocuments.bind(this);
     this.RevokeDocument = this.RevokeDocument.bind(this);
     this.UpdateDocument = this.UpdateDocument.bind(this);
   }
@@ -517,10 +517,10 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgCreateDocumentResponse.decode(new _m0.Reader(data)));
   }
 
-  CreateDocumentInBatch(request: MsgCreateDocumentInBatch): Promise<MsgCreateDocumentInBatchResponse> {
-    const data = MsgCreateDocumentInBatch.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Msg", "CreateDocumentInBatch", data);
-    return promise.then((data) => MsgCreateDocumentInBatchResponse.decode(new _m0.Reader(data)));
+  CreateDocuments(request: MsgCreateDocuments): Promise<MsgCreateDocumentsResponse> {
+    const data = MsgCreateDocuments.encode(request).finish();
+    const promise = this.rpc.request("shareledger.document.Msg", "CreateDocuments", data);
+    return promise.then((data) => MsgCreateDocumentsResponse.decode(new _m0.Reader(data)));
   }
 
   RevokeDocument(request: MsgRevokeDocument): Promise<MsgRevokeDocumentResponse> {

@@ -14,7 +14,7 @@ export interface MsgCreateId {
 
 export interface MsgCreateIdResponse {}
 
-export interface MsgCreateIdBatch {
+export interface MsgCreateIds {
   issuerAddress: string;
   backupAddress: string[];
   extraData: string[];
@@ -22,7 +22,7 @@ export interface MsgCreateIdBatch {
   ownerAddress: string[];
 }
 
-export interface MsgCreateIdBatchResponse {}
+export interface MsgCreateIdsResponse {}
 
 export interface MsgUpdateId {
   issuerAddress: string;
@@ -161,10 +161,10 @@ export const MsgCreateIdResponse = {
   }
 };
 
-const baseMsgCreateIdBatch: object = {issuerAddress: "", backupAddress: "", extraData: "", id: "", ownerAddress: ""};
+const baseMsgCreateIds: object = {issuerAddress: "", backupAddress: "", extraData: "", id: "", ownerAddress: ""};
 
-export const MsgCreateIdBatch = {
-  encode(message: MsgCreateIdBatch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateIds = {
+  encode(message: MsgCreateIds, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.issuerAddress !== "") {
       writer.uint32(10).string(message.issuerAddress);
     }
@@ -183,10 +183,10 @@ export const MsgCreateIdBatch = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIdBatch {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIds {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateIdBatch} as MsgCreateIdBatch;
+    const message = {...baseMsgCreateIds} as MsgCreateIds;
     message.backupAddress = [];
     message.extraData = [];
     message.id = [];
@@ -217,8 +217,8 @@ export const MsgCreateIdBatch = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateIdBatch {
-    const message = {...baseMsgCreateIdBatch} as MsgCreateIdBatch;
+  fromJSON(object: any): MsgCreateIds {
+    const message = {...baseMsgCreateIds} as MsgCreateIds;
     message.issuerAddress = object.issuerAddress !== undefined && object.issuerAddress !== null ? String(object.issuerAddress) : "";
     message.backupAddress = (object.backupAddress ?? []).map((e: any) => String(e));
     message.extraData = (object.extraData ?? []).map((e: any) => String(e));
@@ -227,7 +227,7 @@ export const MsgCreateIdBatch = {
     return message;
   },
 
-  toJSON(message: MsgCreateIdBatch): unknown {
+  toJSON(message: MsgCreateIds): unknown {
     const obj: any = {};
     message.issuerAddress !== undefined && (obj.issuerAddress = message.issuerAddress);
     if (message.backupAddress) {
@@ -253,8 +253,8 @@ export const MsgCreateIdBatch = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCreateIdBatch>, I>>(object: I): MsgCreateIdBatch {
-    const message = {...baseMsgCreateIdBatch} as MsgCreateIdBatch;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateIds>, I>>(object: I): MsgCreateIds {
+    const message = {...baseMsgCreateIds} as MsgCreateIds;
     message.issuerAddress = object.issuerAddress ?? "";
     message.backupAddress = object.backupAddress?.map((e) => e) || [];
     message.extraData = object.extraData?.map((e) => e) || [];
@@ -264,17 +264,17 @@ export const MsgCreateIdBatch = {
   }
 };
 
-const baseMsgCreateIdBatchResponse: object = {};
+const baseMsgCreateIdsResponse: object = {};
 
-export const MsgCreateIdBatchResponse = {
-  encode(_: MsgCreateIdBatchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateIdsResponse = {
+  encode(_: MsgCreateIdsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIdBatchResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIdsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateIdBatchResponse} as MsgCreateIdBatchResponse;
+    const message = {...baseMsgCreateIdsResponse} as MsgCreateIdsResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -286,18 +286,18 @@ export const MsgCreateIdBatchResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCreateIdBatchResponse {
-    const message = {...baseMsgCreateIdBatchResponse} as MsgCreateIdBatchResponse;
+  fromJSON(_: any): MsgCreateIdsResponse {
+    const message = {...baseMsgCreateIdsResponse} as MsgCreateIdsResponse;
     return message;
   },
 
-  toJSON(_: MsgCreateIdBatchResponse): unknown {
+  toJSON(_: MsgCreateIdsResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCreateIdBatchResponse>, I>>(_: I): MsgCreateIdBatchResponse {
-    const message = {...baseMsgCreateIdBatchResponse} as MsgCreateIdBatchResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateIdsResponse>, I>>(_: I): MsgCreateIdsResponse {
+    const message = {...baseMsgCreateIdsResponse} as MsgCreateIdsResponse;
     return message;
   }
 };
@@ -511,7 +511,7 @@ export const MsgReplaceIdOwnerResponse = {
 /** Msg defines the Msg service. */
 export interface Msg {
   CreateId(request: MsgCreateId): Promise<MsgCreateIdResponse>;
-  CreateIdBatch(request: MsgCreateIdBatch): Promise<MsgCreateIdBatchResponse>;
+  CreateIds(request: MsgCreateIds): Promise<MsgCreateIdsResponse>;
   UpdateId(request: MsgUpdateId): Promise<MsgUpdateIdResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
   ReplaceIdOwner(request: MsgReplaceIdOwner): Promise<MsgReplaceIdOwnerResponse>;
@@ -522,7 +522,7 @@ export class MsgClientImpl implements Msg {
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.CreateId = this.CreateId.bind(this);
-    this.CreateIdBatch = this.CreateIdBatch.bind(this);
+    this.CreateIds = this.CreateIds.bind(this);
     this.UpdateId = this.UpdateId.bind(this);
     this.ReplaceIdOwner = this.ReplaceIdOwner.bind(this);
   }
@@ -532,10 +532,10 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgCreateIdResponse.decode(new _m0.Reader(data)));
   }
 
-  CreateIdBatch(request: MsgCreateIdBatch): Promise<MsgCreateIdBatchResponse> {
-    const data = MsgCreateIdBatch.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Msg", "CreateIdBatch", data);
-    return promise.then((data) => MsgCreateIdBatchResponse.decode(new _m0.Reader(data)));
+  CreateIds(request: MsgCreateIds): Promise<MsgCreateIdsResponse> {
+    const data = MsgCreateIds.encode(request).finish();
+    const promise = this.rpc.request("shareledger.id.Msg", "CreateIds", data);
+    return promise.then((data) => MsgCreateIdsResponse.decode(new _m0.Reader(data)));
   }
 
   UpdateId(request: MsgUpdateId): Promise<MsgUpdateIdResponse> {
