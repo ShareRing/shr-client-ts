@@ -4,25 +4,25 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "shareledger.booking";
 
-export interface MsgBook {
+export interface MsgCreateBooking {
   booker: string;
   UUID: string;
   duration: Long;
 }
 
-export interface MsgBookResponse {}
+export interface MsgCreateBookingResponse {}
 
-export interface MsgComplete {
+export interface MsgCompleteBooking {
   booker: string;
   bookID: string;
 }
 
-export interface MsgCompleteResponse {}
+export interface MsgCompleteBookingResponse {}
 
-const baseMsgBook: object = {booker: "", UUID: "", duration: Long.ZERO};
+const baseMsgCreateBooking: object = {booker: "", UUID: "", duration: Long.ZERO};
 
-export const MsgBook = {
-  encode(message: MsgBook, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateBooking = {
+  encode(message: MsgCreateBooking, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.booker !== "") {
       writer.uint32(10).string(message.booker);
     }
@@ -35,10 +35,10 @@ export const MsgBook = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBook {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateBooking {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBook} as MsgBook;
+    const message = {...baseMsgCreateBooking} as MsgCreateBooking;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -59,15 +59,15 @@ export const MsgBook = {
     return message;
   },
 
-  fromJSON(object: any): MsgBook {
-    const message = {...baseMsgBook} as MsgBook;
+  fromJSON(object: any): MsgCreateBooking {
+    const message = {...baseMsgCreateBooking} as MsgCreateBooking;
     message.booker = object.booker !== undefined && object.booker !== null ? String(object.booker) : "";
     message.UUID = object.UUID !== undefined && object.UUID !== null ? String(object.UUID) : "";
     message.duration = object.duration !== undefined && object.duration !== null ? Long.fromString(object.duration) : Long.ZERO;
     return message;
   },
 
-  toJSON(message: MsgBook): unknown {
+  toJSON(message: MsgCreateBooking): unknown {
     const obj: any = {};
     message.booker !== undefined && (obj.booker = message.booker);
     message.UUID !== undefined && (obj.UUID = message.UUID);
@@ -75,8 +75,8 @@ export const MsgBook = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgBook>, I>>(object: I): MsgBook {
-    const message = {...baseMsgBook} as MsgBook;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateBooking>, I>>(object: I): MsgCreateBooking {
+    const message = {...baseMsgCreateBooking} as MsgCreateBooking;
     message.booker = object.booker ?? "";
     message.UUID = object.UUID ?? "";
     message.duration = object.duration !== undefined && object.duration !== null ? Long.fromValue(object.duration) : Long.ZERO;
@@ -84,17 +84,17 @@ export const MsgBook = {
   }
 };
 
-const baseMsgBookResponse: object = {};
+const baseMsgCreateBookingResponse: object = {};
 
-export const MsgBookResponse = {
-  encode(_: MsgBookResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateBookingResponse = {
+  encode(_: MsgCreateBookingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBookResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateBookingResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBookResponse} as MsgBookResponse;
+    const message = {...baseMsgCreateBookingResponse} as MsgCreateBookingResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -106,26 +106,26 @@ export const MsgBookResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgBookResponse {
-    const message = {...baseMsgBookResponse} as MsgBookResponse;
+  fromJSON(_: any): MsgCreateBookingResponse {
+    const message = {...baseMsgCreateBookingResponse} as MsgCreateBookingResponse;
     return message;
   },
 
-  toJSON(_: MsgBookResponse): unknown {
+  toJSON(_: MsgCreateBookingResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgBookResponse>, I>>(_: I): MsgBookResponse {
-    const message = {...baseMsgBookResponse} as MsgBookResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateBookingResponse>, I>>(_: I): MsgCreateBookingResponse {
+    const message = {...baseMsgCreateBookingResponse} as MsgCreateBookingResponse;
     return message;
   }
 };
 
-const baseMsgComplete: object = {booker: "", bookID: ""};
+const baseMsgCompleteBooking: object = {booker: "", bookID: ""};
 
-export const MsgComplete = {
-  encode(message: MsgComplete, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCompleteBooking = {
+  encode(message: MsgCompleteBooking, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.booker !== "") {
       writer.uint32(10).string(message.booker);
     }
@@ -135,10 +135,10 @@ export const MsgComplete = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgComplete {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteBooking {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgComplete} as MsgComplete;
+    const message = {...baseMsgCompleteBooking} as MsgCompleteBooking;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -156,39 +156,39 @@ export const MsgComplete = {
     return message;
   },
 
-  fromJSON(object: any): MsgComplete {
-    const message = {...baseMsgComplete} as MsgComplete;
+  fromJSON(object: any): MsgCompleteBooking {
+    const message = {...baseMsgCompleteBooking} as MsgCompleteBooking;
     message.booker = object.booker !== undefined && object.booker !== null ? String(object.booker) : "";
     message.bookID = object.bookID !== undefined && object.bookID !== null ? String(object.bookID) : "";
     return message;
   },
 
-  toJSON(message: MsgComplete): unknown {
+  toJSON(message: MsgCompleteBooking): unknown {
     const obj: any = {};
     message.booker !== undefined && (obj.booker = message.booker);
     message.bookID !== undefined && (obj.bookID = message.bookID);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgComplete>, I>>(object: I): MsgComplete {
-    const message = {...baseMsgComplete} as MsgComplete;
+  fromPartial<I extends Exact<DeepPartial<MsgCompleteBooking>, I>>(object: I): MsgCompleteBooking {
+    const message = {...baseMsgCompleteBooking} as MsgCompleteBooking;
     message.booker = object.booker ?? "";
     message.bookID = object.bookID ?? "";
     return message;
   }
 };
 
-const baseMsgCompleteResponse: object = {};
+const baseMsgCompleteBookingResponse: object = {};
 
-export const MsgCompleteResponse = {
-  encode(_: MsgCompleteResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCompleteBookingResponse = {
+  encode(_: MsgCompleteBookingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteBookingResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCompleteResponse} as MsgCompleteResponse;
+    const message = {...baseMsgCompleteBookingResponse} as MsgCompleteBookingResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -200,46 +200,46 @@ export const MsgCompleteResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCompleteResponse {
-    const message = {...baseMsgCompleteResponse} as MsgCompleteResponse;
+  fromJSON(_: any): MsgCompleteBookingResponse {
+    const message = {...baseMsgCompleteBookingResponse} as MsgCompleteBookingResponse;
     return message;
   },
 
-  toJSON(_: MsgCompleteResponse): unknown {
+  toJSON(_: MsgCompleteBookingResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCompleteResponse>, I>>(_: I): MsgCompleteResponse {
-    const message = {...baseMsgCompleteResponse} as MsgCompleteResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCompleteBookingResponse>, I>>(_: I): MsgCompleteBookingResponse {
+    const message = {...baseMsgCompleteBookingResponse} as MsgCompleteBookingResponse;
     return message;
   }
 };
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  Book(request: MsgBook): Promise<MsgBookResponse>;
+  CreateBooking(request: MsgCreateBooking): Promise<MsgCreateBookingResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
-  Complete(request: MsgComplete): Promise<MsgCompleteResponse>;
+  CompleteBooking(request: MsgCompleteBooking): Promise<MsgCompleteBookingResponse>;
 }
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
   constructor(rpc: Rpc) {
     this.rpc = rpc;
-    this.Book = this.Book.bind(this);
-    this.Complete = this.Complete.bind(this);
+    this.CreateBooking = this.CreateBooking.bind(this);
+    this.CompleteBooking = this.CompleteBooking.bind(this);
   }
-  Book(request: MsgBook): Promise<MsgBookResponse> {
-    const data = MsgBook.encode(request).finish();
-    const promise = this.rpc.request("shareledger.booking.Msg", "Book", data);
-    return promise.then((data) => MsgBookResponse.decode(new _m0.Reader(data)));
+  CreateBooking(request: MsgCreateBooking): Promise<MsgCreateBookingResponse> {
+    const data = MsgCreateBooking.encode(request).finish();
+    const promise = this.rpc.request("shareledger.booking.Msg", "CreateBooking", data);
+    return promise.then((data) => MsgCreateBookingResponse.decode(new _m0.Reader(data)));
   }
 
-  Complete(request: MsgComplete): Promise<MsgCompleteResponse> {
-    const data = MsgComplete.encode(request).finish();
-    const promise = this.rpc.request("shareledger.booking.Msg", "Complete", data);
-    return promise.then((data) => MsgCompleteResponse.decode(new _m0.Reader(data)));
+  CompleteBooking(request: MsgCompleteBooking): Promise<MsgCompleteBookingResponse> {
+    const data = MsgCompleteBooking.encode(request).finish();
+    const promise = this.rpc.request("shareledger.booking.Msg", "CompleteBooking", data);
+    return promise.then((data) => MsgCompleteBookingResponse.decode(new _m0.Reader(data)));
   }
 }
 
