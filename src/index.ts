@@ -1,5 +1,5 @@
-export { StdFee } from "@cosmjs/amino";
-export { Account, accountFromAny } from "./account";
+export {StdFee} from "@cosmjs/amino";
+export {Account, accountFromAny} from "./account";
 export {
   assertIsBroadcastTxSuccess,
   Block,
@@ -13,15 +13,27 @@ export {
   SequenceResponse,
   TimeoutError
 } from "./client";
-export { calculateFee, GasPrice } from "./fee";
+export {calculateFee, GasPrice} from "./fee";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
-  isSearchByTagsQuery, SearchByHeightQuery,
+  isSearchByTagsQuery,
+  SearchByHeightQuery,
   SearchBySentFromOrToQuery,
-  SearchByTagsQuery, SearchTxFilter, SearchTxQuery
+  SearchByTagsQuery,
+  SearchTxFilter,
+  SearchTxQuery
 } from "./search";
-export { ShareledgerClient } from "./shareledgerclient";
-export { defaultRegistryTypes, ShareledgerSigningClient, SignerData, SigningOptions } from "./shareledgersigningclient";
-export { Coin, coin, coins, makeShareledgerPath, parseCoins, Registry, Secp256k1HdWallet, Secp256k1HdWalletOptions, Secp256k1Wallet } from "./signing";
-
+export {ShareledgerClient} from "./shareledgerclient";
+export {defaultRegistryTypes, ShareledgerSigningClient, SignerData, SigningOptions} from "./shareledgersigningclient";
+export {
+  Coin,
+  coin,
+  coins,
+  makeShareledgerPath,
+  parseCoins,
+  Registry,
+  Secp256k1HdWallet,
+  Secp256k1HdWalletOptions,
+  Secp256k1Wallet
+} from "./signing";

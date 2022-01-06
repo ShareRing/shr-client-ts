@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { AminoMsg } from "@cosmjs/amino";
+import {AminoMsg} from "@cosmjs/amino";
 import {AminoConverter} from "../../amino/types";
-import {
-  MsgCreateAsset,
-  MsgDeleteAsset,
-  MsgUpdateAsset
-} from "../../codec/shareledger/asset/tx";
+import {MsgCreateAsset, MsgDeleteAsset, MsgUpdateAsset} from "../../codec/shareledger/asset/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
 import Long from "long";
 
@@ -14,11 +10,11 @@ export interface AminoMsgCreateAsset extends AminoMsg {
   // NOTE: Type string and names diverge here!
   readonly type: "asset/CreateAsset";
   readonly value: {
-    readonly uuid: string,
-    readonly creator: string,
-    readonly hash: Uint8Array,
-    readonly rate: Long,
-    readonly status: boolean
+    readonly uuid: string;
+    readonly creator: string;
+    readonly hash: Uint8Array;
+    readonly rate: Long;
+    readonly status: boolean;
   };
 }
 
@@ -39,11 +35,11 @@ export function isMsgCreateAssetEncodeObject(encodeObject: EncodeObject): encode
 export interface AminoMsgUpdateAsset extends AminoMsg {
   readonly type: "asset/UpdateAsset";
   readonly value: {
-    readonly uuid: string,
-    readonly creator: string,
-    readonly hash: Uint8Array,
-    readonly rate: Long,
-    readonly status: boolean
+    readonly uuid: string;
+    readonly creator: string;
+    readonly hash: Uint8Array;
+    readonly rate: Long;
+    readonly status: boolean;
   };
 }
 
@@ -63,8 +59,8 @@ export function isMsgUpdateAssetEncodeObject(encodeObject: EncodeObject): encode
 export interface AminoMsgDeleteAsset extends AminoMsg {
   readonly type: "asset/DeleteAsset";
   readonly value: {
-    readonly uuid: string,
-    readonly owner: string,
+    readonly uuid: string;
+    readonly owner: string;
   };
 }
 
@@ -102,14 +98,14 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
     },
     "/shareledger.asset.MsgUpdateAsset": {
       aminoType: "asset/UpdateAsset",
-      toAmino: ({ creator, hash, rate, status, UUID }: MsgUpdateAsset): AminoMsgUpdateAsset["value"] => ({
+      toAmino: ({creator, hash, rate, status, UUID}: MsgUpdateAsset): AminoMsgUpdateAsset["value"] => ({
         creator,
         hash: Uint8Array.from(hash),
         rate,
         status,
         uuid: UUID
       }),
-      fromAmino: ({ creator, hash, rate, status, uuid }: AminoMsgUpdateAsset["value"]): MsgUpdateAsset => ({
+      fromAmino: ({creator, hash, rate, status, uuid}: AminoMsgUpdateAsset["value"]): MsgUpdateAsset => ({
         creator,
         hash: Uint8Array.from(hash),
         rate,
@@ -119,11 +115,11 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
     },
     "/shareledger.asset.MsgDeleteAsset": {
       aminoType: "asset/DeleteAsset",
-      toAmino: ({ owner, UUID }: MsgDeleteAsset): AminoMsgDeleteAsset["value"] => ({
+      toAmino: ({owner, UUID}: MsgDeleteAsset): AminoMsgDeleteAsset["value"] => ({
         owner,
         uuid: UUID
       }),
-      fromAmino: ({ owner, uuid }: AminoMsgDeleteAsset["value"]): MsgDeleteAsset => ({
+      fromAmino: ({owner, uuid}: AminoMsgDeleteAsset["value"]): MsgDeleteAsset => ({
         owner,
         UUID: uuid
       })
@@ -135,6 +131,6 @@ export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
   return [
     ["/shareledger.asset.MsgCreateAsset", MsgCreateAsset],
     ["/shareledger.asset.MsgUpdateAsset", MsgUpdateAsset],
-    ["/shareledger.asset.MsgDeleteAsset", MsgDeleteAsset],
+    ["/shareledger.asset.MsgDeleteAsset", MsgDeleteAsset]
   ];
 }

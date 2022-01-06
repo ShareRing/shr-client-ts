@@ -1,19 +1,19 @@
 import {expect} from "chai";
-import { fromHex } from "@cosmjs/encoding";
-import { MsgSend } from "../codec/cosmos/bank/v1beta1/tx";
-import { PubKey } from "../codec/cosmos/crypto/secp256k1/keys";
-import { SignMode } from "../codec/cosmos/tx/signing/v1beta1/signing";
-import { Any } from "../codec/google/protobuf/any";
+import {fromHex} from "@cosmjs/encoding";
+import {MsgSend} from "../codec/cosmos/bank/v1beta1/tx";
+import {PubKey} from "../codec/cosmos/crypto/secp256k1/keys";
+import {SignMode} from "../codec/cosmos/tx/signing/v1beta1/signing";
+import {Any} from "../codec/google/protobuf/any";
 import Long from "long";
 
-import { decodeTxRaw } from "./decode";
-import { testAccounts, testVectors } from "./testdata.spec";
+import {decodeTxRaw} from "./decode";
+import {testAccounts, testVectors} from "./testdata.spec";
 
 describe("decode", () => {
   describe("decodeTxRaw", () => {
     it("works", () => {
       const pubkeyBytes = fromHex(testAccounts[0].pubkey);
-      const prefixedPubkeyBytes = Uint8Array.from(PubKey.encode({ key: pubkeyBytes }).finish());
+      const prefixedPubkeyBytes = Uint8Array.from(PubKey.encode({key: pubkeyBytes}).finish());
       const testVector = testVectors[0];
 
       const expectedMsg: Any = {
@@ -25,11 +25,11 @@ describe("decode", () => {
             amount: [
               {
                 denom: "shr",
-                amount: "1000",
-              },
-            ],
-          }).finish(),
-        ),
+                amount: "1000"
+              }
+            ]
+          }).finish()
+        )
       };
 
       const decoded = decodeTxRaw(fromHex(testVector.outputs.signedTxBytes));
@@ -39,31 +39,31 @@ describe("decode", () => {
             {
               publicKey: {
                 typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-                value: prefixedPubkeyBytes,
+                value: prefixedPubkeyBytes
               },
               modeInfo: {
                 single: {
-                  mode: SignMode.SIGN_MODE_DIRECT,
-                },
+                  mode: SignMode.SIGN_MODE_DIRECT
+                }
               },
-              sequence: Long.fromNumber(0, true),
-            },
+              sequence: Long.fromNumber(0, true)
+            }
           ],
           fee: {
             gasLimit: Long.fromNumber(200000, true),
             payer: "",
             granter: "",
-            amount: [{ amount: "5", denom: "shr" }],
-          },
+            amount: [{amount: "5", denom: "shr"}]
+          }
         },
         body: {
           memo: "",
           timeoutHeight: Long.UZERO,
           messages: [expectedMsg],
           extensionOptions: [],
-          nonCriticalExtensionOptions: [],
+          nonCriticalExtensionOptions: []
         },
-        signatures: [fromHex(testVector.outputs.signature)],
+        signatures: [fromHex(testVector.outputs.signature)]
       });
     });
   });

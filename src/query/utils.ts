@@ -1,9 +1,8 @@
-import { Bech32 } from "@cosmjs/encoding";
-import { Uint64 } from "@cosmjs/math";
+import {Bech32} from "@cosmjs/encoding";
+import {Uint64} from "@cosmjs/math";
 import Long from "long";
-import { PageRequest } from "../codec/cosmos/base/query/v1beta1/pagination";
-import type { QueryClient } from "./client";
-
+import {PageRequest} from "../codec/cosmos/base/query/v1beta1/pagination";
+import type {QueryClient} from "./client";
 
 /**
  * Takes a bech32 encoded address and returns the data part. The prefix is ignored and discarded.
@@ -43,7 +42,7 @@ export function createProtobufRpcClient(base: QueryClient): ProtobufRpcClient {
  * Takes a uint64 value as string, number, Long or Uint64 and returns an unsigned Long instance
  * of it.
  */
- export function longify(value: string | number | Long | Uint64): Long {
+export function longify(value: string | number | Long | Uint64): Long {
   const checkedValue = Uint64.fromString(value.toString());
   return Long.fromBytesBE([...checkedValue.toBytesBigEndian()], true);
 }

@@ -23,7 +23,7 @@ describe("signing", () => {
   it("correctly parses signed transactions from test vectors", async () => {
     const wallet = await Secp256k1HdWallet.fromMnemonic(testAccounts[0].mnemonic);
     const [{address, pubkey: pubkeyBytes}] = await wallet.getAccounts();
-    const prefixedPubkeyBytes = Uint8Array.from(PubKey.encode({ key: pubkeyBytes }).finish());
+    const prefixedPubkeyBytes = Uint8Array.from(PubKey.encode({key: pubkeyBytes}).finish());
 
     testVectors.forEach(({outputs: {signedTxBytes}}) => {
       const parsedTestTx = decodeTxRaw(fromHex(signedTxBytes));

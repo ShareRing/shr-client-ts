@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Uint64 } from "@cosmjs/math";
+import {Uint64} from "@cosmjs/math";
 import Long from "long";
-import { Client } from "../../client";
-import { Coin } from "../../codec/cosmos/base/v1beta1/coin";
-import { ProposalStatus } from "../../codec/cosmos/gov/v1beta1/gov";
+import {Client} from "../../client";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {ProposalStatus} from "../../codec/cosmos/gov/v1beta1/gov";
 import {
   QueryClientImpl,
   QueryDepositResponse,
@@ -16,10 +16,10 @@ import {
   QueryVoteResponse,
   QueryVotesResponse
 } from "../../codec/cosmos/gov/v1beta1/query";
-import { MsgDeposit, MsgSubmitProposal, MsgVote } from "../../codec/cosmos/gov/v1beta1/tx";
-import { Any } from "../../codec/google/protobuf/any";
-import { createPagination, createProtobufRpcClient, longify } from "../../query";
-import { MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, MsgVoteEncodeObject, VoteOption } from "./amino";
+import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../../codec/cosmos/gov/v1beta1/tx";
+import {Any} from "../../codec/google/protobuf/any";
+import {createPagination, createProtobufRpcClient, longify} from "../../query";
+import {MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, MsgVoteEncodeObject, VoteOption} from "./amino";
 
 export type GovParamsType = "deposit" | "tallying" | "voting";
 

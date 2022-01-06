@@ -9,7 +9,7 @@ import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../../codec/cosmos/gov/v1b
 import {TextProposal} from "../../codec/cosmos/gov/v1beta1/gov";
 import {AminoConverter} from "../../amino/types";
 import Long from "long";
-import { assert, assertDefinedAndNotNull, isNonNullObject } from "@cosmjs/utils";
+import {assert, assertDefinedAndNotNull, isNonNullObject} from "@cosmjs/utils";
 
 export {VoteOption};
 
@@ -126,8 +126,8 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
               type: "cosmos-sdk/TextProposal",
               value: {
                 description: textProposal.description,
-                title: textProposal.title,
-              },
+                title: textProposal.title
+              }
             };
             break;
           }
@@ -137,16 +137,16 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
         return {
           initial_deposit: initialDeposit,
           proposer: proposer,
-          content: proposal,
+          content: proposal
         };
       },
       fromAmino: ({initial_deposit, proposer, content}: AminoMsgSubmitProposal["value"]): MsgSubmitProposal => {
         let any_content: Any;
         switch (content.type) {
           case "cosmos-sdk/TextProposal": {
-            const { value } = content;
+            const {value} = content;
             assert(isNonNullObject(value));
-            const { title, description } = value as any;
+            const {title, description} = value as any;
             assert(typeof title === "string");
             assert(typeof description === "string");
             any_content = Any.fromPartial({
@@ -154,9 +154,9 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
               value: TextProposal.encode(
                 TextProposal.fromPartial({
                   title: title,
-                  description: description,
-                }),
-              ).finish(),
+                  description: description
+                })
+              ).finish()
             });
             break;
           }
@@ -166,7 +166,7 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
         return {
           initialDeposit: Array.from(initial_deposit),
           proposer: proposer,
-          content: any_content,
+          content: any_content
         };
       }
     },

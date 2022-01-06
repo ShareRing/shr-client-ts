@@ -32,7 +32,7 @@ export class ShareledgerClient extends Client {
       throw error;
     }
   }
-  
+
   public async getSequence(address: string): Promise<SequenceResponse> {
     const account = await this.getAccount(address);
     if (!account) {

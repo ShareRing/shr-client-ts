@@ -1,9 +1,9 @@
 import Long from "long";
-import { Client } from "../../client";
-import { QueryClientImpl, QueryAssetByUUIDResponse } from "../../codec/shareledger/asset/query";
-import { MsgCreateAsset, MsgUpdateAsset, MsgDeleteAsset } from "../../codec/shareledger/asset/tx";
-import { createProtobufRpcClient } from "../../query";
-import { MsgCreateAssetEncodeObject, MsgUpdateAssetEncodeObject, MsgDeleteAssetEncodeObject } from "./amino";
+import {Client} from "../../client";
+import {QueryClientImpl, QueryAssetByUUIDResponse} from "../../codec/shareledger/asset/query";
+import {MsgCreateAsset, MsgUpdateAsset, MsgDeleteAsset} from "../../codec/shareledger/asset/tx";
+import {createProtobufRpcClient} from "../../query";
+import {MsgCreateAssetEncodeObject, MsgUpdateAssetEncodeObject, MsgDeleteAssetEncodeObject} from "./amino";
 
 export interface AssetExtension {
   readonly asset: {
@@ -12,7 +12,7 @@ export interface AssetExtension {
       create: () => MsgCreateAssetEncodeObject;
       update: () => MsgUpdateAssetEncodeObject;
       delete: (uuid: string, owner: string) => MsgDeleteAssetEncodeObject;
-    }
+    };
   };
 }
 
@@ -27,7 +27,7 @@ export function AssetExtension<T extends {new (...args: any[]): Client}>(constru
     }
     asset = {
       byId: async (uuid: string) => {
-        const response= await queryService.AssetByUUID({uuid});
+        const response = await queryService.AssetByUUID({uuid});
         return response;
       },
       tx: {
@@ -53,7 +53,7 @@ export function AssetExtension<T extends {new (...args: any[]): Client}>(constru
               status,
               UUID: uuid
             })
-          }
+          };
         },
         replaceIdOnwer: (uuid: string, owner: string): MsgDeleteAssetEncodeObject => {
           return {
@@ -62,7 +62,7 @@ export function AssetExtension<T extends {new (...args: any[]): Client}>(constru
               owner,
               UUID: uuid
             })
-          }
+          };
         }
       }
     };

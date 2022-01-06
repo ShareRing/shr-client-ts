@@ -138,7 +138,7 @@ export class Registry {
     const binaryValue = this.encode(encodeObject);
     return Any.fromPartial({
       typeUrl: encodeObject.typeUrl,
-      value: binaryValue,
+      value: binaryValue
     });
   }
 

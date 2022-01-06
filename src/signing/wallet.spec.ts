@@ -49,7 +49,7 @@ describe("Secp256k1Wallet", () => {
       const fee = coins(1, "stake");
       const gasLimit = 180000;
       const chainId = "planet";
-      const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{ pubkey, sequence }], fee, gasLimit), chainId, accountNumber);
+      const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{pubkey, sequence}], fee, gasLimit), chainId, accountNumber);
       const signDocBytes = makeSignBytes(signDoc);
       const {signature} = await wallet.signDirect(account.address, signDoc);
       const valid = await Secp256k1.verifySignature(
@@ -71,7 +71,7 @@ describe("Secp256k1Wallet", () => {
       const fee = coins(1, "stake");
       const gasLimit = 180000;
       const chainId = "planet";
-      const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{ pubkey, sequence }], fee, gasLimit), chainId, accountNumber);
+      const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{pubkey, sequence}], fee, gasLimit), chainId, accountNumber);
       const signDocBytes = makeSignBytes(signDoc);
       const {signature} = await wallet.signDirect(account.address, signDoc);
       const valid = await Secp256k1.verifySignature(
@@ -93,7 +93,7 @@ describe("Secp256k1Wallet", () => {
       const fee = coins(1, "stake");
       const gasLimit = 180000;
       const chainId = "planet";
-      const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{ pubkey, sequence }], fee, gasLimit), chainId, accountNumber);
+      const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{pubkey, sequence}], fee, gasLimit), chainId, accountNumber);
       expect(wallet.signDirect(testAccounts[1].address, signDoc)).to.eventually.be.rejectedWith(/not found in wallet/);
     });
   });
