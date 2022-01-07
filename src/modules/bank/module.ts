@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import {StdFee} from "@cosmjs/amino";
 import {assert} from "@cosmjs/utils";
 import {Client} from "../../client";
 import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
@@ -17,7 +16,7 @@ export interface BankExtension {
     readonly totalSupply: () => Promise<Coin[]>;
     readonly supplyOf: (denom: string) => Promise<Coin>;
     readonly tx: {
-      readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[], fee: StdFee) => MsgSendEncodeObject;
+      readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]) => MsgSendEncodeObject;
       readonly multiSend: (inputs: Input[], outputs: Output[]) => MsgMultiSendEncodeObject;
     };
   };
