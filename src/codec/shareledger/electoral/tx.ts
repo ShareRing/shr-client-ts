@@ -32,47 +32,47 @@ export interface MsgRevokeLoaders {
 
 export interface MsgRevokeLoadersResponse {}
 
-export interface MsgEnrollIdSigner {
+export interface MsgEnrollIdSigners {
   creator: string;
   addresses: string[];
 }
 
-export interface MsgEnrollIdSignerResponse {}
+export interface MsgEnrollIdSignersResponse {}
 
-export interface MsgRevokeIdSigner {
+export interface MsgRevokeIdSigners {
   creator: string;
   addresses: string[];
 }
 
-export interface MsgRevokeIdSignerResponse {}
+export interface MsgRevokeIdSignersResponse {}
 
-export interface MsgEnrollDocIssuer {
+export interface MsgEnrollDocIssuers {
   creator: string;
   addresses: string[];
 }
 
-export interface MsgEnrollDocIssuerResponse {}
+export interface MsgEnrollDocIssuersResponse {}
 
-export interface MsgRevokeDocIssuer {
+export interface MsgRevokeDocIssuers {
   creator: string;
   addresses: string[];
 }
 
-export interface MsgRevokeDocIssuerResponse {}
+export interface MsgRevokeDocIssuersResponse {}
 
-export interface MsgEnrollAccountOperator {
+export interface MsgEnrollAccountOperators {
   creator: string;
   addresses: string[];
 }
 
-export interface MsgEnrollAccountOperatorResponse {}
+export interface MsgEnrollAccountOperatorsResponse {}
 
-export interface MsgRevokeAccountOperator {
+export interface MsgRevokeAccountOperators {
   creator: string;
   addresses: string[];
 }
 
-export interface MsgRevokeAccountOperatorResponse {}
+export interface MsgRevokeAccountOperatorsResponse {}
 
 const baseMsgEnrollVoter: object = {creator: "", address: ""};
 
@@ -460,10 +460,10 @@ export const MsgRevokeLoadersResponse = {
   }
 };
 
-const baseMsgEnrollIdSigner: object = {creator: "", addresses: ""};
+const baseMsgEnrollIdSigners: object = {creator: "", addresses: ""};
 
-export const MsgEnrollIdSigner = {
-  encode(message: MsgEnrollIdSigner, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgEnrollIdSigners = {
+  encode(message: MsgEnrollIdSigners, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -473,10 +473,10 @@ export const MsgEnrollIdSigner = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollIdSigner {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollIdSigners {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEnrollIdSigner} as MsgEnrollIdSigner;
+    const message = {...baseMsgEnrollIdSigners} as MsgEnrollIdSigners;
     message.addresses = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -495,14 +495,14 @@ export const MsgEnrollIdSigner = {
     return message;
   },
 
-  fromJSON(object: any): MsgEnrollIdSigner {
-    const message = {...baseMsgEnrollIdSigner} as MsgEnrollIdSigner;
+  fromJSON(object: any): MsgEnrollIdSigners {
+    const message = {...baseMsgEnrollIdSigners} as MsgEnrollIdSigners;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.addresses = (object.addresses ?? []).map((e: any) => String(e));
     return message;
   },
 
-  toJSON(message: MsgEnrollIdSigner): unknown {
+  toJSON(message: MsgEnrollIdSigners): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     if (message.addresses) {
@@ -513,25 +513,25 @@ export const MsgEnrollIdSigner = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgEnrollIdSigner>, I>>(object: I): MsgEnrollIdSigner {
-    const message = {...baseMsgEnrollIdSigner} as MsgEnrollIdSigner;
+  fromPartial<I extends Exact<DeepPartial<MsgEnrollIdSigners>, I>>(object: I): MsgEnrollIdSigners {
+    const message = {...baseMsgEnrollIdSigners} as MsgEnrollIdSigners;
     message.creator = object.creator ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMsgEnrollIdSignerResponse: object = {};
+const baseMsgEnrollIdSignersResponse: object = {};
 
-export const MsgEnrollIdSignerResponse = {
-  encode(_: MsgEnrollIdSignerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgEnrollIdSignersResponse = {
+  encode(_: MsgEnrollIdSignersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollIdSignerResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollIdSignersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEnrollIdSignerResponse} as MsgEnrollIdSignerResponse;
+    const message = {...baseMsgEnrollIdSignersResponse} as MsgEnrollIdSignersResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -543,26 +543,26 @@ export const MsgEnrollIdSignerResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgEnrollIdSignerResponse {
-    const message = {...baseMsgEnrollIdSignerResponse} as MsgEnrollIdSignerResponse;
+  fromJSON(_: any): MsgEnrollIdSignersResponse {
+    const message = {...baseMsgEnrollIdSignersResponse} as MsgEnrollIdSignersResponse;
     return message;
   },
 
-  toJSON(_: MsgEnrollIdSignerResponse): unknown {
+  toJSON(_: MsgEnrollIdSignersResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgEnrollIdSignerResponse>, I>>(_: I): MsgEnrollIdSignerResponse {
-    const message = {...baseMsgEnrollIdSignerResponse} as MsgEnrollIdSignerResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgEnrollIdSignersResponse>, I>>(_: I): MsgEnrollIdSignersResponse {
+    const message = {...baseMsgEnrollIdSignersResponse} as MsgEnrollIdSignersResponse;
     return message;
   }
 };
 
-const baseMsgRevokeIdSigner: object = {creator: "", addresses: ""};
+const baseMsgRevokeIdSigners: object = {creator: "", addresses: ""};
 
-export const MsgRevokeIdSigner = {
-  encode(message: MsgRevokeIdSigner, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeIdSigners = {
+  encode(message: MsgRevokeIdSigners, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -572,10 +572,10 @@ export const MsgRevokeIdSigner = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeIdSigner {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeIdSigners {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeIdSigner} as MsgRevokeIdSigner;
+    const message = {...baseMsgRevokeIdSigners} as MsgRevokeIdSigners;
     message.addresses = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -594,14 +594,14 @@ export const MsgRevokeIdSigner = {
     return message;
   },
 
-  fromJSON(object: any): MsgRevokeIdSigner {
-    const message = {...baseMsgRevokeIdSigner} as MsgRevokeIdSigner;
+  fromJSON(object: any): MsgRevokeIdSigners {
+    const message = {...baseMsgRevokeIdSigners} as MsgRevokeIdSigners;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.addresses = (object.addresses ?? []).map((e: any) => String(e));
     return message;
   },
 
-  toJSON(message: MsgRevokeIdSigner): unknown {
+  toJSON(message: MsgRevokeIdSigners): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     if (message.addresses) {
@@ -612,25 +612,25 @@ export const MsgRevokeIdSigner = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeIdSigner>, I>>(object: I): MsgRevokeIdSigner {
-    const message = {...baseMsgRevokeIdSigner} as MsgRevokeIdSigner;
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeIdSigners>, I>>(object: I): MsgRevokeIdSigners {
+    const message = {...baseMsgRevokeIdSigners} as MsgRevokeIdSigners;
     message.creator = object.creator ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMsgRevokeIdSignerResponse: object = {};
+const baseMsgRevokeIdSignersResponse: object = {};
 
-export const MsgRevokeIdSignerResponse = {
-  encode(_: MsgRevokeIdSignerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeIdSignersResponse = {
+  encode(_: MsgRevokeIdSignersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeIdSignerResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeIdSignersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeIdSignerResponse} as MsgRevokeIdSignerResponse;
+    const message = {...baseMsgRevokeIdSignersResponse} as MsgRevokeIdSignersResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -642,26 +642,26 @@ export const MsgRevokeIdSignerResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgRevokeIdSignerResponse {
-    const message = {...baseMsgRevokeIdSignerResponse} as MsgRevokeIdSignerResponse;
+  fromJSON(_: any): MsgRevokeIdSignersResponse {
+    const message = {...baseMsgRevokeIdSignersResponse} as MsgRevokeIdSignersResponse;
     return message;
   },
 
-  toJSON(_: MsgRevokeIdSignerResponse): unknown {
+  toJSON(_: MsgRevokeIdSignersResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeIdSignerResponse>, I>>(_: I): MsgRevokeIdSignerResponse {
-    const message = {...baseMsgRevokeIdSignerResponse} as MsgRevokeIdSignerResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeIdSignersResponse>, I>>(_: I): MsgRevokeIdSignersResponse {
+    const message = {...baseMsgRevokeIdSignersResponse} as MsgRevokeIdSignersResponse;
     return message;
   }
 };
 
-const baseMsgEnrollDocIssuer: object = {creator: "", addresses: ""};
+const baseMsgEnrollDocIssuers: object = {creator: "", addresses: ""};
 
-export const MsgEnrollDocIssuer = {
-  encode(message: MsgEnrollDocIssuer, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgEnrollDocIssuers = {
+  encode(message: MsgEnrollDocIssuers, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -671,10 +671,10 @@ export const MsgEnrollDocIssuer = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollDocIssuer {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollDocIssuers {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEnrollDocIssuer} as MsgEnrollDocIssuer;
+    const message = {...baseMsgEnrollDocIssuers} as MsgEnrollDocIssuers;
     message.addresses = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -693,14 +693,14 @@ export const MsgEnrollDocIssuer = {
     return message;
   },
 
-  fromJSON(object: any): MsgEnrollDocIssuer {
-    const message = {...baseMsgEnrollDocIssuer} as MsgEnrollDocIssuer;
+  fromJSON(object: any): MsgEnrollDocIssuers {
+    const message = {...baseMsgEnrollDocIssuers} as MsgEnrollDocIssuers;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.addresses = (object.addresses ?? []).map((e: any) => String(e));
     return message;
   },
 
-  toJSON(message: MsgEnrollDocIssuer): unknown {
+  toJSON(message: MsgEnrollDocIssuers): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     if (message.addresses) {
@@ -711,25 +711,25 @@ export const MsgEnrollDocIssuer = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgEnrollDocIssuer>, I>>(object: I): MsgEnrollDocIssuer {
-    const message = {...baseMsgEnrollDocIssuer} as MsgEnrollDocIssuer;
+  fromPartial<I extends Exact<DeepPartial<MsgEnrollDocIssuers>, I>>(object: I): MsgEnrollDocIssuers {
+    const message = {...baseMsgEnrollDocIssuers} as MsgEnrollDocIssuers;
     message.creator = object.creator ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMsgEnrollDocIssuerResponse: object = {};
+const baseMsgEnrollDocIssuersResponse: object = {};
 
-export const MsgEnrollDocIssuerResponse = {
-  encode(_: MsgEnrollDocIssuerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgEnrollDocIssuersResponse = {
+  encode(_: MsgEnrollDocIssuersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollDocIssuerResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollDocIssuersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEnrollDocIssuerResponse} as MsgEnrollDocIssuerResponse;
+    const message = {...baseMsgEnrollDocIssuersResponse} as MsgEnrollDocIssuersResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -741,26 +741,26 @@ export const MsgEnrollDocIssuerResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgEnrollDocIssuerResponse {
-    const message = {...baseMsgEnrollDocIssuerResponse} as MsgEnrollDocIssuerResponse;
+  fromJSON(_: any): MsgEnrollDocIssuersResponse {
+    const message = {...baseMsgEnrollDocIssuersResponse} as MsgEnrollDocIssuersResponse;
     return message;
   },
 
-  toJSON(_: MsgEnrollDocIssuerResponse): unknown {
+  toJSON(_: MsgEnrollDocIssuersResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgEnrollDocIssuerResponse>, I>>(_: I): MsgEnrollDocIssuerResponse {
-    const message = {...baseMsgEnrollDocIssuerResponse} as MsgEnrollDocIssuerResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgEnrollDocIssuersResponse>, I>>(_: I): MsgEnrollDocIssuersResponse {
+    const message = {...baseMsgEnrollDocIssuersResponse} as MsgEnrollDocIssuersResponse;
     return message;
   }
 };
 
-const baseMsgRevokeDocIssuer: object = {creator: "", addresses: ""};
+const baseMsgRevokeDocIssuers: object = {creator: "", addresses: ""};
 
-export const MsgRevokeDocIssuer = {
-  encode(message: MsgRevokeDocIssuer, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeDocIssuers = {
+  encode(message: MsgRevokeDocIssuers, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -770,10 +770,10 @@ export const MsgRevokeDocIssuer = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDocIssuer {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDocIssuers {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeDocIssuer} as MsgRevokeDocIssuer;
+    const message = {...baseMsgRevokeDocIssuers} as MsgRevokeDocIssuers;
     message.addresses = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -792,14 +792,14 @@ export const MsgRevokeDocIssuer = {
     return message;
   },
 
-  fromJSON(object: any): MsgRevokeDocIssuer {
-    const message = {...baseMsgRevokeDocIssuer} as MsgRevokeDocIssuer;
+  fromJSON(object: any): MsgRevokeDocIssuers {
+    const message = {...baseMsgRevokeDocIssuers} as MsgRevokeDocIssuers;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.addresses = (object.addresses ?? []).map((e: any) => String(e));
     return message;
   },
 
-  toJSON(message: MsgRevokeDocIssuer): unknown {
+  toJSON(message: MsgRevokeDocIssuers): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     if (message.addresses) {
@@ -810,25 +810,25 @@ export const MsgRevokeDocIssuer = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeDocIssuer>, I>>(object: I): MsgRevokeDocIssuer {
-    const message = {...baseMsgRevokeDocIssuer} as MsgRevokeDocIssuer;
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeDocIssuers>, I>>(object: I): MsgRevokeDocIssuers {
+    const message = {...baseMsgRevokeDocIssuers} as MsgRevokeDocIssuers;
     message.creator = object.creator ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMsgRevokeDocIssuerResponse: object = {};
+const baseMsgRevokeDocIssuersResponse: object = {};
 
-export const MsgRevokeDocIssuerResponse = {
-  encode(_: MsgRevokeDocIssuerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeDocIssuersResponse = {
+  encode(_: MsgRevokeDocIssuersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDocIssuerResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDocIssuersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeDocIssuerResponse} as MsgRevokeDocIssuerResponse;
+    const message = {...baseMsgRevokeDocIssuersResponse} as MsgRevokeDocIssuersResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -840,26 +840,26 @@ export const MsgRevokeDocIssuerResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgRevokeDocIssuerResponse {
-    const message = {...baseMsgRevokeDocIssuerResponse} as MsgRevokeDocIssuerResponse;
+  fromJSON(_: any): MsgRevokeDocIssuersResponse {
+    const message = {...baseMsgRevokeDocIssuersResponse} as MsgRevokeDocIssuersResponse;
     return message;
   },
 
-  toJSON(_: MsgRevokeDocIssuerResponse): unknown {
+  toJSON(_: MsgRevokeDocIssuersResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeDocIssuerResponse>, I>>(_: I): MsgRevokeDocIssuerResponse {
-    const message = {...baseMsgRevokeDocIssuerResponse} as MsgRevokeDocIssuerResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeDocIssuersResponse>, I>>(_: I): MsgRevokeDocIssuersResponse {
+    const message = {...baseMsgRevokeDocIssuersResponse} as MsgRevokeDocIssuersResponse;
     return message;
   }
 };
 
-const baseMsgEnrollAccountOperator: object = {creator: "", addresses: ""};
+const baseMsgEnrollAccountOperators: object = {creator: "", addresses: ""};
 
-export const MsgEnrollAccountOperator = {
-  encode(message: MsgEnrollAccountOperator, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgEnrollAccountOperators = {
+  encode(message: MsgEnrollAccountOperators, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -869,10 +869,10 @@ export const MsgEnrollAccountOperator = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollAccountOperator {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollAccountOperators {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEnrollAccountOperator} as MsgEnrollAccountOperator;
+    const message = {...baseMsgEnrollAccountOperators} as MsgEnrollAccountOperators;
     message.addresses = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -891,14 +891,14 @@ export const MsgEnrollAccountOperator = {
     return message;
   },
 
-  fromJSON(object: any): MsgEnrollAccountOperator {
-    const message = {...baseMsgEnrollAccountOperator} as MsgEnrollAccountOperator;
+  fromJSON(object: any): MsgEnrollAccountOperators {
+    const message = {...baseMsgEnrollAccountOperators} as MsgEnrollAccountOperators;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.addresses = (object.addresses ?? []).map((e: any) => String(e));
     return message;
   },
 
-  toJSON(message: MsgEnrollAccountOperator): unknown {
+  toJSON(message: MsgEnrollAccountOperators): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     if (message.addresses) {
@@ -909,25 +909,25 @@ export const MsgEnrollAccountOperator = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgEnrollAccountOperator>, I>>(object: I): MsgEnrollAccountOperator {
-    const message = {...baseMsgEnrollAccountOperator} as MsgEnrollAccountOperator;
+  fromPartial<I extends Exact<DeepPartial<MsgEnrollAccountOperators>, I>>(object: I): MsgEnrollAccountOperators {
+    const message = {...baseMsgEnrollAccountOperators} as MsgEnrollAccountOperators;
     message.creator = object.creator ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMsgEnrollAccountOperatorResponse: object = {};
+const baseMsgEnrollAccountOperatorsResponse: object = {};
 
-export const MsgEnrollAccountOperatorResponse = {
-  encode(_: MsgEnrollAccountOperatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgEnrollAccountOperatorsResponse = {
+  encode(_: MsgEnrollAccountOperatorsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollAccountOperatorResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgEnrollAccountOperatorsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEnrollAccountOperatorResponse} as MsgEnrollAccountOperatorResponse;
+    const message = {...baseMsgEnrollAccountOperatorsResponse} as MsgEnrollAccountOperatorsResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -939,26 +939,26 @@ export const MsgEnrollAccountOperatorResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgEnrollAccountOperatorResponse {
-    const message = {...baseMsgEnrollAccountOperatorResponse} as MsgEnrollAccountOperatorResponse;
+  fromJSON(_: any): MsgEnrollAccountOperatorsResponse {
+    const message = {...baseMsgEnrollAccountOperatorsResponse} as MsgEnrollAccountOperatorsResponse;
     return message;
   },
 
-  toJSON(_: MsgEnrollAccountOperatorResponse): unknown {
+  toJSON(_: MsgEnrollAccountOperatorsResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgEnrollAccountOperatorResponse>, I>>(_: I): MsgEnrollAccountOperatorResponse {
-    const message = {...baseMsgEnrollAccountOperatorResponse} as MsgEnrollAccountOperatorResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgEnrollAccountOperatorsResponse>, I>>(_: I): MsgEnrollAccountOperatorsResponse {
+    const message = {...baseMsgEnrollAccountOperatorsResponse} as MsgEnrollAccountOperatorsResponse;
     return message;
   }
 };
 
-const baseMsgRevokeAccountOperator: object = {creator: "", addresses: ""};
+const baseMsgRevokeAccountOperators: object = {creator: "", addresses: ""};
 
-export const MsgRevokeAccountOperator = {
-  encode(message: MsgRevokeAccountOperator, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeAccountOperators = {
+  encode(message: MsgRevokeAccountOperators, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -968,10 +968,10 @@ export const MsgRevokeAccountOperator = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeAccountOperator {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeAccountOperators {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeAccountOperator} as MsgRevokeAccountOperator;
+    const message = {...baseMsgRevokeAccountOperators} as MsgRevokeAccountOperators;
     message.addresses = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -990,14 +990,14 @@ export const MsgRevokeAccountOperator = {
     return message;
   },
 
-  fromJSON(object: any): MsgRevokeAccountOperator {
-    const message = {...baseMsgRevokeAccountOperator} as MsgRevokeAccountOperator;
+  fromJSON(object: any): MsgRevokeAccountOperators {
+    const message = {...baseMsgRevokeAccountOperators} as MsgRevokeAccountOperators;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.addresses = (object.addresses ?? []).map((e: any) => String(e));
     return message;
   },
 
-  toJSON(message: MsgRevokeAccountOperator): unknown {
+  toJSON(message: MsgRevokeAccountOperators): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     if (message.addresses) {
@@ -1008,25 +1008,25 @@ export const MsgRevokeAccountOperator = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeAccountOperator>, I>>(object: I): MsgRevokeAccountOperator {
-    const message = {...baseMsgRevokeAccountOperator} as MsgRevokeAccountOperator;
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeAccountOperators>, I>>(object: I): MsgRevokeAccountOperators {
+    const message = {...baseMsgRevokeAccountOperators} as MsgRevokeAccountOperators;
     message.creator = object.creator ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMsgRevokeAccountOperatorResponse: object = {};
+const baseMsgRevokeAccountOperatorsResponse: object = {};
 
-export const MsgRevokeAccountOperatorResponse = {
-  encode(_: MsgRevokeAccountOperatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRevokeAccountOperatorsResponse = {
+  encode(_: MsgRevokeAccountOperatorsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeAccountOperatorResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeAccountOperatorsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeAccountOperatorResponse} as MsgRevokeAccountOperatorResponse;
+    const message = {...baseMsgRevokeAccountOperatorsResponse} as MsgRevokeAccountOperatorsResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1038,18 +1038,18 @@ export const MsgRevokeAccountOperatorResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgRevokeAccountOperatorResponse {
-    const message = {...baseMsgRevokeAccountOperatorResponse} as MsgRevokeAccountOperatorResponse;
+  fromJSON(_: any): MsgRevokeAccountOperatorsResponse {
+    const message = {...baseMsgRevokeAccountOperatorsResponse} as MsgRevokeAccountOperatorsResponse;
     return message;
   },
 
-  toJSON(_: MsgRevokeAccountOperatorResponse): unknown {
+  toJSON(_: MsgRevokeAccountOperatorsResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgRevokeAccountOperatorResponse>, I>>(_: I): MsgRevokeAccountOperatorResponse {
-    const message = {...baseMsgRevokeAccountOperatorResponse} as MsgRevokeAccountOperatorResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRevokeAccountOperatorsResponse>, I>>(_: I): MsgRevokeAccountOperatorsResponse {
+    const message = {...baseMsgRevokeAccountOperatorsResponse} as MsgRevokeAccountOperatorsResponse;
     return message;
   }
 };
@@ -1060,13 +1060,13 @@ export interface Msg {
   RevokeVoter(request: MsgRevokeVoter): Promise<MsgRevokeVoterResponse>;
   EnrollLoaders(request: MsgEnrollLoaders): Promise<MsgEnrollLoadersResponse>;
   RevokeLoaders(request: MsgRevokeLoaders): Promise<MsgRevokeLoadersResponse>;
-  EnrollIdSigner(request: MsgEnrollIdSigner): Promise<MsgEnrollIdSignerResponse>;
-  RevokeIdSigner(request: MsgRevokeIdSigner): Promise<MsgRevokeIdSignerResponse>;
-  EnrollDocIssuer(request: MsgEnrollDocIssuer): Promise<MsgEnrollDocIssuerResponse>;
-  RevokeDocIssuer(request: MsgRevokeDocIssuer): Promise<MsgRevokeDocIssuerResponse>;
-  EnrollAccountOperator(request: MsgEnrollAccountOperator): Promise<MsgEnrollAccountOperatorResponse>;
+  EnrollIdSigners(request: MsgEnrollIdSigners): Promise<MsgEnrollIdSignersResponse>;
+  RevokeIdSigners(request: MsgRevokeIdSigners): Promise<MsgRevokeIdSignersResponse>;
+  EnrollDocIssuers(request: MsgEnrollDocIssuers): Promise<MsgEnrollDocIssuersResponse>;
+  RevokeDocIssuers(request: MsgRevokeDocIssuers): Promise<MsgRevokeDocIssuersResponse>;
+  EnrollAccountOperators(request: MsgEnrollAccountOperators): Promise<MsgEnrollAccountOperatorsResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
-  RevokeAccountOperator(request: MsgRevokeAccountOperator): Promise<MsgRevokeAccountOperatorResponse>;
+  RevokeAccountOperators(request: MsgRevokeAccountOperators): Promise<MsgRevokeAccountOperatorsResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1077,12 +1077,12 @@ export class MsgClientImpl implements Msg {
     this.RevokeVoter = this.RevokeVoter.bind(this);
     this.EnrollLoaders = this.EnrollLoaders.bind(this);
     this.RevokeLoaders = this.RevokeLoaders.bind(this);
-    this.EnrollIdSigner = this.EnrollIdSigner.bind(this);
-    this.RevokeIdSigner = this.RevokeIdSigner.bind(this);
-    this.EnrollDocIssuer = this.EnrollDocIssuer.bind(this);
-    this.RevokeDocIssuer = this.RevokeDocIssuer.bind(this);
-    this.EnrollAccountOperator = this.EnrollAccountOperator.bind(this);
-    this.RevokeAccountOperator = this.RevokeAccountOperator.bind(this);
+    this.EnrollIdSigners = this.EnrollIdSigners.bind(this);
+    this.RevokeIdSigners = this.RevokeIdSigners.bind(this);
+    this.EnrollDocIssuers = this.EnrollDocIssuers.bind(this);
+    this.RevokeDocIssuers = this.RevokeDocIssuers.bind(this);
+    this.EnrollAccountOperators = this.EnrollAccountOperators.bind(this);
+    this.RevokeAccountOperators = this.RevokeAccountOperators.bind(this);
   }
   EnrollVoter(request: MsgEnrollVoter): Promise<MsgEnrollVoterResponse> {
     const data = MsgEnrollVoter.encode(request).finish();
@@ -1108,40 +1108,40 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgRevokeLoadersResponse.decode(new _m0.Reader(data)));
   }
 
-  EnrollIdSigner(request: MsgEnrollIdSigner): Promise<MsgEnrollIdSignerResponse> {
-    const data = MsgEnrollIdSigner.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Msg", "EnrollIdSigner", data);
-    return promise.then((data) => MsgEnrollIdSignerResponse.decode(new _m0.Reader(data)));
+  EnrollIdSigners(request: MsgEnrollIdSigners): Promise<MsgEnrollIdSignersResponse> {
+    const data = MsgEnrollIdSigners.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Msg", "EnrollIdSigners", data);
+    return promise.then((data) => MsgEnrollIdSignersResponse.decode(new _m0.Reader(data)));
   }
 
-  RevokeIdSigner(request: MsgRevokeIdSigner): Promise<MsgRevokeIdSignerResponse> {
-    const data = MsgRevokeIdSigner.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Msg", "RevokeIdSigner", data);
-    return promise.then((data) => MsgRevokeIdSignerResponse.decode(new _m0.Reader(data)));
+  RevokeIdSigners(request: MsgRevokeIdSigners): Promise<MsgRevokeIdSignersResponse> {
+    const data = MsgRevokeIdSigners.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Msg", "RevokeIdSigners", data);
+    return promise.then((data) => MsgRevokeIdSignersResponse.decode(new _m0.Reader(data)));
   }
 
-  EnrollDocIssuer(request: MsgEnrollDocIssuer): Promise<MsgEnrollDocIssuerResponse> {
-    const data = MsgEnrollDocIssuer.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Msg", "EnrollDocIssuer", data);
-    return promise.then((data) => MsgEnrollDocIssuerResponse.decode(new _m0.Reader(data)));
+  EnrollDocIssuers(request: MsgEnrollDocIssuers): Promise<MsgEnrollDocIssuersResponse> {
+    const data = MsgEnrollDocIssuers.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Msg", "EnrollDocIssuers", data);
+    return promise.then((data) => MsgEnrollDocIssuersResponse.decode(new _m0.Reader(data)));
   }
 
-  RevokeDocIssuer(request: MsgRevokeDocIssuer): Promise<MsgRevokeDocIssuerResponse> {
-    const data = MsgRevokeDocIssuer.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Msg", "RevokeDocIssuer", data);
-    return promise.then((data) => MsgRevokeDocIssuerResponse.decode(new _m0.Reader(data)));
+  RevokeDocIssuers(request: MsgRevokeDocIssuers): Promise<MsgRevokeDocIssuersResponse> {
+    const data = MsgRevokeDocIssuers.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Msg", "RevokeDocIssuers", data);
+    return promise.then((data) => MsgRevokeDocIssuersResponse.decode(new _m0.Reader(data)));
   }
 
-  EnrollAccountOperator(request: MsgEnrollAccountOperator): Promise<MsgEnrollAccountOperatorResponse> {
-    const data = MsgEnrollAccountOperator.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Msg", "EnrollAccountOperator", data);
-    return promise.then((data) => MsgEnrollAccountOperatorResponse.decode(new _m0.Reader(data)));
+  EnrollAccountOperators(request: MsgEnrollAccountOperators): Promise<MsgEnrollAccountOperatorsResponse> {
+    const data = MsgEnrollAccountOperators.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Msg", "EnrollAccountOperators", data);
+    return promise.then((data) => MsgEnrollAccountOperatorsResponse.decode(new _m0.Reader(data)));
   }
 
-  RevokeAccountOperator(request: MsgRevokeAccountOperator): Promise<MsgRevokeAccountOperatorResponse> {
-    const data = MsgRevokeAccountOperator.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Msg", "RevokeAccountOperator", data);
-    return promise.then((data) => MsgRevokeAccountOperatorResponse.decode(new _m0.Reader(data)));
+  RevokeAccountOperators(request: MsgRevokeAccountOperators): Promise<MsgRevokeAccountOperatorsResponse> {
+    const data = MsgRevokeAccountOperators.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Msg", "RevokeAccountOperators", data);
+    return promise.then((data) => MsgRevokeAccountOperatorsResponse.decode(new _m0.Reader(data)));
   }
 }
 

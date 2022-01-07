@@ -81,6 +81,18 @@ export interface QueryDocumentIssuersResponse {
   accStates: AccState[];
 }
 
+export interface QueryGetVotersRequest {}
+
+export interface QueryGetVotersResponse {
+  voters: AccState[];
+}
+
+export interface QueryGetLoadersRequest {}
+
+export interface QueryGetLoadersResponse {
+  loaders: AccState[];
+}
+
 const baseQueryGetAccStateRequest: object = {key: ""};
 
 export const QueryGetAccStateRequest = {
@@ -1027,6 +1039,186 @@ export const QueryDocumentIssuersResponse = {
   }
 };
 
+const baseQueryGetVotersRequest: object = {};
+
+export const QueryGetVotersRequest = {
+  encode(_: QueryGetVotersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetVotersRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseQueryGetVotersRequest} as QueryGetVotersRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryGetVotersRequest {
+    const message = {...baseQueryGetVotersRequest} as QueryGetVotersRequest;
+    return message;
+  },
+
+  toJSON(_: QueryGetVotersRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetVotersRequest>, I>>(_: I): QueryGetVotersRequest {
+    const message = {...baseQueryGetVotersRequest} as QueryGetVotersRequest;
+    return message;
+  }
+};
+
+const baseQueryGetVotersResponse: object = {};
+
+export const QueryGetVotersResponse = {
+  encode(message: QueryGetVotersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.voters) {
+      AccState.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetVotersResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseQueryGetVotersResponse} as QueryGetVotersResponse;
+    message.voters = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.voters.push(AccState.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetVotersResponse {
+    const message = {...baseQueryGetVotersResponse} as QueryGetVotersResponse;
+    message.voters = (object.voters ?? []).map((e: any) => AccState.fromJSON(e));
+    return message;
+  },
+
+  toJSON(message: QueryGetVotersResponse): unknown {
+    const obj: any = {};
+    if (message.voters) {
+      obj.voters = message.voters.map((e) => (e ? AccState.toJSON(e) : undefined));
+    } else {
+      obj.voters = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetVotersResponse>, I>>(object: I): QueryGetVotersResponse {
+    const message = {...baseQueryGetVotersResponse} as QueryGetVotersResponse;
+    message.voters = object.voters?.map((e) => AccState.fromPartial(e)) || [];
+    return message;
+  }
+};
+
+const baseQueryGetLoadersRequest: object = {};
+
+export const QueryGetLoadersRequest = {
+  encode(_: QueryGetLoadersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetLoadersRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseQueryGetLoadersRequest} as QueryGetLoadersRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryGetLoadersRequest {
+    const message = {...baseQueryGetLoadersRequest} as QueryGetLoadersRequest;
+    return message;
+  },
+
+  toJSON(_: QueryGetLoadersRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetLoadersRequest>, I>>(_: I): QueryGetLoadersRequest {
+    const message = {...baseQueryGetLoadersRequest} as QueryGetLoadersRequest;
+    return message;
+  }
+};
+
+const baseQueryGetLoadersResponse: object = {};
+
+export const QueryGetLoadersResponse = {
+  encode(message: QueryGetLoadersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.loaders) {
+      AccState.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetLoadersResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseQueryGetLoadersResponse} as QueryGetLoadersResponse;
+    message.loaders = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.loaders.push(AccState.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryGetLoadersResponse {
+    const message = {...baseQueryGetLoadersResponse} as QueryGetLoadersResponse;
+    message.loaders = (object.loaders ?? []).map((e: any) => AccState.fromJSON(e));
+    return message;
+  },
+
+  toJSON(message: QueryGetLoadersResponse): unknown {
+    const obj: any = {};
+    if (message.loaders) {
+      obj.loaders = message.loaders.map((e) => (e ? AccState.toJSON(e) : undefined));
+    } else {
+      obj.loaders = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryGetLoadersResponse>, I>>(object: I): QueryGetLoadersResponse {
+    const message = {...baseQueryGetLoadersResponse} as QueryGetLoadersResponse;
+    message.loaders = object.loaders?.map((e) => AccState.fromPartial(e)) || [];
+    return message;
+  }
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Queries a accState by index. */
@@ -1049,6 +1241,10 @@ export interface Query {
   DocumentIssuer(request: QueryDocumentIssuerRequest): Promise<QueryDocumentIssuerResponse>;
   /** Queries a list of documentIssuers items. */
   DocumentIssuers(request: QueryDocumentIssuersRequest): Promise<QueryDocumentIssuersResponse>;
+  /** Queries a list of getVoters items. */
+  GetVoters(request: QueryGetVotersRequest): Promise<QueryGetVotersResponse>;
+  /** Queries a list of getLoaders items. */
+  GetLoaders(request: QueryGetLoadersRequest): Promise<QueryGetLoadersResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -1065,6 +1261,8 @@ export class QueryClientImpl implements Query {
     this.AccountOperators = this.AccountOperators.bind(this);
     this.DocumentIssuer = this.DocumentIssuer.bind(this);
     this.DocumentIssuers = this.DocumentIssuers.bind(this);
+    this.GetVoters = this.GetVoters.bind(this);
+    this.GetLoaders = this.GetLoaders.bind(this);
   }
   AccState(request: QueryGetAccStateRequest): Promise<QueryGetAccStateResponse> {
     const data = QueryGetAccStateRequest.encode(request).finish();
@@ -1124,6 +1322,18 @@ export class QueryClientImpl implements Query {
     const data = QueryDocumentIssuersRequest.encode(request).finish();
     const promise = this.rpc.request("shareledger.electoral.Query", "DocumentIssuers", data);
     return promise.then((data) => QueryDocumentIssuersResponse.decode(new _m0.Reader(data)));
+  }
+
+  GetVoters(request: QueryGetVotersRequest): Promise<QueryGetVotersResponse> {
+    const data = QueryGetVotersRequest.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Query", "GetVoters", data);
+    return promise.then((data) => QueryGetVotersResponse.decode(new _m0.Reader(data)));
+  }
+
+  GetLoaders(request: QueryGetLoadersRequest): Promise<QueryGetLoadersResponse> {
+    const data = QueryGetLoadersRequest.encode(request).finish();
+    const promise = this.rpc.request("shareledger.electoral.Query", "GetLoaders", data);
+    return promise.then((data) => QueryGetLoadersResponse.decode(new _m0.Reader(data)));
   }
 }
 
