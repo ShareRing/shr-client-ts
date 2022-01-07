@@ -4,23 +4,23 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "shareledger.gentlemint";
 
-export interface QueryGetExchangeRateRequest {}
+export interface QueryExchangeRateRequest {}
 
-export interface QueryGetExchangeRateResponse {
+export interface QueryExchangeRateResponse {
   rate: number;
 }
 
-const baseQueryGetExchangeRateRequest: object = {};
+const baseQueryExchangeRateRequest: object = {};
 
-export const QueryGetExchangeRateRequest = {
-  encode(_: QueryGetExchangeRateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryExchangeRateRequest = {
+  encode(_: QueryExchangeRateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetExchangeRateRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryExchangeRateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryGetExchangeRateRequest} as QueryGetExchangeRateRequest;
+    const message = {...baseQueryExchangeRateRequest} as QueryExchangeRateRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -32,36 +32,36 @@ export const QueryGetExchangeRateRequest = {
     return message;
   },
 
-  fromJSON(_: any): QueryGetExchangeRateRequest {
-    const message = {...baseQueryGetExchangeRateRequest} as QueryGetExchangeRateRequest;
+  fromJSON(_: any): QueryExchangeRateRequest {
+    const message = {...baseQueryExchangeRateRequest} as QueryExchangeRateRequest;
     return message;
   },
 
-  toJSON(_: QueryGetExchangeRateRequest): unknown {
+  toJSON(_: QueryExchangeRateRequest): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryGetExchangeRateRequest>, I>>(_: I): QueryGetExchangeRateRequest {
-    const message = {...baseQueryGetExchangeRateRequest} as QueryGetExchangeRateRequest;
+  fromPartial<I extends Exact<DeepPartial<QueryExchangeRateRequest>, I>>(_: I): QueryExchangeRateRequest {
+    const message = {...baseQueryExchangeRateRequest} as QueryExchangeRateRequest;
     return message;
   }
 };
 
-const baseQueryGetExchangeRateResponse: object = {rate: 0};
+const baseQueryExchangeRateResponse: object = {rate: 0};
 
-export const QueryGetExchangeRateResponse = {
-  encode(message: QueryGetExchangeRateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const QueryExchangeRateResponse = {
+  encode(message: QueryExchangeRateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.rate !== 0) {
       writer.uint32(9).double(message.rate);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryGetExchangeRateResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryExchangeRateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryGetExchangeRateResponse} as QueryGetExchangeRateResponse;
+    const message = {...baseQueryExchangeRateResponse} as QueryExchangeRateResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -76,20 +76,20 @@ export const QueryGetExchangeRateResponse = {
     return message;
   },
 
-  fromJSON(object: any): QueryGetExchangeRateResponse {
-    const message = {...baseQueryGetExchangeRateResponse} as QueryGetExchangeRateResponse;
+  fromJSON(object: any): QueryExchangeRateResponse {
+    const message = {...baseQueryExchangeRateResponse} as QueryExchangeRateResponse;
     message.rate = object.rate !== undefined && object.rate !== null ? Number(object.rate) : 0;
     return message;
   },
 
-  toJSON(message: QueryGetExchangeRateResponse): unknown {
+  toJSON(message: QueryExchangeRateResponse): unknown {
     const obj: any = {};
     message.rate !== undefined && (obj.rate = message.rate);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<QueryGetExchangeRateResponse>, I>>(object: I): QueryGetExchangeRateResponse {
-    const message = {...baseQueryGetExchangeRateResponse} as QueryGetExchangeRateResponse;
+  fromPartial<I extends Exact<DeepPartial<QueryExchangeRateResponse>, I>>(object: I): QueryExchangeRateResponse {
+    const message = {...baseQueryExchangeRateResponse} as QueryExchangeRateResponse;
     message.rate = object.rate ?? 0;
     return message;
   }
@@ -98,7 +98,7 @@ export const QueryGetExchangeRateResponse = {
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Queries a exchangeRate by index. */
-  ExchangeRate(request: QueryGetExchangeRateRequest): Promise<QueryGetExchangeRateResponse>;
+  ExchangeRate(request: QueryExchangeRateRequest): Promise<QueryExchangeRateResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -107,10 +107,10 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.ExchangeRate = this.ExchangeRate.bind(this);
   }
-  ExchangeRate(request: QueryGetExchangeRateRequest): Promise<QueryGetExchangeRateResponse> {
-    const data = QueryGetExchangeRateRequest.encode(request).finish();
+  ExchangeRate(request: QueryExchangeRateRequest): Promise<QueryExchangeRateResponse> {
+    const data = QueryExchangeRateRequest.encode(request).finish();
     const promise = this.rpc.request("shareledger.gentlemint.Query", "ExchangeRate", data);
-    return promise.then((data) => QueryGetExchangeRateResponse.decode(new _m0.Reader(data)));
+    return promise.then((data) => QueryExchangeRateResponse.decode(new _m0.Reader(data)));
   }
 }
 

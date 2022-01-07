@@ -5,10 +5,10 @@ import {
   QueryAccountOperatorsResponse,
   QueryDocumentIssuerResponse,
   QueryDocumentIssuersResponse,
-  QueryGetLoaderResponse,
-  QueryGetLoadersResponse,
-  QueryGetVoterResponse,
-  QueryGetVotersResponse,
+  QueryLoaderResponse,
+  QueryLoadersResponse,
+  QueryVoterResponse,
+  QueryVotersResponse,
   QueryIdSignerResponse,
   QueryIdSignersResponse
 } from "../../codec/shareledger/electoral/query";
@@ -44,10 +44,10 @@ export interface ElectoralExtension {
     readonly accountOperators: () => Promise<QueryAccountOperatorsResponse>;
     readonly docIssuer: (address: string) => Promise<QueryDocumentIssuerResponse>;
     readonly docIssuers: () => Promise<QueryDocumentIssuersResponse>;
-    readonly loader: (address: string) => Promise<QueryGetLoaderResponse>;
-    readonly loaders: () => Promise<QueryGetLoadersResponse>;
-    readonly voter: (address: string) => Promise<QueryGetVoterResponse>;
-    readonly voters: () => Promise<QueryGetVotersResponse>;
+    readonly loader: (address: string) => Promise<QueryLoaderResponse>;
+    readonly loaders: () => Promise<QueryLoadersResponse>;
+    readonly voter: (address: string) => Promise<QueryVoterResponse>;
+    readonly voters: () => Promise<QueryVotersResponse>;
     readonly idSigner: (address: string) => Promise<QueryIdSignerResponse>;
     readonly idSigners: () => Promise<QueryIdSignersResponse>;
     readonly tx: {
@@ -92,19 +92,19 @@ export function ElectoralExtension<T extends {new (...args: any[]): Client}>(con
         return response;
       },
       loader: async (address: string) => {
-        const response = await queryService.GetLoader({address});
+        const response = await queryService.Loader({address});
         return response;
       },
       loaders: async () => {
-        const response = await queryService.GetLoaders({});
+        const response = await queryService.Loaders({});
         return response;
       },
       voter: async (address: string) => {
-        const response = await queryService.GetVoter({address});
+        const response = await queryService.Voter({address});
         return response;
       },
       voters: async () => {
-        const response = await queryService.GetVoters({});
+        const response = await queryService.Voters({});
         return response;
       },
       idSigner: async (address: string) => {
