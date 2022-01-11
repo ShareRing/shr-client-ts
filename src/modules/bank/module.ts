@@ -9,20 +9,25 @@ import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {createProtobufRpcClient} from "../../query";
 import {MsgMultiSendEncodeObject, MsgSendEncodeObject} from "./amino";
 
-export interface BankExtension {
+export type BankQueryExtension = {
   readonly bank: {
     readonly balance: (address: string, denom: string) => Promise<Coin>;
     readonly allBalances: (address: string) => Promise<Coin[]>;
     readonly totalSupply: () => Promise<Coin[]>;
     readonly supplyOf: (denom: string) => Promise<Coin>;
-    readonly tx: {
-      readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]) => MsgSendEncodeObject;
-      readonly multiSend: (inputs: Input[], outputs: Output[]) => MsgMultiSendEncodeObject;
-    };
   };
-}
+};
 
-export function BankExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type BankTxExtension = {
+  readonly bank: {
+    readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]) => MsgSendEncodeObject;
+    readonly multiSend: (inputs: Input[], outputs: Output[]) => MsgMultiSendEncodeObject;
+  };
+};
+
+export type BankExtension = BankQueryExtension & BankTxExtension;
+
+export function BankQueryExtension<T extends {new (...args: any[]): Client & BankQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   return class extends constructor {
     constructor(...args: any[]) {
@@ -31,7 +36,9 @@ export function BankExtension<T extends {new (...args: any[]): Client}>(construc
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
+
     bank = {
+      ...super["bank"],
       balance: async (address: string, denom: string) => {
         const {balance} = await queryService.Balance({address: address, denom: denom});
         assert(balance);
@@ -49,34 +56,44 @@ export function BankExtension<T extends {new (...args: any[]): Client}>(construc
         const {amount} = await queryService.SupplyOf({denom: denom});
         assert(amount);
         return amount;
-      },
-      tx: {
-        send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]): MsgSendEncodeObject => {
-          return {
-            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-            value: MsgSend.fromPartial({
-              fromAddress: senderAddress,
-              toAddress: recipientAddress,
-              amount: [...amount]
-            })
-          };
-        },
-        multiSend: (inputs: Input[], outputs: Output[]): MsgMultiSendEncodeObject => {
-          return {
-            typeUrl: "/cosmos.bank.v1beta1.MsgMuliSend",
-            value: MsgMultiSend.fromPartial({
-              inputs: inputs.map((input) => ({
-                address: input.address,
-                coins: [...input.coins]
-              })),
-              outputs: outputs.map((output) => ({
-                address: output.address,
-                coins: [...output.coins]
-              }))
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function BankTxExtension<T extends {new (...args: any[]): Client & BankTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    bank = {
+      ...super["bank"],
+      send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]): MsgSendEncodeObject => {
+        return {
+          typeUrl: "/cosmos.bank.v1beta1.MsgSend",
+          value: MsgSend.fromPartial({
+            fromAddress: senderAddress,
+            toAddress: recipientAddress,
+            amount: [...amount]
+          })
+        };
+      },
+      multiSend: (inputs: Input[], outputs: Output[]): MsgMultiSendEncodeObject => {
+        return {
+          typeUrl: "/cosmos.bank.v1beta1.MsgMuliSend",
+          value: MsgMultiSend.fromPartial({
+            inputs: inputs.map((input) => ({
+              address: input.address,
+              coins: [...input.coins]
+            })),
+            outputs: outputs.map((output) => ({
+              address: output.address,
+              coins: [...output.coins]
+            }))
+          })
+        };
+      }
+    };
+  };
+}
+
+export function BankExtension<T extends {new (...args: any[]): Client & BankExtension}>(constructor: T): T {
+  return class extends BankTxExtension(BankQueryExtension(constructor)) {};
 }

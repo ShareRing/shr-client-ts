@@ -26,7 +26,7 @@ import {MsgBeginRedelegateEncodeObject, MsgDelegateEncodeObject, MsgUndelegateEn
 
 export type BondStatusString = Exclude<keyof typeof BondStatus, "BOND_STATUS_UNSPECIFIED">;
 
-export interface StakingExtension {
+export type StakingQueryExtension = {
   readonly staking: {
     readonly delegation: (delegatorAddress: string, validatorAddress: string) => Promise<DelegationResponse | undefined>;
     readonly delegatorDelegations: (delegatorAddress: string, paginationKey?: Uint8Array) => Promise<QueryDelegatorDelegationsResponse>;
@@ -52,20 +52,25 @@ export interface StakingExtension {
       validatorAddress: string,
       paginationKey?: Uint8Array
     ) => Promise<QueryValidatorUnbondingDelegationsResponse>;
-    readonly tx: {
-      delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgDelegateEncodeObject;
-      undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgUndelegateEncodeObject;
-      beginRedelegate: (
-        delegatorAddress: string,
-        validatorSrcAddress: string,
-        validatorDstAddress: string,
-        amount: Coin
-      ) => MsgBeginRedelegateEncodeObject;
-    };
   };
-}
+};
 
-export function StakingExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type StakingTxExtension = {
+  readonly staking: {
+    readonly delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgDelegateEncodeObject;
+    readonly undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgUndelegateEncodeObject;
+    readonly beginRedelegate: (
+      delegatorAddress: string,
+      validatorSrcAddress: string,
+      validatorDstAddress: string,
+      amount: Coin
+    ) => MsgBeginRedelegateEncodeObject;
+  };
+};
+
+export type StakingExtension = StakingQueryExtension & StakingTxExtension;
+
+export function StakingQueryExtension<T extends {new (...args: any[]): Client & StakingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   return class extends constructor {
     constructor(...args: any[]) {
@@ -75,6 +80,7 @@ export function StakingExtension<T extends {new (...args: any[]): Client}>(const
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     staking = {
+      ...super["staking"],
       delegation: async (delegatorAddress: string, validatorAddress: string) => {
         const {delegationResponse} = await queryService.Delegation({
           delegatorAddr: delegatorAddress,
@@ -165,45 +171,55 @@ export function StakingExtension<T extends {new (...args: any[]): Client}>(const
           pagination: createPagination(paginationKey)
         });
         return response;
-      },
-      tx: {
-        delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgDelegateEncodeObject => {
-          return {
-            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-            value: MsgDelegate.fromPartial({
-              delegatorAddress,
-              validatorAddress,
-              amount
-            })
-          };
-        },
-        undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgUndelegateEncodeObject => {
-          return {
-            typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
-            value: MsgUndelegate.fromPartial({
-              delegatorAddress,
-              validatorAddress,
-              amount
-            })
-          };
-        },
-        beginRedelegate: (
-          delegatorAddress: string,
-          validatorSrcAddress: string,
-          validatorDstAddress: string,
-          amount: Coin
-        ): MsgBeginRedelegateEncodeObject => {
-          return {
-            typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
-            value: MsgBeginRedelegate.fromPartial({
-              delegatorAddress,
-              validatorSrcAddress,
-              validatorDstAddress,
-              amount
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function StakingTxExtension<T extends {new (...args: any[]): Client & StakingTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    staking = {
+      ...super["staking"],
+      delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgDelegateEncodeObject => {
+        return {
+          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+          value: MsgDelegate.fromPartial({
+            delegatorAddress,
+            validatorAddress,
+            amount
+          })
+        };
+      },
+      undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgUndelegateEncodeObject => {
+        return {
+          typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
+          value: MsgUndelegate.fromPartial({
+            delegatorAddress,
+            validatorAddress,
+            amount
+          })
+        };
+      },
+      beginRedelegate: (
+        delegatorAddress: string,
+        validatorSrcAddress: string,
+        validatorDstAddress: string,
+        amount: Coin
+      ): MsgBeginRedelegateEncodeObject => {
+        return {
+          typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+          value: MsgBeginRedelegate.fromPartial({
+            delegatorAddress,
+            validatorSrcAddress,
+            validatorDstAddress,
+            amount
+          })
+        };
+      }
+    };
+  };
+}
+
+export function StakingExtension<T extends {new (...args: any[]): Client & StakingExtension}>(constructor: T): T {
+  return class extends StakingTxExtension(StakingQueryExtension(constructor)) {};
 }

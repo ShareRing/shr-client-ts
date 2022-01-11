@@ -7,6 +7,7 @@ export {
   BroadcastTxFailure,
   BroadcastTxResponse,
   BroadcastTxSuccess,
+  Client,
   IndexedTx,
   isBroadcastTxFailure,
   isBroadcastTxSuccess,
@@ -25,7 +26,6 @@ export {
   SearchTxQuery
 } from "./search";
 export {ShareledgerClient} from "./shareledgerclient";
-export {defaultRegistryTypes, ShareledgerSigningClient, SignerData, SigningOptions} from "./shareledgersigningclient";
 export {
   Coin,
   coin,
@@ -37,3 +37,4 @@ export {
   Secp256k1HdWalletOptions,
   Secp256k1Wallet
 } from "./signing";
+export {defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";

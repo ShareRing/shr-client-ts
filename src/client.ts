@@ -7,6 +7,13 @@ import {sleep} from "@cosmjs/utils";
 import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
 import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery, SearchTxFilter, SearchTxQuery} from "./search";
 import {QueryClient} from "./query";
+import {Account, accountFromAny} from "./account";
+import {AuthExtension} from "./modules/auth/module";
+// import { BankExtension } from "./modules/bank";
+// import { DistributionExtension } from "./modules/distribution";
+// import { GovExtension } from "./modules/gov";
+// import { SlashingExtension } from "./modules/slashing";
+// import { StakingExtension } from "./modules/staking";
 
 export class TimeoutError extends Error {
   public readonly txId: string;
@@ -121,7 +128,16 @@ export function assertIsBroadcastTxSuccess(result: BroadcastTxResponse): asserts
   }
 }
 
-export abstract class Client {
+// export interface Client extends AuthExtension, BankExtension, DistributionExtension, GovExtension, SlashingExtension, StakingExtension {}
+export type Client = AuthExtension;
+
+@AuthExtension
+// @BankExtension
+// @DistributionExtension
+// @GovExtension
+// @SlashingExtension
+// @StakingExtension
+export class Client {
   private readonly tmClient: Tendermint34Client | undefined;
   protected readonly queryClient: QueryClient | undefined;
   private chainId: string | undefined;
@@ -185,6 +201,29 @@ export abstract class Client {
         time: toRfc3339WithNanoseconds(response.block.header.time)
       },
       txs: response.block.txs
+    };
+  }
+
+  public async getAccount(searchAddress: string): Promise<Account | null> {
+    try {
+      const account = await this.auth.account(searchAddress);
+      return account ? accountFromAny(account) : null;
+    } catch (error) {
+      if (/rpc error: code = NotFound/i.test(error)) {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  public async getSequence(address: string): Promise<SequenceResponse> {
+    const account = await this.getAccount(address);
+    if (!account) {
+      throw new Error("Account does not exist on chain. Send some tokens there before trying to query sequence.");
+    }
+    return {
+      accountNumber: account.accountNumber,
+      sequence: account.sequence
     };
   }
 

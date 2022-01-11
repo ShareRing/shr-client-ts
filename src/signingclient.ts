@@ -1,13 +1,12 @@
-import {encodeSecp256k1Pubkey, StdFee, makeSignDoc as makeSignDocAmino} from "@cosmjs/amino";
+import {encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
 import {fromBase64} from "@cosmjs/encoding";
 import {Int53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {assert} from "@cosmjs/utils";
 import {AminoTypes} from "./amino";
-import {BroadcastTxResponse} from "./client";
+import {BroadcastTxResponse, Client} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
-import {ShareledgerClient} from "./shareledgerclient";
 import {
   EncodeObject,
   encodePubkey,
@@ -39,13 +38,16 @@ export interface SigningOptions {
   readonly broadcastPollIntervalMs?: number;
 }
 
+/** */
 import {createRegistryTypes as A} from "./modules/auth";
 import {createRegistryTypes as B} from "./modules/bank";
 import {createRegistryTypes as C} from "./modules/distribution";
-import {createRegistryTypes as D} from "./modules/staking";
-import {createRegistryTypes as E} from "./modules/gov";
+import {createRegistryTypes as D} from "./modules/gov";
+import {createRegistryTypes as E} from "./modules/slashing";
+import {createRegistryTypes as F} from "./modules/staking";
+/** */
 
-export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [A, B, C, D, E].reduce(
+export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [A, B, C, D, E, F].reduce(
   (prev, curr) => [...prev, ...curr()],
   []
 );
@@ -54,7 +56,7 @@ function createDefaultRegistry(): Registry {
   return new Registry(defaultRegistryTypes);
 }
 
-export class ShareledgerSigningClient extends ShareledgerClient {
+export class SigningClient extends Client {
   public readonly registry: Registry;
   public readonly broadcastTimeoutMs: number | undefined;
   public readonly broadcastPollIntervalMs: number | undefined;
@@ -62,13 +64,9 @@ export class ShareledgerSigningClient extends ShareledgerClient {
   private readonly signer: OfflineSigner;
   private readonly aminoTypes: AminoTypes;
 
-  public static async connectWithSigner(
-    endpoint: string,
-    signer: OfflineSigner,
-    options: SigningOptions = {}
-  ): Promise<ShareledgerSigningClient> {
+  public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    return new ShareledgerSigningClient(tmClient, signer, options);
+    return new SigningClient(tmClient, signer, options);
   }
 
   /**
@@ -80,11 +78,11 @@ export class ShareledgerSigningClient extends ShareledgerClient {
    * When you try to use online functionality with such a signer, an
    * exception will be raised.
    */
-  public static async offline(signer: OfflineSigner, options: SigningOptions = {}): Promise<ShareledgerSigningClient> {
-    return new ShareledgerSigningClient(undefined, signer, options);
+  public static async offline(signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
+    return new SigningClient(undefined, signer, options);
   }
 
-  protected constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
+  public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
     super(tmClient);
     const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix})} = options;
     this.registry = registry;

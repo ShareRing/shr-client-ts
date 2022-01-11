@@ -23,10 +23,10 @@ import {
   MsgWithdrawValidatorCommissionEncodeObject
 } from "./amino";
 
-export interface DistributionExtension {
+export type DistributionQueryExtension = {
   readonly distribution: {
     readonly communityPool: () => Promise<DecCoin[]>;
-    readonly delegationRewards: (delegatorAddress: string, validatorAddress: string) => Promise<DecCoin>;
+    readonly delegationRewards: (delegatorAddress: string, validatorAddress: string) => Promise<DecCoin[]>;
     readonly delegationTotalRewards: (delegatorAddress: string) => Promise<QueryDelegationTotalRewardsResponse>;
     readonly delegatorValidators: (delegatorAddress: string) => Promise<string[]>;
     readonly delegatorWithdrawAddress: (delegatorAddress: string) => Promise<string>;
@@ -38,16 +38,21 @@ export interface DistributionExtension {
       endingHeight: number,
       paginationKey?: Uint8Array
     ) => Promise<QueryValidatorSlashesResponse>;
-    readonly tx: {
-      readonly setWithdrawAddress: (delegatorAddress: string, withdrawAdress: string) => MsgSetWithdrawAddressEncodeObject;
-      readonly withdrawRewards: (delegatorAddress: string, validatorAddress: string) => MsgWithdrawDelegatorRewardEncodeObject;
-      readonly withdrawCommissions: (validatorAddress: string) => MsgWithdrawValidatorCommissionEncodeObject;
-      readonly fundCommunityPool: (depositor: string, amount: Coin[]) => MsgFundCommunityPoolEncodeObject;
-    };
   };
-}
+};
 
-export function DistributionExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type DistributionTxExtension = {
+  readonly distribution: {
+    readonly setWithdrawAddress: (delegatorAddress: string, withdrawAdress: string) => MsgSetWithdrawAddressEncodeObject;
+    readonly withdrawRewards: (delegatorAddress: string, validatorAddress: string) => MsgWithdrawDelegatorRewardEncodeObject;
+    readonly withdrawCommissions: (validatorAddress: string) => MsgWithdrawValidatorCommissionEncodeObject;
+    readonly fundCommunityPool: (depositor: string, amount: Coin[]) => MsgFundCommunityPoolEncodeObject;
+  };
+};
+
+export type DistributionExtension = DistributionQueryExtension & DistributionTxExtension;
+
+export function DistributionQueryExtension<T extends {new (...args: any[]): Client & DistributionQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   return class extends constructor {
     constructor(...args: any[]) {
@@ -56,7 +61,9 @@ export function DistributionExtension<T extends {new (...args: any[]): Client}>(
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
+
     distribution = {
+      ...super["distribution"],
       communityPool: async () => {
         const {pool} = await queryService.CommunityPool({});
         return pool;
@@ -106,44 +113,54 @@ export function DistributionExtension<T extends {new (...args: any[]): Client}>(
           pagination: createPagination(paginationKey)
         });
         return response;
-      },
-      tx: {
-        setWithdrawAddress: (delegatorAddress: string, withdrawAddress: string): MsgSetWithdrawAddressEncodeObject => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress",
-            value: MsgSetWithdrawAddress.fromPartial({
-              delegatorAddress,
-              withdrawAddress
-            })
-          };
-        },
-        withdrawRewards: (delegatorAddress: string, validatorAddress: string): MsgWithdrawDelegatorRewardEncodeObject => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
-            value: MsgWithdrawDelegatorReward.fromPartial({
-              delegatorAddress,
-              validatorAddress
-            })
-          };
-        },
-        withdrawCommissions: (validatorAddress: string): MsgWithdrawValidatorCommissionEncodeObject => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission",
-            value: MsgWithdrawValidatorCommission.fromPartial({
-              validatorAddress
-            })
-          };
-        },
-        fundCommunityPool: (depositor: string, amount: Coin[]): MsgFundCommunityPoolEncodeObject => {
-          return {
-            typeUrl: "/cosmos.distribution.v1beta1.MsgFundCommunityPool",
-            value: MsgFundCommunityPool.fromPartial({
-              depositor,
-              amount: [...amount]
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function DistributionTxExtension<T extends {new (...args: any[]): Client & DistributionTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    distribution = {
+      ...super["distribution"],
+      setWithdrawAddress: (delegatorAddress: string, withdrawAddress: string): MsgSetWithdrawAddressEncodeObject => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress",
+          value: MsgSetWithdrawAddress.fromPartial({
+            delegatorAddress,
+            withdrawAddress
+          })
+        };
+      },
+      withdrawRewards: (delegatorAddress: string, validatorAddress: string): MsgWithdrawDelegatorRewardEncodeObject => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+          value: MsgWithdrawDelegatorReward.fromPartial({
+            delegatorAddress,
+            validatorAddress
+          })
+        };
+      },
+      withdrawCommissions: (validatorAddress: string): MsgWithdrawValidatorCommissionEncodeObject => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission",
+          value: MsgWithdrawValidatorCommission.fromPartial({
+            validatorAddress
+          })
+        };
+      },
+      fundCommunityPool: (depositor: string, amount: Coin[]): MsgFundCommunityPoolEncodeObject => {
+        return {
+          typeUrl: "/cosmos.distribution.v1beta1.MsgFundCommunityPool",
+          value: MsgFundCommunityPool.fromPartial({
+            depositor,
+            amount: [...amount]
+          })
+        };
+      }
+    };
+  };
+}
+
+export function DistributionExtension<T extends {new (...args: any[]): Client & DistributionExtension}>(constructor: T): T {
+  return class extends DistributionTxExtension(DistributionQueryExtension(constructor)) {};
 }

@@ -7,17 +7,22 @@ import {MsgUnjail} from "../../codec/cosmos/slashing/v1beta1/tx";
 import {createPagination, createProtobufRpcClient} from "../../query";
 import {MsgUnjailEncodeObject} from "./amino";
 
-export interface SlashingExtension {
+export type SlashingQueryExtension = {
   readonly slashing: {
     readonly signingInfo: (consAddress: string) => Promise<ValidatorSigningInfo | undefined>;
     readonly signingInfos: (paginationKey?: Uint8Array) => Promise<QuerySigningInfosResponse>;
-    readonly tx: {
-      unjail: (validatorAddress: string) => MsgUnjailEncodeObject;
-    };
   };
-}
+};
 
-export function SlashingExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type SlashingTxExtension = {
+  readonly slashing: {
+    readonly unjail: (validatorAddress: string) => MsgUnjailEncodeObject;
+  };
+};
+
+export type SlashingExtension = SlashingQueryExtension & SlashingTxExtension;
+
+export function SlashingQueryExtension<T extends {new (...args: any[]): Client & SlashingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   return class extends constructor {
     constructor(...args: any[]) {
@@ -27,6 +32,7 @@ export function SlashingExtension<T extends {new (...args: any[]): Client}>(cons
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     slashing = {
+      ...super["slashing"],
       signingInfo: async (consAddress: string) => {
         const {valSigningInfo} = await queryService.SigningInfo({
           consAddress
@@ -38,17 +44,27 @@ export function SlashingExtension<T extends {new (...args: any[]): Client}>(cons
           pagination: createPagination(paginationKey)
         });
         return response;
-      },
-      tx: {
-        unjail: (validatorAddress: string): MsgUnjailEncodeObject => {
-          return {
-            typeUrl: "/cosmos.slashing.v1beta1.MsgUnjail",
-            value: MsgUnjail.fromPartial({
-              validatorAddr: validatorAddress
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function SlashingTxExtension<T extends {new (...args: any[]): Client & SlashingTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    slashing = {
+      ...super["slashing"],
+      unjail: (validatorAddress: string): MsgUnjailEncodeObject => {
+        return {
+          typeUrl: "/cosmos.slashing.v1beta1.MsgUnjail",
+          value: MsgUnjail.fromPartial({
+            validatorAddr: validatorAddress
+          })
+        };
+      }
+    };
+  };
+}
+
+export function SlashingExtension<T extends {new (...args: any[]): Client & SlashingExtension}>(constructor: T): T {
+  return class extends SlashingTxExtension(SlashingQueryExtension(constructor)) {};
 }

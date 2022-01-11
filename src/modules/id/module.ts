@@ -5,34 +5,33 @@ import {MsgCreateId, MsgCreateIds, MsgReplaceIdOwner, MsgUpdateId} from "../../c
 import {createProtobufRpcClient} from "../../query";
 import {MsgCreateIdEncodeObject, MsgCreateIdsEncodeObject, MsgReplaceIdOwnerEncodeObject, MsgUpdateIdEncodeObject} from "./amino";
 
-export interface IdExtension {
+export type IdQueryExtension = {
   readonly id: {
-    readonly byId: (id: string) => Promise<Id | undefined>;
-    readonly byAddress: (address: string) => Promise<Id | undefined>;
-    readonly tx: {
-      create: (
-        id: string,
-        ownerAddress: string,
-        backupAddress: string,
-        issuerAddress: string,
-        extraData?: string
-      ) => MsgCreateIdEncodeObject;
-      createMany: (
-        id: string[],
-        ownerAddress: string[],
-        backupAddress: string[],
-        issuerAddress: string,
-        extraData?: string[]
-      ) => MsgCreateIdsEncodeObject;
-      update: (id: string, issuerAddress: string, extraData?: string) => MsgUpdateIdEncodeObject;
-      replaceOwner: (id: string, ownerAddress: string, backupAddress: string) => MsgReplaceIdOwnerEncodeObject;
-    };
+    readonly id: (id: string) => Promise<Id | undefined>;
+    readonly idByAddress: (address: string) => Promise<Id | undefined>;
   };
-}
+};
 
-export function IdExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type IdTxExtension = {
+  readonly id: {
+    create: (id: string, ownerAddress: string, backupAddress: string, issuerAddress: string, extraData?: string) => MsgCreateIdEncodeObject;
+    createMany: (
+      id: string[],
+      ownerAddress: string[],
+      backupAddress: string[],
+      issuerAddress: string,
+      extraData?: string[]
+    ) => MsgCreateIdsEncodeObject;
+    update: (id: string, issuerAddress: string, extraData?: string) => MsgUpdateIdEncodeObject;
+    replaceOwner: (id: string, ownerAddress: string, backupAddress: string) => MsgReplaceIdOwnerEncodeObject;
+  };
+};
+
+export type IdExtension = IdQueryExtension & IdTxExtension;
+
+export function IdQueryExtension<T extends {new (...args: any[]): Client & IdQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
-  return class Client extends constructor {
+  return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
@@ -40,6 +39,7 @@ export function IdExtension<T extends {new (...args: any[]): Client}>(constructo
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     id = {
+      ...super["id"],
       byId: async (id: string) => {
         const response = await queryService.IdById({id});
         return response.id;
@@ -47,65 +47,75 @@ export function IdExtension<T extends {new (...args: any[]): Client}>(constructo
       byAddress: async (address: string) => {
         const response = await queryService.IdByAddress({address});
         return response.id;
-      },
-      tx: {
-        create: (
-          id: string,
-          ownerAddress: string,
-          backupAddress: string,
-          issuerAddress: string,
-          extraData?: string
-        ): MsgCreateIdEncodeObject => {
-          return {
-            typeUrl: "/shareledger.id.MsgCreateId",
-            value: MsgCreateId.fromPartial({
-              backupAddress,
-              extraData,
-              id,
-              issuerAddress,
-              ownerAddress
-            })
-          };
-        },
-        createMany: (
-          id: string[],
-          ownerAddress: string[],
-          backupAddress: string[],
-          issuerAddress: string,
-          extraData?: string[]
-        ): MsgCreateIdsEncodeObject => {
-          return {
-            typeUrl: "/shareledger.id.MsgCreateIds",
-            value: MsgCreateIds.fromPartial({
-              backupAddress,
-              extraData,
-              id,
-              issuerAddress,
-              ownerAddress
-            })
-          };
-        },
-        update: (id: string, issuerAddress: string, extraData?: string): MsgUpdateIdEncodeObject => {
-          return {
-            typeUrl: "/shareledger.id.MsgUpdateId",
-            value: MsgUpdateId.fromPartial({
-              id,
-              issuerAddress,
-              extraData
-            })
-          };
-        },
-        replaceOnwer: (id: string, ownerAddress: string, backupAddress: string): MsgReplaceIdOwnerEncodeObject => {
-          return {
-            typeUrl: "/shareledger.id.MsgReplaceIdOwner",
-            value: MsgReplaceIdOwner.fromPartial({
-              backupAddress,
-              id,
-              ownerAddress
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function IdTxExtension<T extends {new (...args: any[]): Client & IdTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    id = {
+      ...super["id"],
+      create: (
+        id: string,
+        ownerAddress: string,
+        backupAddress: string,
+        issuerAddress: string,
+        extraData?: string
+      ): MsgCreateIdEncodeObject => {
+        return {
+          typeUrl: "/shareledger.id.MsgCreateId",
+          value: MsgCreateId.fromPartial({
+            backupAddress,
+            extraData,
+            id,
+            issuerAddress,
+            ownerAddress
+          })
+        };
+      },
+      createMany: (
+        id: string[],
+        ownerAddress: string[],
+        backupAddress: string[],
+        issuerAddress: string,
+        extraData?: string[]
+      ): MsgCreateIdsEncodeObject => {
+        return {
+          typeUrl: "/shareledger.id.MsgCreateIds",
+          value: MsgCreateIds.fromPartial({
+            backupAddress,
+            extraData,
+            id,
+            issuerAddress,
+            ownerAddress
+          })
+        };
+      },
+      update: (id: string, issuerAddress: string, extraData?: string): MsgUpdateIdEncodeObject => {
+        return {
+          typeUrl: "/shareledger.id.MsgUpdateId",
+          value: MsgUpdateId.fromPartial({
+            id,
+            issuerAddress,
+            extraData
+          })
+        };
+      },
+      replaceOnwer: (id: string, ownerAddress: string, backupAddress: string): MsgReplaceIdOwnerEncodeObject => {
+        return {
+          typeUrl: "/shareledger.id.MsgReplaceIdOwner",
+          value: MsgReplaceIdOwner.fromPartial({
+            backupAddress,
+            id,
+            ownerAddress
+          })
+        };
+      }
+    };
+  };
+}
+
+export function IdExtension<T extends {new (...args: any[]): Client & IdExtension}>(constructor: T): T {
+  return class extends IdTxExtension(IdQueryExtension(constructor)) {};
 }

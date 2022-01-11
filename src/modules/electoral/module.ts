@@ -27,7 +27,7 @@ import {
   MsgRevokeVoterEncodeObject
 } from "./amino";
 
-export interface ElectoralExtension {
+export type ElectoralQueryExtension = {
   readonly electoral: {
     readonly accountOperator: (address: string) => Promise<AccState | undefined>;
     readonly accountOperators: () => Promise<AccState[]>;
@@ -39,24 +39,39 @@ export interface ElectoralExtension {
     readonly voters: () => Promise<AccState[]>;
     readonly idSigner: (address: string) => Promise<AccState | undefined>;
     readonly idSigners: () => Promise<AccState[]>;
-    readonly tx: {
-      enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
-      revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
-      enrollDocIssuers: (addresses: string[], creator: string) => MsgEnrollDocIssuersEncodeObject;
-      revokeDocIssuers: (addresses: string[], creator: string) => MsgRevokeDocIssuersEncodeObject;
-      enrollLoaders: (addresses: string[], creator: string) => MsgEnrollLoadersEncodeObject;
-      revokeLoaders: (addresses: string[], creator: string) => MsgRevokeLoadersEncodeObject;
-      enrollVoter: (address: string, creator: string) => MsgEnrollVoterEncodeObject;
-      revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
-      enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
-      revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
-    };
+    readonly enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
+    readonly revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
+    readonly enrollDocIssuers: (addresses: string[], creator: string) => MsgEnrollDocIssuersEncodeObject;
+    readonly revokeDocIssuers: (addresses: string[], creator: string) => MsgRevokeDocIssuersEncodeObject;
+    readonly enrollLoaders: (addresses: string[], creator: string) => MsgEnrollLoadersEncodeObject;
+    readonly revokeLoaders: (addresses: string[], creator: string) => MsgRevokeLoadersEncodeObject;
+    readonly enrollVoter: (address: string, creator: string) => MsgEnrollVoterEncodeObject;
+    readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
+    readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
+    readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
   };
-}
+};
 
-export function ElectoralExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type ElectoralTxExtension = {
+  readonly electoral: {
+    readonly enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
+    readonly revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
+    readonly enrollDocIssuers: (addresses: string[], creator: string) => MsgEnrollDocIssuersEncodeObject;
+    readonly revokeDocIssuers: (addresses: string[], creator: string) => MsgRevokeDocIssuersEncodeObject;
+    readonly enrollLoaders: (addresses: string[], creator: string) => MsgEnrollLoadersEncodeObject;
+    readonly revokeLoaders: (addresses: string[], creator: string) => MsgRevokeLoadersEncodeObject;
+    readonly enrollVoter: (address: string, creator: string) => MsgEnrollVoterEncodeObject;
+    readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
+    readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
+    readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
+  };
+};
+
+export type ElectoralExtension = ElectoralQueryExtension & ElectoralTxExtension;
+
+export function ElectoralQueryExtension<T extends {new (...args: any[]): Client & ElectoralQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
-  return class Client extends constructor {
+  return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
@@ -64,6 +79,7 @@ export function ElectoralExtension<T extends {new (...args: any[]): Client}>(con
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     electoral = {
+      ...super["electoral"],
       accountOperator: async (address: string) => {
         const {accState} = await queryService.AccountOperator({address});
         return accState;
@@ -103,99 +119,109 @@ export function ElectoralExtension<T extends {new (...args: any[]): Client}>(con
       idSigners: async () => {
         const {accStates} = await queryService.IdSigners({});
         return accStates;
-      },
-      tx: {
-        enrollAccountOperators: (addresses: string[], creator: string): MsgEnrollAccountOperatorsEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgEnrollAccountOperators",
-            value: MsgEnrollAccountOperators.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        revokeAccountOperators: (addresses: string[], creator: string): MsgRevokeAccountOperatorsEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgRevokeAccountOperators",
-            value: MsgRevokeAccountOperators.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        enrollDocIssuers: (addresses: string[], creator: string): MsgEnrollDocIssuersEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgEnrollDocIssuers",
-            value: MsgEnrollDocIssuers.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        revokeDocIssuers: (addresses: string[], creator: string): MsgRevokeDocIssuersEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgRevokeDocIssuers",
-            value: MsgRevokeDocIssuers.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        enrollLoaders: (addresses: string[], creator: string): MsgEnrollLoadersEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgEnrollLoaders",
-            value: MsgEnrollLoaders.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        revokeLoaders: (addresses: string[], creator: string): MsgRevokeLoadersEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgRevokeLoaders",
-            value: MsgRevokeLoaders.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        enrollIdSigners: (addresses: string[], creator: string): MsgEnrollIdSignersEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgEnrollIdSigners",
-            value: MsgEnrollIdSigners.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        revokeIdSigners: (addresses: string[], creator: string): MsgRevokeIdSignersEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgRevokeIdSigners",
-            value: MsgRevokeIdSigners.fromPartial({
-              addresses,
-              creator
-            })
-          };
-        },
-        enrollVoter: (address: string, creator: string): MsgEnrollVoterEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgEnrollVoter",
-            value: MsgEnrollVoter.fromPartial({
-              address,
-              creator
-            })
-          };
-        },
-        revokeVoter: (address: string, creator: string): MsgRevokeVoterEncodeObject => {
-          return {
-            typeUrl: "/shareledger.electoral.MsgRevokeVoter",
-            value: MsgRevokeVoter.fromPartial({
-              address,
-              creator
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function ElectoralTxExtension<T extends {new (...args: any[]): Client & ElectoralTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    electoral = {
+      ...super["electoral"],
+      enrollAccountOperators: (addresses: string[], creator: string): MsgEnrollAccountOperatorsEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgEnrollAccountOperators",
+          value: MsgEnrollAccountOperators.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      revokeAccountOperators: (addresses: string[], creator: string): MsgRevokeAccountOperatorsEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgRevokeAccountOperators",
+          value: MsgRevokeAccountOperators.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      enrollDocIssuers: (addresses: string[], creator: string): MsgEnrollDocIssuersEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgEnrollDocIssuers",
+          value: MsgEnrollDocIssuers.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      revokeDocIssuers: (addresses: string[], creator: string): MsgRevokeDocIssuersEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgRevokeDocIssuers",
+          value: MsgRevokeDocIssuers.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      enrollLoaders: (addresses: string[], creator: string): MsgEnrollLoadersEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgEnrollLoaders",
+          value: MsgEnrollLoaders.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      revokeLoaders: (addresses: string[], creator: string): MsgRevokeLoadersEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgRevokeLoaders",
+          value: MsgRevokeLoaders.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      enrollIdSigners: (addresses: string[], creator: string): MsgEnrollIdSignersEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgEnrollIdSigners",
+          value: MsgEnrollIdSigners.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      revokeIdSigners: (addresses: string[], creator: string): MsgRevokeIdSignersEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgRevokeIdSigners",
+          value: MsgRevokeIdSigners.fromPartial({
+            addresses,
+            creator
+          })
+        };
+      },
+      enrollVoter: (address: string, creator: string): MsgEnrollVoterEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgEnrollVoter",
+          value: MsgEnrollVoter.fromPartial({
+            address,
+            creator
+          })
+        };
+      },
+      revokeVoter: (address: string, creator: string): MsgRevokeVoterEncodeObject => {
+        return {
+          typeUrl: "/shareledger.electoral.MsgRevokeVoter",
+          value: MsgRevokeVoter.fromPartial({
+            address,
+            creator
+          })
+        };
+      }
+    };
+  };
+}
+
+export function ElectoralExtension<T extends {new (...args: any[]): Client & ElectoralExtension}>(constructor: T): T {
+  return class extends ElectoralTxExtension(ElectoralQueryExtension(constructor)) {};
 }

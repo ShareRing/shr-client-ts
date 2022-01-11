@@ -6,20 +6,25 @@ import {MsgCreateAsset, MsgDeleteAsset, MsgUpdateAsset} from "../../codec/sharel
 import {createProtobufRpcClient} from "../../query";
 import {MsgCreateAssetEncodeObject, MsgDeleteAssetEncodeObject, MsgUpdateAssetEncodeObject} from "./amino";
 
-export interface AssetExtension {
+export type AssetQueryExtension = {
   readonly asset: {
-    readonly byId: (id: string) => Promise<Asset | undefined>;
-    readonly tx: {
-      create: () => MsgCreateAssetEncodeObject;
-      update: () => MsgUpdateAssetEncodeObject;
-      delete: (uuid: string, owner: string) => MsgDeleteAssetEncodeObject;
-    };
+    readonly asset: (id: string) => Promise<Asset | undefined>;
   };
-}
+};
 
-export function AssetExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type AssetTxExtension = {
+  readonly asset: {
+    readonly create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string) => MsgCreateAssetEncodeObject;
+    readonly update: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string) => MsgUpdateAssetEncodeObject;
+    readonly delete: (uuid: string, owner: string) => MsgDeleteAssetEncodeObject;
+  };
+};
+
+export type AssetExtension = AssetQueryExtension & AssetTxExtension;
+
+export function AssetQueryExtension<T extends {new (...args: any[]): Client & AssetQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
-  return class Client extends constructor {
+  return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
@@ -27,45 +32,56 @@ export function AssetExtension<T extends {new (...args: any[]): Client}>(constru
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     asset = {
-      byId: async (uuid: string) => {
+      ...super["asset"],
+      asset: async (uuid: string) => {
         const {asset} = await queryService.AssetByUUID({uuid});
         return asset;
-      },
-      tx: {
-        create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgCreateAssetEncodeObject => {
-          return {
-            typeUrl: "/shareledger.asset.MsgCreateAsset",
-            value: MsgCreateAsset.fromPartial({
-              creator,
-              hash,
-              rate,
-              status,
-              UUID: uuid
-            })
-          };
-        },
-        update: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgUpdateAssetEncodeObject => {
-          return {
-            typeUrl: "/shareledger.asset.MsgUpdateAsset",
-            value: MsgUpdateAsset.fromPartial({
-              creator,
-              hash,
-              rate,
-              status,
-              UUID: uuid
-            })
-          };
-        },
-        replaceIdOnwer: (uuid: string, owner: string): MsgDeleteAssetEncodeObject => {
-          return {
-            typeUrl: "/shareledger.asset.MsgDeleteAsset",
-            value: MsgDeleteAsset.fromPartial({
-              owner,
-              UUID: uuid
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function AssetTxExtension<T extends {new (...args: any[]): Client & AssetTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    asset = {
+      ...super["asset"],
+      create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgCreateAssetEncodeObject => {
+        return {
+          typeUrl: "/shareledger.asset.MsgCreateAsset",
+          value: MsgCreateAsset.fromPartial({
+            creator,
+            hash,
+            rate,
+            status,
+            UUID: uuid
+          })
+        };
+      },
+      update: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgUpdateAssetEncodeObject => {
+        return {
+          typeUrl: "/shareledger.asset.MsgUpdateAsset",
+          value: MsgUpdateAsset.fromPartial({
+            creator,
+            hash,
+            rate,
+            status,
+            UUID: uuid
+          })
+        };
+      },
+      delete: (uuid: string, owner: string): MsgDeleteAssetEncodeObject => {
+        return {
+          typeUrl: "/shareledger.asset.MsgDeleteAsset",
+          value: MsgDeleteAsset.fromPartial({
+            owner,
+            UUID: uuid
+          })
+        };
+      }
+    };
+  };
+}
+
+export function AssetExtension<T extends {new (...args: any[]): Client & AssetExtension}>(constructor: T): T {
+  return class extends AssetTxExtension(AssetQueryExtension(constructor)) {};
 }

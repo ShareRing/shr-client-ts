@@ -15,7 +15,7 @@ export type GovParamsType = "deposit" | "tallying" | "voting";
 
 export type GovProposalId = string | number | Long | Uint64;
 
-export interface GovExtension {
+export type GovQueryExtension = {
   readonly gov: {
     readonly deposit: (proposalId: GovProposalId, depositor: string) => Promise<Deposit | undefined>;
     readonly deposits: (proposalId: GovProposalId, paginationKey?: Uint8Array) => Promise<QueryDepositsResponse>;
@@ -29,19 +29,24 @@ export interface GovExtension {
     readonly tallyResult: (proposalId: GovProposalId) => Promise<TallyResult | undefined>;
     readonly vote: (proposalId: GovProposalId, voter: string) => Promise<Vote | undefined>;
     readonly votes: (proposalId: GovProposalId, paginationKey?: Uint8Array) => Promise<QueryVotesResponse>;
-    readonly tx: {
-      readonly submitProposal: (
-        initialDeposit: Coin[],
-        proposer: string,
-        content?: {title: string; description: string}
-      ) => MsgSubmitProposalEncodeObject;
-      readonly vote: (proposalId: GovProposalId, voter: string, option: VoteOption) => MsgVoteEncodeObject;
-      readonly deposit: (proposalId: GovProposalId, depositor: string, amount: Coin[]) => MsgDepositEncodeObject;
-    };
   };
-}
+};
 
-export function GovExtension<T extends {new (...args: any[]): Client}>(constructor: T): T {
+export type GovTxExtension = {
+  readonly gov: {
+    readonly submitProposal: (
+      proposer: string,
+      initialDeposit: Coin[],
+      content?: {title: string; description: string}
+    ) => MsgSubmitProposalEncodeObject;
+    readonly voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption) => MsgVoteEncodeObject;
+    readonly depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]) => MsgDepositEncodeObject;
+  };
+};
+
+export type GovExtension = GovQueryExtension & GovTxExtension;
+
+export function GovQueryExtension<T extends {new (...args: any[]): Client & GovQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   return class extends constructor {
     constructor(...args: any[]) {
@@ -51,6 +56,7 @@ export function GovExtension<T extends {new (...args: any[]): Client}>(construct
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     gov = {
+      ...super["gov"],
       deposit: async (proposalId: GovProposalId, depositor: string) => {
         const {deposit} = await queryService.Deposit({
           proposalId: longify(proposalId),
@@ -99,51 +105,61 @@ export function GovExtension<T extends {new (...args: any[]): Client}>(construct
           pagination: createPagination(paginationKey)
         });
         return response;
-      },
-      tx: {
-        submitProposal: (
-          proposer: string,
-          initialDeposit: Coin[],
-          content?: {title: string; description: string}
-        ): MsgSubmitProposalEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: MsgSubmitProposal.fromPartial({
-              proposer,
-              initialDeposit: [...initialDeposit],
-              content: content
-                ? Any.fromJSON({
-                    typeUrl: "/cosmos.gov.v1beta1.TextProposal",
-                    value: {
-                      title: content.title,
-                      description: content.description
-                    }
-                  })
-                : undefined
-            })
-          };
-        },
-        vote: (proposalId: GovProposalId, voter: string, option: VoteOption): MsgVoteEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgVote",
-            value: MsgVote.fromPartial({
-              proposalId: longify(proposalId),
-              voter,
-              option
-            })
-          };
-        },
-        deposit: (proposalId: GovProposalId, depositor: string, amount: Coin[]): MsgDepositEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgDeposit",
-            value: MsgDeposit.fromPartial({
-              proposalId: longify(proposalId),
-              depositor,
-              amount: [...amount]
-            })
-          };
-        }
       }
     };
   };
+}
+
+export function GovTxExtension<T extends {new (...args: any[]): Client & GovTxExtension}>(constructor: T): T {
+  return class extends constructor {
+    gov = {
+      ...super["gov"],
+      submitProposal: (
+        proposer: string,
+        initialDeposit: Coin[],
+        content?: {title: string; description: string}
+      ): MsgSubmitProposalEncodeObject => {
+        return {
+          typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+          value: MsgSubmitProposal.fromPartial({
+            proposer,
+            initialDeposit: [...initialDeposit],
+            content: content
+              ? Any.fromJSON({
+                  typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+                  value: {
+                    title: content.title,
+                    description: content.description
+                  }
+                })
+              : undefined
+          })
+        };
+      },
+      voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption): MsgVoteEncodeObject => {
+        return {
+          typeUrl: "/cosmos.gov.v1beta1.MsgVote",
+          value: MsgVote.fromPartial({
+            proposalId: longify(proposalId),
+            voter,
+            option
+          })
+        };
+      },
+      depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]): MsgDepositEncodeObject => {
+        return {
+          typeUrl: "/cosmos.gov.v1beta1.MsgDeposit",
+          value: MsgDeposit.fromPartial({
+            proposalId: longify(proposalId),
+            depositor,
+            amount: [...amount]
+          })
+        };
+      }
+    };
+  };
+}
+
+export function GovExtension<T extends {new (...args: any[]): Client & GovExtension}>(constructor: T): T {
+  return class extends GovTxExtension(GovQueryExtension(constructor)) {};
 }
