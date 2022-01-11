@@ -10,6 +10,7 @@ import {GovExtension} from "./modules/gov";
 import {IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
+import {TxExtension} from "./modules/tx";
 import {GeneratedType, OfflineSigner, Registry} from "./signing";
 import {defaultRegistryTypes, SigningClient, SigningOptions} from "./signingclient";
 
@@ -33,6 +34,7 @@ export interface ShareledgerClient
     GovExtension,
     SlashingExtension,
     StakingExtension,
+    TxExtension,
     AssetExtension,
     DocumentExtension,
     ElectoralExtension,
@@ -45,6 +47,7 @@ export interface ShareledgerClient
 @GovExtension
 @SlashingExtension
 @StakingExtension
+@TxExtension
 @AssetExtension
 @DocumentExtension
 @ElectoralExtension

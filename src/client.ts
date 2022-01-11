@@ -9,6 +9,7 @@ import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery,
 import {QueryClient} from "./query";
 import {Account, accountFromAny} from "./account";
 import {AuthExtension} from "./modules/auth/module";
+import {TxExtension} from "./modules/tx/module";
 // import { BankExtension } from "./modules/bank";
 // import { DistributionExtension } from "./modules/distribution";
 // import { GovExtension } from "./modules/gov";
@@ -71,7 +72,7 @@ export interface IndexedTx {
    *
    * Use `decodeTxRaw` from @cosmjs/proto-signing to decode this.
    */
-  readonly tx: Uint8Array;
+  readonly tx?: Uint8Array;
   readonly gasUsed: number;
   readonly gasWanted: number;
 }
@@ -129,10 +130,10 @@ export function assertIsBroadcastTxSuccess(result: BroadcastTxResponse): asserts
 }
 
 // export interface Client extends AuthExtension, BankExtension, DistributionExtension, GovExtension, SlashingExtension, StakingExtension {}
-
-export interface Client extends AuthExtension {} // eslint-disable-line @typescript-eslint/no-empty-interface
+export interface Client extends AuthExtension, TxExtension {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 @AuthExtension
+@TxExtension
 // @BankExtension
 // @DistributionExtension
 // @GovExtension
@@ -229,8 +230,20 @@ export class Client {
   }
 
   public async getTx(id: string): Promise<IndexedTx | null> {
-    const results = await this.txsQuery(`tx.hash='${id}'`);
-    return results[0] ?? null;
+    // const results = await this.txsQuery(`tx.hash='${id}'`);
+    // return results[0] ?? null;
+    const result = await this.tx.getTx(id);
+    return result.txResponse
+      ? {
+          code: result.txResponse.code,
+          gasUsed: result.txResponse.gasUsed.toNumber(),
+          gasWanted: result.txResponse.gasWanted.toNumber(),
+          hash: result.txResponse.txhash,
+          height: result.txResponse.height.toNumber(),
+          rawLog: result.txResponse.rawLog,
+          tx: result.txResponse.tx?.value
+        }
+      : null;
   }
 
   public async searchTx(query: SearchTxQuery, filter: SearchTxFilter = {}): Promise<readonly IndexedTx[]> {
