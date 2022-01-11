@@ -129,7 +129,8 @@ export function assertIsBroadcastTxSuccess(result: BroadcastTxResponse): asserts
 }
 
 // export interface Client extends AuthExtension, BankExtension, DistributionExtension, GovExtension, SlashingExtension, StakingExtension {}
-export type Client = AuthExtension;
+
+export type Client = AuthExtension; // eslint-enable-line @typescript-eslint/interface-over-type-literal
 
 @AuthExtension
 // @BankExtension
