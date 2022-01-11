@@ -1,13 +1,14 @@
 import {Client} from "../../client";
-import {QueryClientImpl, QueryIdByAddressResponse, QueryIdByIdResponse} from "../../codec/shareledger/id/query";
+import {Id} from "../../codec/shareledger/id/id";
+import {QueryClientImpl} from "../../codec/shareledger/id/query";
 import {MsgCreateId, MsgCreateIds, MsgReplaceIdOwner, MsgUpdateId} from "../../codec/shareledger/id/tx";
 import {createProtobufRpcClient} from "../../query";
-import {MsgCreateIdEncodeObject, MsgCreateIdsEncodeObject, MsgUpdateIdEncodeObject, MsgReplaceIdOwnerEncodeObject} from "./amino";
+import {MsgCreateIdEncodeObject, MsgCreateIdsEncodeObject, MsgReplaceIdOwnerEncodeObject, MsgUpdateIdEncodeObject} from "./amino";
 
 export interface IdExtension {
   readonly id: {
-    readonly byId: (id: string) => Promise<QueryIdByIdResponse>;
-    readonly byAddress: (address: string) => Promise<QueryIdByAddressResponse>;
+    readonly byId: (id: string) => Promise<Id | undefined>;
+    readonly byAddress: (address: string) => Promise<Id | undefined>;
     readonly tx: {
       create: (
         id: string,
@@ -41,11 +42,11 @@ export function IdExtension<T extends {new (...args: any[]): Client}>(constructo
     id = {
       byId: async (id: string) => {
         const response = await queryService.IdById({id});
-        return response;
+        return response.id;
       },
       byAddress: async (address: string) => {
         const response = await queryService.IdByAddress({address});
-        return response;
+        return response.id;
       },
       tx: {
         create: (

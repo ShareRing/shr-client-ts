@@ -1,45 +1,37 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import Long from "long";
+import {Client} from "../../client";
+import {Coin, DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
+import {ValidatorAccumulatedCommission, ValidatorOutstandingRewards} from "../../codec/cosmos/distribution/v1beta1/distribution";
 import {
   QueryClientImpl,
-  QueryCommunityPoolResponse,
-  QueryDelegationRewardsResponse,
   QueryDelegationTotalRewardsResponse,
-  QueryDelegatorValidatorsResponse,
-  QueryDelegatorWithdrawAddressResponse,
-  QueryParamsResponse,
-  QueryValidatorCommissionResponse,
-  QueryValidatorOutstandingRewardsResponse,
   QueryValidatorSlashesResponse
 } from "../../codec/cosmos/distribution/v1beta1/query";
-import Long from "long";
-
-import {createProtobufRpcClient, createPagination} from "../../query";
-import {Client} from "../../client";
-import {
-  MsgSetWithdrawAddressEncodeObject,
-  MsgWithdrawDelegatorRewardEncodeObject,
-  MsgWithdrawValidatorCommissionEncodeObject,
-  MsgFundCommunityPoolEncodeObject
-} from "./amino";
 import {
   MsgFundCommunityPool,
   MsgSetWithdrawAddress,
   MsgWithdrawDelegatorReward,
   MsgWithdrawValidatorCommission
 } from "../../codec/cosmos/distribution/v1beta1/tx";
-import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {createPagination, createProtobufRpcClient} from "../../query";
+import {
+  MsgFundCommunityPoolEncodeObject,
+  MsgSetWithdrawAddressEncodeObject,
+  MsgWithdrawDelegatorRewardEncodeObject,
+  MsgWithdrawValidatorCommissionEncodeObject
+} from "./amino";
 
 export interface DistributionExtension {
   readonly distribution: {
-    readonly communityPool: () => Promise<QueryCommunityPoolResponse>;
-    readonly delegationRewards: (delegatorAddress: string, validatorAddress: string) => Promise<QueryDelegationRewardsResponse>;
+    readonly communityPool: () => Promise<DecCoin[]>;
+    readonly delegationRewards: (delegatorAddress: string, validatorAddress: string) => Promise<DecCoin>;
     readonly delegationTotalRewards: (delegatorAddress: string) => Promise<QueryDelegationTotalRewardsResponse>;
-    readonly delegatorValidators: (delegatorAddress: string) => Promise<QueryDelegatorValidatorsResponse>;
-    readonly delegatorWithdrawAddress: (delegatorAddress: string) => Promise<QueryDelegatorWithdrawAddressResponse>;
-    readonly params: () => Promise<QueryParamsResponse>;
-    readonly validatorCommission: (validatorAddress: string) => Promise<QueryValidatorCommissionResponse>;
-    readonly validatorOutstandingRewards: (validatorAddress: string) => Promise<QueryValidatorOutstandingRewardsResponse>;
+    readonly delegatorValidators: (delegatorAddress: string) => Promise<string[]>;
+    readonly delegatorWithdrawAddress: (delegatorAddress: string) => Promise<string>;
+    readonly validatorCommission: (validatorAddress: string) => Promise<ValidatorAccumulatedCommission | undefined>;
+    readonly validatorOutstandingRewards: (validatorAddress: string) => Promise<ValidatorOutstandingRewards | undefined>;
     readonly validatorSlashes: (
       validatorAddress: string,
       startingHeight: number,
@@ -66,15 +58,15 @@ export function DistributionExtension<T extends {new (...args: any[]): Client}>(
     }
     distribution = {
       communityPool: async () => {
-        const response = await queryService.CommunityPool({});
-        return response;
+        const {pool} = await queryService.CommunityPool({});
+        return pool;
       },
       delegationRewards: async (delegatorAddress: string, validatorAddress: string) => {
-        const response = await queryService.DelegationRewards({
+        const {rewards} = await queryService.DelegationRewards({
           delegatorAddress: delegatorAddress,
           validatorAddress: validatorAddress
         });
-        return response;
+        return rewards;
       },
       delegationTotalRewards: async (delegatorAddress: string) => {
         const response = await queryService.DelegationTotalRewards({
@@ -83,32 +75,28 @@ export function DistributionExtension<T extends {new (...args: any[]): Client}>(
         return response;
       },
       delegatorValidators: async (delegatorAddress: string) => {
-        const response = await queryService.DelegatorValidators({
+        const {validators} = await queryService.DelegatorValidators({
           delegatorAddress: delegatorAddress
         });
-        return response;
+        return validators;
       },
       delegatorWithdrawAddress: async (delegatorAddress: string) => {
-        const response = await queryService.DelegatorWithdrawAddress({
+        const {withdrawAddress} = await queryService.DelegatorWithdrawAddress({
           delegatorAddress: delegatorAddress
         });
-        return response;
-      },
-      params: async () => {
-        const response = await queryService.Params({});
-        return response;
+        return withdrawAddress;
       },
       validatorCommission: async (validatorAddress: string) => {
-        const response = await queryService.ValidatorCommission({
+        const {commission} = await queryService.ValidatorCommission({
           validatorAddress: validatorAddress
         });
-        return response;
+        return commission;
       },
       validatorOutstandingRewards: async (validatorAddress: string) => {
-        const response = await queryService.ValidatorOutstandingRewards({
+        const {rewards} = await queryService.ValidatorOutstandingRewards({
           validatorAddress: validatorAddress
         });
-        return response;
+        return rewards;
       },
       validatorSlashes: async (validatorAddress: string, startingHeight: number, endingHeight: number, paginationKey?: Uint8Array) => {
         const response = await queryService.ValidatorSlashes({

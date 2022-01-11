@@ -4,18 +4,8 @@ import {Uint64} from "@cosmjs/math";
 import Long from "long";
 import {Client} from "../../client";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
-import {ProposalStatus} from "../../codec/cosmos/gov/v1beta1/gov";
-import {
-  QueryClientImpl,
-  QueryDepositResponse,
-  QueryDepositsResponse,
-  QueryParamsResponse,
-  QueryProposalResponse,
-  QueryProposalsResponse,
-  QueryTallyResultResponse,
-  QueryVoteResponse,
-  QueryVotesResponse
-} from "../../codec/cosmos/gov/v1beta1/query";
+import {Deposit, Proposal, ProposalStatus, TallyResult, Vote} from "../../codec/cosmos/gov/v1beta1/gov";
+import {QueryClientImpl, QueryDepositsResponse, QueryProposalsResponse, QueryVotesResponse} from "../../codec/cosmos/gov/v1beta1/query";
 import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../../codec/cosmos/gov/v1beta1/tx";
 import {Any} from "../../codec/google/protobuf/any";
 import {createPagination, createProtobufRpcClient, longify} from "../../query";
@@ -27,18 +17,17 @@ export type GovProposalId = string | number | Long | Uint64;
 
 export interface GovExtension {
   readonly gov: {
-    readonly deposit: (proposalId: GovProposalId, depositor: string) => Promise<QueryDepositResponse>;
+    readonly deposit: (proposalId: GovProposalId, depositor: string) => Promise<Deposit | undefined>;
     readonly deposits: (proposalId: GovProposalId, paginationKey?: Uint8Array) => Promise<QueryDepositsResponse>;
-    readonly params: (paramsType: GovParamsType) => Promise<QueryParamsResponse>;
-    readonly proposal: (proposalId: GovProposalId) => Promise<QueryProposalResponse>;
+    readonly proposal: (proposalId: GovProposalId) => Promise<Proposal | undefined>;
     readonly proposals: (
       proposalStatus: ProposalStatus,
       voter: string,
       depositor: string,
       paginationKey?: Uint8Array
     ) => Promise<QueryProposalsResponse>;
-    readonly tallyResult: (proposalId: GovProposalId) => Promise<QueryTallyResultResponse>;
-    readonly vote: (proposalId: GovProposalId, voter: string) => Promise<QueryVoteResponse>;
+    readonly tallyResult: (proposalId: GovProposalId) => Promise<TallyResult | undefined>;
+    readonly vote: (proposalId: GovProposalId, voter: string) => Promise<Vote | undefined>;
     readonly votes: (proposalId: GovProposalId, paginationKey?: Uint8Array) => Promise<QueryVotesResponse>;
     readonly tx: {
       readonly submitProposal: (
@@ -63,11 +52,11 @@ export function GovExtension<T extends {new (...args: any[]): Client}>(construct
     }
     gov = {
       deposit: async (proposalId: GovProposalId, depositor: string) => {
-        const response = await queryService.Deposit({
+        const {deposit} = await queryService.Deposit({
           proposalId: longify(proposalId),
           depositor
         });
-        return response;
+        return deposit;
       },
       deposits: async (proposalId: GovProposalId, paginationKey?: Uint8Array) => {
         const response = await queryService.Deposits({
@@ -76,15 +65,11 @@ export function GovExtension<T extends {new (...args: any[]): Client}>(construct
         });
         return response;
       },
-      params: async (paramsType: GovParamsType) => {
-        const response = await queryService.Params({paramsType});
-        return response;
-      },
       proposal: async (proposalId: GovProposalId) => {
-        const response = await queryService.Proposal({
+        const {proposal} = await queryService.Proposal({
           proposalId: longify(proposalId)
         });
-        return response;
+        return proposal;
       },
       proposals: async (proposalStatus: ProposalStatus, voter: string, depositor: string, paginationKey?: Uint8Array) => {
         const response = await queryService.Proposals({
@@ -96,17 +81,17 @@ export function GovExtension<T extends {new (...args: any[]): Client}>(construct
         return response;
       },
       tallyResult: async (proposalId: GovProposalId) => {
-        const response = await queryService.TallyResult({
+        const {tally} = await queryService.TallyResult({
           proposalId: longify(proposalId)
         });
-        return response;
+        return tally;
       },
       vote: async (proposalId: GovProposalId, voter: string) => {
-        const response = await queryService.Vote({
+        const {vote} = await queryService.Vote({
           proposalId: longify(proposalId),
           voter
         });
-        return response;
+        return vote;
       },
       votes: async (proposalId: GovProposalId, paginationKey?: Uint8Array) => {
         const response = await queryService.Votes({

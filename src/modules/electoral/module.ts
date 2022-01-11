@@ -1,22 +1,11 @@
 import {Client} from "../../client";
-import {
-  QueryClientImpl,
-  QueryAccountOperatorResponse,
-  QueryAccountOperatorsResponse,
-  QueryDocumentIssuerResponse,
-  QueryDocumentIssuersResponse,
-  QueryLoaderResponse,
-  QueryLoadersResponse,
-  QueryVoterResponse,
-  QueryVotersResponse,
-  QueryIdSignerResponse,
-  QueryIdSignersResponse
-} from "../../codec/shareledger/electoral/query";
+import {AccState} from "../../codec/shareledger/electoral/acc_state";
+import {QueryClientImpl} from "../../codec/shareledger/electoral/query";
 import {
   MsgEnrollAccountOperators,
-  MsgEnrollLoaders,
   MsgEnrollDocIssuers,
   MsgEnrollIdSigners,
+  MsgEnrollLoaders,
   MsgEnrollVoter,
   MsgRevokeAccountOperators,
   MsgRevokeDocIssuers,
@@ -40,16 +29,16 @@ import {
 
 export interface ElectoralExtension {
   readonly electoral: {
-    readonly accountOperator: (address: string) => Promise<QueryAccountOperatorResponse>;
-    readonly accountOperators: () => Promise<QueryAccountOperatorsResponse>;
-    readonly docIssuer: (address: string) => Promise<QueryDocumentIssuerResponse>;
-    readonly docIssuers: () => Promise<QueryDocumentIssuersResponse>;
-    readonly loader: (address: string) => Promise<QueryLoaderResponse>;
-    readonly loaders: () => Promise<QueryLoadersResponse>;
-    readonly voter: (address: string) => Promise<QueryVoterResponse>;
-    readonly voters: () => Promise<QueryVotersResponse>;
-    readonly idSigner: (address: string) => Promise<QueryIdSignerResponse>;
-    readonly idSigners: () => Promise<QueryIdSignersResponse>;
+    readonly accountOperator: (address: string) => Promise<AccState | undefined>;
+    readonly accountOperators: () => Promise<AccState[]>;
+    readonly docIssuer: (address: string) => Promise<AccState | undefined>;
+    readonly docIssuers: () => Promise<AccState[]>;
+    readonly loader: (address: string) => Promise<AccState | undefined>;
+    readonly loaders: () => Promise<AccState[]>;
+    readonly voter: (address: string) => Promise<AccState | undefined>;
+    readonly voters: () => Promise<AccState[]>;
+    readonly idSigner: (address: string) => Promise<AccState | undefined>;
+    readonly idSigners: () => Promise<AccState[]>;
     readonly tx: {
       enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
       revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
@@ -76,44 +65,44 @@ export function ElectoralExtension<T extends {new (...args: any[]): Client}>(con
     }
     electoral = {
       accountOperator: async (address: string) => {
-        const response = await queryService.AccountOperator({address});
-        return response;
+        const {accState} = await queryService.AccountOperator({address});
+        return accState;
       },
       accountOperators: async () => {
-        const response = await queryService.AccountOperators({});
-        return response;
+        const {accStates} = await queryService.AccountOperators({});
+        return accStates;
       },
       docIssuer: async (address: string) => {
-        const response = await queryService.DocumentIssuer({address});
-        return response;
+        const {accState} = await queryService.DocumentIssuer({address});
+        return accState;
       },
       docIssuers: async () => {
-        const response = await queryService.DocumentIssuers({});
-        return response;
+        const {accStates} = await queryService.DocumentIssuers({});
+        return accStates;
       },
       loader: async (address: string) => {
-        const response = await queryService.Loader({address});
-        return response;
+        const {accState} = await queryService.Loader({address});
+        return accState;
       },
       loaders: async () => {
-        const response = await queryService.Loaders({});
-        return response;
+        const {loaders} = await queryService.Loaders({});
+        return loaders;
       },
       voter: async (address: string) => {
-        const response = await queryService.Voter({address});
-        return response;
+        const {voter} = await queryService.Voter({address});
+        return voter;
       },
       voters: async () => {
-        const response = await queryService.Voters({});
-        return response;
+        const {voters} = await queryService.Voters({});
+        return voters;
       },
       idSigner: async (address: string) => {
-        const response = await queryService.IdSigner({address});
-        return response;
+        const {accState} = await queryService.IdSigner({address});
+        return accState;
       },
       idSigners: async () => {
-        const response = await queryService.IdSigners({});
-        return response;
+        const {accStates} = await queryService.IdSigners({});
+        return accStates;
       },
       tx: {
         enrollAccountOperators: (addresses: string[], creator: string): MsgEnrollAccountOperatorsEncodeObject => {

@@ -1,15 +1,15 @@
 import Long from "long";
 import {Client} from "../../client";
-import {QueryClientImpl, QueryExchangeRateResponse} from "../../codec/shareledger/gentlemint/query";
+import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {
   MsgBurnShr,
   MsgBurnShrp,
+  MsgBuyCent,
+  MsgBuyShr,
   MsgLoadShr,
   MsgLoadShrp,
   MsgSendShr,
   MsgSendShrp,
-  MsgBuyCent,
-  MsgBuyShr,
   MsgSetExchange
 } from "../../codec/shareledger/gentlemint/tx";
 import {createProtobufRpcClient} from "../../query";
@@ -27,7 +27,7 @@ import {
 
 export interface GentlemintExtension {
   readonly gentlemint: {
-    readonly exchangeRate: () => Promise<QueryExchangeRateResponse>;
+    readonly exchangeRate: () => Promise<Long>;
     readonly tx: {
       burnShr: (fromAddress: string, amount: Long) => MsgBurnShrEncodeObject;
       burnShrp: (fromAddress: string, amount: string) => MsgBurnShrpEncodeObject;
@@ -52,9 +52,9 @@ export function GentlemintExtension<T extends {new (...args: any[]): Client}>(co
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
     gentlemint = {
-      exchangeRate: () => {
-        const response = queryService.ExchangeRate({});
-        return response;
+      exchangeRate: async () => {
+        const {rate} = await queryService.ExchangeRate({});
+        return Long.fromNumber(rate);
       },
       tx: {
         burnShr: (fromAddress: string, amount: Long): MsgBurnShrEncodeObject => {

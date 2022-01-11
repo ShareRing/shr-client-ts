@@ -1,21 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import {
-  QueryClientImpl,
-  QueryParamsResponse,
-  QuerySigningInfoResponse,
-  QuerySigningInfosResponse
-} from "../../codec/cosmos/slashing/v1beta1/query";
-import {createPagination, createProtobufRpcClient} from "../../query";
 import {Client} from "../../client";
-import {MsgUnjailEncodeObject} from "./amino";
+import {QueryClientImpl, QuerySigningInfosResponse} from "../../codec/cosmos/slashing/v1beta1/query";
+import {ValidatorSigningInfo} from "../../codec/cosmos/slashing/v1beta1/slashing";
 import {MsgUnjail} from "../../codec/cosmos/slashing/v1beta1/tx";
+import {createPagination, createProtobufRpcClient} from "../../query";
+import {MsgUnjailEncodeObject} from "./amino";
 
 export interface SlashingExtension {
   readonly slashing: {
-    readonly signingInfo: (consAddress: string) => Promise<QuerySigningInfoResponse>;
+    readonly signingInfo: (consAddress: string) => Promise<ValidatorSigningInfo | undefined>;
     readonly signingInfos: (paginationKey?: Uint8Array) => Promise<QuerySigningInfosResponse>;
-    readonly params: () => Promise<QueryParamsResponse>;
     readonly tx: {
       unjail: (validatorAddress: string) => MsgUnjailEncodeObject;
     };
@@ -33,19 +28,15 @@ export function SlashingExtension<T extends {new (...args: any[]): Client}>(cons
     }
     slashing = {
       signingInfo: async (consAddress: string) => {
-        const response = await queryService.SigningInfo({
+        const {valSigningInfo} = await queryService.SigningInfo({
           consAddress
         });
-        return response;
+        return valSigningInfo;
       },
       signingInfos: async (paginationKey?: Uint8Array) => {
         const response = await queryService.SigningInfos({
           pagination: createPagination(paginationKey)
         });
-        return response;
-      },
-      params: async () => {
-        const response = await queryService.Params({});
         return response;
       },
       tx: {

@@ -1,11 +1,7 @@
 import {Client} from "../../client";
-import {
-  QueryClientImpl,
-  QueryDocumentByHolderIdResponse,
-  QueryDocumentByProofResponse,
-  QueryDocumentOfHolderByIssuerResponse
-} from "../../codec/shareledger/document/query";
-import {MsgCreateDocument, MsgCreateDocuments, MsgUpdateDocument, MsgRevokeDocument} from "../../codec/shareledger/document/tx";
+import {Document} from "../../codec/shareledger/document/document";
+import {QueryClientImpl} from "../../codec/shareledger/document/query";
+import {MsgCreateDocument, MsgCreateDocuments, MsgRevokeDocument, MsgUpdateDocument} from "../../codec/shareledger/document/tx";
 import {createProtobufRpcClient} from "../../query";
 import {
   MsgCreateDocumentEncodeObject,
@@ -16,9 +12,9 @@ import {
 
 export interface DocumentExtension {
   readonly document: {
-    readonly byHolder: (holder: string) => Promise<QueryDocumentByHolderIdResponse>;
-    readonly byProof: (proof: string) => Promise<QueryDocumentByProofResponse>;
-    readonly byIssuer: (holder: string, issuer: string) => Promise<QueryDocumentOfHolderByIssuerResponse>;
+    readonly byHolder: (holder: string) => Promise<Document[]>;
+    readonly byProof: (proof: string) => Promise<Document | undefined>;
+    readonly byIssuer: (holder: string, issuer: string) => Promise<Document[]>;
     readonly tx: {
       create: (issuer: string, holder: string, proof: string, data?: string) => MsgCreateDocumentEncodeObject;
       createMany: (issuer: string, holder: string[], proof: string[], data?: string[]) => MsgCreateDocumentsEncodeObject;
@@ -39,16 +35,16 @@ export function DocumentExtension<T extends {new (...args: any[]): Client}>(cons
     }
     document = {
       byHolder: async (holder: string) => {
-        const response = await queryService.DocumentByHolderId({id: holder});
-        return response;
+        const {documents} = await queryService.DocumentByHolderId({id: holder});
+        return documents;
       },
       byProof: async (proof: string) => {
-        const response = await queryService.DocumentByProof({proof});
-        return response;
+        const {document} = await queryService.DocumentByProof({proof});
+        return document;
       },
       byIssuer: async (holder: string, issuer: string) => {
-        const response = await queryService.DocumentOfHolderByIssuer({holder, issuer});
-        return response;
+        const {documents} = await queryService.DocumentOfHolderByIssuer({holder, issuer});
+        return documents;
       },
       tx: {
         create: (issuer: string, holder: string, proof: string, data?: string): MsgCreateDocumentEncodeObject => {

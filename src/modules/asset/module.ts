@@ -1,13 +1,14 @@
 import Long from "long";
 import {Client} from "../../client";
-import {QueryClientImpl, QueryAssetByUUIDResponse} from "../../codec/shareledger/asset/query";
-import {MsgCreateAsset, MsgUpdateAsset, MsgDeleteAsset} from "../../codec/shareledger/asset/tx";
+import {Asset} from "../../codec/shareledger/asset/asset";
+import {QueryClientImpl} from "../../codec/shareledger/asset/query";
+import {MsgCreateAsset, MsgDeleteAsset, MsgUpdateAsset} from "../../codec/shareledger/asset/tx";
 import {createProtobufRpcClient} from "../../query";
-import {MsgCreateAssetEncodeObject, MsgUpdateAssetEncodeObject, MsgDeleteAssetEncodeObject} from "./amino";
+import {MsgCreateAssetEncodeObject, MsgDeleteAssetEncodeObject, MsgUpdateAssetEncodeObject} from "./amino";
 
 export interface AssetExtension {
   readonly asset: {
-    readonly byId: (id: string) => Promise<QueryAssetByUUIDResponse>;
+    readonly byId: (id: string) => Promise<Asset | undefined>;
     readonly tx: {
       create: () => MsgCreateAssetEncodeObject;
       update: () => MsgUpdateAssetEncodeObject;
@@ -27,8 +28,8 @@ export function AssetExtension<T extends {new (...args: any[]): Client}>(constru
     }
     asset = {
       byId: async (uuid: string) => {
-        const response = await queryService.AssetByUUID({uuid});
-        return response;
+        const {asset} = await queryService.AssetByUUID({uuid});
+        return asset;
       },
       tx: {
         create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgCreateAssetEncodeObject => {
