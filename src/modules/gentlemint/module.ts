@@ -60,7 +60,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
       ...super["gentlemint"],
       exchangeRate: async () => {
         const {rate} = await queryService.ExchangeRate({});
-        return Long.fromNumber(rate);
+        return Long.fromString(rate);
       }
     };
   };
