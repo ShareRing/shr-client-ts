@@ -5,15 +5,15 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "shareledger.gentlemint";
 
 export interface ExchangeRate {
-  rate: number;
+  rate: string;
 }
 
-const baseExchangeRate: object = {rate: 0};
+const baseExchangeRate: object = {rate: ""};
 
 export const ExchangeRate = {
   encode(message: ExchangeRate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.rate !== 0) {
-      writer.uint32(9).double(message.rate);
+    if (message.rate !== "") {
+      writer.uint32(10).string(message.rate);
     }
     return writer;
   },
@@ -26,7 +26,7 @@ export const ExchangeRate = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.rate = reader.double();
+          message.rate = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -38,7 +38,7 @@ export const ExchangeRate = {
 
   fromJSON(object: any): ExchangeRate {
     const message = {...baseExchangeRate} as ExchangeRate;
-    message.rate = object.rate !== undefined && object.rate !== null ? Number(object.rate) : 0;
+    message.rate = object.rate !== undefined && object.rate !== null ? String(object.rate) : "";
     return message;
   },
 
@@ -50,7 +50,7 @@ export const ExchangeRate = {
 
   fromPartial<I extends Exact<DeepPartial<ExchangeRate>, I>>(object: I): ExchangeRate {
     const message = {...baseExchangeRate} as ExchangeRate;
-    message.rate = object.rate ?? 0;
+    message.rate = object.rate ?? "";
     return message;
   }
 };

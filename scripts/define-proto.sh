@@ -149,8 +149,10 @@ protoc \
   "$SHARELEDGER_PROTO_DIR/electoral/query.proto" \
   "$SHARELEDGER_PROTO_DIR/electoral/treasurer.proto" \
   "$SHARELEDGER_PROTO_DIR/electoral/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/gentlemint/action_level_fee.proto" \
   "$SHARELEDGER_PROTO_DIR/gentlemint/exchange_rate.proto" \
   "$SHARELEDGER_PROTO_DIR/gentlemint/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/gentlemint/level_fee.proto" \
   "$SHARELEDGER_PROTO_DIR/gentlemint/query.proto" \
   "$SHARELEDGER_PROTO_DIR/gentlemint/tx.proto" \
   "$SHARELEDGER_PROTO_DIR/id/base_id.proto" \

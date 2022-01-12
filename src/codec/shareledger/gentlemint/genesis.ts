@@ -2,13 +2,17 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import {ExchangeRate} from "../gentlemint/exchange_rate";
+import {LevelFee} from "../gentlemint/level_fee";
+import {ActionLevelFee} from "../gentlemint/action_level_fee";
 
 export const protobufPackage = "shareledger.gentlemint";
 
 /** GenesisState defines the gentlemint module's genesis state. */
 export interface GenesisState {
-  /** this line is used by starport scaffolding # genesis/proto/state */
   exchangeRate?: ExchangeRate;
+  levelFeeList: LevelFee[];
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  actionLevelFeeList: ActionLevelFee[];
 }
 
 const baseGenesisState: object = {};
@@ -18,6 +22,12 @@ export const GenesisState = {
     if (message.exchangeRate !== undefined) {
       ExchangeRate.encode(message.exchangeRate, writer.uint32(10).fork()).ldelim();
     }
+    for (const v of message.levelFeeList) {
+      LevelFee.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    for (const v of message.actionLevelFeeList) {
+      ActionLevelFee.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -25,11 +35,19 @@ export const GenesisState = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseGenesisState} as GenesisState;
+    message.levelFeeList = [];
+    message.actionLevelFeeList = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.exchangeRate = ExchangeRate.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.levelFeeList.push(LevelFee.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          message.actionLevelFeeList.push(ActionLevelFee.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -43,12 +61,24 @@ export const GenesisState = {
     const message = {...baseGenesisState} as GenesisState;
     message.exchangeRate =
       object.exchangeRate !== undefined && object.exchangeRate !== null ? ExchangeRate.fromJSON(object.exchangeRate) : undefined;
+    message.levelFeeList = (object.levelFeeList ?? []).map((e: any) => LevelFee.fromJSON(e));
+    message.actionLevelFeeList = (object.actionLevelFeeList ?? []).map((e: any) => ActionLevelFee.fromJSON(e));
     return message;
   },
 
   toJSON(message: GenesisState): unknown {
     const obj: any = {};
     message.exchangeRate !== undefined && (obj.exchangeRate = message.exchangeRate ? ExchangeRate.toJSON(message.exchangeRate) : undefined);
+    if (message.levelFeeList) {
+      obj.levelFeeList = message.levelFeeList.map((e) => (e ? LevelFee.toJSON(e) : undefined));
+    } else {
+      obj.levelFeeList = [];
+    }
+    if (message.actionLevelFeeList) {
+      obj.actionLevelFeeList = message.actionLevelFeeList.map((e) => (e ? ActionLevelFee.toJSON(e) : undefined));
+    } else {
+      obj.actionLevelFeeList = [];
+    }
     return obj;
   },
 
@@ -56,6 +86,8 @@ export const GenesisState = {
     const message = {...baseGenesisState} as GenesisState;
     message.exchangeRate =
       object.exchangeRate !== undefined && object.exchangeRate !== null ? ExchangeRate.fromPartial(object.exchangeRate) : undefined;
+    message.levelFeeList = object.levelFeeList?.map((e) => LevelFee.fromPartial(e)) || [];
+    message.actionLevelFeeList = object.actionLevelFeeList?.map((e) => ActionLevelFee.fromPartial(e)) || [];
     return message;
   }
 };
