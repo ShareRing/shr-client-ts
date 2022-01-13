@@ -90,17 +90,25 @@ export class ShareledgerClient extends SigningClient {
     options: SigningOptions = {}
   ): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    if (typeof signer === "string" || isUint8Array(signer)) {
-      if (typeof signer === "string" && !/^[A-F0-9]+$/i.test(signer)) {
-        signer = await Secp256k1HdWallet.fromMnemonic(signer);
-      } else {
-        signer = await Secp256k1Wallet.fromKey(isUint8Array(signer) ? signer : Buffer.from(signer, "hex"));
-      }
-    }
+    signer = typeof signer === "string" || isUint8Array(signer) ? await this.createSigner(signer) : signer;
     return new ShareledgerClient(tmClient, signer, options);
   }
 
-  public static async offline(signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
+  public static async offline(mnemonic: string, options?: SigningOptions): Promise<ShareledgerClient>;
+  public static async offline(privKey: string | Uint8Array, options?: SigningOptions): Promise<ShareledgerClient>;
+  public static async offline(signer: OfflineSigner, options?: SigningOptions): Promise<ShareledgerClient>;
+  public static async offline(signer: string | Uint8Array | OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
+    signer = typeof signer === "string" || isUint8Array(signer) ? await this.createSigner(signer) : signer;
     return new ShareledgerClient(undefined, signer, options);
+  }
+
+  private static async createSigner(input: string | Uint8Array) {
+    let signer: OfflineSigner;
+    if (typeof input === "string" && !/^[A-F0-9]+$/i.test(input)) {
+      signer = await Secp256k1HdWallet.fromMnemonic(input);
+    } else {
+      signer = await Secp256k1Wallet.fromKey(isUint8Array(input) ? input : Buffer.from(input, "hex"));
+    }
+    return signer;
   }
 }
