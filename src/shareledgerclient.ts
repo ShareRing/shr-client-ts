@@ -90,12 +90,12 @@ export class ShareledgerClient extends SigningClient {
     options: SigningOptions = {}
   ): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    if (typeof signer === "string" && !/^[A-F0-9]+$/i.test(signer)) {
-      signer = await Secp256k1HdWallet.fromMnemonic(signer);
-    } else if (!(<OfflineSigner>signer).getAccounts) {
-      signer = await Secp256k1Wallet.fromKey(isUint8Array(signer) ? signer : Buffer.from(<string>signer, "hex"));
-    } else {
-      signer = <OfflineSigner>signer;
+    if (typeof signer === "string" || isUint8Array(signer)) {
+      if (typeof signer === "string" && !/^[A-F0-9]+$/i.test(signer)) {
+        signer = await Secp256k1HdWallet.fromMnemonic(signer);
+      } else {
+        signer = await Secp256k1Wallet.fromKey(isUint8Array(signer) ? signer : Buffer.from(signer, "hex"));
+      }
     }
     return new ShareledgerClient(tmClient, signer, options);
   }
