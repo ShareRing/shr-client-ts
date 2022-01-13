@@ -117,6 +117,13 @@ export interface MsgDeleteActionLevelFee {
 
 export interface MsgDeleteActionLevelFeeResponse {}
 
+export interface MsgLoadFee {
+  creator: string;
+  shrp: string;
+}
+
+export interface MsgLoadFeeResponse {}
+
 const baseMsgLoadShr: object = {creator: "", address: "", amount: ""};
 
 export const MsgLoadShr = {
@@ -1465,6 +1472,100 @@ export const MsgDeleteActionLevelFeeResponse = {
   }
 };
 
+const baseMsgLoadFee: object = {creator: "", shrp: ""};
+
+export const MsgLoadFee = {
+  encode(message: MsgLoadFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.shrp !== "") {
+      writer.uint32(18).string(message.shrp);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadFee {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgLoadFee} as MsgLoadFee;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.shrp = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgLoadFee {
+    const message = {...baseMsgLoadFee} as MsgLoadFee;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.shrp = object.shrp !== undefined && object.shrp !== null ? String(object.shrp) : "";
+    return message;
+  },
+
+  toJSON(message: MsgLoadFee): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.shrp !== undefined && (obj.shrp = message.shrp);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgLoadFee>, I>>(object: I): MsgLoadFee {
+    const message = {...baseMsgLoadFee} as MsgLoadFee;
+    message.creator = object.creator ?? "";
+    message.shrp = object.shrp ?? "";
+    return message;
+  }
+};
+
+const baseMsgLoadFeeResponse: object = {};
+
+export const MsgLoadFeeResponse = {
+  encode(_: MsgLoadFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadFeeResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgLoadFeeResponse} as MsgLoadFeeResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgLoadFeeResponse {
+    const message = {...baseMsgLoadFeeResponse} as MsgLoadFeeResponse;
+    return message;
+  },
+
+  toJSON(_: MsgLoadFeeResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgLoadFeeResponse>, I>>(_: I): MsgLoadFeeResponse {
+    const message = {...baseMsgLoadFeeResponse} as MsgLoadFeeResponse;
+    return message;
+  }
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   LoadShr(request: MsgLoadShr): Promise<MsgLoadShrResponse>;
@@ -1479,8 +1580,9 @@ export interface Msg {
   SetLevelFee(request: MsgSetLevelFee): Promise<MsgSetLevelFeeResponse>;
   DeleteLevelFee(request: MsgDeleteLevelFee): Promise<MsgDeleteLevelFeeResponse>;
   SetActionLevelFee(request: MsgSetActionLevelFee): Promise<MsgSetActionLevelFeeResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   DeleteActionLevelFee(request: MsgDeleteActionLevelFee): Promise<MsgDeleteActionLevelFeeResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  LoadFee(request: MsgLoadFee): Promise<MsgLoadFeeResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1500,6 +1602,7 @@ export class MsgClientImpl implements Msg {
     this.DeleteLevelFee = this.DeleteLevelFee.bind(this);
     this.SetActionLevelFee = this.SetActionLevelFee.bind(this);
     this.DeleteActionLevelFee = this.DeleteActionLevelFee.bind(this);
+    this.LoadFee = this.LoadFee.bind(this);
   }
   LoadShr(request: MsgLoadShr): Promise<MsgLoadShrResponse> {
     const data = MsgLoadShr.encode(request).finish();
@@ -1577,6 +1680,12 @@ export class MsgClientImpl implements Msg {
     const data = MsgDeleteActionLevelFee.encode(request).finish();
     const promise = this.rpc.request("shareledger.gentlemint.Msg", "DeleteActionLevelFee", data);
     return promise.then((data) => MsgDeleteActionLevelFeeResponse.decode(new _m0.Reader(data)));
+  }
+
+  LoadFee(request: MsgLoadFee): Promise<MsgLoadFeeResponse> {
+    const data = MsgLoadFee.encode(request).finish();
+    const promise = this.rpc.request("shareledger.gentlemint.Msg", "LoadFee", data);
+    return promise.then((data) => MsgLoadFeeResponse.decode(new _m0.Reader(data)));
   }
 }
 
