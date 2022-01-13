@@ -16,7 +16,8 @@
     "test:coverage": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' env NODE_ENV=test nyc mocha",
     "lint": "eslint . --ext .ts --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
-    "prettier": "prettier --write --loglevel warn"
+    "prettier": "prettier --write --loglevel warn",
+    "prepare": "yarn build"
   },
   "files": [
     "/dist",
