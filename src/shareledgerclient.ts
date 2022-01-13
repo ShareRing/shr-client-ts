@@ -1,4 +1,5 @@
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
+import {isUint8Array} from "@cosmjs/utils";
 import {AssetExtension} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
@@ -11,7 +12,7 @@ import {IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
 import {TxExtension} from "./modules/tx";
-import {GeneratedType, OfflineSigner, Registry} from "./signing";
+import {GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
 import {defaultRegistryTypes, SigningClient, SigningOptions} from "./signingclient";
 
 /** */
@@ -58,8 +59,44 @@ export class ShareledgerClient extends SigningClient {
     super(tmClient, signer, {...options, registry: new Registry(registryTypes)});
   }
 
-  public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<ShareledgerClient> {
+  /**
+   * Connect with blockchain RPC using mnemonic
+   * @param endpoint RPC endpoint
+   * @param mnemonic Mnemonic
+   * @param options Signing options
+   */
+  public static async connectWithSigner(endpoint: string, mnemonic: string, options?: SigningOptions): Promise<ShareledgerClient>;
+  /**
+   * Connect with blockchain RPC using private key
+   * @param endpoint RPC endpoint
+   * @param privKey Private key
+   * @param options Signing options
+   */
+  public static async connectWithSigner(
+    endpoint: string,
+    privKey: string | Uint8Array,
+    options?: SigningOptions
+  ): Promise<ShareledgerClient>;
+  /**
+   * Connect with blockchain RPC using offline signer
+   * @param endpoint RPC endpoint
+   * @param signer Signer
+   * @param options Signing options
+   */
+  public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options?: SigningOptions): Promise<ShareledgerClient>;
+  public static async connectWithSigner(
+    endpoint: string,
+    signer: string | Uint8Array | OfflineSigner,
+    options: SigningOptions = {}
+  ): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
+    if (typeof signer === "string" && !/^[A-F0-9]+$/i.test(signer)) {
+      signer = await Secp256k1HdWallet.fromMnemonic(signer);
+    } else if (!(<OfflineSigner>signer).getAccounts) {
+      signer = await Secp256k1Wallet.fromKey(isUint8Array(signer) ? signer : Buffer.from(<string>signer, "hex"));
+    } else {
+      signer = <OfflineSigner>signer;
+    }
     return new ShareledgerClient(tmClient, signer, options);
   }
 
