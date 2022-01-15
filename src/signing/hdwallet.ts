@@ -126,6 +126,21 @@ const defaultOptions: Secp256k1HdWalletOptions = {
 /** A wallet for protobuf based signing using SIGN_MODE_DIRECT */
 export class Secp256k1HdWallet implements OfflineDirectSigner {
   /**
+   * Validates whether the input mnemonic is valid.
+   *
+   * @param mnemonic Any valid English mnemonic.
+   * @returns true if the input mnemonic is valid, otherwise false.
+   */
+  public static validateMnemonic(mnemonic: string) {
+    try {
+      const mnemonicChecked = new EnglishMnemonic(mnemonic);
+      return !!mnemonicChecked;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  /**
    * Restores a wallet from the given BIP39 mnemonic.
    *
    * @param mnemonic Any valid English mnemonic.
