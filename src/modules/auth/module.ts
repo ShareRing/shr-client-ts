@@ -4,7 +4,7 @@ import {Any} from "../../codec/google/protobuf/any";
 import {createProtobufRpcClient} from "../../query";
 
 export type AuthQueryExtension = {
-  readonly auth: {
+  get auth(): {
     /**
      * Returns an account if it exists and `null` otherwise.
      *
@@ -27,14 +27,15 @@ export function AuthQueryExtension<T extends {new (...args: any[]): Client & Aut
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
-
-    auth = {
-      ...super["auth"],
-      account: async (address: string) => {
-        const {account} = await queryService.Account({address: address});
-        return account ?? null;
-      }
-    };
+    get auth() {
+      return {
+        ...super["auth"],
+        account: async (address: string) => {
+          const {account} = await queryService.Account({address: address});
+          return account ?? null;
+        }
+      };
+    }
   };
 }
 

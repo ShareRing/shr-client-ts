@@ -11,7 +11,7 @@ import {
 } from "./amino";
 
 export type DocumentQueryExtension = {
-  readonly document: {
+  get document(): {
     readonly documentsByHolder: (holder: string) => Promise<Document[]>;
     readonly documentByProof: (proof: string) => Promise<Document | undefined>;
     readonly documentsByIssuer: (holder: string, issuer: string) => Promise<Document[]>;
@@ -23,7 +23,7 @@ export type DocumentQueryExtension = {
 };
 
 export type DocumentTxExtension = {
-  readonly document: {
+  get document(): {
     readonly create: (issuer: string, holder: string, proof: string, data?: string) => MsgCreateDocumentEncodeObject;
     readonly createMany: (issuer: string, holder: string[], proof: string[], data?: string[]) => MsgCreateDocumentsEncodeObject;
     readonly update: (issuer: string, holder: string, proof: string, data?: string) => MsgUpdateDocumentEncodeObject;
@@ -42,72 +42,76 @@ export function DocumentQueryExtension<T extends {new (...args: any[]): Client &
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
-    document = {
-      ...super["document"],
-      documentsByHolder: async (holder: string) => {
-        const {documents} = await queryService.DocumentByHolderId({id: holder});
-        return documents;
-      },
-      documentByProof: async (proof: string) => {
-        const {document} = await queryService.DocumentByProof({proof});
-        return document;
-      },
-      documentsByIssuer: async (holder: string, issuer: string) => {
-        const {documents} = await queryService.DocumentOfHolderByIssuer({holder, issuer});
-        return documents;
-      }
-    };
+    get document() {
+      return {
+        ...super["document"],
+        documentsByHolder: async (holder: string) => {
+          const {documents} = await queryService.DocumentByHolderId({id: holder});
+          return documents;
+        },
+        documentByProof: async (proof: string) => {
+          const {document} = await queryService.DocumentByProof({proof});
+          return document;
+        },
+        documentsByIssuer: async (holder: string, issuer: string) => {
+          const {documents} = await queryService.DocumentOfHolderByIssuer({holder, issuer});
+          return documents;
+        }
+      };
+    }
   };
 }
 
 export function DocumentTxExtension<T extends {new (...args: any[]): Client & DocumentTxExtension}>(constructor: T): T {
   return class extends constructor {
-    document = {
-      ...super["document"],
-      create: (issuer: string, holder: string, proof: string, data?: string): MsgCreateDocumentEncodeObject => {
-        return {
-          typeUrl: "/shareledger.document.MsgCreateDocument",
-          value: MsgCreateDocument.fromPartial({
-            data,
-            holder,
-            issuer,
-            proof
-          })
-        };
-      },
-      createMany: (issuer: string, holder: string[], proof: string[], data?: string[]): MsgCreateDocumentsEncodeObject => {
-        return {
-          typeUrl: "/shareledger.document.MsgCreateDocuments",
-          value: MsgCreateDocuments.fromPartial({
-            data,
-            holder,
-            issuer,
-            proof
-          })
-        };
-      },
-      update: (issuer: string, holder: string, proof: string, data?: string): MsgUpdateDocumentEncodeObject => {
-        return {
-          typeUrl: "/shareledger.document.MsgUpdateDocument",
-          value: MsgUpdateDocument.fromPartial({
-            data,
-            holder,
-            issuer,
-            proof
-          })
-        };
-      },
-      revoke: (issuer: string, holder: string, proof: string): MsgRevokeDocumentEncodeObject => {
-        return {
-          typeUrl: "/shareledger.document.MsgRevokeDocument",
-          value: MsgRevokeDocument.fromPartial({
-            holder,
-            issuer,
-            proof
-          })
-        };
-      }
-    };
+    get document() {
+      return {
+        ...super["document"],
+        create: (issuer: string, holder: string, proof: string, data?: string): MsgCreateDocumentEncodeObject => {
+          return {
+            typeUrl: "/shareledger.document.MsgCreateDocument",
+            value: MsgCreateDocument.fromPartial({
+              data,
+              holder,
+              issuer,
+              proof
+            })
+          };
+        },
+        createMany: (issuer: string, holder: string[], proof: string[], data?: string[]): MsgCreateDocumentsEncodeObject => {
+          return {
+            typeUrl: "/shareledger.document.MsgCreateDocuments",
+            value: MsgCreateDocuments.fromPartial({
+              data,
+              holder,
+              issuer,
+              proof
+            })
+          };
+        },
+        update: (issuer: string, holder: string, proof: string, data?: string): MsgUpdateDocumentEncodeObject => {
+          return {
+            typeUrl: "/shareledger.document.MsgUpdateDocument",
+            value: MsgUpdateDocument.fromPartial({
+              data,
+              holder,
+              issuer,
+              proof
+            })
+          };
+        },
+        revoke: (issuer: string, holder: string, proof: string): MsgRevokeDocumentEncodeObject => {
+          return {
+            typeUrl: "/shareledger.document.MsgRevokeDocument",
+            value: MsgRevokeDocument.fromPartial({
+              holder,
+              issuer,
+              proof
+            })
+          };
+        }
+      };
+    }
   };
 }
 

@@ -7,13 +7,13 @@ import {createProtobufRpcClient} from "../../query";
 import {MsgCreateAssetEncodeObject, MsgDeleteAssetEncodeObject, MsgUpdateAssetEncodeObject} from "./amino";
 
 export type AssetQueryExtension = {
-  readonly asset: {
+  get asset(): {
     readonly asset: (id: string) => Promise<Asset | undefined>;
   };
 };
 
 export type AssetTxExtension = {
-  readonly asset: {
+  get asset(): {
     readonly create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string) => MsgCreateAssetEncodeObject;
     readonly update: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string) => MsgUpdateAssetEncodeObject;
     readonly delete: (uuid: string, owner: string) => MsgDeleteAssetEncodeObject;
@@ -31,54 +31,58 @@ export function AssetQueryExtension<T extends {new (...args: any[]): Client & As
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
-    asset = {
-      ...super["asset"],
-      asset: async (uuid: string) => {
-        const {asset} = await queryService.AssetByUUID({uuid});
-        return asset;
-      }
-    };
+    get asset() {
+      return {
+        ...super["asset"],
+        asset: async (uuid: string) => {
+          const {asset} = await queryService.AssetByUUID({uuid});
+          return asset;
+        }
+      };
+    }
   };
 }
 
 export function AssetTxExtension<T extends {new (...args: any[]): Client & AssetTxExtension}>(constructor: T): T {
   return class extends constructor {
-    asset = {
-      ...super["asset"],
-      create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgCreateAssetEncodeObject => {
-        return {
-          typeUrl: "/shareledger.asset.MsgCreateAsset",
-          value: MsgCreateAsset.fromPartial({
-            creator,
-            hash,
-            rate,
-            status,
-            UUID: uuid
-          })
-        };
-      },
-      update: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgUpdateAssetEncodeObject => {
-        return {
-          typeUrl: "/shareledger.asset.MsgUpdateAsset",
-          value: MsgUpdateAsset.fromPartial({
-            creator,
-            hash,
-            rate,
-            status,
-            UUID: uuid
-          })
-        };
-      },
-      delete: (uuid: string, owner: string): MsgDeleteAssetEncodeObject => {
-        return {
-          typeUrl: "/shareledger.asset.MsgDeleteAsset",
-          value: MsgDeleteAsset.fromPartial({
-            owner,
-            UUID: uuid
-          })
-        };
-      }
-    };
+    get asset() {
+      return {
+        ...super["asset"],
+        create: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgCreateAssetEncodeObject => {
+          return {
+            typeUrl: "/shareledger.asset.MsgCreateAsset",
+            value: MsgCreateAsset.fromPartial({
+              creator,
+              hash,
+              rate,
+              status,
+              UUID: uuid
+            })
+          };
+        },
+        update: (uuid: string, hash: Uint8Array, status: boolean, rate: Long, creator: string): MsgUpdateAssetEncodeObject => {
+          return {
+            typeUrl: "/shareledger.asset.MsgUpdateAsset",
+            value: MsgUpdateAsset.fromPartial({
+              creator,
+              hash,
+              rate,
+              status,
+              UUID: uuid
+            })
+          };
+        },
+        delete: (uuid: string, owner: string): MsgDeleteAssetEncodeObject => {
+          return {
+            typeUrl: "/shareledger.asset.MsgDeleteAsset",
+            value: MsgDeleteAsset.fromPartial({
+              owner,
+              UUID: uuid
+            })
+          };
+        }
+      };
+    }
   };
 }
 

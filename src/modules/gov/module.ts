@@ -16,7 +16,7 @@ export type GovParamsType = "deposit" | "tallying" | "voting";
 export type GovProposalId = string | number | Long | Uint64;
 
 export type GovQueryExtension = {
-  readonly gov: {
+  get gov(): {
     readonly deposit: (proposalId: GovProposalId, depositor: string) => Promise<Deposit | undefined>;
     readonly deposits: (proposalId: GovProposalId, paginationKey?: Uint8Array) => Promise<QueryDepositsResponse>;
     readonly proposal: (proposalId: GovProposalId) => Promise<Proposal | undefined>;
@@ -33,7 +33,7 @@ export type GovQueryExtension = {
 };
 
 export type GovTxExtension = {
-  readonly gov: {
+  get gov(): {
     readonly submitProposal: (
       proposer: string,
       initialDeposit: Coin[],
@@ -55,108 +55,112 @@ export function GovQueryExtension<T extends {new (...args: any[]): Client & GovQ
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
-    gov = {
-      ...super["gov"],
-      deposit: async (proposalId: GovProposalId, depositor: string) => {
-        const {deposit} = await queryService.Deposit({
-          proposalId: longify(proposalId),
-          depositor
-        });
-        return deposit;
-      },
-      deposits: async (proposalId: GovProposalId, paginationKey?: Uint8Array) => {
-        const response = await queryService.Deposits({
-          proposalId: longify(proposalId),
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      proposal: async (proposalId: GovProposalId) => {
-        const {proposal} = await queryService.Proposal({
-          proposalId: longify(proposalId)
-        });
-        return proposal;
-      },
-      proposals: async (proposalStatus: ProposalStatus, voter: string, depositor: string, paginationKey?: Uint8Array) => {
-        const response = await queryService.Proposals({
-          proposalStatus,
-          voter,
-          depositor,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      tallyResult: async (proposalId: GovProposalId) => {
-        const {tally} = await queryService.TallyResult({
-          proposalId: longify(proposalId)
-        });
-        return tally;
-      },
-      vote: async (proposalId: GovProposalId, voter: string) => {
-        const {vote} = await queryService.Vote({
-          proposalId: longify(proposalId),
-          voter
-        });
-        return vote;
-      },
-      votes: async (proposalId: GovProposalId, paginationKey?: Uint8Array) => {
-        const response = await queryService.Votes({
-          proposalId: longify(proposalId),
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      }
-    };
+    get gov() {
+      return {
+        ...super["gov"],
+        deposit: async (proposalId: GovProposalId, depositor: string) => {
+          const {deposit} = await queryService.Deposit({
+            proposalId: longify(proposalId),
+            depositor
+          });
+          return deposit;
+        },
+        deposits: async (proposalId: GovProposalId, paginationKey?: Uint8Array) => {
+          const response = await queryService.Deposits({
+            proposalId: longify(proposalId),
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        proposal: async (proposalId: GovProposalId) => {
+          const {proposal} = await queryService.Proposal({
+            proposalId: longify(proposalId)
+          });
+          return proposal;
+        },
+        proposals: async (proposalStatus: ProposalStatus, voter: string, depositor: string, paginationKey?: Uint8Array) => {
+          const response = await queryService.Proposals({
+            proposalStatus,
+            voter,
+            depositor,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        tallyResult: async (proposalId: GovProposalId) => {
+          const {tally} = await queryService.TallyResult({
+            proposalId: longify(proposalId)
+          });
+          return tally;
+        },
+        vote: async (proposalId: GovProposalId, voter: string) => {
+          const {vote} = await queryService.Vote({
+            proposalId: longify(proposalId),
+            voter
+          });
+          return vote;
+        },
+        votes: async (proposalId: GovProposalId, paginationKey?: Uint8Array) => {
+          const response = await queryService.Votes({
+            proposalId: longify(proposalId),
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        }
+      };
+    }
   };
 }
 
 export function GovTxExtension<T extends {new (...args: any[]): Client & GovTxExtension}>(constructor: T): T {
   return class extends constructor {
-    gov = {
-      ...super["gov"],
-      submitProposal: (
-        proposer: string,
-        initialDeposit: Coin[],
-        content?: {title: string; description: string}
-      ): MsgSubmitProposalEncodeObject => {
-        return {
-          typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-          value: MsgSubmitProposal.fromPartial({
-            proposer,
-            initialDeposit: [...initialDeposit],
-            content: content
-              ? Any.fromJSON({
-                  typeUrl: "/cosmos.gov.v1beta1.TextProposal",
-                  value: {
-                    title: content.title,
-                    description: content.description
-                  }
-                })
-              : undefined
-          })
-        };
-      },
-      voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption): MsgVoteEncodeObject => {
-        return {
-          typeUrl: "/cosmos.gov.v1beta1.MsgVote",
-          value: MsgVote.fromPartial({
-            proposalId: longify(proposalId),
-            voter,
-            option
-          })
-        };
-      },
-      depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]): MsgDepositEncodeObject => {
-        return {
-          typeUrl: "/cosmos.gov.v1beta1.MsgDeposit",
-          value: MsgDeposit.fromPartial({
-            proposalId: longify(proposalId),
-            depositor,
-            amount: [...amount]
-          })
-        };
-      }
-    };
+    get gov() {
+      return {
+        ...super["gov"],
+        submitProposal: (
+          proposer: string,
+          initialDeposit: Coin[],
+          content?: {title: string; description: string}
+        ): MsgSubmitProposalEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: MsgSubmitProposal.fromPartial({
+              proposer,
+              initialDeposit: [...initialDeposit],
+              content: content
+                ? Any.fromJSON({
+                    typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+                    value: {
+                      title: content.title,
+                      description: content.description
+                    }
+                  })
+                : undefined
+            })
+          };
+        },
+        voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption): MsgVoteEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgVote",
+            value: MsgVote.fromPartial({
+              proposalId: longify(proposalId),
+              voter,
+              option
+            })
+          };
+        },
+        depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]): MsgDepositEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgDeposit",
+            value: MsgDeposit.fromPartial({
+              proposalId: longify(proposalId),
+              depositor,
+              amount: [...amount]
+            })
+          };
+        }
+      };
+    }
   };
 }
 

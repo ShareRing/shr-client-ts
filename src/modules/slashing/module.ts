@@ -8,14 +8,14 @@ import {createPagination, createProtobufRpcClient} from "../../query";
 import {MsgUnjailEncodeObject} from "./amino";
 
 export type SlashingQueryExtension = {
-  readonly slashing: {
+  get slashing(): {
     readonly signingInfo: (consAddress: string) => Promise<ValidatorSigningInfo | undefined>;
     readonly signingInfos: (paginationKey?: Uint8Array) => Promise<QuerySigningInfosResponse>;
   };
 };
 
 export type SlashingTxExtension = {
-  readonly slashing: {
+  get slashing(): {
     readonly unjail: (validatorAddress: string) => MsgUnjailEncodeObject;
   };
 };
@@ -31,37 +31,41 @@ export function SlashingQueryExtension<T extends {new (...args: any[]): Client &
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
-    slashing = {
-      ...super["slashing"],
-      signingInfo: async (consAddress: string) => {
-        const {valSigningInfo} = await queryService.SigningInfo({
-          consAddress
-        });
-        return valSigningInfo;
-      },
-      signingInfos: async (paginationKey?: Uint8Array) => {
-        const response = await queryService.SigningInfos({
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      }
-    };
+    get slashing() {
+      return {
+        ...super["slashing"],
+        signingInfo: async (consAddress: string) => {
+          const {valSigningInfo} = await queryService.SigningInfo({
+            consAddress
+          });
+          return valSigningInfo;
+        },
+        signingInfos: async (paginationKey?: Uint8Array) => {
+          const response = await queryService.SigningInfos({
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        }
+      };
+    }
   };
 }
 
 export function SlashingTxExtension<T extends {new (...args: any[]): Client & SlashingTxExtension}>(constructor: T): T {
   return class extends constructor {
-    slashing = {
-      ...super["slashing"],
-      unjail: (validatorAddress: string): MsgUnjailEncodeObject => {
-        return {
-          typeUrl: "/cosmos.slashing.v1beta1.MsgUnjail",
-          value: MsgUnjail.fromPartial({
-            validatorAddr: validatorAddress
-          })
-        };
-      }
-    };
+    get slashing() {
+      return {
+        ...super["slashing"],
+        unjail: (validatorAddress: string): MsgUnjailEncodeObject => {
+          return {
+            typeUrl: "/cosmos.slashing.v1beta1.MsgUnjail",
+            value: MsgUnjail.fromPartial({
+              validatorAddr: validatorAddress
+            })
+          };
+        }
+      };
+    }
   };
 }
 

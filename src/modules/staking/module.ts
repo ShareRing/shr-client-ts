@@ -27,7 +27,7 @@ import {MsgBeginRedelegateEncodeObject, MsgDelegateEncodeObject, MsgUndelegateEn
 export type BondStatusString = Exclude<keyof typeof BondStatus, "BOND_STATUS_UNSPECIFIED">;
 
 export type StakingQueryExtension = {
-  readonly staking: {
+  get staking(): {
     readonly delegation: (delegatorAddress: string, validatorAddress: string) => Promise<DelegationResponse | undefined>;
     readonly delegatorDelegations: (delegatorAddress: string, paginationKey?: Uint8Array) => Promise<QueryDelegatorDelegationsResponse>;
     readonly delegatorUnbondingDelegations: (
@@ -56,7 +56,7 @@ export type StakingQueryExtension = {
 };
 
 export type StakingTxExtension = {
-  readonly staking: {
+  get staking(): {
     readonly delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgDelegateEncodeObject;
     readonly undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgUndelegateEncodeObject;
     readonly beginRedelegate: (
@@ -79,144 +79,148 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
       // This cannot be used for proof verification
       queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
     }
-    staking = {
-      ...super["staking"],
-      delegation: async (delegatorAddress: string, validatorAddress: string) => {
-        const {delegationResponse} = await queryService.Delegation({
-          delegatorAddr: delegatorAddress,
-          validatorAddr: validatorAddress
-        });
-        return delegationResponse;
-      },
-      delegatorDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
-        const response = await queryService.DelegatorDelegations({
-          delegatorAddr: delegatorAddress,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      delegatorUnbondingDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
-        const response = await queryService.DelegatorUnbondingDelegations({
-          delegatorAddr: delegatorAddress,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      delegatorValidator: async (delegatorAddress: string, validatorAddress: string) => {
-        const {validator} = await queryService.DelegatorValidator({
-          delegatorAddr: delegatorAddress,
-          validatorAddr: validatorAddress
-        });
-        return validator;
-      },
-      delegatorValidators: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
-        const response = await queryService.DelegatorValidators({
-          delegatorAddr: delegatorAddress,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      historicalInfo: async (height: number) => {
-        const {hist} = await queryService.HistoricalInfo({
-          height: Long.fromNumber(height, true)
-        });
-        return hist;
-      },
-      pool: async () => {
-        const {pool} = await queryService.Pool({});
-        return pool;
-      },
-      redelegations: async (
-        delegatorAddress: string,
-        sourceValidatorAddress: string,
-        destinationValidatorAddress: string,
-        paginationKey?: Uint8Array
-      ) => {
-        const response = await queryService.Redelegations({
-          delegatorAddr: delegatorAddress,
-          srcValidatorAddr: sourceValidatorAddress,
-          dstValidatorAddr: destinationValidatorAddress,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      unbondingDelegation: async (delegatorAddress: string, validatorAddress: string) => {
-        const {unbond} = await queryService.UnbondingDelegation({
-          delegatorAddr: delegatorAddress,
-          validatorAddr: validatorAddress
-        });
-        return unbond;
-      },
-      validator: async (validatorAddress: string) => {
-        const {validator} = await queryService.Validator({validatorAddr: validatorAddress});
-        return validator;
-      },
-      validatorDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
-        const response = await queryService.ValidatorDelegations({
-          validatorAddr: validatorAddress,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      validators: async (status: BondStatusString, paginationKey?: Uint8Array) => {
-        const response = await queryService.Validators({
-          status: status,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      },
-      validatorUnbondingDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
-        const response = await queryService.ValidatorUnbondingDelegations({
-          validatorAddr: validatorAddress,
-          pagination: createPagination(paginationKey)
-        });
-        return response;
-      }
-    };
+    get staking() {
+      return {
+        ...super["staking"],
+        delegation: async (delegatorAddress: string, validatorAddress: string) => {
+          const {delegationResponse} = await queryService.Delegation({
+            delegatorAddr: delegatorAddress,
+            validatorAddr: validatorAddress
+          });
+          return delegationResponse;
+        },
+        delegatorDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
+          const response = await queryService.DelegatorDelegations({
+            delegatorAddr: delegatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        delegatorUnbondingDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
+          const response = await queryService.DelegatorUnbondingDelegations({
+            delegatorAddr: delegatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        delegatorValidator: async (delegatorAddress: string, validatorAddress: string) => {
+          const {validator} = await queryService.DelegatorValidator({
+            delegatorAddr: delegatorAddress,
+            validatorAddr: validatorAddress
+          });
+          return validator;
+        },
+        delegatorValidators: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
+          const response = await queryService.DelegatorValidators({
+            delegatorAddr: delegatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        historicalInfo: async (height: number) => {
+          const {hist} = await queryService.HistoricalInfo({
+            height: Long.fromNumber(height, true)
+          });
+          return hist;
+        },
+        pool: async () => {
+          const {pool} = await queryService.Pool({});
+          return pool;
+        },
+        redelegations: async (
+          delegatorAddress: string,
+          sourceValidatorAddress: string,
+          destinationValidatorAddress: string,
+          paginationKey?: Uint8Array
+        ) => {
+          const response = await queryService.Redelegations({
+            delegatorAddr: delegatorAddress,
+            srcValidatorAddr: sourceValidatorAddress,
+            dstValidatorAddr: destinationValidatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        unbondingDelegation: async (delegatorAddress: string, validatorAddress: string) => {
+          const {unbond} = await queryService.UnbondingDelegation({
+            delegatorAddr: delegatorAddress,
+            validatorAddr: validatorAddress
+          });
+          return unbond;
+        },
+        validator: async (validatorAddress: string) => {
+          const {validator} = await queryService.Validator({validatorAddr: validatorAddress});
+          return validator;
+        },
+        validatorDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
+          const response = await queryService.ValidatorDelegations({
+            validatorAddr: validatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        validators: async (status: BondStatusString, paginationKey?: Uint8Array) => {
+          const response = await queryService.Validators({
+            status: status,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        validatorUnbondingDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
+          const response = await queryService.ValidatorUnbondingDelegations({
+            validatorAddr: validatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        }
+      };
+    }
   };
 }
 
 export function StakingTxExtension<T extends {new (...args: any[]): Client & StakingTxExtension}>(constructor: T): T {
   return class extends constructor {
-    staking = {
-      ...super["staking"],
-      delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgDelegateEncodeObject => {
-        return {
-          typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
-          value: MsgDelegate.fromPartial({
-            delegatorAddress,
-            validatorAddress,
-            amount
-          })
-        };
-      },
-      undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgUndelegateEncodeObject => {
-        return {
-          typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
-          value: MsgUndelegate.fromPartial({
-            delegatorAddress,
-            validatorAddress,
-            amount
-          })
-        };
-      },
-      beginRedelegate: (
-        delegatorAddress: string,
-        validatorSrcAddress: string,
-        validatorDstAddress: string,
-        amount: Coin
-      ): MsgBeginRedelegateEncodeObject => {
-        return {
-          typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
-          value: MsgBeginRedelegate.fromPartial({
-            delegatorAddress,
-            validatorSrcAddress,
-            validatorDstAddress,
-            amount
-          })
-        };
-      }
-    };
+    get staking() {
+      return {
+        ...super["staking"],
+        delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgDelegateEncodeObject => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgDelegate",
+            value: MsgDelegate.fromPartial({
+              delegatorAddress,
+              validatorAddress,
+              amount
+            })
+          };
+        },
+        undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin): MsgUndelegateEncodeObject => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate",
+            value: MsgUndelegate.fromPartial({
+              delegatorAddress,
+              validatorAddress,
+              amount
+            })
+          };
+        },
+        beginRedelegate: (
+          delegatorAddress: string,
+          validatorSrcAddress: string,
+          validatorDstAddress: string,
+          amount: Coin
+        ): MsgBeginRedelegateEncodeObject => {
+          return {
+            typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate",
+            value: MsgBeginRedelegate.fromPartial({
+              delegatorAddress,
+              validatorSrcAddress,
+              validatorDstAddress,
+              amount
+            })
+          };
+        }
+      };
+    }
   };
 }
 
