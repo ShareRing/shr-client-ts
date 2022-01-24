@@ -13,6 +13,11 @@ import {
   QueryValidatorUnbondingDelegationsResponse
 } from "../../codec/cosmos/staking/v1beta1/query";
 import {
+  ServiceClientImpl,
+  GetValidatorSetByHeightResponse,
+  GetLatestValidatorSetResponse
+} from "../../codec/cosmos/base/tendermint/v1beta1/query";
+import {
   BondStatus,
   DelegationResponse,
   HistoricalInfo,
@@ -52,6 +57,8 @@ export type StakingQueryExtension = {
       validatorAddress: string,
       paginationKey?: Uint8Array
     ) => Promise<QueryValidatorUnbondingDelegationsResponse>;
+    readonly validatorSetByHeight: (height: Long, paginationKey?: Uint8Array) => Promise<GetValidatorSetByHeightResponse>;
+    readonly latestValidatorSet: (paginationKey?: Uint8Array) => Promise<GetLatestValidatorSetResponse>;
   };
 };
 
@@ -72,12 +79,15 @@ export type StakingExtension = StakingQueryExtension & StakingTxExtension;
 
 export function StakingQueryExtension<T extends {new (...args: any[]): Client & StakingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let tendermintQueryService: ServiceClientImpl;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      const rpc = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpc);
+      tendermintQueryService = new ServiceClientImpl(rpc);
     }
     get staking() {
       return {
@@ -169,6 +179,19 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
         validatorUnbondingDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
           const response = await queryService.ValidatorUnbondingDelegations({
             validatorAddr: validatorAddress,
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        latestValidatorSet: async (paginationKey?: Uint8Array) => {
+          const response = await tendermintQueryService.GetLatestValidatorSet({
+            pagination: createPagination(paginationKey)
+          });
+          return response;
+        },
+        validatorSetByHeight: async (height: Long, paginationKey?: Uint8Array) => {
+          const response = await tendermintQueryService.GetValidatorSetByHeight({
+            height,
             pagination: createPagination(paginationKey)
           });
           return response;
