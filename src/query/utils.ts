@@ -13,6 +13,10 @@ export function toAccAddress(address: string): Uint8Array {
   return Bech32.decode(address).data;
 }
 
+export function toBech32Address(pubkey: Uint8Array, prefix = "shareledger") {
+  return Bech32.encode(prefix, pubkey);
+}
+
 export function createPagination(paginationKey?: Uint8Array): PageRequest | undefined {
   return paginationKey
     ? {

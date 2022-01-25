@@ -1,6 +1,7 @@
 import {fromHex} from "@cosmjs/encoding";
 import {expect} from "chai";
-import {decodeCosmosSdkDecFromProto} from "./utils";
+import {toAccAddress} from ".";
+import {decodeCosmosSdkDecFromProto, toBech32Address} from "./utils";
 
 describe("utils", () => {
   describe("decodeCosmosSdkDecFromProto", () => {
@@ -14,6 +15,14 @@ describe("utils", () => {
 
     it("works for byte inputs", () => {
       expect(decodeCosmosSdkDecFromProto(fromHex("313330303033343138373830313631333938")).toString()).to.equal("0.130003418780161398");
+    });
+  });
+
+  describe("toBech32Address", () => {
+    it("works", () => {
+      expect(toBech32Address(toAccAddress("shareledgervaloper1pdn82hmc36pqfh5qg8q2vcjc60l7h6w8qzcjqz"))).to.equal(
+        "-shareledger1pdn82hmc36pqfh5qg8q2vcjc60l7h6w8glahgf"
+      );
     });
   });
 });

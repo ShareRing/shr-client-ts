@@ -1,4 +1,5 @@
 export {StdFee} from "@cosmjs/amino";
+export {Bech32} from "@cosmjs/encoding";
 export {Account, accountFromAny} from "./account";
 export {
   assertIsBroadcastTxSuccess,
@@ -15,6 +16,7 @@ export {
   TimeoutError
 } from "./client";
 export {calculateFee, GasPrice} from "./fee";
+export {toAccAddress, toBech32Address} from "./query";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
