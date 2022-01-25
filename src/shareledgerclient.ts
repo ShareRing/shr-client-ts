@@ -28,6 +28,14 @@ export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...[A, B, C, D, E].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
+function createRegistry(): Registry {
+  const registry = new Registry();
+  registryTypes.forEach(([typeUrl, type]) => {
+    registry.register(typeUrl, type);
+  });
+  return registry;
+}
+
 export interface ShareledgerClient
   extends AuthExtension,
     BankExtension,
@@ -56,7 +64,7 @@ export interface ShareledgerClient
 @IdExtension
 export class ShareledgerClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
-    super(tmClient, signer, {...options, registry: new Registry(registryTypes)});
+    super(tmClient, signer, {...options, registry: createRegistry()});
   }
 
   /**
