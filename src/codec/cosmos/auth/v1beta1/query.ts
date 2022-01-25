@@ -7,21 +7,13 @@ import {Params} from "../../../cosmos/auth/v1beta1/auth";
 
 export const protobufPackage = "cosmos.auth.v1beta1";
 
-/**
- * QueryAccountsRequest is the request type for the Query/Accounts RPC method.
- *
- * Since: cosmos-sdk 0.43
- */
+/** QueryAccountsRequest is the request type for the Query/Accounts RPC method. */
 export interface QueryAccountsRequest {
   /** pagination defines an optional pagination for the request. */
   pagination?: PageRequest;
 }
 
-/**
- * QueryAccountsResponse is the response type for the Query/Accounts RPC method.
- *
- * Since: cosmos-sdk 0.43
- */
+/** QueryAccountsResponse is the response type for the Query/Accounts RPC method. */
 export interface QueryAccountsResponse {
   /** accounts are the existing accounts */
   accounts: Any[];
@@ -343,11 +335,7 @@ export const QueryParamsResponse = {
 
 /** Query defines the gRPC querier service. */
 export interface Query {
-  /**
-   * Accounts returns all the existing accounts
-   *
-   * Since: cosmos-sdk 0.43
-   */
+  /** Accounts returns all the existing accounts */
   Accounts(request: QueryAccountsRequest): Promise<QueryAccountsResponse>;
   /** Account returns account details based on address. */
   Account(request: QueryAccountRequest): Promise<QueryAccountResponse>;

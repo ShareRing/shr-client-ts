@@ -163,11 +163,7 @@ export interface SimulateRequest {
    * @deprecated
    */
   tx?: Tx;
-  /**
-   * tx_bytes is the raw transaction.
-   *
-   * Since: cosmos-sdk 0.43
-   */
+  /** tx_bytes is the raw transaction. */
   txBytes: Uint8Array;
 }
 

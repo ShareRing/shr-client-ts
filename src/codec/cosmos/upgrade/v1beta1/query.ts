@@ -59,15 +59,12 @@ export interface QueryUpgradedConsensusStateRequest {
  * @deprecated
  */
 export interface QueryUpgradedConsensusStateResponse {
-  /** Since: cosmos-sdk 0.43 */
   upgradedConsensusState: Uint8Array;
 }
 
 /**
  * QueryModuleVersionsRequest is the request type for the Query/ModuleVersions
  * RPC method.
- *
- * Since: cosmos-sdk 0.43
  */
 export interface QueryModuleVersionsRequest {
   /**
@@ -81,8 +78,6 @@ export interface QueryModuleVersionsRequest {
 /**
  * QueryModuleVersionsResponse is the response type for the Query/ModuleVersions
  * RPC method.
- *
- * Since: cosmos-sdk 0.43
  */
 export interface QueryModuleVersionsResponse {
   /** module_versions is a list of module names with their consensus versions. */
@@ -485,11 +480,7 @@ export interface Query {
    * @deprecated
    */
   UpgradedConsensusState(request: QueryUpgradedConsensusStateRequest): Promise<QueryUpgradedConsensusStateResponse>;
-  /**
-   * ModuleVersions queries the list of module versions from state.
-   *
-   * Since: cosmos-sdk 0.43
-   */
+  /** ModuleVersions queries the list of module versions from state. */
   ModuleVersions(request: QueryModuleVersionsRequest): Promise<QueryModuleVersionsResponse>;
 }
 
