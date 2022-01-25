@@ -53,7 +53,11 @@ export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [A, 
 );
 
 function createDefaultRegistry(): Registry {
-  return new Registry(defaultRegistryTypes);
+  const registry = new Registry();
+  defaultRegistryTypes.forEach(([typeUrl, type]) => {
+    registry.register(typeUrl, type);
+  });
+  return registry;
 }
 
 export class SigningClient extends Client {
