@@ -60,6 +60,19 @@ describe("GasPrice", () => {
   });
 });
 
+describe("toString", () => {
+  it("works", () => {
+    const price1 = new GasPrice(Decimal.fromUserInput("3.14", 18), "utest");
+    expect(price1.toString()).to.equal("3.14utest");
+    const price2 = new GasPrice(Decimal.fromUserInput("0.14", 18), "utest");
+    expect(price2.toString()).to.equal("0.14utest");
+
+    // is normalized just like other Decimals
+    const price3 = new GasPrice(Decimal.fromUserInput("003.000", 18), "utest");
+    expect(price3.toString()).to.equal("3utest");
+  });
+});
+
 describe("calculateFee", () => {
   it("multiplies the gas price by the gas limit", () => {
     const gasLimit = 80000;
