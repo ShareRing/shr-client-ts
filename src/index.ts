@@ -28,6 +28,7 @@ export {
   SearchTxQuery
 } from "./search";
 export {ShareledgerClient} from "./shareledgerclient";
+export {ShareledgerSigningClient} from "./shareledgersigningclient";
 export {
   Coin,
   coin,
