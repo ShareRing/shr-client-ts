@@ -123,3 +123,12 @@ export function IdTxExtension<T extends {new (...args: any[]): Client & IdTxExte
 export function IdExtension<T extends {new (...args: any[]): Client & IdExtension}>(constructor: T): T {
   return class extends IdTxExtension(IdQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/shareledger.id.MsgCreateId": "id_create",
+    "/shareledger.id.MsgCreateIds": "id_create-ids",
+    "/shareledger.id.MsgUpdateId": "id_update",
+    "/shareledger.id.MsgReplaceIdOwner": "id_replace"
+  };
+}

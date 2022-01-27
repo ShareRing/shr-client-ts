@@ -167,3 +167,11 @@ export function GovTxExtension<T extends {new (...args: any[]): Client & GovTxEx
 export function GovExtension<T extends {new (...args: any[]): Client & GovExtension}>(constructor: T): T {
   return class extends GovTxExtension(GovQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/cosmos.gov.v1beta1.MsgSubmitProposal": "gov_submit-proposal",
+    "/cosmos.gov.v1beta1.MsgDeposit": "gov_deposit",
+    "/cosmos.gov.v1beta1.MsgVote": "gov_vote"
+  };
+}

@@ -100,3 +100,10 @@ export function BankTxExtension<T extends {new (...args: any[]): Client & BankTx
 export function BankExtension<T extends {new (...args: any[]): Client & BankExtension}>(constructor: T): T {
   return class extends BankTxExtension(BankQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/cosmos.bank.v1beta1.MsgSend": "bank_send",
+    "/cosmos.bank.v1beta1.MsgMultiSend": "bank_multi-send"
+  };
+}

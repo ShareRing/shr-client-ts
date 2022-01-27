@@ -167,3 +167,12 @@ export function DistributionTxExtension<T extends {new (...args: any[]): Client 
 export function DistributionExtension<T extends {new (...args: any[]): Client & DistributionExtension}>(constructor: T): T {
   return class extends DistributionTxExtension(DistributionQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress": "distribution_set-withdraw-address",
+    "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward": "distribution_withdraw-delegator-reward",
+    "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission": "distribution_withdraw-validator-commission",
+    "/cosmos.distribution.v1beta1.MsgFundCommunityPool": "distribution_fund-community-pool"
+  };
+}

@@ -118,3 +118,12 @@ export function DocumentTxExtension<T extends {new (...args: any[]): Client & Do
 export function DocumentExtension<T extends {new (...args: any[]): Client & DocumentExtension}>(constructor: T): T {
   return class extends DocumentTxExtension(DocumentQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/shareledger.document.MsgCreateDocument": "document_create",
+    "/shareledger.document.MsgCreateDocuments": "documents_create",
+    "/shareledger.document.MsgUpdateDocument": "document_update",
+    "/shareledger.document.MsgRevokeDocument": "document_revoke"
+  };
+}

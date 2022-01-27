@@ -72,3 +72,9 @@ export function SlashingTxExtension<T extends {new (...args: any[]): Client & Sl
 export function SlashingExtension<T extends {new (...args: any[]): Client & SlashingExtension}>(constructor: T): T {
   return class extends SlashingTxExtension(SlashingQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/cosmos.slashing.v1beta1.MsgUnjail": "slashing_unjail"
+  };
+}

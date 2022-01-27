@@ -1,6 +1,6 @@
+import {Coin} from "@cosmjs/amino";
 import Long from "long";
 import {Client} from "../../client";
-import {LevelFee} from "../../codec/shareledger/gentlemint/level_fee";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {
   MsgBurnShr,
@@ -29,7 +29,8 @@ import {
 export type GentlemintQueryExtension = {
   get gentlemint(): {
     readonly exchangeRate: () => Promise<Long>;
-    readonly levelFees: () => Promise<LevelFee[]>;
+    readonly levelFees: () => Promise<Record<string, Coin>>;
+    readonly checkFees: (address: string, actions: string | string[]) => Promise<Coin>;
   };
 };
 
@@ -67,7 +68,24 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         },
         levelFees: async () => {
           const {levelFee} = await queryService.LevelFees({});
-          return levelFee;
+          const {rate} = await queryService.ExchangeRate({});
+          return levelFee.reduce((prev, curr) => {
+            prev[curr.level] = {amount: Long.fromString(rate).mul(curr.fee).toString(), denom: "shr"};
+            return prev;
+          }, {} as Record<string, Coin>);
+        },
+        checkFees: async (address: string, actions: string | string[]) => {
+          actions = typeof actions === "string" ? [actions] : actions;
+          try {
+            const {shrFee} = await queryService.CheckFees({address, actions});
+            if (!shrFee) {
+              throw "Not found";
+            }
+            return {amount: shrFee, denom: "shr"};
+          } catch (e) {
+            const fees = await this.gentlemint.levelFees();
+            return fees.low || fees.high;
+          }
         }
       };
     }
@@ -169,4 +187,18 @@ export function GentlemintTxExtension<T extends {new (...args: any[]): Client & 
 
 export function GentlemintExtension<T extends {new (...args: any[]): Client & GentlemintExtension}>(constructor: T): T {
   return class extends GentlemintTxExtension(GentlemintQueryExtension(constructor)) {};
+}
+
+export function createActions(): Record<string, string> {
+  return {
+    "/shareledger.gentlemint.MsgBurnShr": "gentlemint_burn-shr",
+    "/shareledger.gentlemint.MsgBurnShrp": "gentlemint_burn-shrp",
+    "/shareledger.gentlemint.MsgLoadShr": "gentlemint_load-shr",
+    "/shareledger.gentlemint.MsgLoadShrp": "gentlemint_load-shrp",
+    "/shareledger.gentlemint.MsgSendShr": "gentlemint_send-shr",
+    "/shareledger.gentlemint.MsgSendShrp": "gentlemint_send-shrp",
+    "/shareledger.gentlemint.MsgBuyShr": "gentlemint_buy-shr",
+    "/shareledger.gentlemint.MsgBuyCent": "gentlemint_buy-cent ",
+    "/shareledger.gentlemint.MsgSetExchange": "gentlemint_set-exchange"
+  };
 }

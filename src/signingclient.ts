@@ -40,17 +40,19 @@ export interface SigningOptions {
 
 /** */
 import {createRegistryTypes as A} from "./modules/auth";
-import {createRegistryTypes as B} from "./modules/bank";
-import {createRegistryTypes as C} from "./modules/distribution";
-import {createRegistryTypes as D} from "./modules/gov";
-import {createRegistryTypes as E} from "./modules/slashing";
-import {createRegistryTypes as F} from "./modules/staking";
+import {createRegistryTypes as B, createActions as BB} from "./modules/bank";
+import {createRegistryTypes as C, createActions as CC} from "./modules/distribution";
+import {createRegistryTypes as D, createActions as DD} from "./modules/gov";
+import {createRegistryTypes as E, createActions as EE} from "./modules/slashing";
+import {createRegistryTypes as F, createActions as FF} from "./modules/staking";
 /** */
 
 export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [A, B, C, D, E, F].reduce(
   (prev, curr) => [...prev, ...curr()],
   []
 );
+
+export const defaultActions: Record<string, string> = [BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {});
 
 function createDefaultRegistry(): Registry {
   const registry = new Registry();
@@ -100,7 +102,7 @@ export class SigningClient extends Client {
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: StdFee,
-    memo = ""
+    memo?: string
   ): Promise<BroadcastTxResponse> {
     const txBytes = await this.sign(signerAddress, messages, fee, memo);
     return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
@@ -120,7 +122,7 @@ export class SigningClient extends Client {
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: StdFee,
-    memo: string,
+    memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
     let signerData: SignerData;
@@ -137,8 +139,8 @@ export class SigningClient extends Client {
     }
 
     return isOfflineDirectSigner(this.signer)
-      ? this.signDirect(signerAddress, messages, fee, memo, signerData)
-      : this.signAmino(signerAddress, messages, fee, memo, signerData);
+      ? this.signDirect(signerAddress, messages, fee, memo ?? "", signerData)
+      : this.signAmino(signerAddress, messages, fee, memo ?? "", signerData);
   }
 
   private async signAmino(

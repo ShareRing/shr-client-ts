@@ -1,5 +1,7 @@
+import {StdFee} from "@cosmjs/amino";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
+import {BroadcastTxResponse} from "./client";
 import {AssetExtension} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
@@ -12,21 +14,26 @@ import {IdExtension, IdTxExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
 import {TxExtension} from "./modules/tx";
-import {GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
-import {defaultRegistryTypes, SigningClient, SigningOptions} from "./signingclient";
+import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
+import {defaultActions, defaultRegistryTypes, SigningClient, SigningOptions, SignerData} from "./signingclient";
 
 /** */
-import {createRegistryTypes as A} from "./modules/asset";
-import {createRegistryTypes as B} from "./modules/document";
-import {createRegistryTypes as C} from "./modules/electoral";
-import {createRegistryTypes as D} from "./modules/gentlemint";
-import {createRegistryTypes as E} from "./modules/id";
+import {createRegistryTypes as A, createActions as AA} from "./modules/asset";
+import {createRegistryTypes as B, createActions as BB} from "./modules/document";
+import {createRegistryTypes as C, createActions as CC} from "./modules/electoral";
+import {createRegistryTypes as D, createActions as DD} from "./modules/gentlemint";
+import {createRegistryTypes as E, createActions as EE} from "./modules/id";
 /** */
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
   ...[A, B, C, D, E].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
+
+export const actions: Record<string, string> = {
+  ...defaultActions,
+  ...[AA, BB, CC, DD, EE].reduce((prev, curr) => ({...prev, ...curr()}), {})
+};
 
 function createRegistry(): Registry {
   const registry = new Registry();
@@ -125,5 +132,41 @@ export class ShareledgerSigningClient extends SigningClient {
       signer = await Secp256k1Wallet.fromKey(isUint8Array(input) ? input : Buffer.from(input, "hex"));
     }
     return signer;
+  }
+
+  public async signAndBroadcast(
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee?: StdFee | string,
+    memo?: string
+  ): Promise<BroadcastTxResponse> {
+    fee = await this.ensureFee(signerAddress, messages, fee);
+    return super.signAndBroadcast(signerAddress, messages, fee, memo);
+  }
+
+  public async sign(
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee?: StdFee | string,
+    memo?: string,
+    explicitSignerData?: SignerData
+  ): Promise<Uint8Array> {
+    fee = await this.ensureFee(signerAddress, messages, fee);
+    return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
+  }
+
+  private async ensureFee(signerAddress: string, messages: readonly EncodeObject[], fee?: StdFee | string) {
+    if (!fee) {
+      const coin = await this.gentlemint.checkFees(
+        signerAddress,
+        messages.map((msg) => actions[msg.typeUrl])
+      );
+      fee = {gas: "200000", amount: [coin]};
+    } else if (typeof fee === "string") {
+      // assume shr // TODO?
+      fee = {gas: "200000", amount: [{amount: fee, denom: "shr"}]};
+    }
+    console.log(fee);
+    return fee;
   }
 }

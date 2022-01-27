@@ -250,3 +250,13 @@ export function StakingTxExtension<T extends {new (...args: any[]): Client & Sta
 export function StakingExtension<T extends {new (...args: any[]): Client & StakingExtension}>(constructor: T): T {
   return class extends StakingTxExtension(StakingQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/cosmos.staking.v1beta1.MsgCreateValidator": "staking_create-validator",
+    "/cosmos.staking.v1beta1.MsgEditValidator": "staking_edit-validator",
+    "/cosmos.staking.v1beta1.MsgDelegate": "staking_delegate",
+    "/cosmos.staking.v1beta1.MsgBeginRedelegate": "staking_redelegate",
+    "/cosmos.staking.v1beta1.MsgUndelegate": "staking_unbond"
+  };
+}

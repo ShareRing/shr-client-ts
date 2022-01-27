@@ -89,3 +89,11 @@ export function AssetTxExtension<T extends {new (...args: any[]): Client & Asset
 export function AssetExtension<T extends {new (...args: any[]): Client & AssetExtension}>(constructor: T): T {
   return class extends AssetTxExtension(AssetQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/shareledger.asset.MsgCreateAsset": "asset_create",
+    "/shareledger.asset.MsgUpdateAsset": "asset_update",
+    "/shareledger.asset.MsgDeleteAsset": "asset_delete"
+  };
+}

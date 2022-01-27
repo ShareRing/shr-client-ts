@@ -229,3 +229,18 @@ export function ElectoralTxExtension<T extends {new (...args: any[]): Client & E
 export function ElectoralExtension<T extends {new (...args: any[]): Client & ElectoralExtension}>(constructor: T): T {
   return class extends ElectoralTxExtension(ElectoralQueryExtension(constructor)) {};
 }
+
+export function createActions(): Record<string, string> {
+  return {
+    "/shareledger.electoral.MsgEnrollAccountOperators": "electoral_enroll-account-operators",
+    "/shareledger.electoral.MsgRevokeAccountOperators": "electoral_revoke-account-operators",
+    "/shareledger.electoral.MsgEnrollDocIssuers": "electoral_enroll-doc-issuers",
+    "/shareledger.electoral.MsgRevokeDocIssuers": "electoral_revoke-doc-issuers",
+    "/shareledger.electoral.MsgEnrollIdSigners": "electoral_enroll-id-signers",
+    "/shareledger.electoral.MsgRevokeIdSigners": "electoral_revoke-id-signers",
+    "/shareledger.electoral.MsgEnrollLoaders": "electoral_enroll-loaders",
+    "/shareledger.electoral.MsgRevokeLoaders": "electoral_revoke-loaders",
+    "/shareledger.electoral.MsgEnrollVoter": "electoral_enroll-voter",
+    "/shareledger.electoral.MsgRevokeVoter": "electoral_revoke-voter"
+  };
+}
