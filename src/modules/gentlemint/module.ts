@@ -67,21 +67,20 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           return Long.fromString(rate);
         },
         levelFees: async () => {
-          const {levelFee} = await queryService.LevelFees({});
-          const {rate} = await queryService.ExchangeRate({});
-          return levelFee.reduce((prev, curr) => {
-            prev[curr.level] = {amount: Long.fromString(rate).mul(curr.fee).toString(), denom: "shr"};
+          const {levelFees} = await queryService.LevelFees({});
+          return levelFees.reduce((prev, curr) => {
+            prev[curr.level] = curr.convertedFee ?? {amount: "1", denom: "shr"};
             return prev;
           }, {} as Record<string, Coin>);
         },
         checkFees: async (address: string, actions: string | string[]) => {
           actions = typeof actions === "string" ? [actions] : actions;
           try {
-            const {shrFee} = await queryService.CheckFees({address, actions});
-            if (!shrFee) {
+            const {convertedFee} = await queryService.CheckFees({address, actions});
+            if (!convertedFee) {
               throw "Not found";
             }
-            return {amount: shrFee, denom: "shr"};
+            return convertedFee;
           } catch (e) {
             const fees = await this.gentlemint.levelFees();
             return fees.low || fees.high;
