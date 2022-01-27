@@ -102,8 +102,7 @@ export class SigningClient extends Client {
     fee: StdFee,
     memo = ""
   ): Promise<BroadcastTxResponse> {
-    const txRaw = await this.sign(signerAddress, messages, fee, memo);
-    const txBytes = TxRaw.encode(txRaw).finish();
+    const txBytes = await this.sign(signerAddress, messages, fee, memo);
     return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
   }
 
@@ -123,7 +122,7 @@ export class SigningClient extends Client {
     fee: StdFee,
     memo: string,
     explicitSignerData?: SignerData
-  ): Promise<TxRaw> {
+  ): Promise<Uint8Array> {
     let signerData: SignerData;
     if (explicitSignerData) {
       signerData = explicitSignerData;
@@ -148,7 +147,7 @@ export class SigningClient extends Client {
     fee: StdFee,
     memo: string,
     {accountNumber, sequence, chainId}: SignerData
-  ): Promise<TxRaw> {
+  ): Promise<Uint8Array> {
     assert(!isOfflineDirectSigner(this.signer));
     const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
@@ -171,11 +170,13 @@ export class SigningClient extends Client {
     const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
     const signedSequence = Int53.fromString(signed.sequence).toNumber();
     const signedAuthInfoBytes = makeAuthInfoBytes([{pubkey, sequence: signedSequence}], signed.fee.amount, signedGasLimit, signMode);
-    return TxRaw.fromPartial({
-      bodyBytes: signedTxBodyBytes,
-      authInfoBytes: signedAuthInfoBytes,
-      signatures: [fromBase64(signature.signature)]
-    });
+    return TxRaw.encode(
+      TxRaw.fromPartial({
+        bodyBytes: signedTxBodyBytes,
+        authInfoBytes: signedAuthInfoBytes,
+        signatures: [fromBase64(signature.signature)]
+      })
+    ).finish();
   }
 
   private async signDirect(
@@ -184,7 +185,7 @@ export class SigningClient extends Client {
     fee: StdFee,
     memo: string,
     {accountNumber, sequence, chainId}: SignerData
-  ): Promise<TxRaw> {
+  ): Promise<Uint8Array> {
     assert(isOfflineDirectSigner(this.signer));
     const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
@@ -203,10 +204,12 @@ export class SigningClient extends Client {
     const authInfoBytes = makeAuthInfoBytes([{pubkey, sequence}], fee.amount, gasLimit);
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
     const {signature, signed} = await this.signer.signDirect(signerAddress, signDoc);
-    return TxRaw.fromPartial({
-      bodyBytes: signed.bodyBytes,
-      authInfoBytes: signed.authInfoBytes,
-      signatures: [fromBase64(signature.signature)]
-    });
+    return TxRaw.encode(
+      TxRaw.fromPartial({
+        bodyBytes: signed.bodyBytes,
+        authInfoBytes: signed.authInfoBytes,
+        signatures: [fromBase64(signature.signature)]
+      })
+    ).finish();
   }
 }
