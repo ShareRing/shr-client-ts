@@ -1,6 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
+import {DecCoin} from "../../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "shareledger.gentlemint";
 
@@ -119,7 +120,7 @@ export interface MsgDeleteActionLevelFeeResponse {}
 
 export interface MsgLoadFee {
   creator: string;
-  shrp: string;
+  shrp?: DecCoin;
 }
 
 export interface MsgLoadFeeResponse {}
@@ -1472,15 +1473,15 @@ export const MsgDeleteActionLevelFeeResponse = {
   }
 };
 
-const baseMsgLoadFee: object = {creator: "", shrp: ""};
+const baseMsgLoadFee: object = {creator: ""};
 
 export const MsgLoadFee = {
   encode(message: MsgLoadFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
-    if (message.shrp !== "") {
-      writer.uint32(18).string(message.shrp);
+    if (message.shrp !== undefined) {
+      DecCoin.encode(message.shrp, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -1496,7 +1497,7 @@ export const MsgLoadFee = {
           message.creator = reader.string();
           break;
         case 2:
-          message.shrp = reader.string();
+          message.shrp = DecCoin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -1509,21 +1510,21 @@ export const MsgLoadFee = {
   fromJSON(object: any): MsgLoadFee {
     const message = {...baseMsgLoadFee} as MsgLoadFee;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.shrp = object.shrp !== undefined && object.shrp !== null ? String(object.shrp) : "";
+    message.shrp = object.shrp !== undefined && object.shrp !== null ? DecCoin.fromJSON(object.shrp) : undefined;
     return message;
   },
 
   toJSON(message: MsgLoadFee): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
-    message.shrp !== undefined && (obj.shrp = message.shrp);
+    message.shrp !== undefined && (obj.shrp = message.shrp ? DecCoin.toJSON(message.shrp) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgLoadFee>, I>>(object: I): MsgLoadFee {
     const message = {...baseMsgLoadFee} as MsgLoadFee;
     message.creator = object.creator ?? "";
-    message.shrp = object.shrp ?? "";
+    message.shrp = object.shrp !== undefined && object.shrp !== null ? DecCoin.fromPartial(object.shrp) : undefined;
     return message;
   }
 };

@@ -5,7 +5,7 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 ROOT_PROTO_DIR="./proto/cosmos/cosmos-sdk"
 COSMOS_PROTO_DIR="$ROOT_PROTO_DIR/proto"
 THIRD_PARTY_PROTO_DIR="$ROOT_PROTO_DIR/third_party/proto"
-SHARELEDGER_PROTO_DIR="./proto/shareledger/proto/shareledger"
+SHARELEDGER_PROTO_DIR="./proto/shareledger/proto"
 OUT_DIR="./src/codec/"
 
 mkdir -p "$OUT_DIR"
@@ -123,43 +123,51 @@ protoc \
   "$THIRD_PARTY_PROTO_DIR/tendermint/types/validator.proto" \
   "$THIRD_PARTY_PROTO_DIR/tendermint/version/types.proto"
 
+sed -i "" 's/import "asset\//import "shareledger\/asset\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+sed -i "" 's/import "booking\//import "shareledger\/booking\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+sed -i "" 's/import "document\//import "shareledger\/document\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+sed -i "" 's/import "electoral\//import "shareledger\/electoral\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+sed -i "" 's/import "gentlemint\//import "shareledger\/gentlemint\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+sed -i "" 's/import "id\//import "shareledger\/id\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+
 protoc \
   --plugin="$(yarn bin protoc-gen-ts_proto)" \
-  --ts_proto_out="$OUT_DIR/shareledger" \
+  --ts_proto_out="$OUT_DIR" \
+  --proto_path="$COSMOS_PROTO_DIR" \
   --proto_path="$THIRD_PARTY_PROTO_DIR" \
   --proto_path="$SHARELEDGER_PROTO_DIR" \
   --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=true" \
-  "$SHARELEDGER_PROTO_DIR/asset/asset.proto" \
-  "$SHARELEDGER_PROTO_DIR/asset/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/asset/query.proto" \
-  "$SHARELEDGER_PROTO_DIR/asset/tx.proto" \
-  "$SHARELEDGER_PROTO_DIR/booking/booking.proto" \
-  "$SHARELEDGER_PROTO_DIR/booking/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/booking/query.proto" \
-  "$SHARELEDGER_PROTO_DIR/booking/tx.proto" \
-  "$SHARELEDGER_PROTO_DIR/document/doc_basic_state.proto" \
-  "$SHARELEDGER_PROTO_DIR/document/doc_detail_state.proto" \
-  "$SHARELEDGER_PROTO_DIR/document/document.proto" \
-  "$SHARELEDGER_PROTO_DIR/document/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/document/query.proto" \
-  "$SHARELEDGER_PROTO_DIR/document/tx.proto" \
-  "$SHARELEDGER_PROTO_DIR/electoral/acc_state.proto" \
-  "$SHARELEDGER_PROTO_DIR/electoral/authority.proto" \
-  "$SHARELEDGER_PROTO_DIR/electoral/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/electoral/query.proto" \
-  "$SHARELEDGER_PROTO_DIR/electoral/treasurer.proto" \
-  "$SHARELEDGER_PROTO_DIR/electoral/tx.proto" \
-  "$SHARELEDGER_PROTO_DIR/gentlemint/action_level_fee.proto" \
-  "$SHARELEDGER_PROTO_DIR/gentlemint/exchange_rate.proto" \
-  "$SHARELEDGER_PROTO_DIR/gentlemint/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/gentlemint/level_fee.proto" \
-  "$SHARELEDGER_PROTO_DIR/gentlemint/query.proto" \
-  "$SHARELEDGER_PROTO_DIR/gentlemint/tx.proto" \
-  "$SHARELEDGER_PROTO_DIR/id/base_id.proto" \
-  "$SHARELEDGER_PROTO_DIR/id/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/id/id.proto" \
-  "$SHARELEDGER_PROTO_DIR/id/query.proto" \
-  "$SHARELEDGER_PROTO_DIR/id/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/asset/asset.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/asset/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/asset/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/asset/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/booking/booking.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/booking/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/booking/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/booking/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/document/doc_basic_state.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/document/doc_detail_state.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/document/document.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/document/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/document/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/document/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/electoral/acc_state.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/electoral/authority.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/electoral/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/electoral/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/electoral/treasurer.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/electoral/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/gentlemint/action_level_fee.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/gentlemint/exchange_rate.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/gentlemint/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/gentlemint/level_fee.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/gentlemint/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/gentlemint/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/id/base_id.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/id/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/id/id.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/id/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/id/tx.proto" \
 
 # Remove unnecessary codec files
 rm -rf \

@@ -1,9 +1,9 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {ExchangeRate} from "../gentlemint/exchange_rate";
-import {LevelFee} from "../gentlemint/level_fee";
-import {ActionLevelFee} from "../gentlemint/action_level_fee";
+import {ExchangeRate} from "../../shareledger/gentlemint/exchange_rate";
+import {LevelFee} from "../../shareledger/gentlemint/level_fee";
+import {ActionLevelFee} from "../../shareledger/gentlemint/action_level_fee";
 
 export const protobufPackage = "shareledger.gentlemint";
 

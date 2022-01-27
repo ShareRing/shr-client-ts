@@ -1,8 +1,9 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {LevelFee} from "../gentlemint/level_fee";
-import {ActionLevelFee} from "../gentlemint/action_level_fee";
+import {LevelFee, LevelFeeDetail} from "../../shareledger/gentlemint/level_fee";
+import {Coin, DecCoin} from "../../cosmos/base/v1beta1/coin";
+import {ActionLevelFee} from "../../shareledger/gentlemint/action_level_fee";
 
 export const protobufPackage = "shareledger.gentlemint";
 
@@ -23,7 +24,7 @@ export interface QueryLevelFeeResponse {
 export interface QueryLevelFeesRequest {}
 
 export interface QueryLevelFeesResponse {
-  levelFee: LevelFee[];
+  levelFees: LevelFeeDetail[];
 }
 
 export interface QueryActionLevelFeeRequest {
@@ -48,10 +49,10 @@ export interface QueryCheckFeesRequest {
 }
 
 export interface QueryCheckFeesResponse {
-  shrFee: string;
+  convertedFee?: Coin;
   sufficientFee: boolean;
   sufficientFundForFee: boolean;
-  shrpCostLoadingFee: string;
+  costLoadingFee?: DecCoin;
 }
 
 const baseQueryExchangeRateRequest: object = {};
@@ -275,8 +276,8 @@ const baseQueryLevelFeesResponse: object = {};
 
 export const QueryLevelFeesResponse = {
   encode(message: QueryLevelFeesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.levelFee) {
-      LevelFee.encode(v!, writer.uint32(10).fork()).ldelim();
+    for (const v of message.levelFees) {
+      LevelFeeDetail.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -285,12 +286,12 @@ export const QueryLevelFeesResponse = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseQueryLevelFeesResponse} as QueryLevelFeesResponse;
-    message.levelFee = [];
+    message.levelFees = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.levelFee.push(LevelFee.decode(reader, reader.uint32()));
+          message.levelFees.push(LevelFeeDetail.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -302,23 +303,23 @@ export const QueryLevelFeesResponse = {
 
   fromJSON(object: any): QueryLevelFeesResponse {
     const message = {...baseQueryLevelFeesResponse} as QueryLevelFeesResponse;
-    message.levelFee = (object.levelFee ?? []).map((e: any) => LevelFee.fromJSON(e));
+    message.levelFees = (object.levelFees ?? []).map((e: any) => LevelFeeDetail.fromJSON(e));
     return message;
   },
 
   toJSON(message: QueryLevelFeesResponse): unknown {
     const obj: any = {};
-    if (message.levelFee) {
-      obj.levelFee = message.levelFee.map((e) => (e ? LevelFee.toJSON(e) : undefined));
+    if (message.levelFees) {
+      obj.levelFees = message.levelFees.map((e) => (e ? LevelFeeDetail.toJSON(e) : undefined));
     } else {
-      obj.levelFee = [];
+      obj.levelFees = [];
     }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLevelFeesResponse>, I>>(object: I): QueryLevelFeesResponse {
     const message = {...baseQueryLevelFeesResponse} as QueryLevelFeesResponse;
-    message.levelFee = object.levelFee?.map((e) => LevelFee.fromPartial(e)) || [];
+    message.levelFees = object.levelFees?.map((e) => LevelFeeDetail.fromPartial(e)) || [];
     return message;
   }
 };
@@ -586,12 +587,12 @@ export const QueryCheckFeesRequest = {
   }
 };
 
-const baseQueryCheckFeesResponse: object = {shrFee: "", sufficientFee: false, sufficientFundForFee: false, shrpCostLoadingFee: ""};
+const baseQueryCheckFeesResponse: object = {sufficientFee: false, sufficientFundForFee: false};
 
 export const QueryCheckFeesResponse = {
   encode(message: QueryCheckFeesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.shrFee !== "") {
-      writer.uint32(10).string(message.shrFee);
+    if (message.convertedFee !== undefined) {
+      Coin.encode(message.convertedFee, writer.uint32(10).fork()).ldelim();
     }
     if (message.sufficientFee === true) {
       writer.uint32(16).bool(message.sufficientFee);
@@ -599,8 +600,8 @@ export const QueryCheckFeesResponse = {
     if (message.sufficientFundForFee === true) {
       writer.uint32(24).bool(message.sufficientFundForFee);
     }
-    if (message.shrpCostLoadingFee !== "") {
-      writer.uint32(34).string(message.shrpCostLoadingFee);
+    if (message.costLoadingFee !== undefined) {
+      DecCoin.encode(message.costLoadingFee, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -613,7 +614,7 @@ export const QueryCheckFeesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.shrFee = reader.string();
+          message.convertedFee = Coin.decode(reader, reader.uint32());
           break;
         case 2:
           message.sufficientFee = reader.bool();
@@ -622,7 +623,7 @@ export const QueryCheckFeesResponse = {
           message.sufficientFundForFee = reader.bool();
           break;
         case 4:
-          message.shrpCostLoadingFee = reader.string();
+          message.costLoadingFee = DecCoin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -634,30 +635,34 @@ export const QueryCheckFeesResponse = {
 
   fromJSON(object: any): QueryCheckFeesResponse {
     const message = {...baseQueryCheckFeesResponse} as QueryCheckFeesResponse;
-    message.shrFee = object.shrFee !== undefined && object.shrFee !== null ? String(object.shrFee) : "";
+    message.convertedFee =
+      object.convertedFee !== undefined && object.convertedFee !== null ? Coin.fromJSON(object.convertedFee) : undefined;
     message.sufficientFee = object.sufficientFee !== undefined && object.sufficientFee !== null ? Boolean(object.sufficientFee) : false;
     message.sufficientFundForFee =
       object.sufficientFundForFee !== undefined && object.sufficientFundForFee !== null ? Boolean(object.sufficientFundForFee) : false;
-    message.shrpCostLoadingFee =
-      object.shrpCostLoadingFee !== undefined && object.shrpCostLoadingFee !== null ? String(object.shrpCostLoadingFee) : "";
+    message.costLoadingFee =
+      object.costLoadingFee !== undefined && object.costLoadingFee !== null ? DecCoin.fromJSON(object.costLoadingFee) : undefined;
     return message;
   },
 
   toJSON(message: QueryCheckFeesResponse): unknown {
     const obj: any = {};
-    message.shrFee !== undefined && (obj.shrFee = message.shrFee);
+    message.convertedFee !== undefined && (obj.convertedFee = message.convertedFee ? Coin.toJSON(message.convertedFee) : undefined);
     message.sufficientFee !== undefined && (obj.sufficientFee = message.sufficientFee);
     message.sufficientFundForFee !== undefined && (obj.sufficientFundForFee = message.sufficientFundForFee);
-    message.shrpCostLoadingFee !== undefined && (obj.shrpCostLoadingFee = message.shrpCostLoadingFee);
+    message.costLoadingFee !== undefined &&
+      (obj.costLoadingFee = message.costLoadingFee ? DecCoin.toJSON(message.costLoadingFee) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryCheckFeesResponse>, I>>(object: I): QueryCheckFeesResponse {
     const message = {...baseQueryCheckFeesResponse} as QueryCheckFeesResponse;
-    message.shrFee = object.shrFee ?? "";
+    message.convertedFee =
+      object.convertedFee !== undefined && object.convertedFee !== null ? Coin.fromPartial(object.convertedFee) : undefined;
     message.sufficientFee = object.sufficientFee ?? false;
     message.sufficientFundForFee = object.sufficientFundForFee ?? false;
-    message.shrpCostLoadingFee = object.shrpCostLoadingFee ?? "";
+    message.costLoadingFee =
+      object.costLoadingFee !== undefined && object.costLoadingFee !== null ? DecCoin.fromPartial(object.costLoadingFee) : undefined;
     return message;
   }
 };

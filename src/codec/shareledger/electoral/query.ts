@@ -1,8 +1,8 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {AccState} from "../electoral/acc_state";
-import {PageRequest, PageResponse} from "../cosmos/base/query/v1beta1/pagination";
+import {AccState} from "../../shareledger/electoral/acc_state";
+import {PageRequest, PageResponse} from "../../cosmos/base/query/v1beta1/pagination";
 
 export const protobufPackage = "shareledger.electoral";
 
