@@ -1,5 +1,6 @@
 import Long from "long";
 import {Client} from "../../client";
+import {LevelFee} from "../../codec/shareledger/gentlemint/level_fee";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {
   MsgBurnShr,
@@ -28,6 +29,7 @@ import {
 export type GentlemintQueryExtension = {
   get gentlemint(): {
     readonly exchangeRate: () => Promise<Long>;
+    readonly levelFees: () => Promise<LevelFee[]>;
   };
 };
 
@@ -62,6 +64,10 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         exchangeRate: async () => {
           const {rate} = await queryService.ExchangeRate({});
           return Long.fromString(rate);
+        },
+        levelFees: async () => {
+          const {levelFee} = await queryService.LevelFees({});
+          return levelFee;
         }
       };
     }
