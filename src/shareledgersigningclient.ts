@@ -166,7 +166,6 @@ export class ShareledgerSigningClient extends SigningClient {
       // assume shr // TODO?
       fee = {gas: "200000", amount: [{amount: fee, denom: "shr"}]};
     }
-    console.log(fee);
     return fee;
   }
 }
