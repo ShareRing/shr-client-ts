@@ -1,29 +1,23 @@
 import {StdFee} from "@cosmjs/amino";
+import {Decimal} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
 import {BroadcastTxResponse} from "./client";
-import {AssetExtension} from "./modules/asset";
+import {calculateFee} from "./fee";
+import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
 import {DistributionExtension} from "./modules/distribution";
-import {DocumentExtension} from "./modules/document";
-import {ElectoralExtension} from "./modules/electoral";
-import {GentlemintExtension} from "./modules/gentlemint";
+import {createActions as BB, createRegistryTypes as B, DocumentExtension} from "./modules/document";
+import {createActions as CC, createRegistryTypes as C, ElectoralExtension} from "./modules/electoral";
+import {createActions as DD, createRegistryTypes as D, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
-import {IdExtension, IdTxExtension} from "./modules/id";
+import {createActions as EE, createRegistryTypes as E, IdExtension, IdTxExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
 import {TxExtension} from "./modules/tx";
 import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
-import {defaultActions, defaultRegistryTypes, SigningClient, SigningOptions, SignerData} from "./signingclient";
-
-/** */
-import {createRegistryTypes as A, createActions as AA} from "./modules/asset";
-import {createRegistryTypes as B, createActions as BB} from "./modules/document";
-import {createRegistryTypes as C, createActions as CC} from "./modules/electoral";
-import {createRegistryTypes as D, createActions as DD} from "./modules/gentlemint";
-import {createRegistryTypes as E, createActions as EE} from "./modules/id";
-/** */
+import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
@@ -137,35 +131,39 @@ export class ShareledgerSigningClient extends SigningClient {
   public async signAndBroadcast(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: StdFee | string,
+    fee?: StdFee,
     memo?: string
   ): Promise<BroadcastTxResponse> {
-    fee = await this.ensureFee(signerAddress, messages, fee);
+    if (!fee) {
+      fee = await this.estimateFee(signerAddress, messages, memo);
+    }
     return super.signAndBroadcast(signerAddress, messages, fee, memo);
   }
 
   public async sign(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: StdFee | string,
+    fee?: StdFee,
     memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
-    fee = await this.ensureFee(signerAddress, messages, fee);
+    if (!fee) {
+      fee = await this.estimateFee(signerAddress, messages, memo);
+    }
     return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
   }
 
-  private async ensureFee(signerAddress: string, messages: readonly EncodeObject[], fee?: StdFee | string) {
-    if (!fee) {
-      const coin = await this.gentlemint.checkFees(
+  private async estimateFee(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
+    let coin = await this.gentlemint
+      .checkFees(
         signerAddress,
         messages.map((msg) => actions[msg.typeUrl])
-      );
-      fee = {gas: "200000", amount: [coin]};
-    } else if (typeof fee === "string") {
-      // assume shr // TODO?
-      fee = {gas: "200000", amount: [{amount: fee, denom: "shr"}]};
+      )
+      .catch(() => undefined);
+    if (!coin) {
+      coin = {denom: "shr", amount: "1"};
     }
-    return fee;
+    const gasEstimation = await this.simulate(signerAddress, messages, memo, [coin]);
+    return calculateFee(Math.round(gasEstimation * 1.275), {denom: coin.denom, amount: Decimal.fromUserInput(coin.amount, 18)});
   }
 }

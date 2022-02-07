@@ -1,6 +1,7 @@
 import {Pubkey} from "@cosmjs/amino";
 import Long from "long";
 import {Client} from "../../client";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {SignMode} from "../../codec/cosmos/tx/signing/v1beta1/signing";
 import {
   GetTxResponse,
@@ -19,7 +20,7 @@ export type TxQueryExtension = {
   get tx(): {
     getTx: (hash: string) => Promise<GetTxResponse>;
     getTxs: (events: string[], orderBy?: OrderBy, paginationKey?: Uint8Array) => Promise<GetTxsEventResponse>;
-    simulate: (messages: readonly Any[], memo: string | undefined, signer: Pubkey, sequence: number) => Promise<SimulateResponse>;
+    simulate: (signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: Coin[]) => Promise<SimulateResponse>;
   };
 };
 
@@ -47,12 +48,12 @@ export function TxQueryExtension<T extends {new (...args: any[]): Client & TxQue
           });
           return response;
         },
-        simulate: async (messages: readonly Any[], memo: string | undefined, signer: Pubkey, sequence: number) => {
+        simulate: async (signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: Coin[]) => {
           const response = await serviceClient.Simulate(
             SimulateRequest.fromPartial({
               tx: Tx.fromPartial({
                 authInfo: AuthInfo.fromPartial({
-                  fee: Fee.fromPartial({}),
+                  fee: Fee.fromPartial({amount: fee}),
                   signerInfos: [
                     {
                       publicKey: encodePubkey(signer),

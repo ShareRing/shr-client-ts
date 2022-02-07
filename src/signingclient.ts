@@ -1,12 +1,19 @@
-import {encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
+import {Coin, encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
 import {fromBase64} from "@cosmjs/encoding";
-import {Int53} from "@cosmjs/math";
+import {Decimal, Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
-import {assert} from "@cosmjs/utils";
+import {assert, assertDefined} from "@cosmjs/utils";
 import {AminoTypes} from "./amino";
 import {BroadcastTxResponse, Client} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
+import {calculateFee, GasPrice} from "./fee";
+import {createRegistryTypes as A} from "./modules/auth";
+import {createActions as BB, createRegistryTypes as B} from "./modules/bank";
+import {createActions as CC, createRegistryTypes as C} from "./modules/distribution";
+import {createActions as DD, createRegistryTypes as D} from "./modules/gov";
+import {createActions as EE, createRegistryTypes as E} from "./modules/slashing";
+import {createActions as FF, createRegistryTypes as F} from "./modules/staking";
 import {
   EncodeObject,
   encodePubkey,
@@ -36,15 +43,9 @@ export interface SigningOptions {
   readonly prefix?: string;
   readonly broadcastTimeoutMs?: number;
   readonly broadcastPollIntervalMs?: number;
+  readonly gasPrice?: GasPrice;
 }
 
-/** */
-import {createRegistryTypes as A} from "./modules/auth";
-import {createRegistryTypes as B, createActions as BB} from "./modules/bank";
-import {createRegistryTypes as C, createActions as CC} from "./modules/distribution";
-import {createRegistryTypes as D, createActions as DD} from "./modules/gov";
-import {createRegistryTypes as E, createActions as EE} from "./modules/slashing";
-import {createRegistryTypes as F, createActions as FF} from "./modules/staking";
 /** */
 
 export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [A, B, C, D, E, F].reduce(
@@ -69,6 +70,7 @@ export class SigningClient extends Client {
 
   private readonly signer: OfflineSigner;
   private readonly aminoTypes: AminoTypes;
+  private readonly gasPrice: GasPrice | undefined;
 
   public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
@@ -90,18 +92,36 @@ export class SigningClient extends Client {
 
   public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
     super(tmClient);
-    const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"})} = options;
+    const {
+      registry = createDefaultRegistry(),
+      aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"}),
+      gasPrice = new GasPrice(Decimal.fromUserInput("2", 18), "shr")
+    } = options;
     this.registry = registry;
     this.aminoTypes = aminoTypes;
     this.signer = signer;
     this.broadcastTimeoutMs = options.broadcastTimeoutMs;
     this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
+    this.gasPrice = gasPrice;
+  }
+
+  public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: Coin[]): Promise<number> {
+    const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
+    const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
+    }
+    const pubkey = encodeSecp256k1Pubkey(accountFromSigner.pubkey);
+    const {sequence} = await this.getSequence(signerAddress);
+    const {gasInfo} = await this.tx.simulate(pubkey, sequence, anyMsgs, memo, fee);
+    assertDefined(gasInfo);
+    return Uint53.fromString(gasInfo.gasUsed.toString()).toNumber();
   }
 
   public async signAndBroadcast(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee: StdFee,
+    fee?: StdFee,
     memo?: string
   ): Promise<BroadcastTxResponse> {
     const txBytes = await this.sign(signerAddress, messages, fee, memo);
@@ -121,7 +141,7 @@ export class SigningClient extends Client {
   public async sign(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee: StdFee,
+    fee?: StdFee,
     memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
@@ -136,6 +156,12 @@ export class SigningClient extends Client {
         sequence: sequence,
         chainId: chainId
       };
+    }
+
+    if (!fee) {
+      assertDefined(this.gasPrice, "Gas price must be set in the client options when auto gas is used.");
+      const gasEstimation = await this.simulate(signerAddress, messages, memo);
+      fee = calculateFee(Math.round(gasEstimation * 1.275), this.gasPrice);
     }
 
     return isOfflineDirectSigner(this.signer)
