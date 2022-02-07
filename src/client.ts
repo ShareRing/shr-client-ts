@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import {sha256} from "@cosmjs/crypto";
 import {toHex} from "@cosmjs/encoding";
 import {Uint53} from "@cosmjs/math";
 import {Tendermint34Client, toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
 import {sleep} from "@cosmjs/utils";
-import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
-import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery, SearchTxFilter, SearchTxQuery} from "./search";
-import {QueryClient} from "./query";
 import {Account, accountFromAny} from "./account";
+import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
 import {AuthExtension} from "./modules/auth/module";
 import {TxExtension} from "./modules/tx/module";
+import {QueryClient} from "./query";
+import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery, SearchTxFilter, SearchTxQuery} from "./search";
 // import { BankExtension } from "./modules/bank";
 // import { DistributionExtension } from "./modules/distribution";
 // import { GovExtension } from "./modules/gov";
@@ -244,6 +245,10 @@ export class Client {
           tx: result.txResponse.tx?.value
         }
       : null;
+  }
+
+  public getTxHash(tx: Uint8Array | string): string {
+    return toHex(sha256(typeof tx === "string" ? Buffer.from(tx, "base64") : tx)).toUpperCase();
   }
 
   public async searchTx(query: SearchTxQuery, filter: SearchTxFilter = {}): Promise<readonly IndexedTx[]> {
