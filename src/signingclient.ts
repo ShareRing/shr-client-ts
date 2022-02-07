@@ -90,7 +90,7 @@ export class SigningClient extends Client {
 
   public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
     super(tmClient);
-    const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix})} = options;
+    const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"})} = options;
     this.registry = registry;
     this.aminoTypes = aminoTypes;
     this.signer = signer;

@@ -23,7 +23,7 @@ function createDefaultAminoTypes(prefix: string): Record<string, AminoConverter>
 export class AminoTypes {
   private readonly register: Record<string, AminoConverter>;
 
-  public constructor({additions = {}, prefix = "shareledger"}: AminoTypesOptions = {}) {
+  public constructor({prefix, additions = {}}: AminoTypesOptions) {
     const additionalAminoTypes = Object.values(additions);
     const filteredDefaultTypes = Object.entries(createDefaultAminoTypes(prefix)).reduce(
       (acc, [key, value]) => (additionalAminoTypes.find(({aminoType}) => value.aminoType === aminoType) ? acc : {...acc, [key]: value}),
