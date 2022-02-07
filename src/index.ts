@@ -28,7 +28,7 @@ export {
   SearchTxQuery
 } from "./search";
 export {ShareledgerClient} from "./shareledgerclient";
-export {ShareledgerSigningClient} from "./shareledgersigningclient";
+export {actions, registryTypes, ShareledgerSigningClient} from "./shareledgersigningclient";
 export {
   Coin,
   coin,
@@ -40,4 +40,4 @@ export {
   Secp256k1HdWalletOptions,
   Secp256k1Wallet
 } from "./signing";
-export {defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+export {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
