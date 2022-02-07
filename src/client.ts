@@ -233,8 +233,8 @@ export class Client {
   public async getTx(id: string): Promise<IndexedTx | null> {
     // const results = await this.txsQuery(`tx.hash='${id}'`);
     // return results[0] ?? null;
-    const result = await this.tx.getTx(id);
-    return result.txResponse
+    const result = await this.tx.getTx(id).catch(() => undefined);
+    return result && result.txResponse
       ? {
           code: result.txResponse.code,
           gasUsed: result.txResponse.gasUsed.toNumber(),
