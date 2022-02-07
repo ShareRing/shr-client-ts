@@ -1,5 +1,6 @@
 import {Coin} from "@cosmjs/amino";
-import Long from "long";
+import {Decimal} from "@cosmjs/math";
+import {BigNumber} from "bignumber.js";
 import {Client} from "../../client";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {
@@ -13,6 +14,7 @@ import {
   MsgSendShrp,
   MsgSetExchange
 } from "../../codec/shareledger/gentlemint/tx";
+import {GasPrice} from "../../fee";
 import {createProtobufRpcClient} from "../../query";
 import {
   MsgBurnShrEncodeObject,
@@ -28,9 +30,11 @@ import {
 
 export type GentlemintQueryExtension = {
   get gentlemint(): {
-    readonly exchangeRate: () => Promise<Long>;
-    readonly levelFees: () => Promise<Record<string, Coin>>;
-    readonly checkFees: (address: string, actions: string | string[]) => Promise<Coin>;
+    readonly exchangeRate: () => Promise<Decimal>;
+    readonly determineFee: (address: string, actions: string | string[]) => Promise<Coin>;
+    readonly feeByLevel: (level: string) => Promise<Coin>;
+    readonly feeByAction: (action: string) => Promise<Coin>;
+    readonly feeLevels: () => Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
   };
 };
 
@@ -64,16 +68,72 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         ...super["gentlemint"],
         exchangeRate: async () => {
           const {rate} = await queryService.ExchangeRate({});
-          return Long.fromString(rate);
+          return Decimal.fromUserInput(rate, 18);
         },
-        levelFees: async () => {
+        feeByAction: async (action: string) => {
+          const res = await queryService.ActionLevelFee({action});
+          let fee = GasPrice.fromString(res.fee);
+          const exchangeRate = await this.gentlemint.exchangeRate();
+          if (fee.denom === "shrp") {
+            fee = new GasPrice(
+              // TODO
+              Decimal.fromUserInput(
+                new BigNumber(exchangeRate.toString()).multipliedBy(fee.amount.toString()).toFixed(0, BigNumber.ROUND_CEIL),
+                18
+              ),
+              "shr"
+            );
+          }
+          return {
+            denom: fee.denom,
+            amount: fee.amount.toString()
+          };
+        },
+        feeByLevel: async (level: string) => {
+          const {levelFee} = await queryService.LevelFee({level});
+          if (!levelFee) {
+            return {
+              denom: "shr",
+              amount: "1"
+            };
+          }
+          let fee = GasPrice.fromString(levelFee.fee);
+          const exchangeRate = await this.gentlemint.exchangeRate();
+          if (fee.denom === "shrp") {
+            fee = new GasPrice(
+              // TODO
+              Decimal.fromUserInput(
+                new BigNumber(exchangeRate.toString()).multipliedBy(fee.amount.toString()).toFixed(0, BigNumber.ROUND_CEIL),
+                18
+              ),
+              "shr"
+            );
+          }
+          return {
+            denom: fee.denom,
+            amount: fee.amount.toString()
+          };
+        },
+        feeLevels: async () => {
           const {levelFees} = await queryService.LevelFees({});
+          const exchangeRate = await this.gentlemint.exchangeRate();
           return levelFees.reduce((prev, curr) => {
-            prev[curr.level] = curr.convertedFee ?? {amount: "1", denom: "shr"};
+            let fee = GasPrice.fromString(curr.originalFee);
+            if (fee.denom === "shrp") {
+              fee = new GasPrice(
+                // TODO
+                Decimal.fromUserInput(
+                  new BigNumber(exchangeRate.toString()).multipliedBy(fee.amount.toString()).toFixed(0, BigNumber.ROUND_CEIL),
+                  18
+                ),
+                "shr"
+              );
+            }
+            prev[curr.level] = {denom: fee.denom, amount: fee.amount.toString()};
             return prev;
-          }, {} as Record<string, Coin>);
+          }, {} as Record<"zero" | "low" | "medium" | "high" | string, Coin>);
         },
-        checkFees: async (address: string, actions: string | string[]) => {
+        determineFee: async (address: string, actions: string | string[]) => {
           actions = typeof actions === "string" ? [actions] : actions;
           try {
             const {convertedFee} = await queryService.CheckFees({address, actions});
@@ -82,7 +142,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             }
             return convertedFee;
           } catch (e) {
-            const fees = await this.gentlemint.levelFees();
+            const fees = await this.gentlemint.feeLevels();
             return fees.low || fees.high;
           }
         }

@@ -155,7 +155,7 @@ export class ShareledgerSigningClient extends SigningClient {
 
   private async estimateFee(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
     let coin = await this.gentlemint
-      .checkFees(
+      .determineFee(
         signerAddress,
         messages.map((msg) => actions[msg.typeUrl])
       )
