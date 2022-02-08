@@ -122,6 +122,15 @@ export class SigningClient extends Client {
     return this;
   }
 
+  public getSignerAccounts() {
+    return this.forceGetSigner().getAccounts();
+  }
+
+  public async getSignerAccount() {
+    const [account] = await this.getSignerAccounts();
+    return account;
+  }
+
   public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: Coin[]): Promise<number> {
     const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
     const accountFromSigner = (await this.forceGetSigner().getAccounts()).find((account) => account.address === signerAddress);
