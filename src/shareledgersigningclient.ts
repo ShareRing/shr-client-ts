@@ -135,7 +135,7 @@ export class ShareledgerSigningClient extends SigningClient {
 
   public async withSigner(signer: string | Uint8Array | OfflineSigner): Promise<ShareledgerSigningClient> {
     signer = typeof signer === "string" || isUint8Array(signer) ? await ShareledgerSigningClient.createSigner(signer) : signer;
-    super.withSigner(signer);
+    await super.withSigner(signer);
     return this;
   }
 
