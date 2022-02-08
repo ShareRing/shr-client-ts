@@ -68,29 +68,29 @@ export class SigningClient extends Client {
   public readonly broadcastTimeoutMs: number | undefined;
   public readonly broadcastPollIntervalMs: number | undefined;
 
-  private readonly signer: OfflineSigner;
+  private signer?: OfflineSigner;
   private readonly aminoTypes: AminoTypes;
   private readonly gasPrice: GasPrice | undefined;
 
-  public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
-    const tmClient = await Tendermint34Client.connect(endpoint);
-    return new SigningClient(tmClient, signer, options);
-  }
+  // public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
+  //   const tmClient = await Tendermint34Client.connect(endpoint);
+  //   return new SigningClient(tmClient, signer, options);
+  // }
 
-  /**
-   * Creates a client in offline mode.
-   *
-   * This should only be used in niche cases where you know exactly what you're doing,
-   * e.g. when building an offline signing application.
-   *
-   * When you try to use online functionality with such a signer, an
-   * exception will be raised.
-   */
-  public static async offline(signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
-    return new SigningClient(undefined, signer, options);
-  }
+  // /**
+  //  * Creates a client in offline mode.
+  //  *
+  //  * This should only be used in niche cases where you know exactly what you're doing,
+  //  * e.g. when building an offline signing application.
+  //  *
+  //  * When you try to use online functionality with such a signer, an
+  //  * exception will be raised.
+  //  */
+  // public static async offline(signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
+  //   return new SigningClient(undefined, signer, options);
+  // }
 
-  public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
+  public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient);
     const {
       registry = createDefaultRegistry(),
@@ -105,9 +105,26 @@ export class SigningClient extends Client {
     this.gasPrice = gasPrice;
   }
 
+  protected forceGetSigner(): OfflineSigner {
+    if (!this.signer) {
+      throw new Error("Signer not available. You must connect with a signer or add a signer to continue.");
+    }
+    return this.signer;
+  }
+
+  public async withSigner(signer: OfflineSigner): Promise<SigningClient> {
+    this.signer = signer;
+    return this;
+  }
+
+  public withoutSigner(): SigningClient {
+    this.signer = undefined;
+    return this;
+  }
+
   public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: Coin[]): Promise<number> {
     const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
-    const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+    const accountFromSigner = (await this.forceGetSigner().getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
@@ -164,7 +181,8 @@ export class SigningClient extends Client {
       fee = calculateFee(Math.round(gasEstimation * 1.275), this.gasPrice);
     }
 
-    return isOfflineDirectSigner(this.signer)
+    const signer = this.forceGetSigner();
+    return isOfflineDirectSigner(signer)
       ? this.signDirect(signerAddress, messages, fee, memo ?? "", signerData)
       : this.signAmino(signerAddress, messages, fee, memo ?? "", signerData);
   }
@@ -176,8 +194,9 @@ export class SigningClient extends Client {
     memo: string,
     {accountNumber, sequence, chainId}: SignerData
   ): Promise<Uint8Array> {
-    assert(!isOfflineDirectSigner(this.signer));
-    const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+    const signer = this.forceGetSigner();
+    assert(!isOfflineDirectSigner(signer));
+    const accountFromSigner = (await signer.getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
@@ -185,7 +204,7 @@ export class SigningClient extends Client {
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const msgs = messages.map((msg) => this.aminoTypes.toAmino(msg));
     const signDoc = makeSignDocAmino(msgs, fee, chainId, memo, accountNumber, sequence);
-    const {signature, signed} = await this.signer.signAmino(signerAddress, signDoc);
+    const {signature, signed} = await signer.signAmino(signerAddress, signDoc);
     const signedTxBody = {
       messages: signed.msgs.map((msg) => this.aminoTypes.fromAmino(msg)),
       memo: signed.memo
@@ -214,8 +233,9 @@ export class SigningClient extends Client {
     memo: string,
     {accountNumber, sequence, chainId}: SignerData
   ): Promise<Uint8Array> {
-    assert(isOfflineDirectSigner(this.signer));
-    const accountFromSigner = (await this.signer.getAccounts()).find((account) => account.address === signerAddress);
+    const signer = this.forceGetSigner();
+    assert(isOfflineDirectSigner(signer));
+    const accountFromSigner = (await signer.getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
@@ -231,7 +251,7 @@ export class SigningClient extends Client {
     const gasLimit = Int53.fromString(fee.gas).toNumber();
     const authInfoBytes = makeAuthInfoBytes([{pubkey, sequence}], fee.amount, gasLimit);
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
-    const {signature, signed} = await this.signer.signDirect(signerAddress, signDoc);
+    const {signature, signed} = await signer.signDirect(signerAddress, signDoc);
     return TxRaw.encode(
       TxRaw.fromPartial({
         bodyBytes: signed.bodyBytes,

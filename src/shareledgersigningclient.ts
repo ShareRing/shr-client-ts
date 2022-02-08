@@ -64,8 +64,13 @@ export interface ShareledgerSigningClient
 @GentlemintExtension
 @IdTxExtension
 export class ShareledgerSigningClient extends SigningClient {
-  public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
+  public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
+  }
+
+  public static async connect(endpoint: string): Promise<ShareledgerSigningClient> {
+    const tmClient = await Tendermint34Client.connect(endpoint);
+    return new ShareledgerSigningClient(tmClient);
   }
 
   /**
@@ -126,6 +131,17 @@ export class ShareledgerSigningClient extends SigningClient {
       signer = await Secp256k1Wallet.fromKey(isUint8Array(input) ? input : Buffer.from(input, "hex"));
     }
     return signer;
+  }
+
+  public async withSigner(signer: string | Uint8Array | OfflineSigner): Promise<ShareledgerSigningClient> {
+    signer = typeof signer === "string" || isUint8Array(signer) ? await ShareledgerSigningClient.createSigner(signer) : signer;
+    super.withSigner(signer);
+    return this;
+  }
+
+  public withoutSigner(): ShareledgerSigningClient {
+    super.withoutSigner();
+    return this;
   }
 
   public async signAndBroadcast(
