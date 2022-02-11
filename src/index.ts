@@ -39,6 +39,8 @@ export {
   Secp256k1HdWallet,
   Secp256k1HdWalletOptions,
   Secp256k1Wallet,
-  pubkeyToAddress
+  pubkeyToAddress,
+  encodePubkey,
+  decodePubkey
 } from "./signing";
 export {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
