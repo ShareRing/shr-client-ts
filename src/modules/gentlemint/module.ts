@@ -100,7 +100,6 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         },
         feeLevels: async () => {
           const {levelFees} = await queryService.LevelFees({});
-          console.log(levelFees);
           const exchangeRate = await this.gentlemint.exchangeRate();
           return levelFees.reduce((prev, curr) => {
             let {amount, denom} = GasPrice.fromString(curr.originalFee); // eslint-disable-line prefer-const
