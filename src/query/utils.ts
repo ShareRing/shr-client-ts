@@ -17,6 +17,14 @@ export function toBech32Address(pubkey: Uint8Array, prefix = "shareledger") {
   return Bech32.encode(prefix, pubkey);
 }
 
+export function toBech32ValAddress(pubkey: Uint8Array, prefix = "shareledgervaloper") {
+  return toBech32Address(pubkey, prefix);
+}
+
+export function toBech32ConsAddress(pubkey: Uint8Array, prefix = "shareledgervalcons") {
+  return toBech32Address(pubkey, prefix);
+}
+
 export function createPagination(paginationKey?: Uint8Array): PageRequest | undefined {
   return paginationKey
     ? {
