@@ -1,4 +1,4 @@
-import {Coin, encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
+import {Coin, coin, encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
 import {fromBase64} from "@cosmjs/encoding";
 import {Decimal, Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
@@ -43,7 +43,7 @@ export interface SigningOptions {
   readonly prefix?: string;
   readonly broadcastTimeoutMs?: number;
   readonly broadcastPollIntervalMs?: number;
-  readonly gasPrice?: GasPrice;
+  readonly minTxFee?: Coin;
 }
 
 /** */
@@ -68,9 +68,10 @@ export class SigningClient extends Client {
   public readonly broadcastTimeoutMs: number | undefined;
   public readonly broadcastPollIntervalMs: number | undefined;
 
+  protected readonly minTxFee?: Coin;
+
   private signer?: OfflineSigner;
   private readonly aminoTypes: AminoTypes;
-  private readonly gasPrice: GasPrice | undefined;
 
   // public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
   //   const tmClient = await Tendermint34Client.connect(endpoint);
@@ -95,14 +96,14 @@ export class SigningClient extends Client {
     const {
       registry = createDefaultRegistry(),
       aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"}),
-      gasPrice = new GasPrice(Decimal.fromUserInput("2", 18), "shr")
+      minTxFee = coin(2, "shr")
     } = options;
     this.registry = registry;
     this.aminoTypes = aminoTypes;
     this.signer = signer;
     this.broadcastTimeoutMs = options.broadcastTimeoutMs;
     this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
-    this.gasPrice = gasPrice;
+    this.minTxFee = minTxFee;
   }
 
   protected forceGetSigner(): OfflineSigner {
@@ -185,9 +186,14 @@ export class SigningClient extends Client {
     }
 
     if (!fee) {
-      assertDefined(this.gasPrice, "Gas price must be set in the client options when auto gas is used.");
+      assertDefined(this.minTxFee, "Min tx fee must be set in the client options when auto gas is used.");
       const gasEstimation = await this.simulate(signerAddress, messages, memo);
-      fee = calculateFee(Math.round(gasEstimation * 1.275), this.gasPrice);
+      const buff = Math.round(gasEstimation * 1.275);
+      const gasPrice = new GasPrice(
+        Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(this.minTxFee.amount, 18).atomics / buff).toString(), 18),
+        this.minTxFee.denom
+      );
+      fee = calculateFee(buff, gasPrice);
     }
 
     const signer = this.forceGetSigner();

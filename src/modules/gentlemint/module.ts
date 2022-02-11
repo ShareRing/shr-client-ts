@@ -1,4 +1,4 @@
-import {Coin} from "@cosmjs/amino";
+import {Coin, coin} from "@cosmjs/amino";
 import {Decimal} from "@cosmjs/math";
 import {BigNumber} from "bignumber.js";
 import {Client} from "../../client";
@@ -71,23 +71,15 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           return Decimal.fromUserInput(rate, 18);
         },
         feeByAction: async (action: string) => {
-          const res = await queryService.ActionLevelFee({action});
-          let fee = GasPrice.fromString(res.fee);
-          const exchangeRate = await this.gentlemint.exchangeRate();
-          if (fee.denom === "shrp") {
-            fee = new GasPrice(
-              // TODO
-              Decimal.fromUserInput(
-                new BigNumber(exchangeRate.toString()).multipliedBy(fee.amount.toString()).toFixed(0, BigNumber.ROUND_CEIL),
-                18
-              ),
-              "shr"
-            );
+          const {fee} = await queryService.ActionLevelFee({action});
+          let {amount, denom} = GasPrice.fromString(fee); // eslint-disable-line prefer-const
+          let amt = amount.toString();
+          if (denom === "shrp") {
+            const exchangeRate = await this.gentlemint.exchangeRate();
+            amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
+            denom = "shr";
           }
-          return {
-            denom: fee.denom,
-            amount: fee.amount.toString()
-          };
+          return coin(amt, denom);
         },
         feeByLevel: async (level: string) => {
           const {levelFee} = await queryService.LevelFee({level});
@@ -97,39 +89,27 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
               amount: "1"
             };
           }
-          let fee = GasPrice.fromString(levelFee.fee);
-          const exchangeRate = await this.gentlemint.exchangeRate();
-          if (fee.denom === "shrp") {
-            fee = new GasPrice(
-              // TODO
-              Decimal.fromUserInput(
-                new BigNumber(exchangeRate.toString()).multipliedBy(fee.amount.toString()).toFixed(0, BigNumber.ROUND_CEIL),
-                18
-              ),
-              "shr"
-            );
+          let {amount, denom} = GasPrice.fromString(levelFee.fee); // eslint-disable-line prefer-const
+          let amt = amount.toString();
+          if (denom === "shrp") {
+            const exchangeRate = await this.gentlemint.exchangeRate();
+            amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
+            denom = "shr";
           }
-          return {
-            denom: fee.denom,
-            amount: fee.amount.toString()
-          };
+          return coin(amt, denom);
         },
         feeLevels: async () => {
           const {levelFees} = await queryService.LevelFees({});
+          console.log(levelFees);
           const exchangeRate = await this.gentlemint.exchangeRate();
           return levelFees.reduce((prev, curr) => {
-            let fee = GasPrice.fromString(curr.originalFee);
-            if (fee.denom === "shrp") {
-              fee = new GasPrice(
-                // TODO
-                Decimal.fromUserInput(
-                  new BigNumber(exchangeRate.toString()).multipliedBy(fee.amount.toString()).toFixed(0, BigNumber.ROUND_CEIL),
-                  18
-                ),
-                "shr"
-              );
+            let {amount, denom} = GasPrice.fromString(curr.originalFee); // eslint-disable-line prefer-const
+            let amt = amount.toString();
+            if (denom === "shrp") {
+              amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
+              denom = "shr";
             }
-            prev[curr.level] = {denom: fee.denom, amount: fee.amount.toString()};
+            prev[curr.level] = coin(amt, denom);
             return prev;
           }, {} as Record<"zero" | "low" | "medium" | "high" | string, Coin>);
         },

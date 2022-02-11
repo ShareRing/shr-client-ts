@@ -1,9 +1,9 @@
-import {StdFee} from "@cosmjs/amino";
+import {StdFee, coin} from "@cosmjs/amino";
 import {Decimal} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
 import {BroadcastTxResponse} from "./client";
-import {calculateFee} from "./fee";
+import {calculateFee, GasPrice} from "./fee";
 import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
@@ -173,16 +173,21 @@ export class ShareledgerSigningClient extends SigningClient {
   }
 
   private async estimateFee(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
-    let coin = await this.gentlemint
+    let c = await this.gentlemint
       .determineFee(
         signerAddress,
         messages.map((msg) => actions[msg.typeUrl])
       )
       .catch(() => undefined);
-    if (!coin) {
-      coin = {denom: "shr", amount: "1"};
+    if (!c) {
+      c = this.minTxFee ?? coin(1, "shr");
     }
-    const gasEstimation = await this.simulate(signerAddress, messages, memo, [coin]);
-    return calculateFee(Math.round(gasEstimation * 1.275), {denom: coin.denom, amount: Decimal.fromUserInput(coin.amount, 18)});
+    const gasEstimation = await this.simulate(signerAddress, messages, memo, [c]);
+    const buff = Math.round(gasEstimation * 1.275);
+    const gasPrice = new GasPrice(
+      Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(c.amount, 18).atomics / buff).toString(), 18),
+      c.denom
+    );
+    return calculateFee(buff, gasPrice);
   }
 }
