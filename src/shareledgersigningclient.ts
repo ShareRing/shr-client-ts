@@ -108,7 +108,7 @@ export class ShareledgerSigningClient extends SigningClient {
     options: SigningOptions = {}
   ): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    signer = typeof signer === "string" || isUint8Array(signer) ? await this.createSigner(signer) : signer;
+    signer = typeof signer === "string" || isUint8Array(signer) || Buffer.isBuffer(signer) ? await this.createSigner(signer) : signer;
     return new ShareledgerSigningClient(tmClient, signer, options);
   }
 
@@ -119,7 +119,7 @@ export class ShareledgerSigningClient extends SigningClient {
     signer: string | Uint8Array | OfflineSigner,
     options: SigningOptions = {}
   ): Promise<ShareledgerSigningClient> {
-    signer = typeof signer === "string" || isUint8Array(signer) ? await this.createSigner(signer) : signer;
+    signer = typeof signer === "string" || isUint8Array(signer) || Buffer.isBuffer(signer) ? await this.createSigner(signer) : signer;
     return new ShareledgerSigningClient(undefined, signer, options);
   }
 
@@ -128,13 +128,16 @@ export class ShareledgerSigningClient extends SigningClient {
     if (typeof input === "string" && !/^[A-F0-9]+$/i.test(input)) {
       signer = await Secp256k1HdWallet.fromMnemonic(input);
     } else {
-      signer = await Secp256k1Wallet.fromKey(isUint8Array(input) ? input : Buffer.from(input, "hex"));
+      signer = await Secp256k1Wallet.fromKey(isUint8Array(input) || Buffer.isBuffer(input) ? input : Buffer.from(input, "hex"));
     }
     return signer;
   }
 
   public async withSigner(signer: string | Uint8Array | OfflineSigner): Promise<ShareledgerSigningClient> {
-    signer = typeof signer === "string" || isUint8Array(signer) ? await ShareledgerSigningClient.createSigner(signer) : signer;
+    signer =
+      typeof signer === "string" || isUint8Array(signer) || Buffer.isBuffer(signer)
+        ? await ShareledgerSigningClient.createSigner(signer)
+        : signer;
     await super.withSigner(signer);
     return this;
   }
