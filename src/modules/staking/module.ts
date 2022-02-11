@@ -21,6 +21,7 @@ import {
   BondStatus,
   DelegationResponse,
   HistoricalInfo,
+  Params,
   Pool,
   UnbondingDelegation,
   Validator
@@ -59,6 +60,7 @@ export type StakingQueryExtension = {
     ) => Promise<QueryValidatorUnbondingDelegationsResponse>;
     readonly validatorSetByHeight: (height: Long, paginationKey?: Uint8Array) => Promise<GetValidatorSetByHeightResponse>;
     readonly latestValidatorSet: (paginationKey?: Uint8Array) => Promise<GetLatestValidatorSetResponse>;
+    readonly params: () => Promise<Params | undefined>;
   };
 };
 
@@ -195,6 +197,10 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
             pagination: createPagination(paginationKey)
           });
           return response;
+        },
+        params: async () => {
+          const {params} = await queryService.Params({});
+          return params;
         }
       };
     }

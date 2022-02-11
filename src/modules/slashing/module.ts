@@ -2,7 +2,7 @@
 
 import {Client} from "../../client";
 import {QueryClientImpl, QuerySigningInfosResponse} from "../../codec/cosmos/slashing/v1beta1/query";
-import {ValidatorSigningInfo} from "../../codec/cosmos/slashing/v1beta1/slashing";
+import {Params, ValidatorSigningInfo} from "../../codec/cosmos/slashing/v1beta1/slashing";
 import {MsgUnjail} from "../../codec/cosmos/slashing/v1beta1/tx";
 import {createPagination, createProtobufRpcClient} from "../../query";
 import {MsgUnjailEncodeObject} from "./amino";
@@ -11,6 +11,7 @@ export type SlashingQueryExtension = {
   get slashing(): {
     readonly signingInfo: (consAddress: string) => Promise<ValidatorSigningInfo | undefined>;
     readonly signingInfos: (paginationKey?: Uint8Array) => Promise<QuerySigningInfosResponse>;
+    readonly params: () => Promise<Params | undefined>;
   };
 };
 
@@ -45,6 +46,10 @@ export function SlashingQueryExtension<T extends {new (...args: any[]): Client &
             pagination: createPagination(paginationKey)
           });
           return response;
+        },
+        params: async () => {
+          const {params} = await queryService.Params({});
+          return params;
         }
       };
     }
