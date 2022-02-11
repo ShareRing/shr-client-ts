@@ -1,4 +1,4 @@
-export {Coin, coin, coins} from "@cosmjs/amino";
+export {Coin, coin, coins, pubkeyToAddress} from "@cosmjs/amino";
 export {parseCoins} from "./coins";
 
 export {decodeTxRaw, DecodedTxRaw} from "./decode";
