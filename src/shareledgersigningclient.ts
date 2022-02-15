@@ -12,7 +12,7 @@ import {createActions as BB, createRegistryTypes as B, DocumentExtension} from "
 import {createActions as CC, createRegistryTypes as C, ElectoralExtension} from "./modules/electoral";
 import {createActions as DD, createRegistryTypes as D, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
-import {createActions as EE, createRegistryTypes as E, IdExtension, IdTxExtension} from "./modules/id";
+import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
 import {TxExtension} from "./modules/tx";
@@ -62,7 +62,7 @@ export interface ShareledgerSigningClient
 @DocumentExtension
 @ElectoralExtension
 @GentlemintExtension
-@IdTxExtension
+@IdExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
