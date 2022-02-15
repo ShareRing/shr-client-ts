@@ -41,11 +41,11 @@ export function IdQueryExtension<T extends {new (...args: any[]): Client & IdQue
     get id() {
       return {
         ...super["id"],
-        byId: async (id: string) => {
+        id: async (id: string) => {
           const response = await queryService.IdById({id});
           return response.id;
         },
-        byAddress: async (address: string) => {
+        idByAddress: async (address: string) => {
           const response = await queryService.IdByAddress({address});
           return response.id;
         }
