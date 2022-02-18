@@ -154,7 +154,7 @@ export class ShareledgerSigningClient extends SigningClient {
     memo?: string
   ): Promise<BroadcastTxResponse> {
     if (!fee) {
-      fee = await this.estimateFee(signerAddress, messages, memo);
+      fee = await this.estimate(signerAddress, messages, memo);
     }
     return super.signAndBroadcast(signerAddress, messages, fee, memo);
   }
@@ -167,12 +167,12 @@ export class ShareledgerSigningClient extends SigningClient {
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
     if (!fee) {
-      fee = await this.estimateFee(signerAddress, messages, memo);
+      fee = await this.estimate(signerAddress, messages, memo);
     }
     return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
   }
 
-  private async estimateFee(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
+  public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
     let c = await this.gentlemint
       .determineFee(
         signerAddress,
@@ -183,6 +183,7 @@ export class ShareledgerSigningClient extends SigningClient {
       c = this.minTxFee ?? coin(1, "shr");
     }
     const gasEstimation = await this.simulate(signerAddress, messages, memo, [c]);
+    console.log(gasEstimation);
     const buff = Math.round(gasEstimation * 1.275);
     const gasPrice = new GasPrice(
       Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(c.amount, 18).atomics / buff).toString(), 18),
