@@ -4,29 +4,22 @@ import {BigNumber} from "bignumber.js";
 import {Client} from "../../client";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {
-  MsgBurnShr,
-  MsgBurnShrp,
-  MsgBuyCent,
+  MsgBurn,
   MsgBuyShr,
-  MsgLoadShr,
-  MsgLoadShrp,
-  MsgSendShr,
-  MsgSendShrp,
+  MsgLoad,
+  MsgSend,
   MsgSetExchange
 } from "../../codec/shareledger/gentlemint/tx";
 import {GasPrice} from "../../fee";
 import {createProtobufRpcClient} from "../../query";
 import {
-  MsgBurnShrEncodeObject,
-  MsgBurnShrpEncodeObject,
-  MsgBuyCentEncodeObject,
+  MsgBurnEncodeObject,
   MsgBuyShrEncodeObject,
-  MsgLoadShrEncodeObject,
-  MsgLoadShrpEncodeObject,
-  MsgSendShrEncodeObject,
-  MsgSendShrpEncodeObject,
+  MsgLoadEncodeObject,
+  MsgSendEncodeObject,
   MsgSetExchangeEncodeObject
 } from "./amino";
+import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 
 export type GentlemintQueryExtension = {
   get gentlemint(): {
@@ -40,14 +33,10 @@ export type GentlemintQueryExtension = {
 
 export type GentlemintTxExtension = {
   get gentlemint(): {
-    readonly burnShr: (fromAddress: string, amount: Long) => MsgBurnShrEncodeObject;
-    readonly burnShrp: (fromAddress: string, amount: string) => MsgBurnShrpEncodeObject;
-    readonly loadShr: (toAddress: string, amount: Long) => MsgLoadShrEncodeObject;
-    readonly loadShrp: (toAddress: string, amount: string) => MsgLoadShrpEncodeObject;
-    readonly sendShr: (fromAddress: string, toAddress: string, amount: Long) => MsgSendShrEncodeObject;
-    readonly sendShrp: (fromAddress: string, toAddress: string, amount: string) => MsgSendShrpEncodeObject;
+    readonly burn: (fromAddress: string, coins: DecCoin[]) => MsgBurnEncodeObject;
+    readonly load: (fromAddress: string, toAddress: string, coins: DecCoin[]) => MsgLoadEncodeObject;
+    readonly send: (fromAddress: string, toAddress: string, coins: DecCoin[]) => MsgSendEncodeObject;
     readonly buyShr: (toAddress: string, amount: Long) => MsgBuyShrEncodeObject;
-    readonly buyCent: (toAddress: string, amount: Long) => MsgBuyCentEncodeObject;
     readonly setExchangeRate: (rate: string, creator: string) => MsgSetExchangeEncodeObject;
   };
 };
@@ -135,58 +124,31 @@ export function GentlemintTxExtension<T extends {new (...args: any[]): Client & 
     get gentlemint() {
       return {
         ...super["gentlemint"],
-        burnShr: (fromAddress: string, amount: Long): MsgBurnShrEncodeObject => {
+        burn: (fromAddress: string, coins: DecCoin[]): MsgBurnEncodeObject => {
           return {
-            typeUrl: "/shareledger.gentlemint.MsgBurnShr",
-            value: MsgBurnShr.fromPartial({
-              amount: amount.toString(),
+            typeUrl: "/shareledger.gentlemint.MsgBurn",
+            value: MsgBurn.fromPartial({
+              coins: [...coins],
               creator: fromAddress
             })
           };
         },
-        burnShrp: (fromAddress: string, amount: string): MsgBurnShrpEncodeObject => {
+        load: (fromAddress: string, toAddress: string, coins: DecCoin[]): MsgLoadEncodeObject => {
           return {
-            typeUrl: "/shareledger.gentlemint.MsgBurnShrp",
-            value: MsgBurnShrp.fromPartial({
-              amount,
-              creator: fromAddress
+            typeUrl: "/shareledger.gentlemint.MsgLoad",
+            value: MsgLoad.fromPartial({
+              coins: [...coins],
+              creator: fromAddress,
+              address: toAddress
             })
           };
         },
-        loadShr: (toAddress: string, amount: Long): MsgLoadShrEncodeObject => {
+        send: (fromAddress: string, toAddress: string, coins: DecCoin[]): MsgSendEncodeObject => {
           return {
-            typeUrl: "/shareledger.gentlemint.MsgLoadShr",
-            value: MsgLoadShr.fromPartial({
-              amount: amount.toString(),
-              creator: toAddress
-            })
-          };
-        },
-        loadShrp: (toAddress: string, amount: string): MsgLoadShrpEncodeObject => {
-          return {
-            typeUrl: "/shareledger.gentlemint.MsgLoadShrp",
-            value: MsgLoadShrp.fromPartial({
-              amount,
-              creator: toAddress
-            })
-          };
-        },
-        sendShr: (fromAddress: string, toAddress: string, amount: Long): MsgSendShrEncodeObject => {
-          return {
-            typeUrl: "/shareledger.gentlemint.MsgSendShr",
-            value: MsgSendShr.fromPartial({
+            typeUrl: "/shareledger.gentlemint.MsgSend",
+            value: MsgSend.fromPartial({
               address: toAddress,
-              amount: amount.toString(),
-              creator: fromAddress
-            })
-          };
-        },
-        sendShrp: (fromAddress: string, toAddress: string, amount: string): MsgSendShrpEncodeObject => {
-          return {
-            typeUrl: "/shareledger.gentlemint.MsgSendShrp",
-            value: MsgSendShrp.fromPartial({
-              address: toAddress,
-              amount,
+              coins: [...coins],
               creator: fromAddress
             })
           };
@@ -195,15 +157,6 @@ export function GentlemintTxExtension<T extends {new (...args: any[]): Client & 
           return {
             typeUrl: "/shareledger.gentlemint.MsgBuyShr",
             value: MsgBuyShr.fromPartial({
-              amount: amount.toString(),
-              creator: toAddress
-            })
-          };
-        },
-        buyCent: (toAddress: string, amount: Long): MsgBuyCentEncodeObject => {
-          return {
-            typeUrl: "/shareledger.gentlemint.MsgBuyCent",
-            value: MsgBuyCent.fromPartial({
               amount: amount.toString(),
               creator: toAddress
             })
@@ -229,14 +182,10 @@ export function GentlemintExtension<T extends {new (...args: any[]): Client & Ge
 
 export function createActions(): Record<string, string> {
   return {
-    "/shareledger.gentlemint.MsgBurnShr": "gentlemint_burn-shr",
-    "/shareledger.gentlemint.MsgBurnShrp": "gentlemint_burn-shrp",
-    "/shareledger.gentlemint.MsgLoadShr": "gentlemint_load-shr",
-    "/shareledger.gentlemint.MsgLoadShrp": "gentlemint_load-shrp",
-    "/shareledger.gentlemint.MsgSendShr": "gentlemint_send-shr",
-    "/shareledger.gentlemint.MsgSendShrp": "gentlemint_send-shrp",
+    "/shareledger.gentlemint.MsgBurn": "gentlemint_burn",
+    "/shareledger.gentlemint.MsgLoad": "gentlemint_load",
+    "/shareledger.gentlemint.MsgSend": "gentlemint_send",
     "/shareledger.gentlemint.MsgBuyShr": "gentlemint_buy-shr",
-    "/shareledger.gentlemint.MsgBuyCent": "gentlemint_buy-cent ",
     "/shareledger.gentlemint.MsgSetExchange": "gentlemint_set-exchange"
   };
 }

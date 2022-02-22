@@ -183,12 +183,10 @@ export class ShareledgerSigningClient extends SigningClient {
       c = this.minTxFee ?? coin(1, "shr");
     }
     const gasEstimation = await this.simulate(signerAddress, messages, memo, [c]);
-    console.log(gasEstimation);
     const buff = Math.round(gasEstimation * 1.275);
-    const gasPrice = new GasPrice(
-      Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(c.amount, 18).atomics / buff).toString(), 18),
-      c.denom
-    );
-    return calculateFee(buff, gasPrice);
+    return {
+      gas: buff.toString(),
+      amount: [c]
+    };
   }
 }

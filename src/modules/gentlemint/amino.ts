@@ -3,158 +3,84 @@
 import {AminoMsg} from "@cosmjs/amino";
 import {AminoConverter} from "../../amino/types";
 import {
-  MsgBurnShr,
-  MsgBurnShrp,
-  MsgBuyCent,
+  MsgBurn,
   MsgBuyShr,
-  MsgLoadShr,
-  MsgLoadShrp,
-  MsgSendShr,
-  MsgSendShrp,
+  MsgLoad,
+  MsgSend,
   MsgSetExchange
 } from "../../codec/shareledger/gentlemint/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
+import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 
-export interface AminoMsgBurnShr extends AminoMsg {
+export interface AminoMsgBurn extends AminoMsg {
   // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/BurnShr";
+  readonly type: "gentlemint/Burn";
   readonly value: {
-    readonly amount: string;
+    readonly coins: DecCoin[];
     readonly creator: string;
   };
 }
 
-export function isAminoMsgBurnShr(msg: AminoMsg): msg is AminoMsgBurnShr {
+export function isAminoMsgBurn(msg: AminoMsg): msg is AminoMsgBurn {
   // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/BurnShr";
+  return msg.type === "gentlemint/Burn";
 }
 
-export interface MsgBurnShrEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgBurnShr";
-  readonly value: Partial<MsgBurnShr>;
+export interface MsgBurnEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.gentlemint.MsgBurn";
+  readonly value: Partial<MsgBurn>;
 }
 
-export function isMsgBurnShrEncodeObject(encodeObject: EncodeObject): encodeObject is MsgBurnShrEncodeObject {
-  return (encodeObject as MsgBurnShrEncodeObject).typeUrl === "/shareledger.gentlemint.MsgBurnShr";
+export function isMsgBurnEncodeObject(encodeObject: EncodeObject): encodeObject is MsgBurnEncodeObject {
+  return (encodeObject as MsgBurnEncodeObject).typeUrl === "/shareledger.gentlemint.MsgBurn";
 }
 
-export interface AminoMsgBurnShrp extends AminoMsg {
+export interface AminoMsgLoad extends AminoMsg {
   // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/BurnShrp";
-  readonly value: {
-    readonly amount: string;
-    readonly creator: string;
-  };
-}
-
-export function isAminoMsgBurnShrp(msg: AminoMsg): msg is AminoMsgBurnShrp {
-  // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/BurnShrp";
-}
-
-export interface MsgBurnShrpEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgBurnShrp";
-  readonly value: Partial<MsgBurnShrp>;
-}
-
-export function isMsgBurnShrpEncodeObject(encodeObject: EncodeObject): encodeObject is MsgBurnShrpEncodeObject {
-  return (encodeObject as MsgBurnShrpEncodeObject).typeUrl === "/shareledger.gentlemint.MsgBurnShrp";
-}
-
-export interface AminoMsgLoadShr extends AminoMsg {
-  // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/LoadShr";
+  readonly type: "gentlemint/Load";
   readonly value: {
     readonly address: string;
-    readonly amount: string;
+    readonly coins: DecCoin[];
     readonly creator: string;
   };
 }
 
-export function isAminoMsgLoadShr(msg: AminoMsg): msg is AminoMsgLoadShr {
+export function isAminoMsgLoad(msg: AminoMsg): msg is AminoMsgLoad {
   // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/LoadShr";
+  return msg.type === "gentlemint/Load";
 }
 
-export interface MsgLoadShrEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgLoadShr";
-  readonly value: Partial<MsgLoadShr>;
+export interface MsgLoadEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.gentlemint.MsgLoad";
+  readonly value: Partial<MsgLoad>;
 }
 
-export function isMsgLoadShrEncodeObject(encodeObject: EncodeObject): encodeObject is MsgLoadShrEncodeObject {
-  return (encodeObject as MsgLoadShrEncodeObject).typeUrl === "/shareledger.gentlemint.MsgLoadShr";
+export function isMsgLoadEncodeObject(encodeObject: EncodeObject): encodeObject is MsgLoadEncodeObject {
+  return (encodeObject as MsgLoadEncodeObject).typeUrl === "/shareledger.gentlemint.MsgLoad";
 }
 
-export interface AminoMsgLoadShrp extends AminoMsg {
+export interface AminoMsgSend extends AminoMsg {
   // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/LoadShrp";
+  readonly type: "gentlemint/Send";
   readonly value: {
     readonly address: string;
-    readonly amount: string;
+    readonly coins: DecCoin[];
     readonly creator: string;
   };
 }
 
-export function isAminoMsgLoadShrp(msg: AminoMsg): msg is AminoMsgLoadShrp {
+export function isAminoMsgSend(msg: AminoMsg): msg is AminoMsgSend {
   // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/LoadShrp";
+  return msg.type === "gentlemint/Send";
 }
 
-export interface MsgLoadShrpEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgLoadShrp";
-  readonly value: Partial<MsgLoadShrp>;
+export interface MsgSendEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.gentlemint.MsgSend";
+  readonly value: Partial<MsgSend>;
 }
 
-export function isMsgLoadShrpEncodeObject(encodeObject: EncodeObject): encodeObject is MsgLoadShrpEncodeObject {
-  return (encodeObject as MsgLoadShrpEncodeObject).typeUrl === "/shareledger.gentlemint.MsgLoadShrp";
-}
-
-export interface AminoMsgSendShr extends AminoMsg {
-  // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/SendShr";
-  readonly value: {
-    readonly address: string;
-    readonly amount: string;
-    readonly creator: string;
-  };
-}
-
-export function isAminoMsgSendShr(msg: AminoMsg): msg is AminoMsgSendShr {
-  // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/SendShr";
-}
-
-export interface MsgSendShrEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgSendShr";
-  readonly value: Partial<MsgSendShr>;
-}
-
-export function isMsgSendShrEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendShrEncodeObject {
-  return (encodeObject as MsgSendShrEncodeObject).typeUrl === "/shareledger.gentlemint.MsgSendShr";
-}
-
-export interface AminoMsgSendShrp extends AminoMsg {
-  // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/SendShrp";
-  readonly value: {
-    readonly address: string;
-    readonly amount: string;
-    readonly creator: string;
-  };
-}
-
-export function isAminoMsgSendShrp(msg: AminoMsg): msg is AminoMsgSendShrp {
-  // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/SendShrp";
-}
-
-export interface MsgSendShrpEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgSendShrp";
-  readonly value: Partial<MsgSendShrp>;
-}
-
-export function isMsgSendShrpEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendShrpEncodeObject {
-  return (encodeObject as MsgSendShrpEncodeObject).typeUrl === "/shareledger.gentlemint.MsgSendShrp";
+export function isMsgSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendEncodeObject {
+  return (encodeObject as MsgSendEncodeObject).typeUrl === "/shareledger.gentlemint.MsgSend";
 }
 
 export interface AminoMsgBuyShr extends AminoMsg {
@@ -178,29 +104,6 @@ export interface MsgBuyShrEncodeObject extends EncodeObject {
 
 export function isMsgBuyShrEncodeObject(encodeObject: EncodeObject): encodeObject is MsgBuyShrEncodeObject {
   return (encodeObject as MsgBuyShrEncodeObject).typeUrl === "/shareledger.gentlemint.MsgBuyShr";
-}
-
-export interface AminoMsgBuyCent extends AminoMsg {
-  // NOTE: Type string and names diverge here!
-  readonly type: "gentlemint/BuyCent";
-  readonly value: {
-    readonly amount: string;
-    readonly creator: string;
-  };
-}
-
-export function isAminoMsgBuyCent(msg: AminoMsg): msg is AminoMsgBuyCent {
-  // NOTE: Type string and names diverge here!
-  return msg.type === "gentlemint/BuyCent";
-}
-
-export interface MsgBuyCentEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.gentlemint.MsgBuyCent";
-  readonly value: Partial<MsgBuyCent>;
-}
-
-export function isMsgBuyCentEncodeObject(encodeObject: EncodeObject): encodeObject is MsgBuyCentEncodeObject {
-  return (encodeObject as MsgBuyCentEncodeObject).typeUrl === "/shareledger.gentlemint.MsgBuyCent";
 }
 
 export interface AminoMsgSetExchange extends AminoMsg {
@@ -228,77 +131,40 @@ export function isMsgSetExchangeEncodeObject(encodeObject: EncodeObject): encode
 
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
   return {
-    "/shareledger.gentlemint.MsgBurnShr": {
-      aminoType: "gentlemint/BurnShr",
-      toAmino: ({amount, creator}: MsgBurnShr): AminoMsgBurnShr["value"] => ({
-        amount,
+    "/shareledger.gentlemint.MsgBurn": {
+      aminoType: "gentlemint/Burn",
+      toAmino: ({coins, creator}: MsgBurn): AminoMsgBurn["value"] => ({
+        coins,
         creator
       }),
-      fromAmino: ({amount, creator}: AminoMsgBurnShr["value"]): MsgBurnShr => ({
-        amount,
+      fromAmino: ({coins, creator}: AminoMsgBurn["value"]): MsgBurn => ({
+        coins,
         creator
       })
     },
-    "/shareledger.gentlemint.MsgBurnShrp": {
-      aminoType: "gentlemint/BurnShrp",
-      toAmino: ({amount, creator}: MsgBurnShrp): AminoMsgBurnShrp["value"] => ({
-        amount,
+    "/shareledger.gentlemint.MsgLoad": {
+      aminoType: "gentlemint/Load",
+      toAmino: ({address, coins, creator}: MsgLoad): AminoMsgLoad["value"] => ({
+        address,
+        coins,
         creator
       }),
-      fromAmino: ({amount, creator}: AminoMsgBurnShrp["value"]): MsgBurnShrp => ({
-        amount,
+      fromAmino: ({address, coins, creator}: AminoMsgLoad["value"]): MsgLoad => ({
+        address,
+        coins,
         creator
       })
     },
-    "/shareledger.gentlemint.MsgLoadShr": {
-      aminoType: "gentlemint/LoadShr",
-      toAmino: ({address, amount, creator}: MsgLoadShr): AminoMsgLoadShr["value"] => ({
+    "/shareledger.gentlemint.MsgSend": {
+      aminoType: "gentlemint/Send",
+      toAmino: ({address, coins, creator}: MsgSend): AminoMsgSend["value"] => ({
         address,
-        amount,
+        coins,
         creator
       }),
-      fromAmino: ({address, amount, creator}: AminoMsgLoadShr["value"]): MsgLoadShr => ({
+      fromAmino: ({address, coins, creator}: AminoMsgSend["value"]): MsgSend => ({
         address,
-        amount,
-        creator
-      })
-    },
-    "/shareledger.gentlemint.MsgLoadShrp": {
-      aminoType: "gentlemint/LoadShrp",
-      toAmino: ({address, amount, creator}: MsgLoadShrp): AminoMsgLoadShrp["value"] => ({
-        address,
-        amount,
-        creator
-      }),
-      fromAmino: ({address, amount, creator}: AminoMsgLoadShrp["value"]): MsgLoadShrp => ({
-        address,
-        amount,
-        creator
-      })
-    },
-    "/shareledger.gentlemint.MsgSendShr": {
-      aminoType: "gentlemint/SendShr",
-      toAmino: ({address, amount, creator}: MsgSendShr): AminoMsgSendShr["value"] => ({
-        address,
-        amount,
-        creator
-      }),
-      fromAmino: ({address, amount, creator}: AminoMsgSendShr["value"]): MsgSendShr => ({
-        address,
-        amount,
-        creator
-      })
-    },
-    "/shareledger.gentlemint.MsgSendShrp": {
-      aminoType: "gentlemint/SendShrp",
-      toAmino: ({address, amount, creator}: MsgSendShrp): AminoMsgSendShrp["value"] => ({
-        address,
-        amount,
-        creator
-      }),
-      fromAmino: ({address, amount, creator}: AminoMsgSendShrp["value"]): MsgSendShrp => ({
-        address,
-        amount,
+        coins,
         creator
       })
     },
@@ -309,17 +175,6 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
         creator
       }),
       fromAmino: ({amount, creator}: AminoMsgBuyShr["value"]): MsgBuyShr => ({
-        amount,
-        creator
-      })
-    },
-    "/shareledger.gentlemint.MsgBuyCent": {
-      aminoType: "gentlemint/BuyCent",
-      toAmino: ({amount, creator}: MsgBuyCent): AminoMsgBuyCent["value"] => ({
-        amount,
-        creator
-      }),
-      fromAmino: ({amount, creator}: AminoMsgBuyCent["value"]): MsgBuyCent => ({
         amount,
         creator
       })
@@ -340,14 +195,10 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
 
 export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
   return [
-    ["/shareledger.gentlemint.MsgBurnShr", MsgBurnShr],
-    ["/shareledger.gentlemint.MsgBurnShrp", MsgBurnShrp],
-    ["/shareledger.gentlemint.MsgLoadShr", MsgLoadShr],
-    ["/shareledger.gentlemint.MsgLoadShrp", MsgLoadShrp],
-    ["/shareledger.gentlemint.MsgSendShr", MsgSendShr],
-    ["/shareledger.gentlemint.MsgSendShrp", MsgSendShrp],
+    ["/shareledger.gentlemint.MsgBurn", MsgBurn],
+    ["/shareledger.gentlemint.MsgLoad", MsgLoad],
+    ["/shareledger.gentlemint.MsgSend", MsgSend],
     ["/shareledger.gentlemint.MsgBuyShr", MsgBuyShr],
-    ["/shareledger.gentlemint.MsgBuyCent", MsgBuyCent],
     ["/shareledger.gentlemint.MsgSetExchange", MsgSetExchange]
   ];
 }
