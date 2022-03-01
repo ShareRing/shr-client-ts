@@ -3,22 +3,10 @@ import {Decimal} from "@cosmjs/math";
 import {BigNumber} from "bignumber.js";
 import {Client} from "../../client";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
-import {
-  MsgBurn,
-  MsgBuyShr,
-  MsgLoad,
-  MsgSend,
-  MsgSetExchange
-} from "../../codec/shareledger/gentlemint/tx";
+import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange} from "../../codec/shareledger/gentlemint/tx";
 import {GasPrice} from "../../fee";
 import {createProtobufRpcClient} from "../../query";
-import {
-  MsgBurnEncodeObject,
-  MsgBuyShrEncodeObject,
-  MsgLoadEncodeObject,
-  MsgSendEncodeObject,
-  MsgSetExchangeEncodeObject
-} from "./amino";
+import {MsgBurnEncodeObject, MsgBuyShrEncodeObject, MsgLoadEncodeObject, MsgSendEncodeObject, MsgSetExchangeEncodeObject} from "./amino";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 
 export type GentlemintQueryExtension = {
@@ -63,7 +51,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           const {fee} = await queryService.ActionLevelFee({action});
           let {amount, denom} = GasPrice.fromString(fee); // eslint-disable-line prefer-const
           let amt = amount.toString();
-          if (denom === "shrp") {
+          if (denom === "cent") {
             const exchangeRate = await this.gentlemint.exchangeRate();
             amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
             denom = "shr";
@@ -72,32 +60,61 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         },
         feeByLevel: async (level: string) => {
           const {levelFee} = await queryService.LevelFee({level});
-          if (!levelFee) {
-            return {
-              denom: "shr",
-              amount: "1"
-            };
+          if (!levelFee || !levelFee.originalFee) {
+            return coin((10 ** 9).toFixed(0), "nshr");
           }
-          let {amount, denom} = GasPrice.fromString(levelFee.fee); // eslint-disable-line prefer-const
-          let amt = amount.toString();
-          if (denom === "shrp") {
-            const exchangeRate = await this.gentlemint.exchangeRate();
-            amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
-            denom = "shr";
+          let {amount, denom} = levelFee.originalFee; // eslint-disable-line prefer-const
+          const exchangeRate = await this.gentlemint.exchangeRate();
+          switch (denom) {
+            default:
+              throw new Error(`Denom ${denom} not supported`);
+            case "nshr":
+              break;
+            case "shr":
+              amount = new BigNumber(amount).multipliedBy(10 ** 9).toFixed(0, BigNumber.ROUND_CEIL);
+            case "shrp":
+              amount = new BigNumber(amount)
+                .multipliedBy(exchangeRate.toString())
+                .multipliedBy(10 ** 9)
+                .toFixed(0, BigNumber.ROUND_CEIL);
+            case "cent":
+              amount = new BigNumber(amount)
+                .multipliedBy(10 ** 2)
+                .multipliedBy(exchangeRate.toString())
+                .multipliedBy(10 ** 9)
+                .toFixed(0, BigNumber.ROUND_CEIL);
           }
-          return coin(amt, denom);
+          return coin(amount, "nshr");
         },
         feeLevels: async () => {
           const {levelFees} = await queryService.LevelFees({});
           const exchangeRate = await this.gentlemint.exchangeRate();
           return levelFees.reduce((prev, curr) => {
-            let {amount, denom} = GasPrice.fromString(curr.originalFee); // eslint-disable-line prefer-const
-            let amt = amount.toString();
-            if (denom === "shrp") {
-              amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
-              denom = "shr";
+            if (!curr.originalFee) {
+              prev[curr.level] = coin((10 ** 9).toFixed(0), "nshr");
+              return prev;
             }
-            prev[curr.level] = coin(amt, denom);
+            let {amount, denom} = curr.originalFee; // eslint-disable-line prefer-const
+            switch (denom) {
+              default:
+                amount = (10 ** 9).toFixed(0);
+              case "nshr":
+                break;
+              case "shr":
+                amount = new BigNumber(amount).multipliedBy(10 ** 9).toFixed(0, BigNumber.ROUND_CEIL);
+              case "shrp":
+                amount = new BigNumber(amount)
+                  .multipliedBy(exchangeRate.toString())
+                  .multipliedBy(10 ** 9)
+                  .toFixed(0, BigNumber.ROUND_CEIL);
+              case "cent":
+                amount = new BigNumber(amount)
+                  .multipliedBy(10 ** 2)
+                  .multipliedBy(exchangeRate.toString())
+                  .multipliedBy(10 ** 9)
+                  .toFixed(0, BigNumber.ROUND_CEIL);
+            }
+            prev[curr.level] = coin(amount, denom);
             return prev;
           }, {} as Record<"zero" | "low" | "medium" | "high" | string, Coin>);
         },
@@ -106,7 +123,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           try {
             const {convertedFee} = await queryService.CheckFees({address, actions});
             if (!convertedFee) {
-              throw "Not found";
+              throw new Error("Not found");
             }
             return convertedFee;
           } catch (e) {

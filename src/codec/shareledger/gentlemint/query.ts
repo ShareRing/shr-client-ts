@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {LevelFee, LevelFeeDetail} from "../../shareledger/gentlemint/level_fee";
+import {LevelFeeDetail} from "../../shareledger/gentlemint/level_fee";
 import {Coin, DecCoin} from "../../cosmos/base/v1beta1/coin";
 import {ActionLevelFee} from "../../shareledger/gentlemint/action_level_fee";
 
@@ -18,7 +18,7 @@ export interface QueryLevelFeeRequest {
 }
 
 export interface QueryLevelFeeResponse {
-  levelFee?: LevelFee;
+  levelFee?: LevelFeeDetail;
 }
 
 export interface QueryLevelFeesRequest {}
@@ -200,7 +200,7 @@ const baseQueryLevelFeeResponse: object = {};
 export const QueryLevelFeeResponse = {
   encode(message: QueryLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.levelFee !== undefined) {
-      LevelFee.encode(message.levelFee, writer.uint32(10).fork()).ldelim();
+      LevelFeeDetail.encode(message.levelFee, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -213,7 +213,7 @@ export const QueryLevelFeeResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.levelFee = LevelFee.decode(reader, reader.uint32());
+          message.levelFee = LevelFeeDetail.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -225,19 +225,19 @@ export const QueryLevelFeeResponse = {
 
   fromJSON(object: any): QueryLevelFeeResponse {
     const message = {...baseQueryLevelFeeResponse} as QueryLevelFeeResponse;
-    message.levelFee = object.levelFee !== undefined && object.levelFee !== null ? LevelFee.fromJSON(object.levelFee) : undefined;
+    message.levelFee = object.levelFee !== undefined && object.levelFee !== null ? LevelFeeDetail.fromJSON(object.levelFee) : undefined;
     return message;
   },
 
   toJSON(message: QueryLevelFeeResponse): unknown {
     const obj: any = {};
-    message.levelFee !== undefined && (obj.levelFee = message.levelFee ? LevelFee.toJSON(message.levelFee) : undefined);
+    message.levelFee !== undefined && (obj.levelFee = message.levelFee ? LevelFeeDetail.toJSON(message.levelFee) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLevelFeeResponse>, I>>(object: I): QueryLevelFeeResponse {
     const message = {...baseQueryLevelFeeResponse} as QueryLevelFeeResponse;
-    message.levelFee = object.levelFee !== undefined && object.levelFee !== null ? LevelFee.fromPartial(object.levelFee) : undefined;
+    message.levelFee = object.levelFee !== undefined && object.levelFee !== null ? LevelFeeDetail.fromPartial(object.levelFee) : undefined;
     return message;
   }
 };
