@@ -55,7 +55,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           let amt = amount.toString();
           if (denom === "cent") {
             const exchangeRate = await this.gentlemint.exchangeRate();
-            amt = new BigNumber(exchangeRate.toString()).multipliedBy(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
+            amt = new BigNumber(exchangeRate.toString()).times(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
             denom = "shr";
           }
           return coin(amt, denom);
@@ -75,9 +75,9 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             case "shr":
               return toNshr(amount);
             case "shrp":
-              return toNshr(new BigNumber(amount).multipliedBy(exchangeRate.toString()));
+              return toNshr(new BigNumber(amount).times(exchangeRate.toString()));
             case "cent":
-              return toNshr(new BigNumber(fromCent(amount).amount).multipliedBy(exchangeRate.toString()));
+              return toNshr(new BigNumber(fromCent(amount).amount).times(exchangeRate.toString()));
           }
         },
         feeLevels: async () => {
@@ -101,10 +101,10 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
                 c = toNshr(amount);
                 break;
               case "shrp":
-                c = toNshr(new BigNumber(amount).multipliedBy(exchangeRate.toString()));
+                c = toNshr(new BigNumber(amount).times(exchangeRate.toString()));
                 break;
               case "cent":
-                c = toNshr(new BigNumber(fromCent(amount).amount).multipliedBy(exchangeRate.toString()));
+                c = toNshr(new BigNumber(fromCent(amount).amount).times(exchangeRate.toString()));
             }
             prev[curr.level] = c;
             return prev;
