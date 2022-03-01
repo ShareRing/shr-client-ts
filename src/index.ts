@@ -15,8 +15,9 @@ export {
   SequenceResponse,
   TimeoutError
 } from "./client";
+export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
 export {calculateFee, GasPrice} from "./fee";
-export {toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress, longify} from "./query";
+export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
@@ -33,14 +34,14 @@ export {
   Coin,
   coin,
   coins,
+  decodePubkey,
+  encodePubkey,
   makeShareledgerPath,
   parseCoins,
+  pubkeyToAddress,
   Registry,
   Secp256k1HdWallet,
   Secp256k1HdWalletOptions,
-  Secp256k1Wallet,
-  pubkeyToAddress,
-  encodePubkey,
-  decodePubkey
+  Secp256k1Wallet
 } from "./signing";
 export {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";

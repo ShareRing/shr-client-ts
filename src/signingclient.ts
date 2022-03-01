@@ -1,4 +1,4 @@
-import {Coin, coin, encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
+import {Coin, encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
 import {fromBase64} from "@cosmjs/encoding";
 import {Decimal, Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
@@ -7,6 +7,7 @@ import {AminoTypes} from "./amino";
 import {BroadcastTxResponse, Client} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
+import {toNshr} from "./denoms";
 import {calculateFee, GasPrice} from "./fee";
 import {createRegistryTypes as A} from "./modules/auth";
 import {createActions as BB, createRegistryTypes as B} from "./modules/bank";
@@ -96,7 +97,7 @@ export class SigningClient extends Client {
     const {
       registry = createDefaultRegistry(),
       aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"}),
-      minTxFee = coin(2, "shr")
+      minTxFee = toNshr(2)
     } = options;
     this.registry = registry;
     this.aminoTypes = aminoTypes;

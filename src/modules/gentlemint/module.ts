@@ -2,12 +2,13 @@ import {Coin, coin} from "@cosmjs/amino";
 import {Decimal} from "@cosmjs/math";
 import {BigNumber} from "bignumber.js";
 import {Client} from "../../client";
+import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange} from "../../codec/shareledger/gentlemint/tx";
+import {fromCent, toNshr} from "../../denoms";
 import {GasPrice} from "../../fee";
 import {createProtobufRpcClient} from "../../query";
 import {MsgBurnEncodeObject, MsgBuyShrEncodeObject, MsgLoadEncodeObject, MsgSendEncodeObject, MsgSetExchangeEncodeObject} from "./amino";
-import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 
 export type GentlemintQueryExtension = {
   get gentlemint(): {
@@ -62,7 +63,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         feeByLevel: async (level: string) => {
           const {levelFee} = await queryService.LevelFee({level});
           if (!levelFee || !levelFee.originalFee) {
-            return coin((10 ** 9).toFixed(0), "nshr");
+            return toNshr(1);
           }
           let {amount, denom} = levelFee.originalFee; // eslint-disable-line prefer-const
           const exchangeRate = await this.gentlemint.exchangeRate();
@@ -70,52 +71,42 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             default:
               throw new Error(`Denom ${denom} not supported`);
             case "nshr":
-              break;
+              return coin(amount, "nshr");
             case "shr":
-              amount = new BigNumber(amount).multipliedBy(10 ** 9).toFixed(0, BigNumber.ROUND_CEIL);
+              return toNshr(amount);
             case "shrp":
-              amount = new BigNumber(amount)
-                .multipliedBy(exchangeRate.toString())
-                .multipliedBy(10 ** 9)
-                .toFixed(0, BigNumber.ROUND_CEIL);
+              return toNshr(new BigNumber(amount).multipliedBy(exchangeRate.toString()));
             case "cent":
-              amount = new BigNumber(amount)
-                .multipliedBy(10 ** 2)
-                .multipliedBy(exchangeRate.toString())
-                .multipliedBy(10 ** 9)
-                .toFixed(0, BigNumber.ROUND_CEIL);
+              return toNshr(new BigNumber(fromCent(amount).amount).multipliedBy(exchangeRate.toString()));
           }
-          return coin(amount, "nshr");
         },
         feeLevels: async () => {
           const {levelFees} = await queryService.LevelFees({});
           const exchangeRate = await this.gentlemint.exchangeRate();
           return levelFees.reduce((prev, curr) => {
             if (!curr.originalFee) {
-              prev[curr.level] = coin((10 ** 9).toFixed(0), "nshr");
+              prev[curr.level] = toNshr(1);
               return prev;
             }
             let {amount, denom} = curr.originalFee; // eslint-disable-line prefer-const
+            let c: Coin;
             switch (denom) {
               default:
-                amount = (10 ** 9).toFixed(0);
+                c = toNshr(1);
+                break;
               case "nshr":
+                c = coin(amount, denom);
                 break;
               case "shr":
-                amount = new BigNumber(amount).multipliedBy(10 ** 9).toFixed(0, BigNumber.ROUND_CEIL);
+                c = toNshr(amount);
+                break;
               case "shrp":
-                amount = new BigNumber(amount)
-                  .multipliedBy(exchangeRate.toString())
-                  .multipliedBy(10 ** 9)
-                  .toFixed(0, BigNumber.ROUND_CEIL);
+                c = toNshr(new BigNumber(amount).multipliedBy(exchangeRate.toString()));
+                break;
               case "cent":
-                amount = new BigNumber(amount)
-                  .multipliedBy(10 ** 2)
-                  .multipliedBy(exchangeRate.toString())
-                  .multipliedBy(10 ** 9)
-                  .toFixed(0, BigNumber.ROUND_CEIL);
+                c = toNshr(new BigNumber(fromCent(amount).amount).multipliedBy(exchangeRate.toString()));
             }
-            prev[curr.level] = coin(amount, denom);
+            prev[curr.level] = c;
             return prev;
           }, {} as Record<"zero" | "low" | "medium" | "high" | string, Coin>);
         },

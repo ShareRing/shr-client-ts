@@ -1,9 +1,8 @@
-import {StdFee, coin} from "@cosmjs/amino";
-import {Decimal} from "@cosmjs/math";
+import {StdFee} from "@cosmjs/amino";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
 import {BroadcastTxResponse} from "./client";
-import {calculateFee, GasPrice} from "./fee";
+import {toNshr} from "./denoms";
 import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
@@ -180,7 +179,7 @@ export class ShareledgerSigningClient extends SigningClient {
       )
       .catch(() => undefined);
     if (!c) {
-      c = this.minTxFee ?? coin(1, "shr");
+      c = this.minTxFee ?? toNshr(1);
     }
     const gasEstimation = await this.simulate(signerAddress, messages, memo, [c]);
     const buff = Math.round(gasEstimation * 1.275);
