@@ -16,6 +16,7 @@ export type GentlemintQueryExtension = {
     readonly feeByLevel: (level: string) => Promise<Coin>;
     readonly feeByAction: (action: string) => Promise<Coin>;
     readonly feeLevels: () => Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
+    readonly balances: (address: string) => Promise<DecCoin[]>;
   };
 };
 
@@ -130,6 +131,10 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             const fees = await this.gentlemint.feeLevels();
             return fees.low || fees.high;
           }
+        },
+        balances: async (address: string) => {
+          const {coins} = await queryService.Balances({address: address});
+          return coins;
         }
       };
     }
