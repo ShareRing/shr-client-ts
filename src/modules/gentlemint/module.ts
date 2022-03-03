@@ -52,13 +52,20 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
         feeByAction: async (action: string) => {
           const {fee} = await queryService.ActionLevelFee({action});
           let {amount, denom} = GasPrice.fromString(fee); // eslint-disable-line prefer-const
-          let amt = amount.toString();
-          if (denom === "cent") {
-            const exchangeRate = await this.gentlemint.exchangeRate();
-            amt = new BigNumber(exchangeRate.toString()).times(amount.toString()).toFixed(0, BigNumber.ROUND_CEIL);
-            denom = "shr";
+          const amt = amount.toString();
+          const exchangeRate = await this.gentlemint.exchangeRate();
+          switch (denom) {
+            default:
+              throw new Error(`Denom ${denom} not supported`);
+            case "nshr":
+              return coin(amt, "nshr");
+            case "shr":
+              return toNshr(amt);
+            case "shrp":
+              return toNshr(new BigNumber(amt).times(exchangeRate.toString()));
+            case "cent":
+              return toNshr(new BigNumber(fromCent(amt).amount).times(exchangeRate.toString()));
           }
-          return coin(amt, denom);
         },
         feeByLevel: async (level: string) => {
           const {levelFee} = await queryService.LevelFee({level});
