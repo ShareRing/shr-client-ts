@@ -17,10 +17,17 @@ import {
   MsgSetExchangeEncodeObject
 } from "./amino";
 
+export type FeeEstimation = {
+  feeByNshr?: Coin;
+  feeByCent?: DecCoin;
+  hasEnoughNshr: boolean;
+  hasEnoughCentForFeeExchange: boolean;
+};
+
 export type GentlemintQueryExtension = {
   get gentlemint(): {
     readonly exchangeRate: () => Promise<Decimal>;
-    readonly determineFee: (address: string, actions: string | string[]) => Promise<Coin>;
+    readonly estimateFee: (address: string, actions: string | string[]) => Promise<FeeEstimation>;
     readonly feeByLevel: (level: string) => Promise<Coin>;
     readonly feeByAction: (action: string) => Promise<Coin>;
     readonly feeLevels: () => Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
@@ -125,17 +132,26 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             return prev;
           }, {} as Record<"zero" | "low" | "medium" | "high" | string, Coin>);
         },
-        determineFee: async (address: string, actions: string | string[]) => {
+        estimateFee: async (address: string, actions: string | string[]): Promise<FeeEstimation> => {
           actions = typeof actions === "string" ? [actions] : actions;
           try {
-            const {convertedFee} = await queryService.CheckFees({address, actions});
-            if (!convertedFee) {
-              throw new Error("Not found");
-            }
-            return convertedFee;
+            const {convertedFee, sufficientFee, sufficientFundForFee, costLoadingFee} = await queryService.CheckFees({address, actions});
+            // let feeByNshr = convertedFee;
+            // if (!feeByNshr) {
+            //   const fees = await this.gentlemint.feeLevels();
+            //   feeByNshr = fees.low || fees.high;
+            // }
+            return {
+              feeByNshr: convertedFee,
+              feeByCent: costLoadingFee,
+              hasEnoughNshr: sufficientFee,
+              hasEnoughCentForFeeExchange: sufficientFundForFee
+            };
           } catch (e) {
-            const fees = await this.gentlemint.feeLevels();
-            return fees.low || fees.high;
+            return {
+              hasEnoughCentForFeeExchange: false,
+              hasEnoughNshr: false
+            };
           }
         },
         balances: async (address: string) => {

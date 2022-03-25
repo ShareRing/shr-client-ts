@@ -172,20 +172,23 @@ export class ShareledgerSigningClient extends SigningClient {
   }
 
   public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
-    let c = await this.gentlemint
-      .determineFee(
-        signerAddress,
-        messages.map((msg) => actions[msg.typeUrl])
-      )
-      .catch(() => undefined);
-    if (!c) {
-      c = this.minTxFee ?? toNshr(1);
+    const feeEstimation = await this.gentlemint.estimateFee(
+      signerAddress,
+      messages.map((msg) => actions[msg.typeUrl])
+    );
+    let feeByNshr = feeEstimation.feeByNshr;
+    if (!feeByNshr) {
+      feeByNshr = this.minTxFee;
+      if (!feeByNshr) {
+        const fees = await this.gentlemint.feeLevels();
+        feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
+      }
     }
-    const gasEstimation = await this.simulate(signerAddress, messages, memo, [c]);
+    const gasEstimation = await this.simulate(signerAddress, messages, memo, [feeByNshr]);
     const buff = Math.round(gasEstimation * 1.275);
     return {
       gas: buff.toString(),
-      amount: [c]
+      amount: [feeByNshr]
     };
   }
 }
