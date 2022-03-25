@@ -4,11 +4,18 @@ import {BigNumber} from "bignumber.js";
 import {Client} from "../../client";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
-import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange} from "../../codec/shareledger/gentlemint/tx";
+import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange, MsgLoadFee} from "../../codec/shareledger/gentlemint/tx";
 import {fromCent, toNshr} from "../../denoms";
 import {GasPrice} from "../../fee";
 import {createProtobufRpcClient} from "../../query";
-import {MsgBurnEncodeObject, MsgBuyShrEncodeObject, MsgLoadEncodeObject, MsgSendEncodeObject, MsgSetExchangeEncodeObject} from "./amino";
+import {
+  MsgBurnEncodeObject,
+  MsgBuyShrEncodeObject,
+  MsgLoadEncodeObject,
+  MsgLoadFeeEncodeObject,
+  MsgSendEncodeObject,
+  MsgSetExchangeEncodeObject
+} from "./amino";
 
 export type GentlemintQueryExtension = {
   get gentlemint(): {
@@ -28,6 +35,7 @@ export type GentlemintTxExtension = {
     readonly send: (fromAddress: string, toAddress: string, coins: DecCoin[]) => MsgSendEncodeObject;
     readonly buyShr: (toAddress: string, amount: Long) => MsgBuyShrEncodeObject;
     readonly setExchangeRate: (rate: string, creator: string) => MsgSetExchangeEncodeObject;
+    readonly loadFee: (address: string, fee: DecCoin) => MsgLoadFeeEncodeObject;
   };
 };
 
@@ -190,6 +198,15 @@ export function GentlemintTxExtension<T extends {new (...args: any[]): Client & 
               rate
             })
           };
+        },
+        loadFee: (address: string, fee: DecCoin): MsgLoadFeeEncodeObject => {
+          return {
+            typeUrl: "/shareledger.gentlemint.MsgLoadFee",
+            value: MsgLoadFee.fromPartial({
+              creator: address,
+              shrp: {...fee}
+            })
+          };
         }
       };
     }
@@ -206,6 +223,7 @@ export function createActions(): Record<string, string> {
     "/shareledger.gentlemint.MsgLoad": "gentlemint_load",
     "/shareledger.gentlemint.MsgSend": "gentlemint_send",
     "/shareledger.gentlemint.MsgBuyShr": "gentlemint_buy-shr",
-    "/shareledger.gentlemint.MsgSetExchange": "gentlemint_set-exchange"
+    "/shareledger.gentlemint.MsgSetExchange": "gentlemint_set-exchange",
+    "/shareledger.gentlemint.MsgLoadFee": "gentlemint_load-fee"
   };
 }

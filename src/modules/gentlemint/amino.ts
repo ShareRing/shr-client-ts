@@ -2,13 +2,7 @@
 
 import {AminoMsg} from "@cosmjs/amino";
 import {AminoConverter} from "../../amino/types";
-import {
-  MsgBurn,
-  MsgBuyShr,
-  MsgLoad,
-  MsgSend,
-  MsgSetExchange
-} from "../../codec/shareledger/gentlemint/tx";
+import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange, MsgLoadFee} from "../../codec/shareledger/gentlemint/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 
@@ -129,16 +123,39 @@ export function isMsgSetExchangeEncodeObject(encodeObject: EncodeObject): encode
   return (encodeObject as MsgSetExchangeEncodeObject).typeUrl === "/shareledger.gentlemint.MsgSetExchange";
 }
 
+export interface AminoMsgLoadFee extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "gentlemint/LoadFee";
+  readonly value: {
+    readonly creator: string;
+    readonly shrp?: DecCoin;
+  };
+}
+
+export function isAminoMsgLoadFee(msg: AminoMsg): msg is AminoMsgLoadFee {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "gentlemint/LoadFee";
+}
+
+export interface MsgLoadFeeEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.gentlemint.MsgLoadFee";
+  readonly value: Partial<MsgLoadFee>;
+}
+
+export function isMsgLoadFeeEncodeObject(encodeObject: EncodeObject): encodeObject is MsgLoadFeeEncodeObject {
+  return (encodeObject as MsgLoadFeeEncodeObject).typeUrl === "/shareledger.gentlemint.MsgLoadFee";
+}
+
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
   return {
     "/shareledger.gentlemint.MsgBurn": {
       aminoType: "gentlemint/Burn",
       toAmino: ({coins, creator}: MsgBurn): AminoMsgBurn["value"] => ({
-        coins,
+        coins: [...coins],
         creator
       }),
       fromAmino: ({coins, creator}: AminoMsgBurn["value"]): MsgBurn => ({
-        coins,
+        coins: [...coins],
         creator
       })
     },
@@ -146,12 +163,12 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       aminoType: "gentlemint/Load",
       toAmino: ({address, coins, creator}: MsgLoad): AminoMsgLoad["value"] => ({
         address,
-        coins,
+        coins: [...coins],
         creator
       }),
       fromAmino: ({address, coins, creator}: AminoMsgLoad["value"]): MsgLoad => ({
         address,
-        coins,
+        coins: [...coins],
         creator
       })
     },
@@ -159,12 +176,12 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       aminoType: "gentlemint/Send",
       toAmino: ({address, coins, creator}: MsgSend): AminoMsgSend["value"] => ({
         address,
-        coins,
+        coins: [...coins],
         creator
       }),
       fromAmino: ({address, coins, creator}: AminoMsgSend["value"]): MsgSend => ({
         address,
-        coins,
+        coins: [...coins],
         creator
       })
     },
@@ -188,6 +205,17 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       fromAmino: ({creator, rate}: AminoMsgSetExchange["value"]): MsgSetExchange => ({
         creator,
         rate
+      })
+    },
+    "/shareledger.gentlemint.MsgLoadFee": {
+      aminoType: "gentlemint/LoadFee",
+      toAmino: ({creator, shrp}: MsgLoadFee): AminoMsgLoadFee["value"] => ({
+        creator,
+        shrp
+      }),
+      fromAmino: ({creator, shrp}: AminoMsgLoadFee["value"]): MsgLoadFee => ({
+        creator,
+        shrp
       })
     }
   };
