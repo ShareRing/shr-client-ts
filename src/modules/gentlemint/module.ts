@@ -19,7 +19,7 @@ import {
 
 export type FeeEstimation = {
   feeByNshr?: Coin;
-  feeByCent?: DecCoin;
+  feeByCent?: Coin;
   hasEnoughNshr: boolean;
   hasEnoughCentForFeeExchange: boolean;
 };
@@ -48,6 +48,21 @@ export type GentlemintTxExtension = {
 
 export type GentlemintExtension = GentlemintQueryExtension & GentlemintTxExtension;
 
+function normalizeToNshr(amount: string | number, denom = "nshr", exchangeRate: Decimal = Decimal.fromUserInput("1", 18)): Coin {
+  switch (denom) {
+    default:
+      throw new Error(`Denom ${denom} not supported`);
+    case "nshr":
+      return coin(amount, "nshr");
+    case "shr":
+      return toNshr(amount);
+    case "shrp":
+      return toNshr(new BigNumber(amount).times(exchangeRate.toString()));
+    case "cent":
+      return toNshr(new BigNumber(fromCent(amount).amount).times(exchangeRate.toString()));
+  }
+}
+
 export function GentlemintQueryExtension<T extends {new (...args: any[]): Client & GentlemintQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   return class extends constructor {
@@ -69,18 +84,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           let {amount, denom} = GasPrice.fromString(fee); // eslint-disable-line prefer-const
           const amt = amount.toString();
           const exchangeRate = await this.gentlemint.exchangeRate();
-          switch (denom) {
-            default:
-              throw new Error(`Denom ${denom} not supported`);
-            case "nshr":
-              return coin(amt, "nshr");
-            case "shr":
-              return toNshr(amt);
-            case "shrp":
-              return toNshr(new BigNumber(amt).times(exchangeRate.toString()));
-            case "cent":
-              return toNshr(new BigNumber(fromCent(amt).amount).times(exchangeRate.toString()));
-          }
+          return normalizeToNshr(amt, denom, exchangeRate);
         },
         feeByLevel: async (level: string) => {
           const {levelFee} = await queryService.LevelFee({level});
@@ -89,18 +93,7 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           }
           let {amount, denom} = levelFee.originalFee; // eslint-disable-line prefer-const
           const exchangeRate = await this.gentlemint.exchangeRate();
-          switch (denom) {
-            default:
-              throw new Error(`Denom ${denom} not supported`);
-            case "nshr":
-              return coin(amount, "nshr");
-            case "shr":
-              return toNshr(amount);
-            case "shrp":
-              return toNshr(new BigNumber(amount).times(exchangeRate.toString()));
-            case "cent":
-              return toNshr(new BigNumber(fromCent(amount).amount).times(exchangeRate.toString()));
-          }
+          return normalizeToNshr(amount, denom, exchangeRate);
         },
         feeLevels: async () => {
           const {levelFees} = await queryService.LevelFees({});
@@ -117,16 +110,11 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
                 c = toNshr(1);
                 break;
               case "nshr":
-                c = coin(amount, denom);
-                break;
               case "shr":
-                c = toNshr(amount);
-                break;
               case "shrp":
-                c = toNshr(new BigNumber(amount).times(exchangeRate.toString()));
-                break;
               case "cent":
-                c = toNshr(new BigNumber(fromCent(amount).amount).times(exchangeRate.toString()));
+                c = normalizeToNshr(amount, denom, exchangeRate);
+                break;
             }
             prev[curr.level] = c;
             return prev;
@@ -141,9 +129,12 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             //   const fees = await this.gentlemint.feeLevels();
             //   feeByNshr = fees.low || fees.high;
             // }
+            const exchangeRate = await this.gentlemint.exchangeRate();
+            const feeByNshr = convertedFee ? normalizeToNshr(convertedFee.amount, convertedFee.denom, exchangeRate) : undefined;
+            const feeByCent = costLoadingFee ? normalizeToNshr(costLoadingFee.amount, costLoadingFee.denom, exchangeRate) : undefined;
             return {
-              feeByNshr: convertedFee,
-              feeByCent: costLoadingFee,
+              feeByNshr,
+              feeByCent,
               hasEnoughNshr: sufficientFee,
               hasEnoughCentForFeeExchange: sufficientFundForFee
             };
