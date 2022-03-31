@@ -227,6 +227,7 @@ export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
     ["/shareledger.gentlemint.MsgLoad", MsgLoad],
     ["/shareledger.gentlemint.MsgSend", MsgSend],
     ["/shareledger.gentlemint.MsgBuyShr", MsgBuyShr],
-    ["/shareledger.gentlemint.MsgSetExchange", MsgSetExchange]
+    ["/shareledger.gentlemint.MsgSetExchange", MsgSetExchange],
+    ["/shareledger.gentlemint.MsgLoadFee", MsgLoadFee]
   ];
 }
