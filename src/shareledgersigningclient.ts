@@ -176,7 +176,7 @@ export class ShareledgerSigningClient extends SigningClient {
       signerAddress,
       messages.map((msg) => actions[msg.typeUrl])
     );
-    let feeByNshr = feeEstimation.feeByNshr;
+    let feeByNshr = feeEstimation.fee;
     if (!feeByNshr) {
       feeByNshr = this.minTxFee;
       if (!feeByNshr) {
