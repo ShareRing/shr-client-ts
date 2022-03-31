@@ -5,7 +5,7 @@ import {Client} from "../../client";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange, MsgLoadFee} from "../../codec/shareledger/gentlemint/tx";
-import {fromCent, toNshr} from "../../denoms";
+import {fromCent, fromNshr, toCent, toNshr} from "../../denoms";
 import {GasPrice} from "../../fee";
 import {createProtobufRpcClient} from "../../query";
 import {
@@ -18,8 +18,8 @@ import {
 } from "./amino";
 
 export type FeeEstimation = {
-  feeByNshr?: Coin;
-  feeByCent?: Coin;
+  fee?: Coin;
+  feeExchange?: Coin;
   hasEnoughNshr: boolean;
   hasEnoughCentForFeeExchange: boolean;
 };
@@ -60,6 +60,21 @@ function normalizeToNshr(amount: string | number, denom = "nshr", exchangeRate: 
       return toNshr(new BigNumber(amount).times(exchangeRate.toString()));
     case "cent":
       return toNshr(new BigNumber(fromCent(amount).amount).times(exchangeRate.toString()));
+  }
+}
+
+function normalizeToCent(amount: string | number, denom = "cent", exchangeRate: Decimal = Decimal.fromUserInput("1", 18)): Coin {
+  switch (denom) {
+    default:
+      throw new Error(`Denom ${denom} not supported`);
+    case "cent":
+      return coin(amount, "cent");
+    case "shrp":
+      return toCent(amount);
+    case "shr":
+      return toCent(new BigNumber(amount).div(exchangeRate.toString()));
+    case "nshr":
+      return toCent(new BigNumber(fromNshr(amount).amount).div(exchangeRate.toString()));
   }
 }
 
@@ -130,11 +145,11 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             //   feeByNshr = fees.low || fees.high;
             // }
             const exchangeRate = await this.gentlemint.exchangeRate();
-            const feeByNshr = convertedFee ? normalizeToNshr(convertedFee.amount, convertedFee.denom, exchangeRate) : undefined;
-            const feeByCent = costLoadingFee ? normalizeToNshr(costLoadingFee.amount, costLoadingFee.denom, exchangeRate) : undefined;
+            const fee = convertedFee ? normalizeToNshr(convertedFee.amount, convertedFee.denom, exchangeRate) : undefined;
+            const feeExchange = costLoadingFee ? normalizeToCent(costLoadingFee.amount, costLoadingFee.denom, exchangeRate) : undefined;
             return {
-              feeByNshr,
-              feeByCent,
+              fee,
+              feeExchange,
               hasEnoughNshr: sufficientFee,
               hasEnoughCentForFeeExchange: sufficientFundForFee
             };
