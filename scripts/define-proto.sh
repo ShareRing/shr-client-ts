@@ -104,7 +104,6 @@ protoc \
   "$COSMOS_PROTO_DIR/ibc/core/connection/v1/genesis.proto" \
   "$COSMOS_PROTO_DIR/ibc/core/connection/v1/query.proto" \
   "$COSMOS_PROTO_DIR/ibc/core/connection/v1/tx.proto" \
-  "$COSMOS_PROTO_DIR/ibc/core/port/v1/query.proto" \
   "$COSMOS_PROTO_DIR/ibc/core/types/v1/genesis.proto" \
   "$COSMOS_PROTO_DIR/ibc/lightclients/localhost/v1/localhost.proto" \
   "$COSMOS_PROTO_DIR/ibc/lightclients/solomachine/v1/solomachine.proto" \

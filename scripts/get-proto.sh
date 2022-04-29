@@ -6,7 +6,7 @@ PROTO_DIR="./proto"
 COSMOS_DIR="$PROTO_DIR/cosmos"
 COSMOS_SDK_DIR="$COSMOS_DIR/cosmos-sdk"
 ZIP_FILE="$COSMOS_DIR/tmp.zip"
-COSMOS_SDK_REF=${COSMOS_SDK_REF:-"v0.44.0"}
+COSMOS_SDK_REF=${COSMOS_SDK_REF:-"v0.45.0"}
 SUFFIX=${COSMOS_SDK_REF}
 
 [[ $SUFFIX =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-.+)?$ ]] && SUFFIX=${SUFFIX#v}
@@ -19,7 +19,7 @@ mv "$COSMOS_SDK_DIR-$SUFFIX" "$COSMOS_SDK_DIR"
 rm "$ZIP_FILE"
 
 IBC_DIR="$PROTO_DIR/ibc"
-IBC_SDK_REF=${IBC_SDK_REF:-"v2.0.1"}
+IBC_SDK_REF=${IBC_SDK_REF:-"v3.0.0"}
 SUFFIX=${IBC_SDK_REF}
 
 [[ $SUFFIX =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-.+)?$ ]] && SUFFIX=${SUFFIX#v}
