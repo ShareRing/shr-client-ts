@@ -15,9 +15,19 @@ export interface Request {
   fee?: DecCoin;
   status: string;
   batchId: Long;
+  createdAt: Long;
 }
 
-const baseRequest: object = {id: Long.UZERO, srcAddr: "", destAddr: "", srcNetwork: "", destNetwork: "", status: "", batchId: Long.UZERO};
+const baseRequest: object = {
+  id: Long.UZERO,
+  srcAddr: "",
+  destAddr: "",
+  srcNetwork: "",
+  destNetwork: "",
+  status: "",
+  batchId: Long.UZERO,
+  createdAt: Long.UZERO
+};
 
 export const Request = {
   encode(message: Request, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -47,6 +57,9 @@ export const Request = {
     }
     if (!message.batchId.isZero()) {
       writer.uint32(72).uint64(message.batchId);
+    }
+    if (!message.createdAt.isZero()) {
+      writer.uint32(80).uint64(message.createdAt);
     }
     return writer;
   },
@@ -85,6 +98,9 @@ export const Request = {
         case 9:
           message.batchId = reader.uint64() as Long;
           break;
+        case 10:
+          message.createdAt = reader.uint64() as Long;
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -104,6 +120,7 @@ export const Request = {
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
+    message.createdAt = object.createdAt !== undefined && object.createdAt !== null ? Long.fromString(object.createdAt) : Long.UZERO;
     return message;
   },
 
@@ -118,6 +135,7 @@ export const Request = {
     message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
     message.status !== undefined && (obj.status = message.status);
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
+    message.createdAt !== undefined && (obj.createdAt = (message.createdAt || Long.UZERO).toString());
     return obj;
   },
 
@@ -132,6 +150,7 @@ export const Request = {
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
     message.status = object.status ?? "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
+    message.createdAt = object.createdAt !== undefined && object.createdAt !== null ? Long.fromValue(object.createdAt) : Long.UZERO;
     return message;
   }
 };

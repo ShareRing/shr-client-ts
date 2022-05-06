@@ -169,12 +169,12 @@ protoc \
   "$SHARELEDGER_PROTO_DIR/shareledger/id/query.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/id/tx.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/batch.proto" \
-  "$SHARELEDGER_PROTO_DIR/shareledger/swap/format.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/genesis.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/id.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/params.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/query.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/request.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/sign_schema.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/tx.proto"
 
 

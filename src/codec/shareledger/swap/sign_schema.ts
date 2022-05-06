@@ -4,32 +4,32 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "shareledger.swap";
 
-export interface Format {
+export interface SignSchema {
   network: string;
   creator: string;
-  dataFormat: string;
+  schema: string;
 }
 
-const baseFormat: object = {network: "", creator: "", dataFormat: ""};
+const baseSignSchema: object = {network: "", creator: "", schema: ""};
 
-export const Format = {
-  encode(message: Format, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const SignSchema = {
+  encode(message: SignSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.network !== "") {
       writer.uint32(10).string(message.network);
     }
     if (message.creator !== "") {
       writer.uint32(18).string(message.creator);
     }
-    if (message.dataFormat !== "") {
-      writer.uint32(26).string(message.dataFormat);
+    if (message.schema !== "") {
+      writer.uint32(26).string(message.schema);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Format {
+  decode(input: _m0.Reader | Uint8Array, length?: number): SignSchema {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseFormat} as Format;
+    const message = {...baseSignSchema} as SignSchema;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -40,7 +40,7 @@ export const Format = {
           message.creator = reader.string();
           break;
         case 3:
-          message.dataFormat = reader.string();
+          message.schema = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -50,27 +50,27 @@ export const Format = {
     return message;
   },
 
-  fromJSON(object: any): Format {
-    const message = {...baseFormat} as Format;
+  fromJSON(object: any): SignSchema {
+    const message = {...baseSignSchema} as SignSchema;
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.dataFormat = object.dataFormat !== undefined && object.dataFormat !== null ? String(object.dataFormat) : "";
+    message.schema = object.schema !== undefined && object.schema !== null ? String(object.schema) : "";
     return message;
   },
 
-  toJSON(message: Format): unknown {
+  toJSON(message: SignSchema): unknown {
     const obj: any = {};
     message.network !== undefined && (obj.network = message.network);
     message.creator !== undefined && (obj.creator = message.creator);
-    message.dataFormat !== undefined && (obj.dataFormat = message.dataFormat);
+    message.schema !== undefined && (obj.schema = message.schema);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Format>, I>>(object: I): Format {
-    const message = {...baseFormat} as Format;
+  fromPartial<I extends Exact<DeepPartial<SignSchema>, I>>(object: I): SignSchema {
+    const message = {...baseSignSchema} as SignSchema;
     message.network = object.network ?? "";
     message.creator = object.creator ?? "";
-    message.dataFormat = object.dataFormat ?? "";
+    message.schema = object.schema ?? "";
     return message;
   }
 };
