@@ -6,21 +6,21 @@ export const protobufPackage = "shareledger.swap";
 
 export interface Batch {
   id: Long;
-  signedHash: string;
+  signature: string;
   txIds: Long[];
   status: string;
   digest: string;
 }
 
-const baseBatch: object = {id: Long.UZERO, signedHash: "", txIds: Long.UZERO, status: "", digest: ""};
+const baseBatch: object = {id: Long.UZERO, signature: "", txIds: Long.UZERO, status: "", digest: ""};
 
 export const Batch = {
   encode(message: Batch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (!message.id.isZero()) {
       writer.uint32(8).uint64(message.id);
     }
-    if (message.signedHash !== "") {
-      writer.uint32(18).string(message.signedHash);
+    if (message.signature !== "") {
+      writer.uint32(18).string(message.signature);
     }
     writer.uint32(26).fork();
     for (const v of message.txIds) {
@@ -48,7 +48,7 @@ export const Batch = {
           message.id = reader.uint64() as Long;
           break;
         case 2:
-          message.signedHash = reader.string();
+          message.signature = reader.string();
           break;
         case 3:
           if ((tag & 7) === 2) {
@@ -77,7 +77,7 @@ export const Batch = {
   fromJSON(object: any): Batch {
     const message = {...baseBatch} as Batch;
     message.id = object.id !== undefined && object.id !== null ? Long.fromString(object.id) : Long.UZERO;
-    message.signedHash = object.signedHash !== undefined && object.signedHash !== null ? String(object.signedHash) : "";
+    message.signature = object.signature !== undefined && object.signature !== null ? String(object.signature) : "";
     message.txIds = (object.txIds ?? []).map((e: any) => Long.fromString(e));
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.digest = object.digest !== undefined && object.digest !== null ? String(object.digest) : "";
@@ -87,7 +87,7 @@ export const Batch = {
   toJSON(message: Batch): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
-    message.signedHash !== undefined && (obj.signedHash = message.signedHash);
+    message.signature !== undefined && (obj.signature = message.signature);
     if (message.txIds) {
       obj.txIds = message.txIds.map((e) => (e || Long.UZERO).toString());
     } else {
@@ -101,7 +101,7 @@ export const Batch = {
   fromPartial<I extends Exact<DeepPartial<Batch>, I>>(object: I): Batch {
     const message = {...baseBatch} as Batch;
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
-    message.signedHash = object.signedHash ?? "";
+    message.signature = object.signature ?? "";
     message.txIds = object.txIds?.map((e) => Long.fromValue(e)) || [];
     message.status = object.status ?? "";
     message.digest = object.digest ?? "";
