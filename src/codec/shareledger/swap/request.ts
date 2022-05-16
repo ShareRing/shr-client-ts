@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {DecCoin} from "../../cosmos/base/v1beta1/coin";
+import {Coin} from "../../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "shareledger.swap";
 
@@ -11,8 +11,8 @@ export interface Request {
   destAddr: string;
   srcNetwork: string;
   destNetwork: string;
-  amount?: DecCoin;
-  fee?: DecCoin;
+  amount?: Coin;
+  fee?: Coin;
   status: string;
   batchId: Long;
   createdAt: Long;
@@ -47,10 +47,10 @@ export const Request = {
       writer.uint32(42).string(message.destNetwork);
     }
     if (message.amount !== undefined) {
-      DecCoin.encode(message.amount, writer.uint32(50).fork()).ldelim();
+      Coin.encode(message.amount, writer.uint32(50).fork()).ldelim();
     }
     if (message.fee !== undefined) {
-      DecCoin.encode(message.fee, writer.uint32(58).fork()).ldelim();
+      Coin.encode(message.fee, writer.uint32(58).fork()).ldelim();
     }
     if (message.status !== "") {
       writer.uint32(66).string(message.status);
@@ -87,10 +87,10 @@ export const Request = {
           message.destNetwork = reader.string();
           break;
         case 6:
-          message.amount = DecCoin.decode(reader, reader.uint32());
+          message.amount = Coin.decode(reader, reader.uint32());
           break;
         case 7:
-          message.fee = DecCoin.decode(reader, reader.uint32());
+          message.fee = Coin.decode(reader, reader.uint32());
           break;
         case 8:
           message.status = reader.string();
@@ -116,8 +116,8 @@ export const Request = {
     message.destAddr = object.destAddr !== undefined && object.destAddr !== null ? String(object.destAddr) : "";
     message.srcNetwork = object.srcNetwork !== undefined && object.srcNetwork !== null ? String(object.srcNetwork) : "";
     message.destNetwork = object.destNetwork !== undefined && object.destNetwork !== null ? String(object.destNetwork) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
+    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromJSON(object.amount) : undefined;
+    message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromJSON(object.fee) : undefined;
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
     message.createdAt = object.createdAt !== undefined && object.createdAt !== null ? Long.fromString(object.createdAt) : Long.UZERO;
@@ -131,8 +131,8 @@ export const Request = {
     message.destAddr !== undefined && (obj.destAddr = message.destAddr);
     message.srcNetwork !== undefined && (obj.srcNetwork = message.srcNetwork);
     message.destNetwork !== undefined && (obj.destNetwork = message.destNetwork);
-    message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
-    message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
+    message.amount !== undefined && (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    message.fee !== undefined && (obj.fee = message.fee ? Coin.toJSON(message.fee) : undefined);
     message.status !== undefined && (obj.status = message.status);
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
     message.createdAt !== undefined && (obj.createdAt = (message.createdAt || Long.UZERO).toString());
@@ -146,8 +146,8 @@ export const Request = {
     message.destAddr = object.destAddr ?? "";
     message.srcNetwork = object.srcNetwork ?? "";
     message.destNetwork = object.destNetwork ?? "";
-    message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
+    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromPartial(object.amount) : undefined;
+    message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromPartial(object.fee) : undefined;
     message.status = object.status ?? "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
     message.createdAt = object.createdAt !== undefined && object.createdAt !== null ? Long.fromValue(object.createdAt) : Long.UZERO;

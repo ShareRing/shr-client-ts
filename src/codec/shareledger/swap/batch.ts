@@ -9,10 +9,11 @@ export interface Batch {
   signature: string;
   txIds: Long[];
   status: string;
-  digest: string;
+  txHash: string;
+  network: string;
 }
 
-const baseBatch: object = {id: Long.UZERO, signature: "", txIds: Long.UZERO, status: "", digest: ""};
+const baseBatch: object = {id: Long.UZERO, signature: "", txIds: Long.UZERO, status: "", txHash: "", network: ""};
 
 export const Batch = {
   encode(message: Batch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -30,8 +31,11 @@ export const Batch = {
     if (message.status !== "") {
       writer.uint32(34).string(message.status);
     }
-    if (message.digest !== "") {
-      writer.uint32(42).string(message.digest);
+    if (message.txHash !== "") {
+      writer.uint32(50).string(message.txHash);
+    }
+    if (message.network !== "") {
+      writer.uint32(58).string(message.network);
     }
     return writer;
   },
@@ -63,8 +67,11 @@ export const Batch = {
         case 4:
           message.status = reader.string();
           break;
-        case 5:
-          message.digest = reader.string();
+        case 6:
+          message.txHash = reader.string();
+          break;
+        case 7:
+          message.network = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -80,7 +87,8 @@ export const Batch = {
     message.signature = object.signature !== undefined && object.signature !== null ? String(object.signature) : "";
     message.txIds = (object.txIds ?? []).map((e: any) => Long.fromString(e));
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    message.digest = object.digest !== undefined && object.digest !== null ? String(object.digest) : "";
+    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
+    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     return message;
   },
 
@@ -94,7 +102,8 @@ export const Batch = {
       obj.txIds = [];
     }
     message.status !== undefined && (obj.status = message.status);
-    message.digest !== undefined && (obj.digest = message.digest);
+    message.txHash !== undefined && (obj.txHash = message.txHash);
+    message.network !== undefined && (obj.network = message.network);
     return obj;
   },
 
@@ -104,7 +113,8 @@ export const Batch = {
     message.signature = object.signature ?? "";
     message.txIds = object.txIds?.map((e) => Long.fromValue(e)) || [];
     message.status = object.status ?? "";
-    message.digest = object.digest ?? "";
+    message.txHash = object.txHash ?? "";
+    message.network = object.network ?? "";
     return message;
   }
 };

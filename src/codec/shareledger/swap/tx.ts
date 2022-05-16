@@ -46,28 +46,34 @@ export interface MsgWithdrawResponse {
   status: string;
 }
 
-export interface MsgCreateSignSchema {
+export interface MsgCreateSchema {
   creator: string;
   network: string;
   schema: string;
+  in?: DecCoin;
+  out?: DecCoin;
+  contractExponent: number;
 }
 
-export interface MsgCreateSignSchemaResponse {}
+export interface MsgCreateSchemaResponse {}
 
-export interface MsgUpdateSignSchema {
+export interface MsgUpdateSchema {
   creator: string;
   network: string;
   schema: string;
+  in?: DecCoin;
+  out?: DecCoin;
+  contractExponent: number;
 }
 
-export interface MsgUpdateSignSchemaResponse {}
+export interface MsgUpdateSchemaResponse {}
 
-export interface MsgDeleteSignSchema {
+export interface MsgDeleteSchema {
   creator: string;
   network: string;
 }
 
-export interface MsgDeleteSignSchemaResponse {}
+export interface MsgDeleteSchemaResponse {}
 
 export interface MsgCancel {
   creator: string;
@@ -102,6 +108,32 @@ export interface MsgApproveIn {
 }
 
 export interface MsgApproveInResponse {}
+
+export interface MsgUpdateBatch {
+  creator: string;
+  batchId: Long;
+  status: string;
+  txHash: string;
+  network: string;
+}
+
+export interface MsgUpdateBatchResponse {}
+
+export interface MsgUpdateSwapFee {
+  creator: string;
+  network: string;
+  in?: DecCoin;
+  out?: DecCoin;
+}
+
+export interface MsgUpdateSwapFeeResponse {}
+
+export interface MsgCancelBatches {
+  creator: string;
+  ids: Long[];
+}
+
+export interface MsgCancelBatchesResponse {}
 
 const baseMsgRequestOut: object = {creator: "", destAddress: "", network: ""};
 
@@ -574,10 +606,10 @@ export const MsgWithdrawResponse = {
   }
 };
 
-const baseMsgCreateSignSchema: object = {creator: "", network: "", schema: ""};
+const baseMsgCreateSchema: object = {creator: "", network: "", schema: "", contractExponent: 0};
 
-export const MsgCreateSignSchema = {
-  encode(message: MsgCreateSignSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateSchema = {
+  encode(message: MsgCreateSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -587,13 +619,22 @@ export const MsgCreateSignSchema = {
     if (message.schema !== "") {
       writer.uint32(26).string(message.schema);
     }
+    if (message.in !== undefined) {
+      DecCoin.encode(message.in, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.out !== undefined) {
+      DecCoin.encode(message.out, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.contractExponent !== 0) {
+      writer.uint32(48).int32(message.contractExponent);
+    }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateSignSchema {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateSchema {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateSignSchema} as MsgCreateSignSchema;
+    const message = {...baseMsgCreateSchema} as MsgCreateSchema;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -606,6 +647,15 @@ export const MsgCreateSignSchema = {
         case 3:
           message.schema = reader.string();
           break;
+        case 4:
+          message.in = DecCoin.decode(reader, reader.uint32());
+          break;
+        case 5:
+          message.out = DecCoin.decode(reader, reader.uint32());
+          break;
+        case 6:
+          message.contractExponent = reader.int32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -614,42 +664,52 @@ export const MsgCreateSignSchema = {
     return message;
   },
 
-  fromJSON(object: any): MsgCreateSignSchema {
-    const message = {...baseMsgCreateSignSchema} as MsgCreateSignSchema;
+  fromJSON(object: any): MsgCreateSchema {
+    const message = {...baseMsgCreateSchema} as MsgCreateSchema;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.schema = object.schema !== undefined && object.schema !== null ? String(object.schema) : "";
+    message.in = object.in !== undefined && object.in !== null ? DecCoin.fromJSON(object.in) : undefined;
+    message.out = object.out !== undefined && object.out !== null ? DecCoin.fromJSON(object.out) : undefined;
+    message.contractExponent =
+      object.contractExponent !== undefined && object.contractExponent !== null ? Number(object.contractExponent) : 0;
     return message;
   },
 
-  toJSON(message: MsgCreateSignSchema): unknown {
+  toJSON(message: MsgCreateSchema): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.network !== undefined && (obj.network = message.network);
     message.schema !== undefined && (obj.schema = message.schema);
+    message.in !== undefined && (obj.in = message.in ? DecCoin.toJSON(message.in) : undefined);
+    message.out !== undefined && (obj.out = message.out ? DecCoin.toJSON(message.out) : undefined);
+    message.contractExponent !== undefined && (obj.contractExponent = message.contractExponent);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCreateSignSchema>, I>>(object: I): MsgCreateSignSchema {
-    const message = {...baseMsgCreateSignSchema} as MsgCreateSignSchema;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateSchema>, I>>(object: I): MsgCreateSchema {
+    const message = {...baseMsgCreateSchema} as MsgCreateSchema;
     message.creator = object.creator ?? "";
     message.network = object.network ?? "";
     message.schema = object.schema ?? "";
+    message.in = object.in !== undefined && object.in !== null ? DecCoin.fromPartial(object.in) : undefined;
+    message.out = object.out !== undefined && object.out !== null ? DecCoin.fromPartial(object.out) : undefined;
+    message.contractExponent = object.contractExponent ?? 0;
     return message;
   }
 };
 
-const baseMsgCreateSignSchemaResponse: object = {};
+const baseMsgCreateSchemaResponse: object = {};
 
-export const MsgCreateSignSchemaResponse = {
-  encode(_: MsgCreateSignSchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCreateSchemaResponse = {
+  encode(_: MsgCreateSchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateSignSchemaResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateSchemaResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateSignSchemaResponse} as MsgCreateSignSchemaResponse;
+    const message = {...baseMsgCreateSchemaResponse} as MsgCreateSchemaResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -661,26 +721,26 @@ export const MsgCreateSignSchemaResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgCreateSignSchemaResponse {
-    const message = {...baseMsgCreateSignSchemaResponse} as MsgCreateSignSchemaResponse;
+  fromJSON(_: any): MsgCreateSchemaResponse {
+    const message = {...baseMsgCreateSchemaResponse} as MsgCreateSchemaResponse;
     return message;
   },
 
-  toJSON(_: MsgCreateSignSchemaResponse): unknown {
+  toJSON(_: MsgCreateSchemaResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgCreateSignSchemaResponse>, I>>(_: I): MsgCreateSignSchemaResponse {
-    const message = {...baseMsgCreateSignSchemaResponse} as MsgCreateSignSchemaResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCreateSchemaResponse>, I>>(_: I): MsgCreateSchemaResponse {
+    const message = {...baseMsgCreateSchemaResponse} as MsgCreateSchemaResponse;
     return message;
   }
 };
 
-const baseMsgUpdateSignSchema: object = {creator: "", network: "", schema: ""};
+const baseMsgUpdateSchema: object = {creator: "", network: "", schema: "", contractExponent: 0};
 
-export const MsgUpdateSignSchema = {
-  encode(message: MsgUpdateSignSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgUpdateSchema = {
+  encode(message: MsgUpdateSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -690,13 +750,22 @@ export const MsgUpdateSignSchema = {
     if (message.schema !== "") {
       writer.uint32(26).string(message.schema);
     }
+    if (message.in !== undefined) {
+      DecCoin.encode(message.in, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.out !== undefined) {
+      DecCoin.encode(message.out, writer.uint32(42).fork()).ldelim();
+    }
+    if (message.contractExponent !== 0) {
+      writer.uint32(48).int32(message.contractExponent);
+    }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateSignSchema {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateSchema {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateSignSchema} as MsgUpdateSignSchema;
+    const message = {...baseMsgUpdateSchema} as MsgUpdateSchema;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -709,6 +778,15 @@ export const MsgUpdateSignSchema = {
         case 3:
           message.schema = reader.string();
           break;
+        case 4:
+          message.in = DecCoin.decode(reader, reader.uint32());
+          break;
+        case 5:
+          message.out = DecCoin.decode(reader, reader.uint32());
+          break;
+        case 6:
+          message.contractExponent = reader.int32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -717,42 +795,52 @@ export const MsgUpdateSignSchema = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateSignSchema {
-    const message = {...baseMsgUpdateSignSchema} as MsgUpdateSignSchema;
+  fromJSON(object: any): MsgUpdateSchema {
+    const message = {...baseMsgUpdateSchema} as MsgUpdateSchema;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.schema = object.schema !== undefined && object.schema !== null ? String(object.schema) : "";
+    message.in = object.in !== undefined && object.in !== null ? DecCoin.fromJSON(object.in) : undefined;
+    message.out = object.out !== undefined && object.out !== null ? DecCoin.fromJSON(object.out) : undefined;
+    message.contractExponent =
+      object.contractExponent !== undefined && object.contractExponent !== null ? Number(object.contractExponent) : 0;
     return message;
   },
 
-  toJSON(message: MsgUpdateSignSchema): unknown {
+  toJSON(message: MsgUpdateSchema): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.network !== undefined && (obj.network = message.network);
     message.schema !== undefined && (obj.schema = message.schema);
+    message.in !== undefined && (obj.in = message.in ? DecCoin.toJSON(message.in) : undefined);
+    message.out !== undefined && (obj.out = message.out ? DecCoin.toJSON(message.out) : undefined);
+    message.contractExponent !== undefined && (obj.contractExponent = message.contractExponent);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateSignSchema>, I>>(object: I): MsgUpdateSignSchema {
-    const message = {...baseMsgUpdateSignSchema} as MsgUpdateSignSchema;
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateSchema>, I>>(object: I): MsgUpdateSchema {
+    const message = {...baseMsgUpdateSchema} as MsgUpdateSchema;
     message.creator = object.creator ?? "";
     message.network = object.network ?? "";
     message.schema = object.schema ?? "";
+    message.in = object.in !== undefined && object.in !== null ? DecCoin.fromPartial(object.in) : undefined;
+    message.out = object.out !== undefined && object.out !== null ? DecCoin.fromPartial(object.out) : undefined;
+    message.contractExponent = object.contractExponent ?? 0;
     return message;
   }
 };
 
-const baseMsgUpdateSignSchemaResponse: object = {};
+const baseMsgUpdateSchemaResponse: object = {};
 
-export const MsgUpdateSignSchemaResponse = {
-  encode(_: MsgUpdateSignSchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgUpdateSchemaResponse = {
+  encode(_: MsgUpdateSchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateSignSchemaResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateSchemaResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateSignSchemaResponse} as MsgUpdateSignSchemaResponse;
+    const message = {...baseMsgUpdateSchemaResponse} as MsgUpdateSchemaResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -764,26 +852,26 @@ export const MsgUpdateSignSchemaResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateSignSchemaResponse {
-    const message = {...baseMsgUpdateSignSchemaResponse} as MsgUpdateSignSchemaResponse;
+  fromJSON(_: any): MsgUpdateSchemaResponse {
+    const message = {...baseMsgUpdateSchemaResponse} as MsgUpdateSchemaResponse;
     return message;
   },
 
-  toJSON(_: MsgUpdateSignSchemaResponse): unknown {
+  toJSON(_: MsgUpdateSchemaResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateSignSchemaResponse>, I>>(_: I): MsgUpdateSignSchemaResponse {
-    const message = {...baseMsgUpdateSignSchemaResponse} as MsgUpdateSignSchemaResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateSchemaResponse>, I>>(_: I): MsgUpdateSchemaResponse {
+    const message = {...baseMsgUpdateSchemaResponse} as MsgUpdateSchemaResponse;
     return message;
   }
 };
 
-const baseMsgDeleteSignSchema: object = {creator: "", network: ""};
+const baseMsgDeleteSchema: object = {creator: "", network: ""};
 
-export const MsgDeleteSignSchema = {
-  encode(message: MsgDeleteSignSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgDeleteSchema = {
+  encode(message: MsgDeleteSchema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
@@ -793,10 +881,10 @@ export const MsgDeleteSignSchema = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteSignSchema {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteSchema {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteSignSchema} as MsgDeleteSignSchema;
+    const message = {...baseMsgDeleteSchema} as MsgDeleteSchema;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -814,39 +902,39 @@ export const MsgDeleteSignSchema = {
     return message;
   },
 
-  fromJSON(object: any): MsgDeleteSignSchema {
-    const message = {...baseMsgDeleteSignSchema} as MsgDeleteSignSchema;
+  fromJSON(object: any): MsgDeleteSchema {
+    const message = {...baseMsgDeleteSchema} as MsgDeleteSchema;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     return message;
   },
 
-  toJSON(message: MsgDeleteSignSchema): unknown {
+  toJSON(message: MsgDeleteSchema): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.network !== undefined && (obj.network = message.network);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgDeleteSignSchema>, I>>(object: I): MsgDeleteSignSchema {
-    const message = {...baseMsgDeleteSignSchema} as MsgDeleteSignSchema;
+  fromPartial<I extends Exact<DeepPartial<MsgDeleteSchema>, I>>(object: I): MsgDeleteSchema {
+    const message = {...baseMsgDeleteSchema} as MsgDeleteSchema;
     message.creator = object.creator ?? "";
     message.network = object.network ?? "";
     return message;
   }
 };
 
-const baseMsgDeleteSignSchemaResponse: object = {};
+const baseMsgDeleteSchemaResponse: object = {};
 
-export const MsgDeleteSignSchemaResponse = {
-  encode(_: MsgDeleteSignSchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgDeleteSchemaResponse = {
+  encode(_: MsgDeleteSchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteSignSchemaResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteSchemaResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteSignSchemaResponse} as MsgDeleteSignSchemaResponse;
+    const message = {...baseMsgDeleteSchemaResponse} as MsgDeleteSchemaResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -858,18 +946,18 @@ export const MsgDeleteSignSchemaResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgDeleteSignSchemaResponse {
-    const message = {...baseMsgDeleteSignSchemaResponse} as MsgDeleteSignSchemaResponse;
+  fromJSON(_: any): MsgDeleteSchemaResponse {
+    const message = {...baseMsgDeleteSchemaResponse} as MsgDeleteSchemaResponse;
     return message;
   },
 
-  toJSON(_: MsgDeleteSignSchemaResponse): unknown {
+  toJSON(_: MsgDeleteSchemaResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgDeleteSignSchemaResponse>, I>>(_: I): MsgDeleteSignSchemaResponse {
-    const message = {...baseMsgDeleteSignSchemaResponse} as MsgDeleteSignSchemaResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgDeleteSchemaResponse>, I>>(_: I): MsgDeleteSchemaResponse {
+    const message = {...baseMsgDeleteSchemaResponse} as MsgDeleteSchemaResponse;
     return message;
   }
 };
@@ -1337,20 +1425,364 @@ export const MsgApproveInResponse = {
   }
 };
 
+const baseMsgUpdateBatch: object = {creator: "", batchId: Long.UZERO, status: "", txHash: "", network: ""};
+
+export const MsgUpdateBatch = {
+  encode(message: MsgUpdateBatch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (!message.batchId.isZero()) {
+      writer.uint32(16).uint64(message.batchId);
+    }
+    if (message.status !== "") {
+      writer.uint32(26).string(message.status);
+    }
+    if (message.txHash !== "") {
+      writer.uint32(34).string(message.txHash);
+    }
+    if (message.network !== "") {
+      writer.uint32(42).string(message.network);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateBatch {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgUpdateBatch} as MsgUpdateBatch;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.batchId = reader.uint64() as Long;
+          break;
+        case 3:
+          message.status = reader.string();
+          break;
+        case 4:
+          message.txHash = reader.string();
+          break;
+        case 5:
+          message.network = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateBatch {
+    const message = {...baseMsgUpdateBatch} as MsgUpdateBatch;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
+    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
+    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
+    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
+    return message;
+  },
+
+  toJSON(message: MsgUpdateBatch): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
+    message.status !== undefined && (obj.status = message.status);
+    message.txHash !== undefined && (obj.txHash = message.txHash);
+    message.network !== undefined && (obj.network = message.network);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateBatch>, I>>(object: I): MsgUpdateBatch {
+    const message = {...baseMsgUpdateBatch} as MsgUpdateBatch;
+    message.creator = object.creator ?? "";
+    message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
+    message.status = object.status ?? "";
+    message.txHash = object.txHash ?? "";
+    message.network = object.network ?? "";
+    return message;
+  }
+};
+
+const baseMsgUpdateBatchResponse: object = {};
+
+export const MsgUpdateBatchResponse = {
+  encode(_: MsgUpdateBatchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateBatchResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgUpdateBatchResponse} as MsgUpdateBatchResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateBatchResponse {
+    const message = {...baseMsgUpdateBatchResponse} as MsgUpdateBatchResponse;
+    return message;
+  },
+
+  toJSON(_: MsgUpdateBatchResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateBatchResponse>, I>>(_: I): MsgUpdateBatchResponse {
+    const message = {...baseMsgUpdateBatchResponse} as MsgUpdateBatchResponse;
+    return message;
+  }
+};
+
+const baseMsgUpdateSwapFee: object = {creator: "", network: ""};
+
+export const MsgUpdateSwapFee = {
+  encode(message: MsgUpdateSwapFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.network !== "") {
+      writer.uint32(18).string(message.network);
+    }
+    if (message.in !== undefined) {
+      DecCoin.encode(message.in, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.out !== undefined) {
+      DecCoin.encode(message.out, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateSwapFee {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgUpdateSwapFee} as MsgUpdateSwapFee;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.network = reader.string();
+          break;
+        case 3:
+          message.in = DecCoin.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.out = DecCoin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgUpdateSwapFee {
+    const message = {...baseMsgUpdateSwapFee} as MsgUpdateSwapFee;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
+    message.in = object.in !== undefined && object.in !== null ? DecCoin.fromJSON(object.in) : undefined;
+    message.out = object.out !== undefined && object.out !== null ? DecCoin.fromJSON(object.out) : undefined;
+    return message;
+  },
+
+  toJSON(message: MsgUpdateSwapFee): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.network !== undefined && (obj.network = message.network);
+    message.in !== undefined && (obj.in = message.in ? DecCoin.toJSON(message.in) : undefined);
+    message.out !== undefined && (obj.out = message.out ? DecCoin.toJSON(message.out) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateSwapFee>, I>>(object: I): MsgUpdateSwapFee {
+    const message = {...baseMsgUpdateSwapFee} as MsgUpdateSwapFee;
+    message.creator = object.creator ?? "";
+    message.network = object.network ?? "";
+    message.in = object.in !== undefined && object.in !== null ? DecCoin.fromPartial(object.in) : undefined;
+    message.out = object.out !== undefined && object.out !== null ? DecCoin.fromPartial(object.out) : undefined;
+    return message;
+  }
+};
+
+const baseMsgUpdateSwapFeeResponse: object = {};
+
+export const MsgUpdateSwapFeeResponse = {
+  encode(_: MsgUpdateSwapFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateSwapFeeResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgUpdateSwapFeeResponse} as MsgUpdateSwapFeeResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgUpdateSwapFeeResponse {
+    const message = {...baseMsgUpdateSwapFeeResponse} as MsgUpdateSwapFeeResponse;
+    return message;
+  },
+
+  toJSON(_: MsgUpdateSwapFeeResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgUpdateSwapFeeResponse>, I>>(_: I): MsgUpdateSwapFeeResponse {
+    const message = {...baseMsgUpdateSwapFeeResponse} as MsgUpdateSwapFeeResponse;
+    return message;
+  }
+};
+
+const baseMsgCancelBatches: object = {creator: "", ids: Long.UZERO};
+
+export const MsgCancelBatches = {
+  encode(message: MsgCancelBatches, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    writer.uint32(18).fork();
+    for (const v of message.ids) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelBatches {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgCancelBatches} as MsgCancelBatches;
+    message.ids = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.ids.push(reader.uint64() as Long);
+            }
+          } else {
+            message.ids.push(reader.uint64() as Long);
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCancelBatches {
+    const message = {...baseMsgCancelBatches} as MsgCancelBatches;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.ids = (object.ids ?? []).map((e: any) => Long.fromString(e));
+    return message;
+  },
+
+  toJSON(message: MsgCancelBatches): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    if (message.ids) {
+      obj.ids = message.ids.map((e) => (e || Long.UZERO).toString());
+    } else {
+      obj.ids = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgCancelBatches>, I>>(object: I): MsgCancelBatches {
+    const message = {...baseMsgCancelBatches} as MsgCancelBatches;
+    message.creator = object.creator ?? "";
+    message.ids = object.ids?.map((e) => Long.fromValue(e)) || [];
+    return message;
+  }
+};
+
+const baseMsgCancelBatchesResponse: object = {};
+
+export const MsgCancelBatchesResponse = {
+  encode(_: MsgCancelBatchesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelBatchesResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgCancelBatchesResponse} as MsgCancelBatchesResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgCancelBatchesResponse {
+    const message = {...baseMsgCancelBatchesResponse} as MsgCancelBatchesResponse;
+    return message;
+  },
+
+  toJSON(_: MsgCancelBatchesResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgCancelBatchesResponse>, I>>(_: I): MsgCancelBatchesResponse {
+    const message = {...baseMsgCancelBatchesResponse} as MsgCancelBatchesResponse;
+    return message;
+  }
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
   RequestOut(request: MsgRequestOut): Promise<MsgOutSwapResponse>;
   ApproveOut(request: MsgApproveOut): Promise<MsgApproveResponse>;
   Deposit(request: MsgDeposit): Promise<MsgDepositResponse>;
   Withdraw(request: MsgWithdraw): Promise<MsgWithdrawResponse>;
-  CreateSignSchema(request: MsgCreateSignSchema): Promise<MsgCreateSignSchemaResponse>;
-  UpdateSignSchema(request: MsgUpdateSignSchema): Promise<MsgUpdateSignSchemaResponse>;
-  DeleteSignSchema(request: MsgDeleteSignSchema): Promise<MsgDeleteSignSchemaResponse>;
+  CreateSchema(request: MsgCreateSchema): Promise<MsgCreateSchemaResponse>;
+  UpdateSchema(request: MsgUpdateSchema): Promise<MsgUpdateSchemaResponse>;
+  DeleteSchema(request: MsgDeleteSchema): Promise<MsgDeleteSchemaResponse>;
   Cancel(request: MsgCancel): Promise<MsgCancelResponse>;
   Reject(request: MsgReject): Promise<MsgRejectResponse>;
   RequestIn(request: MsgRequestIn): Promise<MsgSwapInResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   ApproveIn(request: MsgApproveIn): Promise<MsgApproveInResponse>;
+  UpdateBatch(request: MsgUpdateBatch): Promise<MsgUpdateBatchResponse>;
+  UpdateSwapFee(request: MsgUpdateSwapFee): Promise<MsgUpdateSwapFeeResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  CancelBatches(request: MsgCancelBatches): Promise<MsgCancelBatchesResponse>;
 }
 
 export class MsgClientImpl implements Msg {
@@ -1361,13 +1793,16 @@ export class MsgClientImpl implements Msg {
     this.ApproveOut = this.ApproveOut.bind(this);
     this.Deposit = this.Deposit.bind(this);
     this.Withdraw = this.Withdraw.bind(this);
-    this.CreateSignSchema = this.CreateSignSchema.bind(this);
-    this.UpdateSignSchema = this.UpdateSignSchema.bind(this);
-    this.DeleteSignSchema = this.DeleteSignSchema.bind(this);
+    this.CreateSchema = this.CreateSchema.bind(this);
+    this.UpdateSchema = this.UpdateSchema.bind(this);
+    this.DeleteSchema = this.DeleteSchema.bind(this);
     this.Cancel = this.Cancel.bind(this);
     this.Reject = this.Reject.bind(this);
     this.RequestIn = this.RequestIn.bind(this);
     this.ApproveIn = this.ApproveIn.bind(this);
+    this.UpdateBatch = this.UpdateBatch.bind(this);
+    this.UpdateSwapFee = this.UpdateSwapFee.bind(this);
+    this.CancelBatches = this.CancelBatches.bind(this);
   }
   RequestOut(request: MsgRequestOut): Promise<MsgOutSwapResponse> {
     const data = MsgRequestOut.encode(request).finish();
@@ -1393,22 +1828,22 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgWithdrawResponse.decode(new _m0.Reader(data)));
   }
 
-  CreateSignSchema(request: MsgCreateSignSchema): Promise<MsgCreateSignSchemaResponse> {
-    const data = MsgCreateSignSchema.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Msg", "CreateSignSchema", data);
-    return promise.then((data) => MsgCreateSignSchemaResponse.decode(new _m0.Reader(data)));
+  CreateSchema(request: MsgCreateSchema): Promise<MsgCreateSchemaResponse> {
+    const data = MsgCreateSchema.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "CreateSchema", data);
+    return promise.then((data) => MsgCreateSchemaResponse.decode(new _m0.Reader(data)));
   }
 
-  UpdateSignSchema(request: MsgUpdateSignSchema): Promise<MsgUpdateSignSchemaResponse> {
-    const data = MsgUpdateSignSchema.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Msg", "UpdateSignSchema", data);
-    return promise.then((data) => MsgUpdateSignSchemaResponse.decode(new _m0.Reader(data)));
+  UpdateSchema(request: MsgUpdateSchema): Promise<MsgUpdateSchemaResponse> {
+    const data = MsgUpdateSchema.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "UpdateSchema", data);
+    return promise.then((data) => MsgUpdateSchemaResponse.decode(new _m0.Reader(data)));
   }
 
-  DeleteSignSchema(request: MsgDeleteSignSchema): Promise<MsgDeleteSignSchemaResponse> {
-    const data = MsgDeleteSignSchema.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Msg", "DeleteSignSchema", data);
-    return promise.then((data) => MsgDeleteSignSchemaResponse.decode(new _m0.Reader(data)));
+  DeleteSchema(request: MsgDeleteSchema): Promise<MsgDeleteSchemaResponse> {
+    const data = MsgDeleteSchema.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "DeleteSchema", data);
+    return promise.then((data) => MsgDeleteSchemaResponse.decode(new _m0.Reader(data)));
   }
 
   Cancel(request: MsgCancel): Promise<MsgCancelResponse> {
@@ -1433,6 +1868,24 @@ export class MsgClientImpl implements Msg {
     const data = MsgApproveIn.encode(request).finish();
     const promise = this.rpc.request("shareledger.swap.Msg", "ApproveIn", data);
     return promise.then((data) => MsgApproveInResponse.decode(new _m0.Reader(data)));
+  }
+
+  UpdateBatch(request: MsgUpdateBatch): Promise<MsgUpdateBatchResponse> {
+    const data = MsgUpdateBatch.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "UpdateBatch", data);
+    return promise.then((data) => MsgUpdateBatchResponse.decode(new _m0.Reader(data)));
+  }
+
+  UpdateSwapFee(request: MsgUpdateSwapFee): Promise<MsgUpdateSwapFeeResponse> {
+    const data = MsgUpdateSwapFee.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "UpdateSwapFee", data);
+    return promise.then((data) => MsgUpdateSwapFeeResponse.decode(new _m0.Reader(data)));
+  }
+
+  CancelBatches(request: MsgCancelBatches): Promise<MsgCancelBatchesResponse> {
+    const data = MsgCancelBatches.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "CancelBatches", data);
+    return promise.then((data) => MsgCancelBatchesResponse.decode(new _m0.Reader(data)));
   }
 }
 

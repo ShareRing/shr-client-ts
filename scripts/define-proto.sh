@@ -174,7 +174,7 @@ protoc \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/params.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/query.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/request.proto" \
-  "$SHARELEDGER_PROTO_DIR/shareledger/swap/sign_schema.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/schema.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/tx.proto"
 
 
