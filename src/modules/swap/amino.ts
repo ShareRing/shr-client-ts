@@ -8,13 +8,16 @@ import {
   MsgApproveIn,
   MsgApproveOut,
   MsgCancel,
-  MsgCreateSignSchema,
-  MsgDeleteSignSchema,
+  MsgCancelBatches,
+  MsgCreateSchema,
+  MsgDeleteSchema,
   MsgDeposit,
   MsgReject,
   MsgRequestIn,
   MsgRequestOut,
-  MsgUpdateSignSchema,
+  MsgUpdateBatch,
+  MsgUpdateSchema,
+  MsgUpdateSwapFee,
   MsgWithdraw
 } from "../../codec/shareledger/swap/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
@@ -196,69 +199,148 @@ export function isMsgWithdrawEncodeObject(encodeObject: EncodeObject): encodeObj
   return (encodeObject as MsgWithdrawEncodeObject).typeUrl === "/shareledger.swap.MsgWithdraw";
 }
 
-export interface AminoMsgCreateSignSchema extends AminoMsg {
-  readonly type: "swap/CreateSignSchema";
+export interface AminoMsgCreateSchema extends AminoMsg {
+  readonly type: "swap/CreateSchema";
   readonly value: {
     readonly creator: string;
     readonly network: string;
     readonly schema: string;
+    readonly exponent: number;
+    readonly fee?: {
+      readonly in?: DecCoin;
+      readonly out?: DecCoin;
+    };
   };
 }
 
-export function isAminoMsgCreateSignSchema(msg: AminoMsg): msg is AminoMsgCreateSignSchema {
-  return msg.type === "swap/MsgCreateSignSchema";
+export function isAminoMsgCreateSchema(msg: AminoMsg): msg is AminoMsgCreateSchema {
+  return msg.type === "swap/MsgCreateSchema";
 }
 
-export interface MsgCreateSignSchemaEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.swap.MsgCreateSignSchema";
-  readonly value: Partial<MsgCreateSignSchema>;
+export interface MsgCreateSchemaEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCreateSchema";
+  readonly value: Partial<MsgCreateSchema>;
 }
 
-export function isMsgCreateSignSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateSignSchemaEncodeObject {
-  return (encodeObject as MsgCreateSignSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgCreateSignSchema";
+export function isMsgCreateSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateSchemaEncodeObject {
+  return (encodeObject as MsgCreateSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgCreateSchema";
 }
 
-export interface AminoMsgUpdateSignSchema extends AminoMsg {
-  readonly type: "swap/UpdateSignSchema";
+export interface AminoMsgUpdateSchema extends AminoMsg {
+  readonly type: "swap/UpdateSchema";
   readonly value: {
     readonly creator: string;
     readonly network: string;
     readonly schema: string;
+    readonly decimals: number;
+    readonly fee?: {
+      readonly in?: DecCoin;
+      readonly out?: DecCoin;
+    };
   };
 }
 
-export function isAminoMsgUpdateSignSchema(msg: AminoMsg): msg is AminoMsgUpdateSignSchema {
-  return msg.type === "swap/MsgUpdateSignSchema";
+export function isAminoMsgUpdateSchema(msg: AminoMsg): msg is AminoMsgUpdateSchema {
+  return msg.type === "swap/MsgUpdateSchema";
 }
 
-export interface MsgUpdateSignSchemaEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.swap.MsgUpdateSignSchema";
-  readonly value: Partial<MsgUpdateSignSchema>;
+export interface MsgUpdateSchemaEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgUpdateSchema";
+  readonly value: Partial<MsgUpdateSchema>;
 }
 
-export function isMsgUpdateSignSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateSignSchemaEncodeObject {
-  return (encodeObject as MsgUpdateSignSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateSignSchema";
+export function isMsgUpdateSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateSchemaEncodeObject {
+  return (encodeObject as MsgUpdateSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateSchema";
 }
 
-export interface AminoMsgDeleteSignSchema extends AminoMsg {
-  readonly type: "swap/DeleteSignSchema";
+export interface AminoMsgDeleteSchema extends AminoMsg {
+  readonly type: "swap/DeleteSchema";
   readonly value: {
     readonly creator: string;
     readonly network: string;
   };
 }
 
-export function isAminoMsgDeleteSignSchema(msg: AminoMsg): msg is AminoMsgDeleteSignSchema {
-  return msg.type === "swap/MsgDeleteSignSchema";
+export function isAminoMsgDeleteSchema(msg: AminoMsg): msg is AminoMsgDeleteSchema {
+  return msg.type === "swap/MsgDeleteSchema";
 }
 
-export interface MsgDeleteSignSchemaEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.swap.MsgDeleteSignSchema";
-  readonly value: Partial<MsgDeleteSignSchema>;
+export interface MsgDeleteSchemaEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgDeleteSchema";
+  readonly value: Partial<MsgDeleteSchema>;
 }
 
-export function isMsgDeleteSignSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgDeleteSignSchemaEncodeObject {
-  return (encodeObject as MsgDeleteSignSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgDeleteSignSchema";
+export function isMsgDeleteSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgDeleteSchemaEncodeObject {
+  return (encodeObject as MsgDeleteSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgDeleteSchema";
+}
+
+export interface AminoMsgCancelBatches extends AminoMsg {
+  readonly type: "swap/CancelBatches";
+  readonly value: {
+    readonly creator: string;
+    readonly ids: Long[];
+  };
+}
+
+export function isAminoMsgCancelBatches(msg: AminoMsg): msg is AminoMsgCancelBatches {
+  return msg.type === "swap/MsgCancelBatches";
+}
+
+export interface MsgCancelBatchesEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCancelBatches";
+  readonly value: Partial<MsgCancelBatches>;
+}
+
+export function isMsgCancelBatchesEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCancelBatchesEncodeObject {
+  return (encodeObject as MsgCancelBatchesEncodeObject).typeUrl === "/shareledger.swap.MsgCancelBatches";
+}
+
+export interface AminoMsgUpdateBatch extends AminoMsg {
+  readonly type: "swap/UpdateBatch";
+  readonly value: {
+    readonly creator: string;
+    readonly batchId: Long;
+    readonly network: string;
+    readonly status: string;
+  };
+}
+
+export function isAminoMsgUpdateBatch(msg: AminoMsg): msg is AminoMsgUpdateBatch {
+  return msg.type === "swap/MsgUpdateBatch";
+}
+
+export interface MsgUpdateBatchEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgUpdateBatch";
+  readonly value: Partial<MsgUpdateBatch>;
+}
+
+export function isMsgUpdateBatchEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateBatchEncodeObject {
+  return (encodeObject as MsgUpdateBatchEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateBatch";
+}
+
+export interface AminoMsgUpdateSwapFee extends AminoMsg {
+  readonly type: "swap/UpdateSwapFee";
+  readonly value: {
+    readonly creator: string;
+    readonly network: string;
+    readonly fee?: {
+      readonly in?: DecCoin;
+      readonly out?: DecCoin;
+    };
+  };
+}
+
+export function isAminoMsgUpdateSwapFee(msg: AminoMsg): msg is AminoMsgUpdateSwapFee {
+  return msg.type === "swap/MsgUpdateSwapFee";
+}
+
+export interface MsgUpdateSwapFeeEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgUpdateSwapFee";
+  readonly value: Partial<MsgUpdateSwapFee>;
+}
+
+export function isMsgUpdateSwapFeeEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateSwapFeeEncodeObject {
+  return (encodeObject as MsgUpdateSwapFeeEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateSwapFee";
 }
 
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
@@ -407,52 +489,117 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
         };
       }
     },
-    "/shareledger.swap.MsgCreateSignSchema": {
-      aminoType: "swap/CreateSignSchema",
-      toAmino: ({creator, network, schema}: MsgCreateSignSchema): AminoMsgCreateSignSchema["value"] => {
+    "/shareledger.swap.MsgCreateSchema": {
+      aminoType: "swap/CreateSchema",
+      toAmino: ({creator, network, schema, contractExponent, ...msg}: MsgCreateSchema): AminoMsgCreateSchema["value"] => {
         return {
           creator,
           network,
-          schema
+          schema,
+          exponent: contractExponent,
+          fee: {
+            in: msg.in,
+            out: msg.out
+          }
         };
       },
-      fromAmino: ({creator, network, schema}: AminoMsgCreateSignSchema["value"]): MsgCreateSignSchema => {
+      fromAmino: ({creator, network, schema, exponent, fee}: AminoMsgCreateSchema["value"]): MsgCreateSchema => {
         return {
           creator,
           network,
-          schema
+          schema,
+          contractExponent: exponent,
+          in: fee?.in,
+          out: fee?.out
         };
       }
     },
-    "/shareledger.swap.MsgUpdateSignSchema": {
-      aminoType: "swap/UpdateSignSchema",
-      toAmino: ({creator, network, schema}: MsgUpdateSignSchema): AminoMsgUpdateSignSchema["value"] => {
+    "/shareledger.swap.MsgUpdateSchema": {
+      aminoType: "swap/UpdateSchema",
+      toAmino: ({creator, network, schema, contractExponent}: MsgUpdateSchema): AminoMsgUpdateSchema["value"] => {
         return {
           creator,
           network,
-          schema
+          schema,
+          decimals: contractExponent
         };
       },
-      fromAmino: ({creator, network, schema}: AminoMsgUpdateSignSchema["value"]): MsgUpdateSignSchema => {
+      fromAmino: ({creator, network, schema, decimals}: AminoMsgUpdateSchema["value"]): MsgUpdateSchema => {
         return {
           creator,
           network,
-          schema
+          schema,
+          contractExponent: decimals
         };
       }
     },
-    "/shareledger.swap.MsgDeleteSignSchema": {
-      aminoType: "swap/DeleteSignSchema",
-      toAmino: ({creator, network}: MsgDeleteSignSchema): AminoMsgDeleteSignSchema["value"] => {
+    "/shareledger.swap.MsgDeleteSchema": {
+      aminoType: "swap/DeleteSchema",
+      toAmino: ({creator, network}: MsgDeleteSchema): AminoMsgDeleteSchema["value"] => {
         return {
           creator,
           network
         };
       },
-      fromAmino: ({creator, network}: AminoMsgDeleteSignSchema["value"]): MsgDeleteSignSchema => {
+      fromAmino: ({creator, network}: AminoMsgDeleteSchema["value"]): MsgDeleteSchema => {
         return {
           creator,
           network
+        };
+      }
+    },
+    "/shareledger.swap.MsgUpdateBatch": {
+      aminoType: "swap/UpdateBatch",
+      toAmino: ({batchId, creator, network, status}: MsgUpdateBatch): AminoMsgUpdateBatch["value"] => {
+        return {
+          batchId,
+          creator,
+          network,
+          status
+        };
+      },
+      fromAmino: ({batchId, creator, network, status}: AminoMsgUpdateBatch["value"]): MsgUpdateBatch => {
+        return {
+          batchId,
+          creator,
+          network,
+          status
+        };
+      }
+    },
+    "/shareledger.swap.MsgCancelBatches": {
+      aminoType: "swap/CancelBatches",
+      toAmino: ({creator, ids}: MsgCancelBatches): AminoMsgCancelBatches["value"] => {
+        return {
+          creator,
+          ids: [...ids]
+        };
+      },
+      fromAmino: ({creator, ids}: AminoMsgCancelBatches["value"]): MsgCancelBatches => {
+        return {
+          creator,
+          ids: [...ids]
+        };
+      }
+    },
+    "/shareledger.swap.MsgUpdateSwapFee": {
+      aminoType: "swap/UpdateSwapFee",
+      toAmino: ({creator, network, ...msg}: MsgUpdateSwapFee): AminoMsgUpdateSwapFee["value"] => {
+        return {
+          creator,
+          network,
+          fee: {
+            in: msg.in,
+            out: msg.out
+          }
+        };
+      },
+      fromAmino: ({creator, network, fee}: AminoMsgUpdateSwapFee["value"]): MsgUpdateSwapFee => {
+        return {
+          creator,
+          network,
+          in: fee?.in,
+          out: fee?.out
         };
       }
     }
@@ -469,8 +616,8 @@ export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
     ["/shareledger.swap.MsgReject", MsgReject],
     ["/shareledger.swap.MsgDeposit", MsgDeposit],
     ["/shareledger.swap.MsgWithdraw", MsgWithdraw],
-    ["/shareledger.swap.MsgCreateSignSchema", MsgCreateSignSchema],
-    ["/shareledger.swap.MsgUpdateSignSchema", MsgUpdateSignSchema],
-    ["/shareledger.swap.MsgDeleteSignSchema", MsgDeleteSignSchema]
+    ["/shareledger.swap.MsgCreateSchema", MsgCreateSchema],
+    ["/shareledger.swap.MsgUpdateSchema", MsgUpdateSchema],
+    ["/shareledger.swap.MsgDeleteSchema", MsgDeleteSchema]
   ];
 }

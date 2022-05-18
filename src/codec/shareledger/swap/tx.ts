@@ -113,7 +113,6 @@ export interface MsgUpdateBatch {
   creator: string;
   batchId: Long;
   status: string;
-  txHash: string;
   network: string;
 }
 
@@ -1425,7 +1424,7 @@ export const MsgApproveInResponse = {
   }
 };
 
-const baseMsgUpdateBatch: object = {creator: "", batchId: Long.UZERO, status: "", txHash: "", network: ""};
+const baseMsgUpdateBatch: object = {creator: "", batchId: Long.UZERO, status: "", network: ""};
 
 export const MsgUpdateBatch = {
   encode(message: MsgUpdateBatch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1438,11 +1437,8 @@ export const MsgUpdateBatch = {
     if (message.status !== "") {
       writer.uint32(26).string(message.status);
     }
-    if (message.txHash !== "") {
-      writer.uint32(34).string(message.txHash);
-    }
     if (message.network !== "") {
-      writer.uint32(42).string(message.network);
+      writer.uint32(34).string(message.network);
     }
     return writer;
   },
@@ -1464,9 +1460,6 @@ export const MsgUpdateBatch = {
           message.status = reader.string();
           break;
         case 4:
-          message.txHash = reader.string();
-          break;
-        case 5:
           message.network = reader.string();
           break;
         default:
@@ -1482,7 +1475,6 @@ export const MsgUpdateBatch = {
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     return message;
   },
@@ -1492,7 +1484,6 @@ export const MsgUpdateBatch = {
     message.creator !== undefined && (obj.creator = message.creator);
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
     message.status !== undefined && (obj.status = message.status);
-    message.txHash !== undefined && (obj.txHash = message.txHash);
     message.network !== undefined && (obj.network = message.network);
     return obj;
   },
@@ -1502,7 +1493,6 @@ export const MsgUpdateBatch = {
     message.creator = object.creator ?? "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
     message.status = object.status ?? "";
-    message.txHash = object.txHash ?? "";
     message.network = object.network ?? "";
     return message;
   }

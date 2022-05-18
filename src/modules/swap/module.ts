@@ -1,43 +1,47 @@
 import Long from "long";
 import {Client} from "../../client";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
-import {Batch} from "../../codec/shareledger/swap/batch";
 import {Params} from "../../codec/shareledger/swap/params";
-import {QueryAllSignSchemasResponse, QueryClientImpl, QuerySwapResponse} from "../../codec/shareledger/swap/query";
-import {SignSchema} from "../../codec/shareledger/swap/sign_schema";
+import {QueryAllSchemasResponse, QueryBatchesResponse, QueryClientImpl, QuerySwapResponse} from "../../codec/shareledger/swap/query";
+import {Schema} from "../../codec/shareledger/swap/schema";
 import {
   MsgApproveIn,
   MsgApproveOut,
   MsgCancel,
-  MsgCreateSignSchema,
-  MsgDeleteSignSchema,
+  MsgCreateSchema,
+  MsgDeleteSchema,
   MsgDeposit,
   MsgReject,
   MsgRequestIn,
   MsgRequestOut,
-  MsgUpdateSignSchema,
-  MsgWithdraw
+  MsgUpdateSchema,
+  MsgWithdraw,
+  MsgCancelBatches,
+  MsgUpdateBatch,
+  MsgUpdateSwapFee
 } from "../../codec/shareledger/swap/tx";
 import {createPagination, createProtobufRpcClient} from "../../query";
 import {
   MsgApproveInEncodeObject,
   MsgApproveOutEncodeObject,
   MsgCancelEncodeObject,
-  MsgCreateSignSchemaEncodeObject,
-  MsgDeleteSignSchemaEncodeObject,
+  MsgCreateSchemaEncodeObject,
+  MsgDeleteSchemaEncodeObject,
   MsgDepositEncodeObject,
   MsgRejectEncodeObject,
   MsgRequestInEncodeObject,
   MsgRequestOutEncodeObject,
-  MsgUpdateSignSchemaEncodeObject,
-  MsgWithdrawEncodeObject
+  MsgUpdateSchemaEncodeObject,
+  MsgWithdrawEncodeObject,
+  MsgCancelBatchesEncodeObject,
+  MsgUpdateBatchEncodeObject,
+  MsgUpdateSwapFeeEncodeObject
 } from "./amino";
 
 export type SwapQueryExtension = {
   get swap(): {
     readonly params: () => Promise<Params | undefined>;
-    readonly batchById: (id: Long) => Promise<Batch | undefined>;
-    readonly batchByStatus: (status: string) => Promise<Batch | undefined>;
+    readonly batches: (ids: Long[], network: string, status: string, paginationKey?: Uint8Array) => Promise<QueryBatchesResponse>;
     readonly tokensAvailable: () => Promise<DecCoin | undefined>;
     readonly requests: (
       ids: Long[],
@@ -48,8 +52,8 @@ export type SwapQueryExtension = {
       status: string,
       paginationKey?: Uint8Array
     ) => Promise<QuerySwapResponse>;
-    readonly schema: (network: string) => Promise<SignSchema | undefined>;
-    readonly schemas: () => Promise<QueryAllSignSchemasResponse>;
+    readonly schema: (network: string) => Promise<Schema | undefined>;
+    readonly schemas: () => Promise<QueryAllSchemasResponse>;
   };
 };
 
@@ -76,9 +80,24 @@ export type SwapTxExtension = {
     readonly withdraw: (creator: string, to: string, amount: DecCoin) => MsgWithdrawEncodeObject;
     readonly cancelSwap: (creator: string, ids: Long[]) => MsgCancelEncodeObject;
     readonly rejectSwap: (creator: string, ids: Long[]) => MsgRejectEncodeObject;
-    readonly createSignSchema: (creator: string, network: string, schema: string) => MsgCreateSignSchemaEncodeObject;
-    readonly updateSignSchema: (creator: string, network: string, schema: string) => MsgUpdateSignSchemaEncodeObject;
-    readonly deleteSignSchema: (creator: string, network: string) => MsgDeleteSignSchemaEncodeObject;
+    readonly createSchema: (
+      creator: string,
+      network: string,
+      schema: string,
+      decimals: number,
+      fee?: {in?: DecCoin; out?: DecCoin}
+    ) => MsgCreateSchemaEncodeObject;
+    readonly updateSchema: (
+      creator: string,
+      network: string,
+      schema: string,
+      decimals: number,
+      fee?: {in?: DecCoin; out?: DecCoin}
+    ) => MsgUpdateSchemaEncodeObject;
+    readonly deleteSchema: (creator: string, network: string) => MsgDeleteSchemaEncodeObject;
+    readonly cancelBatches: (creator: string, ids: Long[]) => MsgCancelBatchesEncodeObject;
+    readonly updateBatch: (batchId: Long, creator: string, network: string, status: string) => MsgUpdateBatchEncodeObject;
+    readonly updateSwapFee: (creator: string, network: string, fee?: {in?: DecCoin; out?: DecCoin}) => MsgUpdateSwapFeeEncodeObject;
   };
 };
 
@@ -94,12 +113,8 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
     get swap() {
       return {
         ...super["swap"],
-        batchById: async (id: Long) => {
-          return queryService.Batch({id}).then((res) => res.batch);
-        },
-        batchByStatus: (status: string) => {
-          status;
-          return Promise.resolve(undefined);
+        batches: async (ids: Long[], network: string, status: string, paginationKey?: Uint8Array) => {
+          return queryService.Batches({ids, network, status, pagination: createPagination(paginationKey)});
         },
         tokensAvailable: async () => {
           return queryService.Balance({}).then((res) => res.balance);
@@ -124,10 +139,10 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
           });
         },
         schema: async (network: string) => {
-          return queryService.SignSchema({network}).then((res) => res.schema);
+          return queryService.Schema({network}).then((res) => res.schema);
         },
         schemas: async (paginationKey?: Uint8Array) => {
-          return queryService.AllSignSchemas({pagination: createPagination(paginationKey)});
+          return queryService.AllSchemas({pagination: createPagination(paginationKey)});
         }
       };
     }
@@ -233,32 +248,81 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
             })
           };
         },
-        createSignSchema: (creator: string, network: string, schema: string): MsgCreateSignSchemaEncodeObject => {
+        createSchema: (
+          creator: string,
+          network: string,
+          schema: string,
+          decimals: number,
+          fee?: {in?: DecCoin; out?: DecCoin}
+        ): MsgCreateSchemaEncodeObject => {
           return {
-            typeUrl: "/shareledger.swap.MsgCreateSignSchema",
-            value: MsgCreateSignSchema.fromPartial({
+            typeUrl: "/shareledger.swap.MsgCreateSchema",
+            value: MsgCreateSchema.fromPartial({
               creator,
               network,
-              schema
+              schema,
+              contractExponent: decimals,
+              in: fee?.in,
+              out: fee?.out
             })
           };
         },
-        updateSignSchema: (creator: string, network: string, schema: string): MsgUpdateSignSchemaEncodeObject => {
+        updateSchema: (
+          creator: string,
+          network: string,
+          schema: string,
+          decimals: number,
+          fee?: {in?: DecCoin; out?: DecCoin}
+        ): MsgUpdateSchemaEncodeObject => {
           return {
-            typeUrl: "/shareledger.swap.MsgUpdateSignSchema",
-            value: MsgUpdateSignSchema.fromPartial({
+            typeUrl: "/shareledger.swap.MsgUpdateSchema",
+            value: MsgUpdateSchema.fromPartial({
               creator,
               network,
-              schema
+              schema,
+              contractExponent: decimals,
+              in: fee?.in,
+              out: fee?.out
             })
           };
         },
-        deleteSignSchema: (creator: string, network: string): MsgDeleteSignSchemaEncodeObject => {
+        deleteSchema: (creator: string, network: string): MsgDeleteSchemaEncodeObject => {
           return {
-            typeUrl: "/shareledger.swap.MsgDeleteSignSchema",
-            value: MsgDeleteSignSchema.fromPartial({
+            typeUrl: "/shareledger.swap.MsgDeleteSchema",
+            value: MsgDeleteSchema.fromPartial({
               creator,
               network
+            })
+          };
+        },
+        cancelBatches: (creator: string, ids: Long[]): MsgCancelBatchesEncodeObject => {
+          return {
+            typeUrl: "/shareledger.swap.MsgCancelBatches",
+            value: MsgCancelBatches.fromPartial({
+              creator,
+              ids: [...ids]
+            })
+          };
+        },
+        updateBatch: (batchId: Long, creator: string, network: string, status: string): MsgUpdateBatchEncodeObject => {
+          return {
+            typeUrl: "/shareledger.swap.MsgUpdateBatch",
+            value: MsgUpdateBatch.fromPartial({
+              batchId,
+              creator,
+              network,
+              status
+            })
+          };
+        },
+        updateSwapFee: (creator: string, network: string, fee?: {in?: DecCoin; out?: DecCoin}): MsgUpdateSwapFeeEncodeObject => {
+          return {
+            typeUrl: "/shareledger.swap.MsgUpdateSwapFee",
+            value: MsgUpdateSwapFee.fromPartial({
+              creator,
+              network,
+              in: fee?.in,
+              out: fee?.out
             })
           };
         }
@@ -281,8 +345,11 @@ export function createActions(): Record<string, string> {
     "/shareledger.swap.MsgReject": "swap_reject",
     "/shareledger.swap.MsgDeposit": "swap_deposit",
     "/shareledger.swap.MsgWithdraw": "swap_withdraw",
-    "/shareledger.swap.MsgCreateSignSchema": "swap_create-sign-schema",
-    "/shareledger.swap.MsgUpdateSignSchema": "swap_update-sign-schema",
-    "/shareledger.swap.MsgDeleteSignSchema": "swap_delete-sign-schema"
+    "/shareledger.swap.MsgCreateSchema": "swap_create-schema",
+    "/shareledger.swap.MsgUpdateSchema": "swap_update-schema",
+    "/shareledger.swap.MsgDeleteSchema": "swap_delete-schema",
+    "/shareledger.swap.MsgCancelBatches": "swap_cancel-batches",
+    "/shareledger.swap.MsgUpdateBatch": "swap_update-batch",
+    "/shareledger.swap.MsgUpdateSwapFee": "swap_update-swap-fee"
   };
 }

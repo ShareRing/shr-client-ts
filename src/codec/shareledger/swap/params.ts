@@ -5,17 +5,12 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "shareledger.swap";
 
 /** Params defines the parameters for the module. */
-export interface Params {
-  outFee: string;
-}
+export interface Params {}
 
-const baseParams: object = {outFee: ""};
+const baseParams: object = {};
 
 export const Params = {
-  encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.outFee !== "") {
-      writer.uint32(10).string(message.outFee);
-    }
+  encode(_: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
@@ -26,9 +21,6 @@ export const Params = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.outFee = reader.string();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -37,21 +29,18 @@ export const Params = {
     return message;
   },
 
-  fromJSON(object: any): Params {
+  fromJSON(_: any): Params {
     const message = {...baseParams} as Params;
-    message.outFee = object.outFee !== undefined && object.outFee !== null ? String(object.outFee) : "";
     return message;
   },
 
-  toJSON(message: Params): unknown {
+  toJSON(_: Params): unknown {
     const obj: any = {};
-    message.outFee !== undefined && (obj.outFee = message.outFee);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
+  fromPartial<I extends Exact<DeepPartial<Params>, I>>(_: I): Params {
     const message = {...baseParams} as Params;
-    message.outFee = object.outFee ?? "";
     return message;
   }
 };
