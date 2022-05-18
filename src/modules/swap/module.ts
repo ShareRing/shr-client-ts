@@ -41,15 +41,15 @@ import {
 export type SwapQueryExtension = {
   get swap(): {
     readonly params: () => Promise<Params | undefined>;
-    readonly batches: (ids: Long[], network: string, status: string, paginationKey?: Uint8Array) => Promise<QueryBatchesResponse>;
+    readonly batches: (ids?: Long[], network?: string, status?: string, paginationKey?: Uint8Array) => Promise<QueryBatchesResponse>;
     readonly tokensAvailable: () => Promise<DecCoin | undefined>;
     readonly requests: (
-      ids: Long[],
-      destAddr: string,
-      destNetwork: string,
-      srcAddr: string,
-      srcNetwork: string,
-      status: string,
+      ids?: Long[],
+      destAddr?: string,
+      destNetwork?: string,
+      srcAddr?: string,
+      srcNetwork?: string,
+      status?: string,
       paginationKey?: Uint8Array
     ) => Promise<QuerySwapResponse>;
     readonly schema: (network: string) => Promise<Schema | undefined>;
@@ -113,28 +113,33 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
     get swap() {
       return {
         ...super["swap"],
-        batches: async (ids: Long[], network: string, status: string, paginationKey?: Uint8Array) => {
-          return queryService.Batches({ids, network, status, pagination: createPagination(paginationKey)});
+        batches: async (ids?: Long[], network?: string, status?: string, paginationKey?: Uint8Array) => {
+          return queryService.Batches({
+            ids: ids || [],
+            network: network || "",
+            status: status || "",
+            pagination: createPagination(paginationKey)
+          });
         },
         tokensAvailable: async () => {
           return queryService.Balance({}).then((res) => res.balance);
         },
         requests: async (
-          ids: Long[],
-          destAddr: string,
-          destNetwork: string,
-          srcAddr: string,
-          srcNetwork: string,
-          status: string,
+          ids?: Long[],
+          destAddr?: string,
+          destNetwork?: string,
+          srcAddr?: string,
+          srcNetwork?: string,
+          status?: string,
           paginationKey?: Uint8Array
         ) => {
           return queryService.Swap({
-            ids,
-            destAddr,
-            destNetwork,
-            srcAddr,
-            srcNetwork,
-            status,
+            ids: ids || [],
+            destAddr: destAddr || "",
+            destNetwork: destNetwork || "",
+            srcAddr: srcAddr || "",
+            srcNetwork: srcNetwork || "",
+            status: status || "",
             pagination: createPagination(paginationKey)
           });
         },
