@@ -35,6 +35,7 @@ export {
   coin,
   coins,
   decodePubkey,
+  decodeTxRaw,
   encodePubkey,
   makeShareledgerPath,
   parseCoins,
