@@ -618,6 +618,9 @@ export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
     ["/shareledger.swap.MsgWithdraw", MsgWithdraw],
     ["/shareledger.swap.MsgCreateSchema", MsgCreateSchema],
     ["/shareledger.swap.MsgUpdateSchema", MsgUpdateSchema],
-    ["/shareledger.swap.MsgDeleteSchema", MsgDeleteSchema]
+    ["/shareledger.swap.MsgDeleteSchema", MsgDeleteSchema],
+    ["/shareledger.swap.MsgCancelBatches", MsgCancelBatches],
+    ["/shareledger.swap.MsgUpdateBatch", MsgUpdateBatch],
+    ["/shareledger.swap.MsgUpdateSwapFee", MsgUpdateSwapFee]
   ];
 }
