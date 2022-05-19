@@ -74,7 +74,7 @@ export class SigningClient extends Client {
   private signer?: OfflineSigner;
   private readonly aminoTypes: AminoTypes;
 
-  // public static async connectWithSigner(endpoint: string, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
+  // public static async connectWithSigner(endpoint: string | HttpEndpoint, signer: OfflineSigner, options: SigningOptions = {}): Promise<SigningClient> {
   //   const tmClient = await Tendermint34Client.connect(endpoint);
   //   return new SigningClient(tmClient, signer, options);
   // }
