@@ -12,14 +12,13 @@ import {
   Slip10Curve,
   stringToPath
 } from "@cosmjs/crypto";
-import {Bech32, fromBase64, fromUtf8, toBase64, toUtf8} from "@cosmjs/encoding";
+import {fromBase64, fromUtf8, toBase64, toBech32, toUtf8} from "@cosmjs/encoding";
 import {assert, isNonNullObject} from "@cosmjs/utils/build";
 import {SignDoc} from "../codec/cosmos/tx/v1beta1/tx";
-
-import {AccountData, DirectSignResponse, OfflineDirectSigner} from "./signer";
-import {makeSignBytes} from "./signing";
 import {decrypt, encrypt, EncryptionConfiguration, executeKdf, KdfConfiguration, supportedAlgorithms} from "./encryption";
 import {makeShareledgerPath} from "./paths";
+import {AccountData, DirectSignResponse, OfflineDirectSigner} from "./signer";
+import {makeSignBytes} from "./signing";
 
 interface AccountDataWithPrivkey extends AccountData {
   readonly privkey: Uint8Array;
@@ -339,7 +338,7 @@ export class Secp256k1HdWallet implements OfflineDirectSigner {
     return Promise.all(
       this.accounts.map(async ({hdPath, prefix}) => {
         const {privkey, pubkey} = await this.getKeyPair(hdPath);
-        const address = Bech32.encode(prefix, rawSecp256k1PubkeyToRawAddress(pubkey));
+        const address = toBech32(prefix, rawSecp256k1PubkeyToRawAddress(pubkey));
         return {
           algo: "secp256k1" as const,
           privkey: privkey,

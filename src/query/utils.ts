@@ -1,4 +1,4 @@
-import {Bech32, fromAscii} from "@cosmjs/encoding";
+import {fromBech32, fromAscii, toBech32} from "@cosmjs/encoding";
 import {Decimal, Uint64} from "@cosmjs/math";
 import Long from "long";
 import {PageRequest} from "../codec/cosmos/base/query/v1beta1/pagination";
@@ -10,11 +10,11 @@ import type {QueryClient} from "./client";
  * The result is typically 20 bytes long but not restricted to that.
  */
 export function toAccAddress(address: string): Uint8Array {
-  return Bech32.decode(address).data;
+  return fromBech32(address).data;
 }
 
 export function toBech32Address(pubkey: Uint8Array, prefix = "shareledger") {
-  return Bech32.encode(prefix, pubkey);
+  return toBech32(prefix, pubkey);
 }
 
 export function toBech32ValAddress(pubkey: Uint8Array, prefix = "shareledgervaloper") {
