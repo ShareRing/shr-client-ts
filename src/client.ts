@@ -368,4 +368,16 @@ export class Client {
       };
     });
   }
+
+  public subscribeNewBlock() {
+    return this.forceGetTmClient().subscribeNewBlock();
+  }
+
+  public subscribeNewBlockHeader() {
+    return this.forceGetTmClient().subscribeNewBlockHeader();
+  }
+
+  public subscribeTx(query?: string) {
+    return this.forceGetTmClient().subscribeTx(query);
+  }
 }
