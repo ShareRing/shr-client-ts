@@ -2,6 +2,7 @@
 
 import {AminoMsg} from "@cosmjs/amino";
 import {assertDefinedAndNotNull} from "@cosmjs/utils";
+import Long from "long";
 import {AminoConverter} from "../../amino/types";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 import {
