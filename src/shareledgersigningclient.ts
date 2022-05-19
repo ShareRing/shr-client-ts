@@ -70,9 +70,9 @@ export class ShareledgerSigningClient extends SigningClient {
     super(tmClient, signer, {...options, registry: createRegistry()});
   }
 
-  public static async connect(endpoint: string): Promise<ShareledgerSigningClient> {
+  public static async connect(endpoint: string, options?: SigningOptions): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    return new ShareledgerSigningClient(tmClient);
+    return new ShareledgerSigningClient(tmClient, undefined, options);
   }
 
   /**

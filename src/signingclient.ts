@@ -4,7 +4,7 @@ import {Decimal, Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {assert, assertDefined} from "@cosmjs/utils";
 import {AminoTypes} from "./amino";
-import {BroadcastTxResponse, Client} from "./client";
+import {BroadcastTxResponse, Client, ClientOptions} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
 import {toNshr} from "./denoms";
@@ -38,7 +38,7 @@ export interface SignerData {
   readonly chainId: string;
 }
 
-export interface SigningOptions {
+export interface SigningOptions extends ClientOptions {
   readonly registry?: Registry;
   readonly aminoTypes?: AminoTypes;
   readonly prefix?: string;
@@ -93,7 +93,7 @@ export class SigningClient extends Client {
   // }
 
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
-    super(tmClient);
+    super(tmClient, options);
     const {
       registry = createDefaultRegistry(),
       aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"}),
