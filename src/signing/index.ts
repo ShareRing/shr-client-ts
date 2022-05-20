@@ -1,5 +1,5 @@
 export {Coin, coin, coins, pubkeyToAddress} from "@cosmjs/amino";
-export {parseCoins} from "./coins";
+export {parseCoins, parseDecCoins} from "./coins";
 
 export {decodeTxRaw, DecodedTxRaw} from "./decode";
 export {
