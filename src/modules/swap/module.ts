@@ -139,7 +139,7 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
             destNetwork: destNetwork || "",
             srcAddr: srcAddr || "",
             srcNetwork: srcNetwork || "",
-            status: status || "",
+            status: status || "pending", // cannot be empty
             pagination: createPagination(paginationKey)
           });
         },
