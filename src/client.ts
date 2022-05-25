@@ -146,7 +146,7 @@ export interface Client extends AuthExtension, TxExtension {} // eslint-disable-
 // @StakingExtension
 export class Client {
   private readonly tmClient: Tendermint34Client | undefined;
-  protected readonly queryClient: QueryClient | undefined;
+  private readonly queryClient: QueryClient | undefined;
   private chainId: string | undefined;
   private readonly accountParser: AccountParser;
 
