@@ -1,5 +1,5 @@
 export {StdFee} from "@cosmjs/amino";
-export {toBech32} from "@cosmjs/encoding";
+export {Bech32} from "@cosmjs/encoding";
 export {Account, accountFromAny, AccountParser} from "./account";
 export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 export {

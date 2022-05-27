@@ -1,5 +1,5 @@
 import {StdFee} from "@cosmjs/amino";
-import {HttpEndpoint, Tendermint34Client} from "@cosmjs/tendermint-rpc";
+import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
 import {BroadcastTxResponse} from "./client";
 import {toNshr} from "./denoms";
@@ -70,7 +70,7 @@ export class ShareledgerSigningClient extends SigningClient {
     super(tmClient, signer, {...options, registry: createRegistry()});
   }
 
-  public static async connect(endpoint: string | HttpEndpoint, options?: SigningOptions): Promise<ShareledgerSigningClient> {
+  public static async connect(endpoint: string, options?: SigningOptions): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
     return new ShareledgerSigningClient(tmClient, undefined, options);
   }
@@ -81,11 +81,7 @@ export class ShareledgerSigningClient extends SigningClient {
    * @param mnemonic Mnemonic
    * @param options Signing options
    */
-  public static async connectWithSigner(
-    endpoint: string | HttpEndpoint,
-    mnemonic: string,
-    options?: SigningOptions
-  ): Promise<ShareledgerSigningClient>;
+  public static async connectWithSigner(endpoint: string, mnemonic: string, options?: SigningOptions): Promise<ShareledgerSigningClient>;
   /**
    * Connect with blockchain RPC using private key
    * @param endpoint RPC endpoint
@@ -93,7 +89,7 @@ export class ShareledgerSigningClient extends SigningClient {
    * @param options Signing options
    */
   public static async connectWithSigner(
-    endpoint: string | HttpEndpoint,
+    endpoint: string,
     privKey: string | Uint8Array,
     options?: SigningOptions
   ): Promise<ShareledgerSigningClient>;
@@ -104,12 +100,12 @@ export class ShareledgerSigningClient extends SigningClient {
    * @param options Signing options
    */
   public static async connectWithSigner(
-    endpoint: string | HttpEndpoint,
+    endpoint: string,
     signer: OfflineSigner,
     options?: SigningOptions
   ): Promise<ShareledgerSigningClient>;
   public static async connectWithSigner(
-    endpoint: string | HttpEndpoint,
+    endpoint: string,
     signer: string | Uint8Array | OfflineSigner,
     options: SigningOptions = {}
   ): Promise<ShareledgerSigningClient> {
