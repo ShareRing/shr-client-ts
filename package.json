@@ -24,7 +24,7 @@
     "/scripts"
   ],
   "dependencies": {
-    "@confio/ics23": "^0.6.8",
+    "@confio/ics23": "0.6.5",
     "@cosmjs/amino": "0.27.1",
     "@cosmjs/crypto": "0.27.1",
     "@cosmjs/encoding": "0.27.1",
