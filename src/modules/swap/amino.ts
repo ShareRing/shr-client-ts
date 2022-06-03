@@ -27,11 +27,11 @@ export interface AminoMsgRequestIn extends AminoMsg {
   readonly type: "swap/RequestIn";
   readonly value: {
     readonly creator: string;
-    readonly srcAddress: string;
     readonly destAddress: string;
     readonly network: string;
     readonly amount: DecCoin;
     readonly fee: DecCoin;
+    readonly txHashes: string[];
   };
 }
 
@@ -348,26 +348,26 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
   return {
     "/shareledger.swap.MsgRequestIn": {
       aminoType: "swap/RequestIn",
-      toAmino: ({creator, srcAddress, destAddress, network, amount, fee}: MsgRequestIn): AminoMsgRequestIn["value"] => {
+      toAmino: ({creator, destAddress, network, amount, fee, txHashes}: MsgRequestIn): AminoMsgRequestIn["value"] => {
         assertDefinedAndNotNull(amount, "missing amount");
         assertDefinedAndNotNull(fee, "missing fee");
         return {
           creator,
-          srcAddress,
           destAddress,
           network,
           amount,
-          fee
+          fee,
+          txHashes: [...txHashes]
         };
       },
-      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee}: AminoMsgRequestIn["value"]): MsgRequestIn => {
+      fromAmino: ({creator, destAddress, network, amount, fee, txHashes}: AminoMsgRequestIn["value"]): MsgRequestIn => {
         return {
           creator,
-          srcAddress,
           destAddress,
           network,
           amount,
-          fee
+          fee,
+          txHashes: [...txHashes]
         };
       }
     },

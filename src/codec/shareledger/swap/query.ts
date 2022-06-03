@@ -5,6 +5,7 @@ import {Params} from "../../shareledger/swap/params";
 import {PageRequest, PageResponse} from "../../cosmos/base/query/v1beta1/pagination";
 import {DecCoin} from "../../cosmos/base/v1beta1/coin";
 import {Schema} from "../../shareledger/swap/schema";
+import {RequestedIn} from "../../shareledger/swap/requested_in";
 import {Request} from "../../shareledger/swap/request";
 import {Batch} from "../../shareledger/swap/batch";
 
@@ -67,6 +68,14 @@ export interface QueryBatchesRequest {
   network: string;
   ids: Long[];
   pagination?: PageRequest;
+}
+
+export interface QueryRequestedInsRequest {
+  address: string;
+}
+
+export interface QueryRequestedInsResponse {
+  requestedIn?: RequestedIn;
 }
 
 const baseQueryParamsRequest: object = {};
@@ -778,6 +787,102 @@ export const QueryBatchesRequest = {
   }
 };
 
+const baseQueryRequestedInsRequest: object = {address: ""};
+
+export const QueryRequestedInsRequest = {
+  encode(message: QueryRequestedInsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryRequestedInsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseQueryRequestedInsRequest} as QueryRequestedInsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryRequestedInsRequest {
+    const message = {...baseQueryRequestedInsRequest} as QueryRequestedInsRequest;
+    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
+    return message;
+  },
+
+  toJSON(message: QueryRequestedInsRequest): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryRequestedInsRequest>, I>>(object: I): QueryRequestedInsRequest {
+    const message = {...baseQueryRequestedInsRequest} as QueryRequestedInsRequest;
+    message.address = object.address ?? "";
+    return message;
+  }
+};
+
+const baseQueryRequestedInsResponse: object = {};
+
+export const QueryRequestedInsResponse = {
+  encode(message: QueryRequestedInsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.requestedIn !== undefined) {
+      RequestedIn.encode(message.requestedIn, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryRequestedInsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseQueryRequestedInsResponse} as QueryRequestedInsResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.requestedIn = RequestedIn.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryRequestedInsResponse {
+    const message = {...baseQueryRequestedInsResponse} as QueryRequestedInsResponse;
+    message.requestedIn =
+      object.requestedIn !== undefined && object.requestedIn !== null ? RequestedIn.fromJSON(object.requestedIn) : undefined;
+    return message;
+  },
+
+  toJSON(message: QueryRequestedInsResponse): unknown {
+    const obj: any = {};
+    message.requestedIn !== undefined && (obj.requestedIn = message.requestedIn ? RequestedIn.toJSON(message.requestedIn) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryRequestedInsResponse>, I>>(object: I): QueryRequestedInsResponse {
+    const message = {...baseQueryRequestedInsResponse} as QueryRequestedInsResponse;
+    message.requestedIn =
+      object.requestedIn !== undefined && object.requestedIn !== null ? RequestedIn.fromPartial(object.requestedIn) : undefined;
+    return message;
+  }
+};
+
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Parameters queries the parameters of the module. */
@@ -792,6 +897,8 @@ export interface Query {
   AllSchemas(request: QueryAllSchemasRequest): Promise<QueryAllSchemasResponse>;
   /** Queries a list of SearchBatch items. */
   Batches(request: QueryBatchesRequest): Promise<QueryBatchesResponse>;
+  /** Queries a list of RequestedIns items. */
+  RequestedIns(request: QueryRequestedInsRequest): Promise<QueryRequestedInsResponse>;
 }
 
 export class QueryClientImpl implements Query {
@@ -804,6 +911,7 @@ export class QueryClientImpl implements Query {
     this.Schema = this.Schema.bind(this);
     this.AllSchemas = this.AllSchemas.bind(this);
     this.Batches = this.Batches.bind(this);
+    this.RequestedIns = this.RequestedIns.bind(this);
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
@@ -839,6 +947,12 @@ export class QueryClientImpl implements Query {
     const data = QueryBatchesRequest.encode(request).finish();
     const promise = this.rpc.request("shareledger.swap.Query", "Batches", data);
     return promise.then((data) => QueryBatchesResponse.decode(new _m0.Reader(data)));
+  }
+
+  RequestedIns(request: QueryRequestedInsRequest): Promise<QueryRequestedInsResponse> {
+    const data = QueryRequestedInsRequest.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Query", "RequestedIns", data);
+    return promise.then((data) => QueryRequestedInsResponse.decode(new _m0.Reader(data)));
   }
 }
 

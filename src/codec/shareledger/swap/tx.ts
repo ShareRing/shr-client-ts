@@ -91,11 +91,11 @@ export interface MsgRejectResponse {}
 
 export interface MsgRequestIn {
   creator: string;
-  srcAddress: string;
   destAddress: string;
   network: string;
   amount?: DecCoin;
   fee?: DecCoin;
+  txHashes: string[];
 }
 
 export interface MsgSwapInResponse {
@@ -1177,15 +1177,12 @@ export const MsgRejectResponse = {
   }
 };
 
-const baseMsgRequestIn: object = {creator: "", srcAddress: "", destAddress: "", network: ""};
+const baseMsgRequestIn: object = {creator: "", destAddress: "", network: "", txHashes: ""};
 
 export const MsgRequestIn = {
   encode(message: MsgRequestIn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
-    }
-    if (message.srcAddress !== "") {
-      writer.uint32(18).string(message.srcAddress);
     }
     if (message.destAddress !== "") {
       writer.uint32(26).string(message.destAddress);
@@ -1199,6 +1196,9 @@ export const MsgRequestIn = {
     if (message.fee !== undefined) {
       DecCoin.encode(message.fee, writer.uint32(50).fork()).ldelim();
     }
+    for (const v of message.txHashes) {
+      writer.uint32(58).string(v!);
+    }
     return writer;
   },
 
@@ -1206,14 +1206,12 @@ export const MsgRequestIn = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseMsgRequestIn} as MsgRequestIn;
+    message.txHashes = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.creator = reader.string();
-          break;
-        case 2:
-          message.srcAddress = reader.string();
           break;
         case 3:
           message.destAddress = reader.string();
@@ -1227,6 +1225,9 @@ export const MsgRequestIn = {
         case 6:
           message.fee = DecCoin.decode(reader, reader.uint32());
           break;
+        case 7:
+          message.txHashes.push(reader.string());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1238,33 +1239,37 @@ export const MsgRequestIn = {
   fromJSON(object: any): MsgRequestIn {
     const message = {...baseMsgRequestIn} as MsgRequestIn;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.srcAddress = object.srcAddress !== undefined && object.srcAddress !== null ? String(object.srcAddress) : "";
     message.destAddress = object.destAddress !== undefined && object.destAddress !== null ? String(object.destAddress) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
+    message.txHashes = (object.txHashes ?? []).map((e: any) => String(e));
     return message;
   },
 
   toJSON(message: MsgRequestIn): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
-    message.srcAddress !== undefined && (obj.srcAddress = message.srcAddress);
     message.destAddress !== undefined && (obj.destAddress = message.destAddress);
     message.network !== undefined && (obj.network = message.network);
     message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
     message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
+    if (message.txHashes) {
+      obj.txHashes = message.txHashes.map((e) => e);
+    } else {
+      obj.txHashes = [];
+    }
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRequestIn>, I>>(object: I): MsgRequestIn {
     const message = {...baseMsgRequestIn} as MsgRequestIn;
     message.creator = object.creator ?? "";
-    message.srcAddress = object.srcAddress ?? "";
     message.destAddress = object.destAddress ?? "";
     message.network = object.network ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
+    message.txHashes = object.txHashes?.map((e) => e) || [];
     return message;
   }
 };

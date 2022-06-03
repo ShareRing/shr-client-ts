@@ -7,11 +7,17 @@ import {
   MsgEnrollIdSigners,
   MsgEnrollLoaders,
   MsgEnrollVoter,
+  MsgEnrollApprovers,
+  MsgEnrollRelayers,
+  MsgEnrollSwapManagers,
   MsgRevokeAccountOperators,
   MsgRevokeDocIssuers,
   MsgRevokeIdSigners,
   MsgRevokeLoaders,
-  MsgRevokeVoter
+  MsgRevokeVoter,
+  MsgRevokeApprovers,
+  MsgRevokeRelayers,
+  MsgRevokeSwapManagers
 } from "../../codec/shareledger/electoral/tx";
 import {createProtobufRpcClient} from "../../query";
 import {
@@ -20,11 +26,17 @@ import {
   MsgEnrollIdSignersEncodeObject,
   MsgEnrollLoadersEncodeObject,
   MsgEnrollVoterEncodeObject,
+  MsgEnrollApproversEncodeObject,
+  MsgEnrollRelayersEncodeObject,
+  MsgEnrollSwapManagersEncodeObject,
   MsgRevokeAccountOperatorsEncodeObject,
   MsgRevokeDocIssuersEncodeObject,
   MsgRevokeIdSignersEncodeObject,
   MsgRevokeLoadersEncodeObject,
-  MsgRevokeVoterEncodeObject
+  MsgRevokeVoterEncodeObject,
+  MsgRevokeApproversEncodeObject,
+  MsgRevokeRelayersEncodeObject,
+  MsgRevokeSwapManagersEncodeObject
 } from "./amino";
 
 export type ElectoralQueryExtension = {
@@ -39,16 +51,12 @@ export type ElectoralQueryExtension = {
     readonly voters: () => Promise<AccState[]>;
     readonly idSigner: (address: string) => Promise<AccState | undefined>;
     readonly idSigners: () => Promise<AccState[]>;
-    readonly enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
-    readonly revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
-    readonly enrollDocIssuers: (addresses: string[], creator: string) => MsgEnrollDocIssuersEncodeObject;
-    readonly revokeDocIssuers: (addresses: string[], creator: string) => MsgRevokeDocIssuersEncodeObject;
-    readonly enrollLoaders: (addresses: string[], creator: string) => MsgEnrollLoadersEncodeObject;
-    readonly revokeLoaders: (addresses: string[], creator: string) => MsgRevokeLoadersEncodeObject;
-    readonly enrollVoter: (address: string, creator: string) => MsgEnrollVoterEncodeObject;
-    readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
-    readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
-    readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
+    readonly approver: (address: string) => Promise<AccState | undefined>;
+    readonly approvers: () => Promise<AccState[]>;
+    readonly relayer: (address: string) => Promise<AccState | undefined>;
+    readonly relayers: () => Promise<AccState[]>;
+    readonly swapManager: (address: string) => Promise<AccState | undefined>;
+    readonly swapManagers: () => Promise<AccState[]>;
   };
 };
 
@@ -64,6 +72,12 @@ export type ElectoralTxExtension = {
     readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
     readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
     readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
+    readonly enrollRelayers: (addresses: string[], creator: string) => MsgEnrollRelayersEncodeObject;
+    readonly revokeRelayers: (addresses: string[], creator: string) => MsgRevokeRelayersEncodeObject;
+    readonly enrollApprovers: (addresses: string[], creator: string) => MsgEnrollApproversEncodeObject;
+    readonly revokeApprovers: (addresses: string[], creator: string) => MsgRevokeApproversEncodeObject;
+    readonly enrollSwapManagers: (addresses: string[], creator: string) => MsgEnrollSwapManagersEncodeObject;
+    readonly revokeSwapManagers: (addresses: string[], creator: string) => MsgRevokeSwapManagersEncodeObject;
   };
 };
 
@@ -120,6 +134,22 @@ export function ElectoralQueryExtension<T extends {new (...args: any[]): Client 
         idSigners: async () => {
           const {accStates} = await queryService.IdSigners({});
           return accStates;
+        },
+        approver: async (address: string) => {
+          const {accState} = await queryService.Approver({address});
+          return accState;
+        },
+        approvers: async () => {
+          const {approvers} = await queryService.Approvers({});
+          return approvers;
+        },
+        relayer: async (address: string) => {
+          const {accState} = await queryService.Relayer({address});
+          return accState;
+        },
+        relayers: async () => {
+          const {relayers} = await queryService.Relayers({});
+          return relayers;
         }
       };
     }
@@ -220,6 +250,60 @@ export function ElectoralTxExtension<T extends {new (...args: any[]): Client & E
               creator
             })
           };
+        },
+        enrollApprovers: (addresses: string[], creator: string): MsgEnrollApproversEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgEnrollApprovers",
+            value: MsgEnrollApprovers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        revokeApprovers: (addresses: string[], creator: string): MsgRevokeApproversEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgRevokeApprovers",
+            value: MsgRevokeApprovers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        enrollRelayers: (addresses: string[], creator: string): MsgEnrollRelayersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgEnrollRelayers",
+            value: MsgEnrollRelayers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        revokeRelayers: (addresses: string[], creator: string): MsgRevokeRelayersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgRevokeRelayers",
+            value: MsgRevokeRelayers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        enrollSwapManagers: (addresses: string[], creator: string): MsgEnrollSwapManagersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgEnrollSwapManagers",
+            value: MsgEnrollSwapManagers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        revokeSwapManagers: (addresses: string[], creator: string): MsgRevokeSwapManagersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgRevokeSwapManagers",
+            value: MsgRevokeSwapManagers.fromPartial({
+              addresses,
+              creator
+            })
+          };
         }
       };
     }
@@ -241,6 +325,12 @@ export function createActions(): Record<string, string> {
     "/shareledger.electoral.MsgEnrollLoaders": "electoral_enroll-loaders",
     "/shareledger.electoral.MsgRevokeLoaders": "electoral_revoke-loaders",
     "/shareledger.electoral.MsgEnrollVoter": "electoral_enroll-voter",
-    "/shareledger.electoral.MsgRevokeVoter": "electoral_revoke-voter"
+    "/shareledger.electoral.MsgRevokeVoter": "electoral_revoke-voter",
+    "/shareledger.electoral.MsgEnrollApprovers": "electoral_enroll-approvers",
+    "/shareledger.electoral.MsgRevokeApprovers": "electoral_revoke-approvers",
+    "/shareledger.electoral.MsgEnrollRelayers": "electoral_enroll-relayers",
+    "/shareledger.electoral.MsgRevokeRelayers": "electoral_revoke-relayers",
+    "/shareledger.electoral.MsgEnrollSwapManagers": "electoral_enroll-swap-managers",
+    "/shareledger.electoral.MsgRevokeSwapManagers": "electoral_revoke-swap-managers"
   };
 }

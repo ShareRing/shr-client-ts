@@ -8,11 +8,17 @@ import {
   MsgEnrollIdSigners,
   MsgEnrollLoaders,
   MsgEnrollVoter,
+  MsgEnrollApprovers,
+  MsgEnrollRelayers,
+  MsgEnrollSwapManagers,
   MsgRevokeAccountOperators,
   MsgRevokeDocIssuers,
   MsgRevokeIdSigners,
   MsgRevokeLoaders,
-  MsgRevokeVoter
+  MsgRevokeVoter,
+  MsgRevokeApprovers,
+  MsgRevokeRelayers,
+  MsgRevokeSwapManagers
 } from "../../codec/shareledger/electoral/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
 
@@ -211,6 +217,126 @@ export function isMsgRevokeVoterEncodeObject(encodeObject: EncodeObject): encode
   return (encodeObject as MsgRevokeVoterEncodeObject).typeUrl === "/shareledger.electoral.MsgRevokeVoter";
 }
 
+export interface AminoMsgEnrollRelayers extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "electoral/EnrollRelayers";
+  readonly value: AminoMsgValue;
+}
+
+export function isAminoMsgEnrollRelayers(msg: AminoMsg): msg is AminoMsgEnrollRelayers {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "electoral/EnrollRelayers";
+}
+
+export interface MsgEnrollRelayersEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.electoral.MsgEnrollRelayers";
+  readonly value: Partial<MsgEnrollRelayers>;
+}
+
+export function isMsgEnrollRelayersEncodeObject(encodeObject: EncodeObject): encodeObject is MsgEnrollRelayersEncodeObject {
+  return (encodeObject as MsgEnrollRelayersEncodeObject).typeUrl === "/shareledger.electoral.MsgEnrollRelayers";
+}
+
+export interface AminoMsgRevokeRelayers extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "electoral/RevokeRelayers";
+  readonly value: AminoMsgValue;
+}
+
+export function isAminoMsgRevokeRelayers(msg: AminoMsg): msg is AminoMsgRevokeRelayers {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "electoral/RevokeRelayers";
+}
+
+export interface MsgRevokeRelayersEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.electoral.MsgRevokeRelayers";
+  readonly value: Partial<MsgRevokeRelayers>;
+}
+
+export function isMsgRevokeRelayersEncodeObject(encodeObject: EncodeObject): encodeObject is MsgRevokeRelayersEncodeObject {
+  return (encodeObject as MsgRevokeRelayersEncodeObject).typeUrl === "/shareledger.electoral.MsgRevokeRelayers";
+}
+
+export interface AminoMsgEnrollApprovers extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "electoral/EnrollApprovers";
+  readonly value: AminoMsgValue;
+}
+
+export function isAminoMsgEnrollApprovers(msg: AminoMsg): msg is AminoMsgEnrollApprovers {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "electoral/EnrollApprovers";
+}
+
+export interface MsgEnrollApproversEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.electoral.MsgEnrollApprovers";
+  readonly value: Partial<MsgEnrollApprovers>;
+}
+
+export function isMsgEnrollApproversEncodeObject(encodeObject: EncodeObject): encodeObject is MsgEnrollApproversEncodeObject {
+  return (encodeObject as MsgEnrollApproversEncodeObject).typeUrl === "/shareledger.electoral.MsgEnrollApprovers";
+}
+
+export interface AminoMsgRevokeApprovers extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "electoral/RevokeApprovers";
+  readonly value: AminoMsgValue;
+}
+
+export function isAminoMsgRevokeApprovers(msg: AminoMsg): msg is AminoMsgRevokeApprovers {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "electoral/RevokeApprovers";
+}
+
+export interface MsgRevokeApproversEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.electoral.MsgRevokeApprovers";
+  readonly value: Partial<MsgRevokeApprovers>;
+}
+
+export function isMsgRevokeApproversEncodeObject(encodeObject: EncodeObject): encodeObject is MsgRevokeApproversEncodeObject {
+  return (encodeObject as MsgRevokeApproversEncodeObject).typeUrl === "/shareledger.electoral.MsgRevokeApprovers";
+}
+
+export interface AminoMsgEnrollSwapManagers extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "electoral/EnrollSwapManagers";
+  readonly value: AminoMsgValue;
+}
+
+export function isAminoMsgEnrollSwapManagers(msg: AminoMsg): msg is AminoMsgEnrollSwapManagers {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "electoral/EnrollSwapManagers";
+}
+
+export interface MsgEnrollSwapManagersEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.electoral.MsgEnrollSwapManagers";
+  readonly value: Partial<MsgEnrollSwapManagers>;
+}
+
+export function isMsgEnrollSwapManagersEncodeObject(encodeObject: EncodeObject): encodeObject is MsgEnrollSwapManagersEncodeObject {
+  return (encodeObject as MsgEnrollSwapManagersEncodeObject).typeUrl === "/shareledger.electoral.MsgEnrollSwapManagers";
+}
+
+export interface AminoMsgRevokeSwapManagers extends AminoMsg {
+  // NOTE: Type string and names diverge here!
+  readonly type: "electoral/RevokeSwapManagers";
+  readonly value: AminoMsgValue;
+}
+
+export function isAminoMsgRevokeSwapManagers(msg: AminoMsg): msg is AminoMsgRevokeSwapManagers {
+  // NOTE: Type string and names diverge here!
+  return msg.type === "electoral/RevokeSwapManagers";
+}
+
+export interface MsgRevokeSwapManagersEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.electoral.MsgRevokeSwapManagers";
+  readonly value: Partial<MsgRevokeSwapManagers>;
+}
+
+export function isMsgRevokeSwapManagersEncodeObject(encodeObject: EncodeObject): encodeObject is MsgRevokeSwapManagersEncodeObject {
+  return (encodeObject as MsgRevokeSwapManagersEncodeObject).typeUrl === "/shareledger.electoral.MsgRevokeSwapManagers";
+}
+
 export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
   return {
     "/shareledger.electoral.MsgEnrollAccountOperators": {
@@ -322,6 +448,72 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
         address,
         creator
       })
+    },
+    "/shareledger.electoral.MsgEnrollRelayers": {
+      aminoType: "electoral/EnrollRelayers",
+      toAmino: ({addresses, creator}: MsgEnrollRelayers): AminoMsgEnrollRelayers["value"] => ({
+        addresses: [...addresses],
+        creator
+      }),
+      fromAmino: ({addresses, creator}: AminoMsgEnrollRelayers["value"]): MsgEnrollRelayers => ({
+        addresses: [...addresses],
+        creator
+      })
+    },
+    "/shareledger.electoral.MsgRevokeRelayers": {
+      aminoType: "electoral/RevokeRelayers",
+      toAmino: ({addresses, creator}: MsgRevokeRelayers): AminoMsgRevokeRelayers["value"] => ({
+        addresses: [...addresses],
+        creator
+      }),
+      fromAmino: ({addresses, creator}: AminoMsgRevokeRelayers["value"]): MsgRevokeRelayers => ({
+        addresses: [...addresses],
+        creator
+      })
+    },
+    "/shareledger.electoral.MsgEnrollApprovers": {
+      aminoType: "electoral/EnrollApprovers",
+      toAmino: ({addresses, creator}: MsgEnrollApprovers): AminoMsgEnrollApprovers["value"] => ({
+        addresses: [...addresses],
+        creator
+      }),
+      fromAmino: ({addresses, creator}: AminoMsgEnrollApprovers["value"]): MsgEnrollApprovers => ({
+        addresses: [...addresses],
+        creator
+      })
+    },
+    "/shareledger.electoral.MsgRevokeApprovers": {
+      aminoType: "electoral/RevokeApprovers",
+      toAmino: ({addresses, creator}: MsgRevokeApprovers): AminoMsgRevokeApprovers["value"] => ({
+        addresses: [...addresses],
+        creator
+      }),
+      fromAmino: ({addresses, creator}: AminoMsgRevokeApprovers["value"]): MsgRevokeApprovers => ({
+        addresses: [...addresses],
+        creator
+      })
+    },
+    "/shareledger.electoral.MsgEnrollSwapManagers": {
+      aminoType: "electoral/EnrollSwapManagers",
+      toAmino: ({addresses, creator}: MsgEnrollSwapManagers): AminoMsgEnrollSwapManagers["value"] => ({
+        addresses: [...addresses],
+        creator
+      }),
+      fromAmino: ({addresses, creator}: AminoMsgEnrollSwapManagers["value"]): MsgEnrollSwapManagers => ({
+        addresses: [...addresses],
+        creator
+      })
+    },
+    "/shareledger.electoral.MsgRevokeSwapManagers": {
+      aminoType: "electoral/RevokeSwapManagers",
+      toAmino: ({addresses, creator}: MsgRevokeSwapManagers): AminoMsgRevokeSwapManagers["value"] => ({
+        addresses: [...addresses],
+        creator
+      }),
+      fromAmino: ({addresses, creator}: AminoMsgRevokeSwapManagers["value"]): MsgRevokeSwapManagers => ({
+        addresses: [...addresses],
+        creator
+      })
     }
   };
 }
@@ -337,6 +529,12 @@ export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
     ["/shareledger.electoral.MsgEnrollLoaders", MsgEnrollLoaders],
     ["/shareledger.electoral.MsgRevokeLoaders", MsgRevokeLoaders],
     ["/shareledger.electoral.MsgEnrollVoter", MsgEnrollVoter],
-    ["/shareledger.electoral.MsgRevokeVoter", MsgRevokeVoter]
+    ["/shareledger.electoral.MsgRevokeVoter", MsgRevokeVoter],
+    ["/shareledger.electoral.MsgEnrollRelayers", MsgEnrollRelayers],
+    ["/shareledger.electoral.MsgRevokeRelayers", MsgRevokeRelayers],
+    ["/shareledger.electoral.MsgEnrollApprovers", MsgEnrollApprovers],
+    ["/shareledger.electoral.MsgRevokeApprovers", MsgRevokeApprovers],
+    ["/shareledger.electoral.MsgEnrollSwapManagers", MsgEnrollSwapManagers],
+    ["/shareledger.electoral.MsgRevokeSwapManagers", MsgRevokeSwapManagers]
   ];
 }

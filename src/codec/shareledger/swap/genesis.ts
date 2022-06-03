@@ -18,7 +18,7 @@ export interface GenesisState {
   batchList: Batch[];
   batchCount: Long;
   /** this line is used by starport scaffolding # genesis/proto/state */
-  formatList: Schema[];
+  schemas: Schema[];
 }
 
 const baseGenesisState: object = {requestCount: Long.UZERO, batchCount: Long.UZERO};
@@ -43,7 +43,7 @@ export const GenesisState = {
     if (!message.batchCount.isZero()) {
       writer.uint32(48).uint64(message.batchCount);
     }
-    for (const v of message.formatList) {
+    for (const v of message.schemas) {
       Schema.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
@@ -56,7 +56,7 @@ export const GenesisState = {
     message.idList = [];
     message.requestList = [];
     message.batchList = [];
-    message.formatList = [];
+    message.schemas = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -79,7 +79,7 @@ export const GenesisState = {
           message.batchCount = reader.uint64() as Long;
           break;
         case 7:
-          message.formatList.push(Schema.decode(reader, reader.uint32()));
+          message.schemas.push(Schema.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -98,7 +98,7 @@ export const GenesisState = {
       object.requestCount !== undefined && object.requestCount !== null ? Long.fromString(object.requestCount) : Long.UZERO;
     message.batchList = (object.batchList ?? []).map((e: any) => Batch.fromJSON(e));
     message.batchCount = object.batchCount !== undefined && object.batchCount !== null ? Long.fromString(object.batchCount) : Long.UZERO;
-    message.formatList = (object.formatList ?? []).map((e: any) => Schema.fromJSON(e));
+    message.schemas = (object.schemas ?? []).map((e: any) => Schema.fromJSON(e));
     return message;
   },
 
@@ -122,10 +122,10 @@ export const GenesisState = {
       obj.batchList = [];
     }
     message.batchCount !== undefined && (obj.batchCount = (message.batchCount || Long.UZERO).toString());
-    if (message.formatList) {
-      obj.formatList = message.formatList.map((e) => (e ? Schema.toJSON(e) : undefined));
+    if (message.schemas) {
+      obj.schemas = message.schemas.map((e) => (e ? Schema.toJSON(e) : undefined));
     } else {
-      obj.formatList = [];
+      obj.schemas = [];
     }
     return obj;
   },
@@ -139,7 +139,7 @@ export const GenesisState = {
       object.requestCount !== undefined && object.requestCount !== null ? Long.fromValue(object.requestCount) : Long.UZERO;
     message.batchList = object.batchList?.map((e) => Batch.fromPartial(e)) || [];
     message.batchCount = object.batchCount !== undefined && object.batchCount !== null ? Long.fromValue(object.batchCount) : Long.UZERO;
-    message.formatList = object.formatList?.map((e) => Schema.fromPartial(e)) || [];
+    message.schemas = object.schemas?.map((e) => Schema.fromPartial(e)) || [];
     return message;
   }
 };

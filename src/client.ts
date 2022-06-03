@@ -312,9 +312,11 @@ export class Client {
 
     const pollForTx = async (txId: string): Promise<BroadcastTxResponse> => {
       if (timedOut) {
-        throw new TimeoutError(
-          `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later.`,
-          txId
+        return Promise.reject(
+          new TimeoutError(
+            `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later.`,
+            txId
+          )
         );
       }
       await sleep(pollIntervalMs);

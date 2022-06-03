@@ -15,7 +15,7 @@ export interface Request {
   fee?: Coin;
   status: string;
   batchId: Long;
-  createdAt: Long;
+  txHashes: string[];
 }
 
 const baseRequest: object = {
@@ -26,7 +26,7 @@ const baseRequest: object = {
   destNetwork: "",
   status: "",
   batchId: Long.UZERO,
-  createdAt: Long.UZERO
+  txHashes: ""
 };
 
 export const Request = {
@@ -58,8 +58,8 @@ export const Request = {
     if (!message.batchId.isZero()) {
       writer.uint32(72).uint64(message.batchId);
     }
-    if (!message.createdAt.isZero()) {
-      writer.uint32(80).uint64(message.createdAt);
+    for (const v of message.txHashes) {
+      writer.uint32(90).string(v!);
     }
     return writer;
   },
@@ -68,6 +68,7 @@ export const Request = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseRequest} as Request;
+    message.txHashes = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -98,8 +99,8 @@ export const Request = {
         case 9:
           message.batchId = reader.uint64() as Long;
           break;
-        case 10:
-          message.createdAt = reader.uint64() as Long;
+        case 11:
+          message.txHashes.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -120,7 +121,7 @@ export const Request = {
     message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromJSON(object.fee) : undefined;
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
-    message.createdAt = object.createdAt !== undefined && object.createdAt !== null ? Long.fromString(object.createdAt) : Long.UZERO;
+    message.txHashes = (object.txHashes ?? []).map((e: any) => String(e));
     return message;
   },
 
@@ -135,7 +136,11 @@ export const Request = {
     message.fee !== undefined && (obj.fee = message.fee ? Coin.toJSON(message.fee) : undefined);
     message.status !== undefined && (obj.status = message.status);
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
-    message.createdAt !== undefined && (obj.createdAt = (message.createdAt || Long.UZERO).toString());
+    if (message.txHashes) {
+      obj.txHashes = message.txHashes.map((e) => e);
+    } else {
+      obj.txHashes = [];
+    }
     return obj;
   },
 
@@ -150,7 +155,7 @@ export const Request = {
     message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromPartial(object.fee) : undefined;
     message.status = object.status ?? "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
-    message.createdAt = object.createdAt !== undefined && object.createdAt !== null ? Long.fromValue(object.createdAt) : Long.UZERO;
+    message.txHashes = object.txHashes?.map((e) => e) || [];
     return message;
   }
 };
