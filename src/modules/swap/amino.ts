@@ -16,7 +16,7 @@ import {
   MsgReject,
   MsgRequestIn,
   MsgRequestOut,
-  MsgUpdateBatch,
+  MsgCompleteBatch,
   MsgUpdateSchema,
   MsgUpdateSwapFee,
   MsgWithdraw
@@ -296,27 +296,25 @@ export function isMsgCancelBatchesEncodeObject(encodeObject: EncodeObject): enco
   return (encodeObject as MsgCancelBatchesEncodeObject).typeUrl === "/shareledger.swap.MsgCancelBatches";
 }
 
-export interface AminoMsgUpdateBatch extends AminoMsg {
-  readonly type: "swap/UpdateBatch";
+export interface AminoMsgCompleteBatch extends AminoMsg {
+  readonly type: "swap/CompleteBatch";
   readonly value: {
     readonly creator: string;
     readonly batchId: Long;
-    readonly network: string;
-    readonly status: string;
   };
 }
 
-export function isAminoMsgUpdateBatch(msg: AminoMsg): msg is AminoMsgUpdateBatch {
-  return msg.type === "swap/MsgUpdateBatch";
+export function isAminoMsgCompleteBatch(msg: AminoMsg): msg is AminoMsgCompleteBatch {
+  return msg.type === "swap/MsgCompleteBatch";
 }
 
-export interface MsgUpdateBatchEncodeObject extends EncodeObject {
-  readonly typeUrl: "/shareledger.swap.MsgUpdateBatch";
-  readonly value: Partial<MsgUpdateBatch>;
+export interface MsgCompleteBatchEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCompleteBatch";
+  readonly value: Partial<MsgCompleteBatch>;
 }
 
-export function isMsgUpdateBatchEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateBatchEncodeObject {
-  return (encodeObject as MsgUpdateBatchEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateBatch";
+export function isMsgCompleteBatchEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCompleteBatchEncodeObject {
+  return (encodeObject as MsgCompleteBatchEncodeObject).typeUrl === "/shareledger.swap.MsgCompleteBatch";
 }
 
 export interface AminoMsgUpdateSwapFee extends AminoMsg {
@@ -549,22 +547,18 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
         };
       }
     },
-    "/shareledger.swap.MsgUpdateBatch": {
-      aminoType: "swap/UpdateBatch",
-      toAmino: ({batchId, creator, network, status}: MsgUpdateBatch): AminoMsgUpdateBatch["value"] => {
+    "/shareledger.swap.MsgCompleteBatch": {
+      aminoType: "swap/CompleteBatch",
+      toAmino: ({batchId, creator}: MsgCompleteBatch): AminoMsgCompleteBatch["value"] => {
         return {
           batchId,
-          creator,
-          network,
-          status
+          creator
         };
       },
-      fromAmino: ({batchId, creator, network, status}: AminoMsgUpdateBatch["value"]): MsgUpdateBatch => {
+      fromAmino: ({batchId, creator}: AminoMsgCompleteBatch["value"]): MsgCompleteBatch => {
         return {
           batchId,
-          creator,
-          network,
-          status
+          creator
         };
       }
     },
@@ -621,7 +615,7 @@ export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
     ["/shareledger.swap.MsgUpdateSchema", MsgUpdateSchema],
     ["/shareledger.swap.MsgDeleteSchema", MsgDeleteSchema],
     ["/shareledger.swap.MsgCancelBatches", MsgCancelBatches],
-    ["/shareledger.swap.MsgUpdateBatch", MsgUpdateBatch],
+    ["/shareledger.swap.MsgCompleteBatch", MsgCompleteBatch],
     ["/shareledger.swap.MsgUpdateSwapFee", MsgUpdateSwapFee]
   ];
 }

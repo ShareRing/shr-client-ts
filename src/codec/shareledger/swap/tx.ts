@@ -109,14 +109,12 @@ export interface MsgApproveIn {
 
 export interface MsgApproveInResponse {}
 
-export interface MsgUpdateBatch {
+export interface MsgCompleteBatch {
   creator: string;
   batchId: Long;
-  status: string;
-  network: string;
 }
 
-export interface MsgUpdateBatchResponse {}
+export interface MsgCompleteBatchResponse {}
 
 export interface MsgUpdateSwapFee {
   creator: string;
@@ -1429,29 +1427,23 @@ export const MsgApproveInResponse = {
   }
 };
 
-const baseMsgUpdateBatch: object = {creator: "", batchId: Long.UZERO, status: "", network: ""};
+const baseMsgCompleteBatch: object = {creator: "", batchId: Long.UZERO};
 
-export const MsgUpdateBatch = {
-  encode(message: MsgUpdateBatch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCompleteBatch = {
+  encode(message: MsgCompleteBatch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
     if (!message.batchId.isZero()) {
       writer.uint32(16).uint64(message.batchId);
     }
-    if (message.status !== "") {
-      writer.uint32(26).string(message.status);
-    }
-    if (message.network !== "") {
-      writer.uint32(34).string(message.network);
-    }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateBatch {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteBatch {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateBatch} as MsgUpdateBatch;
+    const message = {...baseMsgCompleteBatch} as MsgCompleteBatch;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1461,12 +1453,6 @@ export const MsgUpdateBatch = {
         case 2:
           message.batchId = reader.uint64() as Long;
           break;
-        case 3:
-          message.status = reader.string();
-          break;
-        case 4:
-          message.network = reader.string();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1475,45 +1461,39 @@ export const MsgUpdateBatch = {
     return message;
   },
 
-  fromJSON(object: any): MsgUpdateBatch {
-    const message = {...baseMsgUpdateBatch} as MsgUpdateBatch;
+  fromJSON(object: any): MsgCompleteBatch {
+    const message = {...baseMsgCompleteBatch} as MsgCompleteBatch;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
-    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     return message;
   },
 
-  toJSON(message: MsgUpdateBatch): unknown {
+  toJSON(message: MsgCompleteBatch): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
-    message.status !== undefined && (obj.status = message.status);
-    message.network !== undefined && (obj.network = message.network);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateBatch>, I>>(object: I): MsgUpdateBatch {
-    const message = {...baseMsgUpdateBatch} as MsgUpdateBatch;
+  fromPartial<I extends Exact<DeepPartial<MsgCompleteBatch>, I>>(object: I): MsgCompleteBatch {
+    const message = {...baseMsgCompleteBatch} as MsgCompleteBatch;
     message.creator = object.creator ?? "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
-    message.status = object.status ?? "";
-    message.network = object.network ?? "";
     return message;
   }
 };
 
-const baseMsgUpdateBatchResponse: object = {};
+const baseMsgCompleteBatchResponse: object = {};
 
-export const MsgUpdateBatchResponse = {
-  encode(_: MsgUpdateBatchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgCompleteBatchResponse = {
+  encode(_: MsgCompleteBatchResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateBatchResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteBatchResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateBatchResponse} as MsgUpdateBatchResponse;
+    const message = {...baseMsgCompleteBatchResponse} as MsgCompleteBatchResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1525,18 +1505,18 @@ export const MsgUpdateBatchResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgUpdateBatchResponse {
-    const message = {...baseMsgUpdateBatchResponse} as MsgUpdateBatchResponse;
+  fromJSON(_: any): MsgCompleteBatchResponse {
+    const message = {...baseMsgCompleteBatchResponse} as MsgCompleteBatchResponse;
     return message;
   },
 
-  toJSON(_: MsgUpdateBatchResponse): unknown {
+  toJSON(_: MsgCompleteBatchResponse): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgUpdateBatchResponse>, I>>(_: I): MsgUpdateBatchResponse {
-    const message = {...baseMsgUpdateBatchResponse} as MsgUpdateBatchResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgCompleteBatchResponse>, I>>(_: I): MsgCompleteBatchResponse {
+    const message = {...baseMsgCompleteBatchResponse} as MsgCompleteBatchResponse;
     return message;
   }
 };
@@ -1774,7 +1754,7 @@ export interface Msg {
   Reject(request: MsgReject): Promise<MsgRejectResponse>;
   RequestIn(request: MsgRequestIn): Promise<MsgSwapInResponse>;
   ApproveIn(request: MsgApproveIn): Promise<MsgApproveInResponse>;
-  UpdateBatch(request: MsgUpdateBatch): Promise<MsgUpdateBatchResponse>;
+  CompleteBatch(request: MsgCompleteBatch): Promise<MsgCompleteBatchResponse>;
   UpdateSwapFee(request: MsgUpdateSwapFee): Promise<MsgUpdateSwapFeeResponse>;
   /** this line is used by starport scaffolding # proto/tx/rpc */
   CancelBatches(request: MsgCancelBatches): Promise<MsgCancelBatchesResponse>;
@@ -1795,7 +1775,7 @@ export class MsgClientImpl implements Msg {
     this.Reject = this.Reject.bind(this);
     this.RequestIn = this.RequestIn.bind(this);
     this.ApproveIn = this.ApproveIn.bind(this);
-    this.UpdateBatch = this.UpdateBatch.bind(this);
+    this.CompleteBatch = this.CompleteBatch.bind(this);
     this.UpdateSwapFee = this.UpdateSwapFee.bind(this);
     this.CancelBatches = this.CancelBatches.bind(this);
   }
@@ -1865,10 +1845,10 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgApproveInResponse.decode(new _m0.Reader(data)));
   }
 
-  UpdateBatch(request: MsgUpdateBatch): Promise<MsgUpdateBatchResponse> {
-    const data = MsgUpdateBatch.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Msg", "UpdateBatch", data);
-    return promise.then((data) => MsgUpdateBatchResponse.decode(new _m0.Reader(data)));
+  CompleteBatch(request: MsgCompleteBatch): Promise<MsgCompleteBatchResponse> {
+    const data = MsgCompleteBatch.encode(request).finish();
+    const promise = this.rpc.request("shareledger.swap.Msg", "CompleteBatch", data);
+    return promise.then((data) => MsgCompleteBatchResponse.decode(new _m0.Reader(data)));
   }
 
   UpdateSwapFee(request: MsgUpdateSwapFee): Promise<MsgUpdateSwapFeeResponse> {

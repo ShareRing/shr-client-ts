@@ -17,7 +17,7 @@ import {
   MsgUpdateSchema,
   MsgWithdraw,
   MsgCancelBatches,
-  MsgUpdateBatch,
+  MsgCompleteBatch,
   MsgUpdateSwapFee
 } from "../../codec/shareledger/swap/tx";
 import {createPagination, createProtobufRpcClient} from "../../query";
@@ -34,7 +34,7 @@ import {
   MsgUpdateSchemaEncodeObject,
   MsgWithdrawEncodeObject,
   MsgCancelBatchesEncodeObject,
-  MsgUpdateBatchEncodeObject,
+  MsgCompleteBatchEncodeObject,
   MsgUpdateSwapFeeEncodeObject
 } from "./amino";
 
@@ -96,7 +96,7 @@ export type SwapTxExtension = {
     ) => MsgUpdateSchemaEncodeObject;
     readonly deleteSchema: (creator: string, network: string) => MsgDeleteSchemaEncodeObject;
     readonly cancelBatches: (creator: string, ids: Long[]) => MsgCancelBatchesEncodeObject;
-    readonly updateBatch: (batchId: Long, creator: string, network: string, status: string) => MsgUpdateBatchEncodeObject;
+    readonly completeBatch: (batchId: Long, creator: string) => MsgCompleteBatchEncodeObject;
     readonly updateSwapFee: (creator: string, network: string, fee?: {in?: DecCoin; out?: DecCoin}) => MsgUpdateSwapFeeEncodeObject;
   };
 };
@@ -117,7 +117,6 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
           return queryService.Batches({
             ids: ids || [],
             network: network || "",
-            status: status || "",
             pagination: createPagination(paginationKey)
           });
         },
@@ -309,14 +308,12 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
             })
           };
         },
-        updateBatch: (batchId: Long, creator: string, network: string, status: string): MsgUpdateBatchEncodeObject => {
+        completeBatch: (batchId: Long, creator: string): MsgCompleteBatchEncodeObject => {
           return {
-            typeUrl: "/shareledger.swap.MsgUpdateBatch",
-            value: MsgUpdateBatch.fromPartial({
+            typeUrl: "/shareledger.swap.MsgCompleteBatch",
+            value: MsgCompleteBatch.fromPartial({
               batchId,
-              creator,
-              network,
-              status
+              creator
             })
           };
         },
@@ -354,7 +351,7 @@ export function createActions(): Record<string, string> {
     "/shareledger.swap.MsgUpdateSchema": "swap_update-schema",
     "/shareledger.swap.MsgDeleteSchema": "swap_delete-schema",
     "/shareledger.swap.MsgCancelBatches": "swap_cancel-batches",
-    "/shareledger.swap.MsgUpdateBatch": "swap_update-batch",
+    "/shareledger.swap.MsgCompleteBatch": "swap_update-batch",
     "/shareledger.swap.MsgUpdateSwapFee": "swap_update-swap-fee"
   };
 }

@@ -64,7 +64,6 @@ export interface QueryAllSchemasResponse {
 }
 
 export interface QueryBatchesRequest {
-  status: string;
   network: string;
   ids: Long[];
   pagination?: PageRequest;
@@ -697,13 +696,10 @@ export const QueryAllSchemasResponse = {
   }
 };
 
-const baseQueryBatchesRequest: object = {status: "", network: "", ids: Long.UZERO};
+const baseQueryBatchesRequest: object = {network: "", ids: Long.UZERO};
 
 export const QueryBatchesRequest = {
   encode(message: QueryBatchesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.status !== "") {
-      writer.uint32(10).string(message.status);
-    }
     if (message.network !== "") {
       writer.uint32(18).string(message.network);
     }
@@ -726,9 +722,6 @@ export const QueryBatchesRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.status = reader.string();
-          break;
         case 2:
           message.network = reader.string();
           break;
@@ -755,7 +748,6 @@ export const QueryBatchesRequest = {
 
   fromJSON(object: any): QueryBatchesRequest {
     const message = {...baseQueryBatchesRequest} as QueryBatchesRequest;
-    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.ids = (object.ids ?? []).map((e: any) => Long.fromString(e));
     message.pagination =
@@ -765,7 +757,6 @@ export const QueryBatchesRequest = {
 
   toJSON(message: QueryBatchesRequest): unknown {
     const obj: any = {};
-    message.status !== undefined && (obj.status = message.status);
     message.network !== undefined && (obj.network = message.network);
     if (message.ids) {
       obj.ids = message.ids.map((e) => (e || Long.UZERO).toString());
@@ -778,7 +769,6 @@ export const QueryBatchesRequest = {
 
   fromPartial<I extends Exact<DeepPartial<QueryBatchesRequest>, I>>(object: I): QueryBatchesRequest {
     const message = {...baseQueryBatchesRequest} as QueryBatchesRequest;
-    message.status = object.status ?? "";
     message.network = object.network ?? "";
     message.ids = object.ids?.map((e) => Long.fromValue(e)) || [];
     message.pagination =
