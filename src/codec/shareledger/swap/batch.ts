@@ -7,12 +7,12 @@ export const protobufPackage = "shareledger.swap";
 export interface Batch {
   id: Long;
   signature: string;
-  txIds: Long[];
+  requestIds: Long[];
   status: string;
   network: string;
 }
 
-const baseBatch: object = {id: Long.UZERO, signature: "", txIds: Long.UZERO, status: "", network: ""};
+const baseBatch: object = {id: Long.UZERO, signature: "", requestIds: Long.UZERO, status: "", network: ""};
 
 export const Batch = {
   encode(message: Batch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -23,7 +23,7 @@ export const Batch = {
       writer.uint32(18).string(message.signature);
     }
     writer.uint32(26).fork();
-    for (const v of message.txIds) {
+    for (const v of message.requestIds) {
       writer.uint64(v);
     }
     writer.ldelim();
@@ -40,7 +40,7 @@ export const Batch = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseBatch} as Batch;
-    message.txIds = [];
+    message.requestIds = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -54,10 +54,10 @@ export const Batch = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.txIds.push(reader.uint64() as Long);
+              message.requestIds.push(reader.uint64() as Long);
             }
           } else {
-            message.txIds.push(reader.uint64() as Long);
+            message.requestIds.push(reader.uint64() as Long);
           }
           break;
         case 4:
@@ -78,7 +78,7 @@ export const Batch = {
     const message = {...baseBatch} as Batch;
     message.id = object.id !== undefined && object.id !== null ? Long.fromString(object.id) : Long.UZERO;
     message.signature = object.signature !== undefined && object.signature !== null ? String(object.signature) : "";
-    message.txIds = (object.txIds ?? []).map((e: any) => Long.fromString(e));
+    message.requestIds = (object.requestIds ?? []).map((e: any) => Long.fromString(e));
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     return message;
@@ -88,10 +88,10 @@ export const Batch = {
     const obj: any = {};
     message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
     message.signature !== undefined && (obj.signature = message.signature);
-    if (message.txIds) {
-      obj.txIds = message.txIds.map((e) => (e || Long.UZERO).toString());
+    if (message.requestIds) {
+      obj.requestIds = message.requestIds.map((e) => (e || Long.UZERO).toString());
     } else {
-      obj.txIds = [];
+      obj.requestIds = [];
     }
     message.status !== undefined && (obj.status = message.status);
     message.network !== undefined && (obj.network = message.network);
@@ -102,7 +102,7 @@ export const Batch = {
     const message = {...baseBatch} as Batch;
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.signature = object.signature ?? "";
-    message.txIds = object.txIds?.map((e) => Long.fromValue(e)) || [];
+    message.requestIds = object.requestIds?.map((e) => Long.fromValue(e)) || [];
     message.status = object.status ?? "";
     message.network = object.network ?? "";
     return message;
