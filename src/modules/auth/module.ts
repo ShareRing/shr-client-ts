@@ -1,7 +1,7 @@
 import {Client} from "../../client";
 import {QueryClientImpl} from "../../codec/cosmos/auth/v1beta1/query";
 import {Any} from "../../codec/google/protobuf/any";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
 export type AuthQueryExtension = {
   get auth(): {
@@ -20,17 +20,20 @@ export type AuthExtension = AuthQueryExtension;
 
 export function AuthQueryExtension<T extends {new (...args: any[]): Client & AuthQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get auth() {
       return {
         ...super["auth"],
-        account: async (address: string) => {
+        account: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {account} = await queryService.Account({address: address});
           return account ?? null;
         }

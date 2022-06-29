@@ -39,15 +39,27 @@ export function createPagination(paginationKey?: Uint8Array): PageRequest | unde
 
 export interface ProtobufRpcClient {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+  withHeight(height?: number): ProtobufRpcClient;
+}
+
+export class ProtobufRpcClientImpl implements ProtobufRpcClient {
+  private _height?: number = undefined;
+
+  constructor(private readonly base: QueryClient) {}
+
+  request(service: string, method: string, data: Uint8Array, height?: number): Promise<Uint8Array> {
+    const path = `/${service}/${method}`;
+    return this.base.queryUnverified(path, data, height || this._height).finally(() => this.withHeight(undefined));
+  }
+
+  withHeight(height?: number): ProtobufRpcClient {
+    this._height = height;
+    return this;
+  }
 }
 
 export function createProtobufRpcClient(base: QueryClient): ProtobufRpcClient {
-  return {
-    request: (service: string, method: string, data: Uint8Array): Promise<Uint8Array> => {
-      const path = `/${service}/${method}`;
-      return base.queryUnverified(path, data);
-    }
-  };
+  return new ProtobufRpcClientImpl(base);
 }
 
 /**

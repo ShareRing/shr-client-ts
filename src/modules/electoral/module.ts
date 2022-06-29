@@ -13,7 +13,7 @@ import {
   MsgRevokeLoaders,
   MsgRevokeVoter
 } from "../../codec/shareledger/electoral/tx";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {
   MsgEnrollAccountOperatorsEncodeObject,
   MsgEnrollDocIssuersEncodeObject,
@@ -71,53 +71,65 @@ export type ElectoralExtension = ElectoralQueryExtension & ElectoralTxExtension;
 
 export function ElectoralQueryExtension<T extends {new (...args: any[]): Client & ElectoralQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get electoral() {
       return {
         ...super["electoral"],
-        accountOperator: async (address: string) => {
+        accountOperator: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.AccountOperator({address});
           return accState;
         },
-        accountOperators: async () => {
+        accountOperators: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {accStates} = await queryService.AccountOperators({});
           return accStates;
         },
-        docIssuer: async (address: string) => {
+        docIssuer: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.DocumentIssuer({address});
           return accState;
         },
-        docIssuers: async () => {
+        docIssuers: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {accStates} = await queryService.DocumentIssuers({});
           return accStates;
         },
-        loader: async (address: string) => {
+        loader: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.Loader({address});
           return accState;
         },
-        loaders: async () => {
+        loaders: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {loaders} = await queryService.Loaders({});
           return loaders;
         },
-        voter: async (address: string) => {
+        voter: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {voter} = await queryService.Voter({address});
           return voter;
         },
-        voters: async () => {
+        voters: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {voters} = await queryService.Voters({});
           return voters;
         },
-        idSigner: async (address: string) => {
+        idSigner: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.IdSigner({address});
           return accState;
         },
-        idSigners: async () => {
+        idSigners: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {accStates} = await queryService.IdSigners({});
           return accStates;
         }

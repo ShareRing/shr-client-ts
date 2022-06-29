@@ -4,14 +4,14 @@ import {Client} from "../../client";
 import {QueryClientImpl, QuerySigningInfosResponse} from "../../codec/cosmos/slashing/v1beta1/query";
 import {Params, ValidatorSigningInfo} from "../../codec/cosmos/slashing/v1beta1/slashing";
 import {MsgUnjail} from "../../codec/cosmos/slashing/v1beta1/tx";
-import {createPagination, createProtobufRpcClient} from "../../query";
+import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgUnjailEncodeObject} from "./amino";
 
 export type SlashingQueryExtension = {
   get slashing(): {
-    readonly signingInfo: (consAddress: string) => Promise<ValidatorSigningInfo | undefined>;
-    readonly signingInfos: (paginationKey?: Uint8Array) => Promise<QuerySigningInfosResponse>;
-    readonly params: () => Promise<Params | undefined>;
+    readonly signingInfo: (consAddress: string, height?: number) => Promise<ValidatorSigningInfo | undefined>;
+    readonly signingInfos: (paginationKey?: Uint8Array, height?: number) => Promise<QuerySigningInfosResponse>;
+    readonly params: (height?: number) => Promise<Params | undefined>;
   };
 };
 
@@ -25,29 +25,34 @@ export type SlashingExtension = SlashingQueryExtension & SlashingTxExtension;
 
 export function SlashingQueryExtension<T extends {new (...args: any[]): Client & SlashingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get slashing() {
       return {
         ...super["slashing"],
-        signingInfo: async (consAddress: string) => {
+        signingInfo: async (consAddress: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {valSigningInfo} = await queryService.SigningInfo({
             consAddress
           });
           return valSigningInfo;
         },
-        signingInfos: async (paginationKey?: Uint8Array) => {
+        signingInfos: async (paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.SigningInfos({
             pagination: createPagination(paginationKey)
           });
           return response;
         },
-        params: async () => {
+        params: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {params} = await queryService.Params({});
           return params;
         }

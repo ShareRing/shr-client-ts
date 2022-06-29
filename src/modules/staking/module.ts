@@ -27,40 +27,59 @@ import {
   Validator
 } from "../../codec/cosmos/staking/v1beta1/staking";
 import {MsgBeginRedelegate, MsgDelegate, MsgUndelegate} from "../../codec/cosmos/staking/v1beta1/tx";
-import {createPagination, createProtobufRpcClient} from "../../query";
+import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgBeginRedelegateEncodeObject, MsgDelegateEncodeObject, MsgUndelegateEncodeObject} from "./amino";
 
 export type BondStatusString = Exclude<keyof typeof BondStatus, "BOND_STATUS_UNSPECIFIED">;
 
 export type StakingQueryExtension = {
   get staking(): {
-    readonly delegation: (delegatorAddress: string, validatorAddress: string) => Promise<DelegationResponse | undefined>;
-    readonly delegatorDelegations: (delegatorAddress: string, paginationKey?: Uint8Array) => Promise<QueryDelegatorDelegationsResponse>;
+    readonly delegation: (delegatorAddress: string, validatorAddress: string, height?: number) => Promise<DelegationResponse | undefined>;
+    readonly delegatorDelegations: (
+      delegatorAddress: string,
+      paginationKey?: Uint8Array,
+      height?: number
+    ) => Promise<QueryDelegatorDelegationsResponse>;
     readonly delegatorUnbondingDelegations: (
       delegatorAddress: string,
-      paginationKey?: Uint8Array
+      paginationKey?: Uint8Array,
+      height?: number
     ) => Promise<QueryDelegatorUnbondingDelegationsResponse>;
-    readonly delegatorValidator: (delegatorAddress: string, validatorAddress: string) => Promise<Validator | undefined>;
-    readonly delegatorValidators: (delegatorAddress: string, paginationKey?: Uint8Array) => Promise<QueryDelegatorValidatorsResponse>;
+    readonly delegatorValidator: (delegatorAddress: string, validatorAddress: string, height?: number) => Promise<Validator | undefined>;
+    readonly delegatorValidators: (
+      delegatorAddress: string,
+      paginationKey?: Uint8Array,
+      height?: number
+    ) => Promise<QueryDelegatorValidatorsResponse>;
     readonly historicalInfo: (height: number) => Promise<HistoricalInfo | undefined>;
-    readonly pool: () => Promise<Pool | undefined>;
+    readonly pool: (height?: number) => Promise<Pool | undefined>;
     readonly redelegations: (
       delegatorAddress: string,
       sourceValidatorAddress: string,
       destinationValidatorAddress: string,
-      paginationKey?: Uint8Array
+      paginationKey?: Uint8Array,
+      height?: number
     ) => Promise<QueryRedelegationsResponse>;
-    readonly unbondingDelegation: (delegatorAddress: string, validatorAddress: string) => Promise<UnbondingDelegation | undefined>;
-    readonly validator: (validatorAddress: string) => Promise<Validator | undefined>;
-    readonly validatorDelegations: (validatorAddress: string, paginationKey?: Uint8Array) => Promise<QueryValidatorDelegationsResponse>;
-    readonly validators: (status: BondStatusString, paginationKey?: Uint8Array) => Promise<QueryValidatorsResponse>;
+    readonly unbondingDelegation: (
+      delegatorAddress: string,
+      validatorAddress: string,
+      height?: number
+    ) => Promise<UnbondingDelegation | undefined>;
+    readonly validator: (validatorAddress: string, height?: number) => Promise<Validator | undefined>;
+    readonly validatorDelegations: (
+      validatorAddress: string,
+      paginationKey?: Uint8Array,
+      height?: number
+    ) => Promise<QueryValidatorDelegationsResponse>;
+    readonly validators: (status: BondStatusString, paginationKey?: Uint8Array, height?: number) => Promise<QueryValidatorsResponse>;
     readonly validatorUnbondingDelegations: (
       validatorAddress: string,
-      paginationKey?: Uint8Array
+      paginationKey?: Uint8Array,
+      height?: number
     ) => Promise<QueryValidatorUnbondingDelegationsResponse>;
     readonly validatorSetByHeight: (height: Long, paginationKey?: Uint8Array) => Promise<GetValidatorSetByHeightResponse>;
     readonly latestValidatorSet: (paginationKey?: Uint8Array) => Promise<GetLatestValidatorSetResponse>;
-    readonly params: () => Promise<Params | undefined>;
+    readonly params: (height?: number) => Promise<Params | undefined>;
   };
 };
 
@@ -82,47 +101,53 @@ export type StakingExtension = StakingQueryExtension & StakingTxExtension;
 export function StakingQueryExtension<T extends {new (...args: any[]): Client & StakingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   let tendermintQueryService: ServiceClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      const rpc = createProtobufRpcClient(this.forceGetQueryClient());
-      queryService = new QueryClientImpl(rpc);
-      tendermintQueryService = new ServiceClientImpl(rpc);
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
+      tendermintQueryService = new ServiceClientImpl(rpcClient);
     }
     get staking() {
       return {
         ...super["staking"],
-        delegation: async (delegatorAddress: string, validatorAddress: string) => {
+        delegation: async (delegatorAddress: string, validatorAddress: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {delegationResponse} = await queryService.Delegation({
             delegatorAddr: delegatorAddress,
             validatorAddr: validatorAddress
           });
           return delegationResponse;
         },
-        delegatorDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
+        delegatorDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.DelegatorDelegations({
             delegatorAddr: delegatorAddress,
             pagination: createPagination(paginationKey)
           });
           return response;
         },
-        delegatorUnbondingDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
+        delegatorUnbondingDelegations: async (delegatorAddress: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.DelegatorUnbondingDelegations({
             delegatorAddr: delegatorAddress,
             pagination: createPagination(paginationKey)
           });
           return response;
         },
-        delegatorValidator: async (delegatorAddress: string, validatorAddress: string) => {
+        delegatorValidator: async (delegatorAddress: string, validatorAddress: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {validator} = await queryService.DelegatorValidator({
             delegatorAddr: delegatorAddress,
             validatorAddr: validatorAddress
           });
           return validator;
         },
-        delegatorValidators: async (delegatorAddress: string, paginationKey?: Uint8Array) => {
+        delegatorValidators: async (delegatorAddress: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.DelegatorValidators({
             delegatorAddr: delegatorAddress,
             pagination: createPagination(paginationKey)
@@ -135,7 +160,8 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
           });
           return hist;
         },
-        pool: async () => {
+        pool: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {pool} = await queryService.Pool({});
           return pool;
         },
@@ -143,8 +169,10 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
           delegatorAddress: string,
           sourceValidatorAddress: string,
           destinationValidatorAddress: string,
-          paginationKey?: Uint8Array
+          paginationKey?: Uint8Array,
+          height?: number
         ) => {
+          rpcClient.withHeight(height);
           const response = await queryService.Redelegations({
             delegatorAddr: delegatorAddress,
             srcValidatorAddr: sourceValidatorAddress,
@@ -153,32 +181,37 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
           });
           return response;
         },
-        unbondingDelegation: async (delegatorAddress: string, validatorAddress: string) => {
+        unbondingDelegation: async (delegatorAddress: string, validatorAddress: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {unbond} = await queryService.UnbondingDelegation({
             delegatorAddr: delegatorAddress,
             validatorAddr: validatorAddress
           });
           return unbond;
         },
-        validator: async (validatorAddress: string) => {
+        validator: async (validatorAddress: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {validator} = await queryService.Validator({validatorAddr: validatorAddress});
           return validator;
         },
-        validatorDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
+        validatorDelegations: async (validatorAddress: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.ValidatorDelegations({
             validatorAddr: validatorAddress,
             pagination: createPagination(paginationKey)
           });
           return response;
         },
-        validators: async (status: BondStatusString, paginationKey?: Uint8Array) => {
+        validators: async (status: BondStatusString, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.Validators({
             status: status,
             pagination: createPagination(paginationKey)
           });
           return response;
         },
-        validatorUnbondingDelegations: async (validatorAddress: string, paginationKey?: Uint8Array) => {
+        validatorUnbondingDelegations: async (validatorAddress: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.ValidatorUnbondingDelegations({
             validatorAddr: validatorAddress,
             pagination: createPagination(paginationKey)
@@ -198,7 +231,8 @@ export function StakingQueryExtension<T extends {new (...args: any[]): Client & 
           });
           return response;
         },
-        params: async () => {
+        params: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {params} = await queryService.Params({});
           return params;
         }

@@ -6,15 +6,15 @@ import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
 import {QueryClientImpl} from "../../codec/cosmos/bank/v1beta1/query";
 import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgMultiSendEncodeObject, MsgSendEncodeObject} from "./amino";
 
 export type BankQueryExtension = {
   get bank(): {
-    readonly balance: (address: string, denom: string) => Promise<Coin>;
-    readonly allBalances: (address: string) => Promise<Coin[]>;
-    readonly totalSupply: () => Promise<Coin[]>;
-    readonly supplyOf: (denom: string) => Promise<Coin>;
+    readonly balance: (address: string, denom: string, height?: number) => Promise<Coin>;
+    readonly allBalances: (address: string, height?: number) => Promise<Coin[]>;
+    readonly totalSupply: (height?: number) => Promise<Coin[]>;
+    readonly supplyOf: (denom: string, height?: number) => Promise<Coin>;
   };
 };
 
@@ -29,30 +29,36 @@ export type BankExtension = BankQueryExtension & BankTxExtension;
 
 export function BankQueryExtension<T extends {new (...args: any[]): Client & BankQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get bank() {
       return {
         ...super["bank"],
-        balance: async (address: string, denom: string) => {
+        balance: async (address: string, denom: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {balance} = await queryService.Balance({address: address, denom: denom});
           assert(balance);
           return balance;
         },
-        allBalances: async (address: string) => {
+        allBalances: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {balances} = await queryService.AllBalances({address: address});
           return balances;
         },
-        totalSupply: async () => {
+        totalSupply: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {supply} = await queryService.TotalSupply({});
           return supply;
         },
-        supplyOf: async (denom: string) => {
+        supplyOf: async (denom: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {amount} = await queryService.SupplyOf({denom: denom});
           assert(amount);
           return amount;
