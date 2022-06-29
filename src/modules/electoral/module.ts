@@ -41,22 +41,22 @@ import {
 
 export type ElectoralQueryExtension = {
   get electoral(): {
-    readonly accountOperator: (address: string) => Promise<AccState | undefined>;
-    readonly accountOperators: () => Promise<AccState[]>;
-    readonly docIssuer: (address: string) => Promise<AccState | undefined>;
-    readonly docIssuers: () => Promise<AccState[]>;
-    readonly loader: (address: string) => Promise<AccState | undefined>;
-    readonly loaders: () => Promise<AccState[]>;
-    readonly voter: (address: string) => Promise<AccState | undefined>;
-    readonly voters: () => Promise<AccState[]>;
-    readonly idSigner: (address: string) => Promise<AccState | undefined>;
-    readonly idSigners: () => Promise<AccState[]>;
-    readonly approver: (address: string) => Promise<AccState | undefined>;
-    readonly approvers: () => Promise<AccState[]>;
-    readonly relayer: (address: string) => Promise<AccState | undefined>;
-    readonly relayers: () => Promise<AccState[]>;
-    readonly swapManager: (address: string) => Promise<AccState | undefined>;
-    readonly swapManagers: () => Promise<AccState[]>;
+    readonly accountOperator: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly accountOperators: (height?: number) => Promise<AccState[]>;
+    readonly docIssuer: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly docIssuers: (height?: number) => Promise<AccState[]>;
+    readonly loader: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly loaders: (height?: number) => Promise<AccState[]>;
+    readonly voter: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly voters: (height?: number) => Promise<AccState[]>;
+    readonly idSigner: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly idSigners: (height?: number) => Promise<AccState[]>;
+    readonly approver: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly approvers: (height?: number) => Promise<AccState[]>;
+    readonly relayer: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly relayers: (height?: number) => Promise<AccState[]>;
+    readonly swapManager: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly swapManagers: (height?: number) => Promise<AccState[]>;
   };
 };
 
@@ -147,19 +147,23 @@ export function ElectoralQueryExtension<T extends {new (...args: any[]): Client 
           const {accStates} = await queryService.IdSigners({});
           return accStates;
         },
-        approver: async (address: string) => {
+        approver: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.Approver({address});
           return accState;
         },
-        approvers: async () => {
+        approvers: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {approvers} = await queryService.Approvers({});
           return approvers;
         },
-        relayer: async (address: string) => {
+        relayer: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.Relayer({address});
           return accState;
         },
-        relayers: async () => {
+        relayers: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {relayers} = await queryService.Relayers({});
           return relayers;
         }

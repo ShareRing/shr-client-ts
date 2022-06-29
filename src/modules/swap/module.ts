@@ -20,7 +20,7 @@ import {
   MsgCompleteBatch,
   MsgUpdateSwapFee
 } from "../../codec/shareledger/swap/tx";
-import {createPagination, createProtobufRpcClient} from "../../query";
+import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {
   MsgApproveInEncodeObject,
   MsgApproveOutEncodeObject,
@@ -40,9 +40,9 @@ import {
 
 export type SwapQueryExtension = {
   get swap(): {
-    readonly params: () => Promise<Params | undefined>;
-    readonly batches: (ids?: Long[], network?: string, status?: string, paginationKey?: Uint8Array) => Promise<QueryBatchesResponse>;
-    readonly tokensAvailable: () => Promise<DecCoin | undefined>;
+    readonly params: (height?: number) => Promise<Params | undefined>;
+    readonly batches: (ids?: Long[], network?: string, paginationKey?: Uint8Array, height?: number) => Promise<QueryBatchesResponse>;
+    readonly tokensAvailable: (height?: number) => Promise<DecCoin | undefined>;
     readonly requests: (
       ids?: Long[],
       destAddr?: string,
@@ -50,10 +50,11 @@ export type SwapQueryExtension = {
       srcAddr?: string,
       srcNetwork?: string,
       status?: string,
-      paginationKey?: Uint8Array
+      paginationKey?: Uint8Array,
+      height?: number
     ) => Promise<QuerySwapResponse>;
-    readonly schema: (network: string) => Promise<Schema | undefined>;
-    readonly schemas: () => Promise<QueryAllSchemasResponse>;
+    readonly schema: (network: string, height?: number) => Promise<Schema | undefined>;
+    readonly schemas: (paginationKey?: Uint8Array, height?: number) => Promise<QueryAllSchemasResponse>;
   };
 };
 
@@ -105,22 +106,26 @@ export type SwapExtension = SwapQueryExtension & SwapTxExtension;
 
 export function SwapQueryExtension<T extends {new (...args: any[]): Client & SwapQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get swap() {
       return {
         ...super["swap"],
-        batches: async (ids?: Long[], network?: string, status?: string, paginationKey?: Uint8Array) => {
+        batches: async (ids?: Long[], network?: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           return queryService.Batches({
             ids: ids || [],
             network: network || "",
             pagination: createPagination(paginationKey)
           });
         },
-        tokensAvailable: async () => {
+        tokensAvailable: async (height?: number) => {
+          rpcClient.withHeight(height);
           return queryService.Balance({}).then((res) => res.balance);
         },
         requests: async (
@@ -130,8 +135,10 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
           srcAddr?: string,
           srcNetwork?: string,
           status?: string,
-          paginationKey?: Uint8Array
+          paginationKey?: Uint8Array,
+          height?: number
         ) => {
+          rpcClient.withHeight(height);
           return queryService.Swap({
             ids: ids || [],
             destAddr: destAddr || "",
@@ -142,10 +149,12 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
             pagination: createPagination(paginationKey)
           });
         },
-        schema: async (network: string) => {
+        schema: async (network: string, height?: number) => {
+          rpcClient.withHeight(height);
           return queryService.Schema({network}).then((res) => res.schema);
         },
-        schemas: async (paginationKey?: Uint8Array) => {
+        schemas: async (paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
           return queryService.AllSchemas({pagination: createPagination(paginationKey)});
         }
       };
