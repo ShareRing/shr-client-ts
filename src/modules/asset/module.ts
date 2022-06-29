@@ -3,12 +3,12 @@ import {Client} from "../../client";
 import {Asset} from "../../codec/shareledger/asset/asset";
 import {QueryClientImpl} from "../../codec/shareledger/asset/query";
 import {MsgCreateAsset, MsgDeleteAsset, MsgUpdateAsset} from "../../codec/shareledger/asset/tx";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgCreateAssetEncodeObject, MsgDeleteAssetEncodeObject, MsgUpdateAssetEncodeObject} from "./amino";
 
 export type AssetQueryExtension = {
   get asset(): {
-    readonly asset: (id: string) => Promise<Asset | undefined>;
+    readonly asset: (id: string, height?: number) => Promise<Asset | undefined>;
   };
 };
 
@@ -24,17 +24,20 @@ export type AssetExtension = AssetQueryExtension & AssetTxExtension;
 
 export function AssetQueryExtension<T extends {new (...args: any[]): Client & AssetQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get asset() {
       return {
         ...super["asset"],
-        asset: async (uuid: string) => {
+        asset: async (uuid: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {asset} = await queryService.AssetByUUID({uuid});
           return asset;
         }

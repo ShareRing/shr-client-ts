@@ -103,11 +103,12 @@ export class QueryClient {
     };
   }
 
-  public async queryUnverified(path: string, request: Uint8Array): Promise<Uint8Array> {
+  public async queryUnverified(path: string, request: Uint8Array, desiredHeight?: number): Promise<Uint8Array> {
     const response = await this.tmClient.abciQuery({
       path: path,
       data: request,
-      prove: false
+      prove: false,
+      height: desiredHeight
     });
 
     if (response.code) {

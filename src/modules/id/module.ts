@@ -2,13 +2,13 @@ import {Client} from "../../client";
 import {Id} from "../../codec/shareledger/id/id";
 import {QueryClientImpl} from "../../codec/shareledger/id/query";
 import {MsgCreateId, MsgCreateIds, MsgReplaceIdOwner, MsgUpdateId} from "../../codec/shareledger/id/tx";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgCreateIdEncodeObject, MsgCreateIdsEncodeObject, MsgReplaceIdOwnerEncodeObject, MsgUpdateIdEncodeObject} from "./amino";
 
 export type IdQueryExtension = {
   get id(): {
-    readonly id: (id: string) => Promise<Id | undefined>;
-    readonly idByAddress: (address: string) => Promise<Id | undefined>;
+    readonly id: (id: string, height?: number) => Promise<Id | undefined>;
+    readonly idByAddress: (address: string, height?: number) => Promise<Id | undefined>;
   };
 };
 
@@ -31,21 +31,25 @@ export type IdExtension = IdQueryExtension & IdTxExtension;
 
 export function IdQueryExtension<T extends {new (...args: any[]): Client & IdQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get id() {
       return {
         ...super["id"],
-        id: async (id: string) => {
+        id: async (id: string, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.IdById({id});
           return response.id;
         },
-        idByAddress: async (address: string) => {
+        idByAddress: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const response = await queryService.IdByAddress({address});
           return response.id;
         }

@@ -7,7 +7,7 @@ import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {MsgBurn, MsgBuyShr, MsgLoad, MsgSend, MsgSetExchange, MsgLoadFee} from "../../codec/shareledger/gentlemint/tx";
 import {fromCent, fromNshr, toCent, toNshr} from "../../denoms";
 import {GasPrice} from "../../fee";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {
   MsgBurnEncodeObject,
   MsgBuyShrEncodeObject,
@@ -26,12 +26,12 @@ export type FeeEstimation = {
 
 export type GentlemintQueryExtension = {
   get gentlemint(): {
-    readonly exchangeRate: () => Promise<Decimal>;
-    readonly estimateFee: (address: string, actions: string | string[]) => Promise<FeeEstimation>;
-    readonly feeByLevel: (level: string) => Promise<Coin>;
-    readonly feeByAction: (action: string) => Promise<Coin>;
-    readonly feeLevels: () => Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
-    readonly balances: (address: string) => Promise<DecCoin[]>;
+    readonly exchangeRate: (height?: number) => Promise<Decimal>;
+    readonly estimateFee: (address: string, actions: string | string[], height?: number) => Promise<FeeEstimation>;
+    readonly feeByLevel: (level: string, height?: number) => Promise<Coin>;
+    readonly feeByAction: (action: string, height?: number) => Promise<Coin>;
+    readonly feeLevels: (height?: number) => Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
+    readonly balances: (address: string, height?: number) => Promise<DecCoin[]>;
   };
 };
 
@@ -80,28 +80,33 @@ function normalizeToCent(amount: string | number, denom = "cent", exchangeRate: 
 
 export function GentlemintQueryExtension<T extends {new (...args: any[]): Client & GentlemintQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get gentlemint() {
       return {
         ...super["gentlemint"],
-        exchangeRate: async () => {
+        exchangeRate: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {rate} = await queryService.ExchangeRate({});
           return Decimal.fromUserInput(rate, 18);
         },
-        feeByAction: async (action: string) => {
+        feeByAction: async (action: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {fee} = await queryService.ActionLevelFee({action});
           let {amount, denom} = GasPrice.fromString(fee); // eslint-disable-line prefer-const
           const amt = amount.toString();
           const exchangeRate = await this.gentlemint.exchangeRate();
           return normalizeToNshr(amt, denom, exchangeRate);
         },
-        feeByLevel: async (level: string) => {
+        feeByLevel: async (level: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {levelFee} = await queryService.LevelFee({level});
           if (!levelFee || !levelFee.originalFee) {
             return toNshr(1);
@@ -110,7 +115,8 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
           const exchangeRate = await this.gentlemint.exchangeRate();
           return normalizeToNshr(amount, denom, exchangeRate);
         },
-        feeLevels: async () => {
+        feeLevels: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {levelFees} = await queryService.LevelFees({});
           const exchangeRate = await this.gentlemint.exchangeRate();
           return levelFees.reduce((prev, curr) => {
@@ -135,9 +141,10 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             return prev;
           }, {} as Record<"zero" | "low" | "medium" | "high" | string, Coin>);
         },
-        estimateFee: async (address: string, actions: string | string[]): Promise<FeeEstimation> => {
+        estimateFee: async (address: string, actions: string | string[], height?: number): Promise<FeeEstimation> => {
           actions = typeof actions === "string" ? [actions] : actions;
           try {
+            rpcClient.withHeight(height);
             const {convertedFee, sufficientFee, sufficientFundForFee, costLoadingFee} = await queryService.CheckFees({address, actions});
             // let feeByNshr = convertedFee;
             // if (!feeByNshr) {
@@ -160,7 +167,8 @@ export function GentlemintQueryExtension<T extends {new (...args: any[]): Client
             };
           }
         },
-        balances: async (address: string) => {
+        balances: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {coins} = await queryService.Balances({address: address});
           return coins;
         }
