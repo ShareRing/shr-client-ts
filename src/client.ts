@@ -5,7 +5,7 @@ import {toHex} from "@cosmjs/encoding";
 import {Uint53} from "@cosmjs/math";
 import {Tendermint34Client, toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
 import {sleep} from "@cosmjs/utils";
-import {Account, accountFromAny} from "./account";
+import {Account, accountFromAny, AccountParser} from "./account";
 import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
 import {AuthExtension} from "./modules/auth/module";
 import {TxExtension} from "./modules/tx/module";
@@ -130,6 +130,10 @@ export function assertIsBroadcastTxSuccess(result: BroadcastTxResponse): asserts
   }
 }
 
+export interface ClientOptions {
+  readonly accountParser?: AccountParser;
+}
+
 // export interface Client extends AuthExtension, BankExtension, DistributionExtension, GovExtension, SlashingExtension, StakingExtension {}
 export interface Client extends AuthExtension, TxExtension {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
@@ -142,14 +146,17 @@ export interface Client extends AuthExtension, TxExtension {} // eslint-disable-
 // @StakingExtension
 export class Client {
   private readonly tmClient: Tendermint34Client | undefined;
-  protected readonly queryClient: QueryClient | undefined;
+  private readonly queryClient: QueryClient | undefined;
   private chainId: string | undefined;
+  private readonly accountParser: AccountParser;
 
-  public constructor(tmClient: Tendermint34Client | undefined) {
+  public constructor(tmClient: Tendermint34Client | undefined, options: ClientOptions) {
     if (tmClient) {
       this.tmClient = tmClient;
       this.queryClient = new QueryClient(tmClient);
     }
+    const {accountParser = accountFromAny} = options;
+    this.accountParser = accountParser;
   }
 
   protected getTmClient(): Tendermint34Client | undefined {
@@ -210,7 +217,7 @@ export class Client {
   public async getAccount(searchAddress: string): Promise<Account | null> {
     try {
       const account = await this.auth.account(searchAddress);
-      return account ? accountFromAny(account) : null;
+      return account ? this.accountParser(account) : null;
     } catch (error) {
       if (/rpc error: code = NotFound/i.test(error)) {
         return null;
@@ -305,9 +312,11 @@ export class Client {
 
     const pollForTx = async (txId: string): Promise<BroadcastTxResponse> => {
       if (timedOut) {
-        throw new TimeoutError(
-          `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later.`,
-          txId
+        return Promise.reject(
+          new TimeoutError(
+            `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later.`,
+            txId
+          )
         );
       }
       await sleep(pollIntervalMs);
@@ -326,8 +335,10 @@ export class Client {
 
     const broadcasted = await this.forceGetTmClient().broadcastTxSync({tx});
     if (broadcasted.code) {
-      throw new Error(
-        `Broadcasting transaction failed with code ${broadcasted.code} (codespace: ${broadcasted.codeSpace}). Log: ${broadcasted.log}`
+      return Promise.reject(
+        new Error(
+          `Broadcasting transaction failed with code ${broadcasted.code} (codespace: ${broadcasted.codeSpace}). Log: ${broadcasted.log}`
+        )
       );
     }
     const transactionId = toHex(broadcasted.hash).toUpperCase();
@@ -358,5 +369,17 @@ export class Client {
         gasWanted: tx.result.gasWanted
       };
     });
+  }
+
+  public subscribeNewBlock() {
+    return this.forceGetTmClient().subscribeNewBlock();
+  }
+
+  public subscribeNewBlockHeader() {
+    return this.forceGetTmClient().subscribeNewBlockHeader();
+  }
+
+  public subscribeTx(query?: string) {
+    return this.forceGetTmClient().subscribeTx(query);
   }
 }

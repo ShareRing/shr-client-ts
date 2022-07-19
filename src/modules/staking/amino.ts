@@ -44,7 +44,7 @@ export function isAminoMsgCreateValidator(msg: AminoMsg): msg is AminoMsgCreateV
 
 export interface MsgCreateValidatorEncodeObject extends EncodeObject {
   readonly typeUrl: "/cosmos.staking.v1beta1.MsgCreateValidator";
-  readonly value: Partial<MsgUndelegate>;
+  readonly value: Partial<MsgCreateValidator>;
 }
 
 export function isMsgCreateValidatorEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateValidatorEncodeObject {

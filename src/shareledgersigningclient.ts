@@ -14,18 +14,19 @@ import {GovExtension} from "./modules/gov";
 import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
+import {createActions as FF, createRegistryTypes as F, SwapExtension} from "./modules/swap";
 import {TxExtension} from "./modules/tx";
 import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
 import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[A, B, C, D, E, F].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
 export const actions: Record<string, string> = {
   ...defaultActions,
-  ...[AA, BB, CC, DD, EE].reduce((prev, curr) => ({...prev, ...curr()}), {})
+  ...[AA, BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {})
 };
 
 function createRegistry(): Registry {
@@ -48,7 +49,8 @@ export interface ShareledgerSigningClient
     DocumentExtension,
     ElectoralExtension,
     GentlemintExtension,
-    IdExtension {}
+    IdExtension,
+    SwapExtension {}
 
 @AuthExtension
 @BankExtension
@@ -62,14 +64,15 @@ export interface ShareledgerSigningClient
 @ElectoralExtension
 @GentlemintExtension
 @IdExtension
+@SwapExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
   }
 
-  public static async connect(endpoint: string): Promise<ShareledgerSigningClient> {
+  public static async connect(endpoint: string, options?: SigningOptions): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    return new ShareledgerSigningClient(tmClient);
+    return new ShareledgerSigningClient(tmClient, undefined, options);
   }
 
   /**

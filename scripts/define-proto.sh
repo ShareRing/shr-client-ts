@@ -104,7 +104,6 @@ protoc \
   "$COSMOS_PROTO_DIR/ibc/core/connection/v1/genesis.proto" \
   "$COSMOS_PROTO_DIR/ibc/core/connection/v1/query.proto" \
   "$COSMOS_PROTO_DIR/ibc/core/connection/v1/tx.proto" \
-  "$COSMOS_PROTO_DIR/ibc/core/port/v1/query.proto" \
   "$COSMOS_PROTO_DIR/ibc/core/types/v1/genesis.proto" \
   "$COSMOS_PROTO_DIR/ibc/lightclients/localhost/v1/localhost.proto" \
   "$COSMOS_PROTO_DIR/ibc/lightclients/solomachine/v1/solomachine.proto" \
@@ -129,6 +128,7 @@ sed -i "" 's/import "document\//import "shareledger\/document\//' $SHARELEDGER_P
 sed -i "" 's/import "electoral\//import "shareledger\/electoral\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
 sed -i "" 's/import "gentlemint\//import "shareledger\/gentlemint\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
 sed -i "" 's/import "id\//import "shareledger\/id\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
+sed -i "" 's/import "swap\//import "shareledger\/swap\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
 
 protoc \
   --plugin="$(yarn bin protoc-gen-ts_proto)" \
@@ -168,6 +168,15 @@ protoc \
   "$SHARELEDGER_PROTO_DIR/shareledger/id/id.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/id/query.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/id/tx.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/batch.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/genesis.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/id.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/params.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/query.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/request.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/schema.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/tx.proto"
+
 
 # Remove unnecessary codec files
 rm -rf \
