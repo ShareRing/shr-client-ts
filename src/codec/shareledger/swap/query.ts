@@ -3,7 +3,7 @@ import Long from "long";
 import _m0 from "protobufjs/minimal";
 import {Params} from "../../shareledger/swap/params";
 import {PageRequest, PageResponse} from "../../cosmos/base/query/v1beta1/pagination";
-import {DecCoin} from "../../cosmos/base/v1beta1/coin";
+import {Coin} from "../../cosmos/base/v1beta1/coin";
 import {Schema} from "../../shareledger/swap/schema";
 import {RequestedIn} from "../../shareledger/swap/requested_in";
 import {Request} from "../../shareledger/swap/request";
@@ -43,7 +43,7 @@ export interface QueryBatchesResponse {
 export interface QueryBalanceRequest {}
 
 export interface QueryBalanceResponse {
-  balance?: DecCoin;
+  balance?: Coin;
 }
 
 export interface QueryGetSchemaRequest {
@@ -448,7 +448,7 @@ const baseQueryBalanceResponse: object = {};
 export const QueryBalanceResponse = {
   encode(message: QueryBalanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.balance !== undefined) {
-      DecCoin.encode(message.balance, writer.uint32(10).fork()).ldelim();
+      Coin.encode(message.balance, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -461,7 +461,7 @@ export const QueryBalanceResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.balance = DecCoin.decode(reader, reader.uint32());
+          message.balance = Coin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -473,19 +473,19 @@ export const QueryBalanceResponse = {
 
   fromJSON(object: any): QueryBalanceResponse {
     const message = {...baseQueryBalanceResponse} as QueryBalanceResponse;
-    message.balance = object.balance !== undefined && object.balance !== null ? DecCoin.fromJSON(object.balance) : undefined;
+    message.balance = object.balance !== undefined && object.balance !== null ? Coin.fromJSON(object.balance) : undefined;
     return message;
   },
 
   toJSON(message: QueryBalanceResponse): unknown {
     const obj: any = {};
-    message.balance !== undefined && (obj.balance = message.balance ? DecCoin.toJSON(message.balance) : undefined);
+    message.balance !== undefined && (obj.balance = message.balance ? Coin.toJSON(message.balance) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBalanceResponse>, I>>(object: I): QueryBalanceResponse {
     const message = {...baseQueryBalanceResponse} as QueryBalanceResponse;
-    message.balance = object.balance !== undefined && object.balance !== null ? DecCoin.fromPartial(object.balance) : undefined;
+    message.balance = object.balance !== undefined && object.balance !== null ? Coin.fromPartial(object.balance) : undefined;
     return message;
   }
 };
