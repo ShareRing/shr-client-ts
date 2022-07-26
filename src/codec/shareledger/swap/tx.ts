@@ -7,6 +7,7 @@ export const protobufPackage = "shareledger.swap";
 
 export interface MsgRequestOut {
   creator: string;
+  srcAddress: string;
   destAddress: string;
   network: string;
   amount?: DecCoin;
@@ -91,6 +92,7 @@ export interface MsgRejectResponse {}
 
 export interface MsgRequestIn {
   creator: string;
+  srcAddress: string;
   destAddress: string;
   network: string;
   amount?: DecCoin;
@@ -132,24 +134,27 @@ export interface MsgCancelBatches {
 
 export interface MsgCancelBatchesResponse {}
 
-const baseMsgRequestOut: object = {creator: "", destAddress: "", network: ""};
+const baseMsgRequestOut: object = {creator: "", srcAddress: "", destAddress: "", network: ""};
 
 export const MsgRequestOut = {
   encode(message: MsgRequestOut, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
+    if (message.srcAddress !== "") {
+      writer.uint32(18).string(message.srcAddress);
+    }
     if (message.destAddress !== "") {
-      writer.uint32(18).string(message.destAddress);
+      writer.uint32(26).string(message.destAddress);
     }
     if (message.network !== "") {
-      writer.uint32(26).string(message.network);
+      writer.uint32(34).string(message.network);
     }
     if (message.amount !== undefined) {
-      DecCoin.encode(message.amount, writer.uint32(34).fork()).ldelim();
+      DecCoin.encode(message.amount, writer.uint32(42).fork()).ldelim();
     }
     if (message.fee !== undefined) {
-      DecCoin.encode(message.fee, writer.uint32(42).fork()).ldelim();
+      DecCoin.encode(message.fee, writer.uint32(50).fork()).ldelim();
     }
     return writer;
   },
@@ -165,15 +170,18 @@ export const MsgRequestOut = {
           message.creator = reader.string();
           break;
         case 2:
-          message.destAddress = reader.string();
+          message.srcAddress = reader.string();
           break;
         case 3:
-          message.network = reader.string();
+          message.destAddress = reader.string();
           break;
         case 4:
-          message.amount = DecCoin.decode(reader, reader.uint32());
+          message.network = reader.string();
           break;
         case 5:
+          message.amount = DecCoin.decode(reader, reader.uint32());
+          break;
+        case 6:
           message.fee = DecCoin.decode(reader, reader.uint32());
           break;
         default:
@@ -187,6 +195,7 @@ export const MsgRequestOut = {
   fromJSON(object: any): MsgRequestOut {
     const message = {...baseMsgRequestOut} as MsgRequestOut;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.srcAddress = object.srcAddress !== undefined && object.srcAddress !== null ? String(object.srcAddress) : "";
     message.destAddress = object.destAddress !== undefined && object.destAddress !== null ? String(object.destAddress) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
@@ -197,6 +206,7 @@ export const MsgRequestOut = {
   toJSON(message: MsgRequestOut): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
+    message.srcAddress !== undefined && (obj.srcAddress = message.srcAddress);
     message.destAddress !== undefined && (obj.destAddress = message.destAddress);
     message.network !== undefined && (obj.network = message.network);
     message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
@@ -207,6 +217,7 @@ export const MsgRequestOut = {
   fromPartial<I extends Exact<DeepPartial<MsgRequestOut>, I>>(object: I): MsgRequestOut {
     const message = {...baseMsgRequestOut} as MsgRequestOut;
     message.creator = object.creator ?? "";
+    message.srcAddress = object.srcAddress ?? "";
     message.destAddress = object.destAddress ?? "";
     message.network = object.network ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
@@ -1175,12 +1186,15 @@ export const MsgRejectResponse = {
   }
 };
 
-const baseMsgRequestIn: object = {creator: "", destAddress: "", network: "", txHashes: ""};
+const baseMsgRequestIn: object = {creator: "", srcAddress: "", destAddress: "", network: "", txHashes: ""};
 
 export const MsgRequestIn = {
   encode(message: MsgRequestIn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
+    }
+    if (message.srcAddress !== "") {
+      writer.uint32(18).string(message.srcAddress);
     }
     if (message.destAddress !== "") {
       writer.uint32(26).string(message.destAddress);
@@ -1211,6 +1225,9 @@ export const MsgRequestIn = {
         case 1:
           message.creator = reader.string();
           break;
+        case 2:
+          message.srcAddress = reader.string();
+          break;
         case 3:
           message.destAddress = reader.string();
           break;
@@ -1237,6 +1254,7 @@ export const MsgRequestIn = {
   fromJSON(object: any): MsgRequestIn {
     const message = {...baseMsgRequestIn} as MsgRequestIn;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.srcAddress = object.srcAddress !== undefined && object.srcAddress !== null ? String(object.srcAddress) : "";
     message.destAddress = object.destAddress !== undefined && object.destAddress !== null ? String(object.destAddress) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
@@ -1248,6 +1266,7 @@ export const MsgRequestIn = {
   toJSON(message: MsgRequestIn): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
+    message.srcAddress !== undefined && (obj.srcAddress = message.srcAddress);
     message.destAddress !== undefined && (obj.destAddress = message.destAddress);
     message.network !== undefined && (obj.network = message.network);
     message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
@@ -1263,6 +1282,7 @@ export const MsgRequestIn = {
   fromPartial<I extends Exact<DeepPartial<MsgRequestIn>, I>>(object: I): MsgRequestIn {
     const message = {...baseMsgRequestIn} as MsgRequestIn;
     message.creator = object.creator ?? "";
+    message.srcAddress = object.srcAddress ?? "";
     message.destAddress = object.destAddress ?? "";
     message.network = object.network ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
