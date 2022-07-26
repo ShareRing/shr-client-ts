@@ -27,6 +27,7 @@ export interface AminoMsgRequestIn extends AminoMsg {
   readonly type: "swap/RequestIn";
   readonly value: {
     readonly creator: string;
+    readonly srcAddress: string;
     readonly destAddress: string;
     readonly network: string;
     readonly amount: DecCoin;
@@ -52,6 +53,7 @@ export interface AminoMsgRequestOut extends AminoMsg {
   readonly type: "swap/RequestOut";
   readonly value: {
     readonly creator: string;
+    readonly srcAddress: string;
     readonly destAddress: string;
     readonly network: string;
     readonly amount: DecCoin;
@@ -346,11 +348,12 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
   return {
     "/shareledger.swap.MsgRequestIn": {
       aminoType: "swap/RequestIn",
-      toAmino: ({creator, destAddress, network, amount, fee, txHashes}: MsgRequestIn): AminoMsgRequestIn["value"] => {
+      toAmino: ({creator, srcAddress, destAddress, network, amount, fee, txHashes}: MsgRequestIn): AminoMsgRequestIn["value"] => {
         assertDefinedAndNotNull(amount, "missing amount");
         assertDefinedAndNotNull(fee, "missing fee");
         return {
           creator,
+          srcAddress,
           destAddress,
           network,
           amount,
@@ -358,9 +361,10 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
           txHashes: [...txHashes]
         };
       },
-      fromAmino: ({creator, destAddress, network, amount, fee, txHashes}: AminoMsgRequestIn["value"]): MsgRequestIn => {
+      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee, txHashes}: AminoMsgRequestIn["value"]): MsgRequestIn => {
         return {
           creator,
+          srcAddress,
           destAddress,
           network,
           amount,
@@ -371,20 +375,22 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
     },
     "/shareledger.swap.MsgRequestOut": {
       aminoType: "swap/RequestOut",
-      toAmino: ({creator, destAddress, network, amount, fee}: MsgRequestOut): AminoMsgRequestOut["value"] => {
+      toAmino: ({creator, srcAddress, destAddress, network, amount, fee}: MsgRequestOut): AminoMsgRequestOut["value"] => {
         assertDefinedAndNotNull(amount, "missing amount");
         assertDefinedAndNotNull(fee, "missing fee");
         return {
           creator,
+          srcAddress,
           destAddress,
           network,
           amount,
           fee
         };
       },
-      fromAmino: ({creator, destAddress, network, amount, fee}: AminoMsgRequestOut["value"]): MsgRequestOut => {
+      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee}: AminoMsgRequestOut["value"]): MsgRequestOut => {
         return {
           creator,
+          srcAddress,
           destAddress,
           network,
           amount,

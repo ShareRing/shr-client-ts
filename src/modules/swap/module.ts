@@ -62,6 +62,7 @@ export type SwapTxExtension = {
   get swap(): {
     readonly requestSwapIn: (
       creator: string,
+      srcAddress: string,
       destAddress: string,
       network: string,
       amount: DecCoin,
@@ -70,6 +71,7 @@ export type SwapTxExtension = {
     ) => MsgRequestInEncodeObject;
     readonly requestSwapOut: (
       creator: string,
+      srcAddress: string,
       destAddress: string,
       network: string,
       amount: DecCoin,
@@ -169,6 +171,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
         ...super["swap"],
         requestSwapIn: (
           creator: string,
+          srcAddress: string,
           destAddress: string,
           network: string,
           amount: DecCoin,
@@ -179,6 +182,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
             typeUrl: "/shareledger.swap.MsgRequestIn",
             value: MsgRequestIn.fromPartial({
               creator,
+              srcAddress,
               destAddress,
               network,
               amount,
@@ -189,6 +193,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
         },
         requestSwapOut: (
           creator: string,
+          srcAddress: string,
           destAddress: string,
           network: string,
           amount: DecCoin,
@@ -198,6 +203,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
             typeUrl: "/shareledger.swap.MsgRequestOut",
             value: MsgRequestOut.fromPartial({
               creator,
+              srcAddress,
               destAddress,
               network,
               amount,
