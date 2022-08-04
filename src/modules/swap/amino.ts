@@ -23,6 +23,12 @@ import {
 } from "../../codec/shareledger/swap/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
 
+export interface RequestInTransaction {
+  transactionHash: string;
+  logIndex: Long;
+  sender: string;
+}
+
 export interface AminoMsgRequestIn extends AminoMsg {
   readonly type: "swap/RequestIn";
   readonly value: {
@@ -32,7 +38,7 @@ export interface AminoMsgRequestIn extends AminoMsg {
     readonly network: string;
     readonly amount: DecCoin;
     readonly fee: DecCoin;
-    readonly txHashes: string[];
+    readonly transactions: RequestInTransaction[];
   };
 }
 
@@ -358,10 +364,14 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
           network,
           amount,
           fee,
-          txHashes: [...txHashes]
+          transactions: txHashes.map((value) => ({
+            sender: value.sender,
+            transactionHash: value.txHash,
+            logIndex: value.logEventIdx
+          }))
         };
       },
-      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee, txHashes}: AminoMsgRequestIn["value"]): MsgRequestIn => {
+      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee, transactions}: AminoMsgRequestIn["value"]): MsgRequestIn => {
         return {
           creator,
           srcAddress,
@@ -369,7 +379,11 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
           network,
           amount,
           fee,
-          txHashes: [...txHashes]
+          txHashes: transactions.map((value) => ({
+            sender: value.sender,
+            txHash: value.transactionHash,
+            logEventIdx: value.logIndex
+          }))
         };
       }
     },

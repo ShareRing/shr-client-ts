@@ -70,7 +70,8 @@ export interface QueryBatchesRequest {
 }
 
 export interface QueryRequestedInsRequest {
-  address: string;
+  txHash: string;
+  logEventIndex: Long;
 }
 
 export interface QueryRequestedInsResponse {
@@ -777,12 +778,15 @@ export const QueryBatchesRequest = {
   }
 };
 
-const baseQueryRequestedInsRequest: object = {address: ""};
+const baseQueryRequestedInsRequest: object = {txHash: "", logEventIndex: Long.UZERO};
 
 export const QueryRequestedInsRequest = {
   encode(message: QueryRequestedInsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
+    if (message.txHash !== "") {
+      writer.uint32(10).string(message.txHash);
+    }
+    if (!message.logEventIndex.isZero()) {
+      writer.uint32(16).uint64(message.logEventIndex);
     }
     return writer;
   },
@@ -795,7 +799,10 @@ export const QueryRequestedInsRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.address = reader.string();
+          message.txHash = reader.string();
+          break;
+        case 2:
+          message.logEventIndex = reader.uint64() as Long;
           break;
         default:
           reader.skipType(tag & 7);
@@ -807,19 +814,24 @@ export const QueryRequestedInsRequest = {
 
   fromJSON(object: any): QueryRequestedInsRequest {
     const message = {...baseQueryRequestedInsRequest} as QueryRequestedInsRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
+    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
+    message.logEventIndex =
+      object.logEventIndex !== undefined && object.logEventIndex !== null ? Long.fromString(object.logEventIndex) : Long.UZERO;
     return message;
   },
 
   toJSON(message: QueryRequestedInsRequest): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
+    message.txHash !== undefined && (obj.txHash = message.txHash);
+    message.logEventIndex !== undefined && (obj.logEventIndex = (message.logEventIndex || Long.UZERO).toString());
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryRequestedInsRequest>, I>>(object: I): QueryRequestedInsRequest {
     const message = {...baseQueryRequestedInsRequest} as QueryRequestedInsRequest;
-    message.address = object.address ?? "";
+    message.txHash = object.txHash ?? "";
+    message.logEventIndex =
+      object.logEventIndex !== undefined && object.logEventIndex !== null ? Long.fromValue(object.logEventIndex) : Long.UZERO;
     return message;
   }
 };

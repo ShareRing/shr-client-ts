@@ -2,6 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import {DecCoin} from "../../cosmos/base/v1beta1/coin";
+import {ERCHash} from "../../shareledger/swap/request";
 
 export const protobufPackage = "shareledger.swap";
 
@@ -97,7 +98,7 @@ export interface MsgRequestIn {
   network: string;
   amount?: DecCoin;
   fee?: DecCoin;
-  txHashes: string[];
+  txHashes: ERCHash[];
 }
 
 export interface MsgSwapInResponse {
@@ -1186,7 +1187,7 @@ export const MsgRejectResponse = {
   }
 };
 
-const baseMsgRequestIn: object = {creator: "", srcAddress: "", destAddress: "", network: "", txHashes: ""};
+const baseMsgRequestIn: object = {creator: "", srcAddress: "", destAddress: "", network: ""};
 
 export const MsgRequestIn = {
   encode(message: MsgRequestIn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1209,7 +1210,7 @@ export const MsgRequestIn = {
       DecCoin.encode(message.fee, writer.uint32(50).fork()).ldelim();
     }
     for (const v of message.txHashes) {
-      writer.uint32(58).string(v!);
+      ERCHash.encode(v!, writer.uint32(58).fork()).ldelim();
     }
     return writer;
   },
@@ -1241,7 +1242,7 @@ export const MsgRequestIn = {
           message.fee = DecCoin.decode(reader, reader.uint32());
           break;
         case 7:
-          message.txHashes.push(reader.string());
+          message.txHashes.push(ERCHash.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1259,7 +1260,7 @@ export const MsgRequestIn = {
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
-    message.txHashes = (object.txHashes ?? []).map((e: any) => String(e));
+    message.txHashes = (object.txHashes ?? []).map((e: any) => ERCHash.fromJSON(e));
     return message;
   },
 
@@ -1272,7 +1273,7 @@ export const MsgRequestIn = {
     message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
     message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
     if (message.txHashes) {
-      obj.txHashes = message.txHashes.map((e) => e);
+      obj.txHashes = message.txHashes.map((e) => (e ? ERCHash.toJSON(e) : undefined));
     } else {
       obj.txHashes = [];
     }
@@ -1287,7 +1288,7 @@ export const MsgRequestIn = {
     message.network = object.network ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
-    message.txHashes = object.txHashes?.map((e) => e) || [];
+    message.txHashes = object.txHashes?.map((e) => ERCHash.fromPartial(e)) || [];
     return message;
   }
 };

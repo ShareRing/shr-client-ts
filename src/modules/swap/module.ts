@@ -35,7 +35,8 @@ import {
   MsgWithdrawEncodeObject,
   MsgCancelBatchesEncodeObject,
   MsgCompleteBatchEncodeObject,
-  MsgUpdateSwapFeeEncodeObject
+  MsgUpdateSwapFeeEncodeObject,
+  RequestInTransaction
 } from "./amino";
 
 export type SwapQueryExtension = {
@@ -67,7 +68,7 @@ export type SwapTxExtension = {
       network: string,
       amount: DecCoin,
       fee: DecCoin,
-      txHashes: string[]
+      transactions: RequestInTransaction[]
     ) => MsgRequestInEncodeObject;
     readonly requestSwapOut: (
       creator: string,
@@ -176,7 +177,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
           network: string,
           amount: DecCoin,
           fee: DecCoin,
-          txHashes: string[]
+          transactions: RequestInTransaction[]
         ): MsgRequestInEncodeObject => {
           return {
             typeUrl: "/shareledger.swap.MsgRequestIn",
@@ -187,7 +188,11 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
               network,
               amount,
               fee,
-              txHashes
+              txHashes: transactions.map((value) => ({
+                sender: value.sender,
+                logEventIdx: value.logIndex,
+                txHash: value.transactionHash
+              }))
             })
           };
         },

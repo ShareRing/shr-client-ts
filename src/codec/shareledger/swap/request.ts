@@ -15,19 +15,16 @@ export interface Request {
   fee?: Coin;
   status: string;
   batchId: Long;
-  txHashes: string[];
+  txHashes: ERCHash[];
 }
 
-const baseRequest: object = {
-  id: Long.UZERO,
-  srcAddr: "",
-  destAddr: "",
-  srcNetwork: "",
-  destNetwork: "",
-  status: "",
-  batchId: Long.UZERO,
-  txHashes: ""
-};
+export interface ERCHash {
+  txHash: string;
+  sender: string;
+  logEventIdx: Long;
+}
+
+const baseRequest: object = {id: Long.UZERO, srcAddr: "", destAddr: "", srcNetwork: "", destNetwork: "", status: "", batchId: Long.UZERO};
 
 export const Request = {
   encode(message: Request, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -59,7 +56,7 @@ export const Request = {
       writer.uint32(72).uint64(message.batchId);
     }
     for (const v of message.txHashes) {
-      writer.uint32(90).string(v!);
+      ERCHash.encode(v!, writer.uint32(90).fork()).ldelim();
     }
     return writer;
   },
@@ -100,7 +97,7 @@ export const Request = {
           message.batchId = reader.uint64() as Long;
           break;
         case 11:
-          message.txHashes.push(reader.string());
+          message.txHashes.push(ERCHash.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -121,7 +118,7 @@ export const Request = {
     message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromJSON(object.fee) : undefined;
     message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
-    message.txHashes = (object.txHashes ?? []).map((e: any) => String(e));
+    message.txHashes = (object.txHashes ?? []).map((e: any) => ERCHash.fromJSON(e));
     return message;
   },
 
@@ -137,7 +134,7 @@ export const Request = {
     message.status !== undefined && (obj.status = message.status);
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
     if (message.txHashes) {
-      obj.txHashes = message.txHashes.map((e) => e);
+      obj.txHashes = message.txHashes.map((e) => (e ? ERCHash.toJSON(e) : undefined));
     } else {
       obj.txHashes = [];
     }
@@ -155,7 +152,73 @@ export const Request = {
     message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromPartial(object.fee) : undefined;
     message.status = object.status ?? "";
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
-    message.txHashes = object.txHashes?.map((e) => e) || [];
+    message.txHashes = object.txHashes?.map((e) => ERCHash.fromPartial(e)) || [];
+    return message;
+  }
+};
+
+const baseERCHash: object = {txHash: "", sender: "", logEventIdx: Long.UZERO};
+
+export const ERCHash = {
+  encode(message: ERCHash, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.txHash !== "") {
+      writer.uint32(10).string(message.txHash);
+    }
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (!message.logEventIdx.isZero()) {
+      writer.uint32(24).uint64(message.logEventIdx);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ERCHash {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseERCHash} as ERCHash;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.txHash = reader.string();
+          break;
+        case 2:
+          message.sender = reader.string();
+          break;
+        case 3:
+          message.logEventIdx = reader.uint64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ERCHash {
+    const message = {...baseERCHash} as ERCHash;
+    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
+    message.sender = object.sender !== undefined && object.sender !== null ? String(object.sender) : "";
+    message.logEventIdx =
+      object.logEventIdx !== undefined && object.logEventIdx !== null ? Long.fromString(object.logEventIdx) : Long.UZERO;
+    return message;
+  },
+
+  toJSON(message: ERCHash): unknown {
+    const obj: any = {};
+    message.txHash !== undefined && (obj.txHash = message.txHash);
+    message.sender !== undefined && (obj.sender = message.sender);
+    message.logEventIdx !== undefined && (obj.logEventIdx = (message.logEventIdx || Long.UZERO).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ERCHash>, I>>(object: I): ERCHash {
+    const message = {...baseERCHash} as ERCHash;
+    message.txHash = object.txHash ?? "";
+    message.sender = object.sender ?? "";
+    message.logEventIdx = object.logEventIdx !== undefined && object.logEventIdx !== null ? Long.fromValue(object.logEventIdx) : Long.UZERO;
     return message;
   }
 };

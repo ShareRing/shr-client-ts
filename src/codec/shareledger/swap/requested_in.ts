@@ -5,19 +5,19 @@ import _m0 from "protobufjs/minimal";
 export const protobufPackage = "shareledger.swap";
 
 export interface RequestedIn {
-  address: string;
-  txHashes: string[];
+  slp3Address: string;
+  erc20Address: string;
 }
 
-const baseRequestedIn: object = {address: "", txHashes: ""};
+const baseRequestedIn: object = {slp3Address: "", erc20Address: ""};
 
 export const RequestedIn = {
   encode(message: RequestedIn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.address !== "") {
-      writer.uint32(10).string(message.address);
+    if (message.slp3Address !== "") {
+      writer.uint32(10).string(message.slp3Address);
     }
-    for (const v of message.txHashes) {
-      writer.uint32(18).string(v!);
+    if (message.erc20Address !== "") {
+      writer.uint32(18).string(message.erc20Address);
     }
     return writer;
   },
@@ -26,15 +26,14 @@ export const RequestedIn = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseRequestedIn} as RequestedIn;
-    message.txHashes = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.address = reader.string();
+          message.slp3Address = reader.string();
           break;
         case 2:
-          message.txHashes.push(reader.string());
+          message.erc20Address = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -46,26 +45,22 @@ export const RequestedIn = {
 
   fromJSON(object: any): RequestedIn {
     const message = {...baseRequestedIn} as RequestedIn;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.txHashes = (object.txHashes ?? []).map((e: any) => String(e));
+    message.slp3Address = object.slp3Address !== undefined && object.slp3Address !== null ? String(object.slp3Address) : "";
+    message.erc20Address = object.erc20Address !== undefined && object.erc20Address !== null ? String(object.erc20Address) : "";
     return message;
   },
 
   toJSON(message: RequestedIn): unknown {
     const obj: any = {};
-    message.address !== undefined && (obj.address = message.address);
-    if (message.txHashes) {
-      obj.txHashes = message.txHashes.map((e) => e);
-    } else {
-      obj.txHashes = [];
-    }
+    message.slp3Address !== undefined && (obj.slp3Address = message.slp3Address);
+    message.erc20Address !== undefined && (obj.erc20Address = message.erc20Address);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<RequestedIn>, I>>(object: I): RequestedIn {
     const message = {...baseRequestedIn} as RequestedIn;
-    message.address = object.address ?? "";
-    message.txHashes = object.txHashes?.map((e) => e) || [];
+    message.slp3Address = object.slp3Address ?? "";
+    message.erc20Address = object.erc20Address ?? "";
     return message;
   }
 };
