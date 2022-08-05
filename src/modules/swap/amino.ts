@@ -5,6 +5,7 @@ import {assertDefinedAndNotNull} from "@cosmjs/utils";
 import Long from "long";
 import {AminoConverter} from "../../amino/types";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
+import {TxEvent} from "../../codec/shareledger/swap/request";
 import {
   MsgApproveIn,
   MsgApproveOut,
@@ -23,12 +24,6 @@ import {
 } from "../../codec/shareledger/swap/tx";
 import {EncodeObject, GeneratedType} from "../../signing";
 
-export interface RequestInTransaction {
-  transactionHash: string;
-  logIndex: Long;
-  sender: string;
-}
-
 export interface AminoMsgRequestIn extends AminoMsg {
   readonly type: "swap/RequestIn";
   readonly value: {
@@ -37,8 +32,8 @@ export interface AminoMsgRequestIn extends AminoMsg {
     readonly destAddress: string;
     readonly network: string;
     readonly amount: DecCoin;
-    readonly fee: DecCoin;
-    readonly transactions: RequestInTransaction[];
+    //readonly fee: DecCoin;
+    readonly events: TxEvent[];
   };
 }
 
@@ -63,7 +58,7 @@ export interface AminoMsgRequestOut extends AminoMsg {
     readonly destAddress: string;
     readonly network: string;
     readonly amount: DecCoin;
-    readonly fee: DecCoin;
+    // readonly fee: DecCoin;
   };
 }
 
@@ -354,61 +349,49 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
   return {
     "/shareledger.swap.MsgRequestIn": {
       aminoType: "swap/RequestIn",
-      toAmino: ({creator, srcAddress, destAddress, network, amount, fee, txHashes}: MsgRequestIn): AminoMsgRequestIn["value"] => {
+      toAmino: ({creator, srcAddress, destAddress, network, amount, txEvents}: MsgRequestIn): AminoMsgRequestIn["value"] => {
         assertDefinedAndNotNull(amount, "missing amount");
-        assertDefinedAndNotNull(fee, "missing fee");
+        // assertDefinedAndNotNull(fee, "missing fee");
         return {
           creator,
           srcAddress,
           destAddress,
           network,
           amount,
-          fee,
-          transactions: txHashes.map((value) => ({
-            sender: value.sender,
-            transactionHash: value.txHash,
-            logIndex: value.logEventIdx
-          }))
+          events: [...txEvents]
         };
       },
-      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee, transactions}: AminoMsgRequestIn["value"]): MsgRequestIn => {
+      fromAmino: ({creator, srcAddress, destAddress, network, amount, events}: AminoMsgRequestIn["value"]): MsgRequestIn => {
         return {
           creator,
           srcAddress,
           destAddress,
           network,
           amount,
-          fee,
-          txHashes: transactions.map((value) => ({
-            sender: value.sender,
-            txHash: value.transactionHash,
-            logEventIdx: value.logIndex
-          }))
+          txEvents: [...events]
         };
       }
     },
     "/shareledger.swap.MsgRequestOut": {
       aminoType: "swap/RequestOut",
-      toAmino: ({creator, srcAddress, destAddress, network, amount, fee}: MsgRequestOut): AminoMsgRequestOut["value"] => {
+      toAmino: ({creator, srcAddress, destAddress, network, amount}: MsgRequestOut): AminoMsgRequestOut["value"] => {
         assertDefinedAndNotNull(amount, "missing amount");
-        assertDefinedAndNotNull(fee, "missing fee");
+        // assertDefinedAndNotNull(fee, "missing fee");
         return {
           creator,
           srcAddress,
           destAddress,
           network,
-          amount,
-          fee
+          amount
         };
       },
-      fromAmino: ({creator, srcAddress, destAddress, network, amount, fee}: AminoMsgRequestOut["value"]): MsgRequestOut => {
+      fromAmino: ({creator, srcAddress, destAddress, network, amount}: AminoMsgRequestOut["value"]): MsgRequestOut => {
         return {
           creator,
           srcAddress,
           destAddress,
           network,
-          amount,
-          fee
+          amount
         };
       }
     },

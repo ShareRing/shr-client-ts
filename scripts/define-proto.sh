@@ -170,8 +170,8 @@ protoc \
   "$SHARELEDGER_PROTO_DIR/shareledger/id/tx.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/batch.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/genesis.proto" \
-  "$SHARELEDGER_PROTO_DIR/shareledger/swap/id.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/params.proto" \
+  "$SHARELEDGER_PROTO_DIR/shareledger/swap/past_tx_event.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/query.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/request.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/swap/schema.proto" \

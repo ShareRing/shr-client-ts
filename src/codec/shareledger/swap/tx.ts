@@ -2,7 +2,7 @@
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import {DecCoin} from "../../cosmos/base/v1beta1/coin";
-import {ERCHash} from "../../shareledger/swap/request";
+import {TxEvent} from "../../shareledger/swap/request";
 
 export const protobufPackage = "shareledger.swap";
 
@@ -12,10 +12,9 @@ export interface MsgRequestOut {
   destAddress: string;
   network: string;
   amount?: DecCoin;
-  fee?: DecCoin;
 }
 
-export interface MsgOutSwapResponse {
+export interface MsgRequestOutResponse {
   id: Long;
 }
 
@@ -25,7 +24,7 @@ export interface MsgApproveOut {
   ids: Long[];
 }
 
-export interface MsgApproveResponse {
+export interface MsgApproveOutResponse {
   batchId: Long;
 }
 
@@ -97,11 +96,10 @@ export interface MsgRequestIn {
   destAddress: string;
   network: string;
   amount?: DecCoin;
-  fee?: DecCoin;
-  txHashes: ERCHash[];
+  txEvents: TxEvent[];
 }
 
-export interface MsgSwapInResponse {
+export interface MsgRequestInResponse {
   id: Long;
 }
 
@@ -154,9 +152,6 @@ export const MsgRequestOut = {
     if (message.amount !== undefined) {
       DecCoin.encode(message.amount, writer.uint32(42).fork()).ldelim();
     }
-    if (message.fee !== undefined) {
-      DecCoin.encode(message.fee, writer.uint32(50).fork()).ldelim();
-    }
     return writer;
   },
 
@@ -182,9 +177,6 @@ export const MsgRequestOut = {
         case 5:
           message.amount = DecCoin.decode(reader, reader.uint32());
           break;
-        case 6:
-          message.fee = DecCoin.decode(reader, reader.uint32());
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -200,7 +192,6 @@ export const MsgRequestOut = {
     message.destAddress = object.destAddress !== undefined && object.destAddress !== null ? String(object.destAddress) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
     return message;
   },
 
@@ -211,7 +202,6 @@ export const MsgRequestOut = {
     message.destAddress !== undefined && (obj.destAddress = message.destAddress);
     message.network !== undefined && (obj.network = message.network);
     message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
-    message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
     return obj;
   },
 
@@ -222,25 +212,24 @@ export const MsgRequestOut = {
     message.destAddress = object.destAddress ?? "";
     message.network = object.network ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
     return message;
   }
 };
 
-const baseMsgOutSwapResponse: object = {id: Long.UZERO};
+const baseMsgRequestOutResponse: object = {id: Long.UZERO};
 
-export const MsgOutSwapResponse = {
-  encode(message: MsgOutSwapResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRequestOutResponse = {
+  encode(message: MsgRequestOutResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (!message.id.isZero()) {
       writer.uint32(8).uint64(message.id);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgOutSwapResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRequestOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgOutSwapResponse} as MsgOutSwapResponse;
+    const message = {...baseMsgRequestOutResponse} as MsgRequestOutResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -255,20 +244,20 @@ export const MsgOutSwapResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgOutSwapResponse {
-    const message = {...baseMsgOutSwapResponse} as MsgOutSwapResponse;
+  fromJSON(object: any): MsgRequestOutResponse {
+    const message = {...baseMsgRequestOutResponse} as MsgRequestOutResponse;
     message.id = object.id !== undefined && object.id !== null ? Long.fromString(object.id) : Long.UZERO;
     return message;
   },
 
-  toJSON(message: MsgOutSwapResponse): unknown {
+  toJSON(message: MsgRequestOutResponse): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgOutSwapResponse>, I>>(object: I): MsgOutSwapResponse {
-    const message = {...baseMsgOutSwapResponse} as MsgOutSwapResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRequestOutResponse>, I>>(object: I): MsgRequestOutResponse {
+    const message = {...baseMsgRequestOutResponse} as MsgRequestOutResponse;
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     return message;
   }
@@ -353,20 +342,20 @@ export const MsgApproveOut = {
   }
 };
 
-const baseMsgApproveResponse: object = {batchId: Long.UZERO};
+const baseMsgApproveOutResponse: object = {batchId: Long.UZERO};
 
-export const MsgApproveResponse = {
-  encode(message: MsgApproveResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgApproveOutResponse = {
+  encode(message: MsgApproveOutResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (!message.batchId.isZero()) {
       writer.uint32(8).uint64(message.batchId);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgApproveResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgApproveOutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgApproveResponse} as MsgApproveResponse;
+    const message = {...baseMsgApproveOutResponse} as MsgApproveOutResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -381,20 +370,20 @@ export const MsgApproveResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgApproveResponse {
-    const message = {...baseMsgApproveResponse} as MsgApproveResponse;
+  fromJSON(object: any): MsgApproveOutResponse {
+    const message = {...baseMsgApproveOutResponse} as MsgApproveOutResponse;
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
     return message;
   },
 
-  toJSON(message: MsgApproveResponse): unknown {
+  toJSON(message: MsgApproveOutResponse): unknown {
     const obj: any = {};
     message.batchId !== undefined && (obj.batchId = (message.batchId || Long.UZERO).toString());
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgApproveResponse>, I>>(object: I): MsgApproveResponse {
-    const message = {...baseMsgApproveResponse} as MsgApproveResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgApproveOutResponse>, I>>(object: I): MsgApproveOutResponse {
+    const message = {...baseMsgApproveOutResponse} as MsgApproveOutResponse;
     message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromValue(object.batchId) : Long.UZERO;
     return message;
   }
@@ -1206,11 +1195,8 @@ export const MsgRequestIn = {
     if (message.amount !== undefined) {
       DecCoin.encode(message.amount, writer.uint32(42).fork()).ldelim();
     }
-    if (message.fee !== undefined) {
-      DecCoin.encode(message.fee, writer.uint32(50).fork()).ldelim();
-    }
-    for (const v of message.txHashes) {
-      ERCHash.encode(v!, writer.uint32(58).fork()).ldelim();
+    for (const v of message.txEvents) {
+      TxEvent.encode(v!, writer.uint32(50).fork()).ldelim();
     }
     return writer;
   },
@@ -1219,7 +1205,7 @@ export const MsgRequestIn = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {...baseMsgRequestIn} as MsgRequestIn;
-    message.txHashes = [];
+    message.txEvents = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1239,10 +1225,7 @@ export const MsgRequestIn = {
           message.amount = DecCoin.decode(reader, reader.uint32());
           break;
         case 6:
-          message.fee = DecCoin.decode(reader, reader.uint32());
-          break;
-        case 7:
-          message.txHashes.push(ERCHash.decode(reader, reader.uint32()));
+          message.txEvents.push(TxEvent.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1259,8 +1242,7 @@ export const MsgRequestIn = {
     message.destAddress = object.destAddress !== undefined && object.destAddress !== null ? String(object.destAddress) : "";
     message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromJSON(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
-    message.txHashes = (object.txHashes ?? []).map((e: any) => ERCHash.fromJSON(e));
+    message.txEvents = (object.txEvents ?? []).map((e: any) => TxEvent.fromJSON(e));
     return message;
   },
 
@@ -1271,11 +1253,10 @@ export const MsgRequestIn = {
     message.destAddress !== undefined && (obj.destAddress = message.destAddress);
     message.network !== undefined && (obj.network = message.network);
     message.amount !== undefined && (obj.amount = message.amount ? DecCoin.toJSON(message.amount) : undefined);
-    message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
-    if (message.txHashes) {
-      obj.txHashes = message.txHashes.map((e) => (e ? ERCHash.toJSON(e) : undefined));
+    if (message.txEvents) {
+      obj.txEvents = message.txEvents.map((e) => (e ? TxEvent.toJSON(e) : undefined));
     } else {
-      obj.txHashes = [];
+      obj.txEvents = [];
     }
     return obj;
   },
@@ -1287,26 +1268,25 @@ export const MsgRequestIn = {
     message.destAddress = object.destAddress ?? "";
     message.network = object.network ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? DecCoin.fromPartial(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
-    message.txHashes = object.txHashes?.map((e) => ERCHash.fromPartial(e)) || [];
+    message.txEvents = object.txEvents?.map((e) => TxEvent.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseMsgSwapInResponse: object = {id: Long.UZERO};
+const baseMsgRequestInResponse: object = {id: Long.UZERO};
 
-export const MsgSwapInResponse = {
-  encode(message: MsgSwapInResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const MsgRequestInResponse = {
+  encode(message: MsgRequestInResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (!message.id.isZero()) {
       writer.uint32(8).uint64(message.id);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSwapInResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgRequestInResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSwapInResponse} as MsgSwapInResponse;
+    const message = {...baseMsgRequestInResponse} as MsgRequestInResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1321,20 +1301,20 @@ export const MsgSwapInResponse = {
     return message;
   },
 
-  fromJSON(object: any): MsgSwapInResponse {
-    const message = {...baseMsgSwapInResponse} as MsgSwapInResponse;
+  fromJSON(object: any): MsgRequestInResponse {
+    const message = {...baseMsgRequestInResponse} as MsgRequestInResponse;
     message.id = object.id !== undefined && object.id !== null ? Long.fromString(object.id) : Long.UZERO;
     return message;
   },
 
-  toJSON(message: MsgSwapInResponse): unknown {
+  toJSON(message: MsgRequestInResponse): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = (message.id || Long.UZERO).toString());
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgSwapInResponse>, I>>(object: I): MsgSwapInResponse {
-    const message = {...baseMsgSwapInResponse} as MsgSwapInResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgRequestInResponse>, I>>(object: I): MsgRequestInResponse {
+    const message = {...baseMsgRequestInResponse} as MsgRequestInResponse;
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     return message;
   }
@@ -1764,8 +1744,8 @@ export const MsgCancelBatchesResponse = {
 
 /** Msg defines the Msg service. */
 export interface Msg {
-  RequestOut(request: MsgRequestOut): Promise<MsgOutSwapResponse>;
-  ApproveOut(request: MsgApproveOut): Promise<MsgApproveResponse>;
+  RequestOut(request: MsgRequestOut): Promise<MsgRequestOutResponse>;
+  ApproveOut(request: MsgApproveOut): Promise<MsgApproveOutResponse>;
   Deposit(request: MsgDeposit): Promise<MsgDepositResponse>;
   Withdraw(request: MsgWithdraw): Promise<MsgWithdrawResponse>;
   CreateSchema(request: MsgCreateSchema): Promise<MsgCreateSchemaResponse>;
@@ -1773,7 +1753,7 @@ export interface Msg {
   DeleteSchema(request: MsgDeleteSchema): Promise<MsgDeleteSchemaResponse>;
   Cancel(request: MsgCancel): Promise<MsgCancelResponse>;
   Reject(request: MsgReject): Promise<MsgRejectResponse>;
-  RequestIn(request: MsgRequestIn): Promise<MsgSwapInResponse>;
+  RequestIn(request: MsgRequestIn): Promise<MsgRequestInResponse>;
   ApproveIn(request: MsgApproveIn): Promise<MsgApproveInResponse>;
   CompleteBatch(request: MsgCompleteBatch): Promise<MsgCompleteBatchResponse>;
   UpdateSwapFee(request: MsgUpdateSwapFee): Promise<MsgUpdateSwapFeeResponse>;
@@ -1800,16 +1780,16 @@ export class MsgClientImpl implements Msg {
     this.UpdateSwapFee = this.UpdateSwapFee.bind(this);
     this.CancelBatches = this.CancelBatches.bind(this);
   }
-  RequestOut(request: MsgRequestOut): Promise<MsgOutSwapResponse> {
+  RequestOut(request: MsgRequestOut): Promise<MsgRequestOutResponse> {
     const data = MsgRequestOut.encode(request).finish();
     const promise = this.rpc.request("shareledger.swap.Msg", "RequestOut", data);
-    return promise.then((data) => MsgOutSwapResponse.decode(new _m0.Reader(data)));
+    return promise.then((data) => MsgRequestOutResponse.decode(new _m0.Reader(data)));
   }
 
-  ApproveOut(request: MsgApproveOut): Promise<MsgApproveResponse> {
+  ApproveOut(request: MsgApproveOut): Promise<MsgApproveOutResponse> {
     const data = MsgApproveOut.encode(request).finish();
     const promise = this.rpc.request("shareledger.swap.Msg", "ApproveOut", data);
-    return promise.then((data) => MsgApproveResponse.decode(new _m0.Reader(data)));
+    return promise.then((data) => MsgApproveOutResponse.decode(new _m0.Reader(data)));
   }
 
   Deposit(request: MsgDeposit): Promise<MsgDepositResponse> {
@@ -1854,10 +1834,10 @@ export class MsgClientImpl implements Msg {
     return promise.then((data) => MsgRejectResponse.decode(new _m0.Reader(data)));
   }
 
-  RequestIn(request: MsgRequestIn): Promise<MsgSwapInResponse> {
+  RequestIn(request: MsgRequestIn): Promise<MsgRequestInResponse> {
     const data = MsgRequestIn.encode(request).finish();
     const promise = this.rpc.request("shareledger.swap.Msg", "RequestIn", data);
-    return promise.then((data) => MsgSwapInResponse.decode(new _m0.Reader(data)));
+    return promise.then((data) => MsgRequestInResponse.decode(new _m0.Reader(data)));
   }
 
   ApproveIn(request: MsgApproveIn): Promise<MsgApproveInResponse> {

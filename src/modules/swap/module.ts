@@ -2,7 +2,15 @@ import Long from "long";
 import {Client} from "../../client";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 import {Params} from "../../codec/shareledger/swap/params";
-import {QueryAllSchemasResponse, QueryBatchesResponse, QueryClientImpl, QuerySwapResponse} from "../../codec/shareledger/swap/query";
+import {PastTxEvent} from "../../codec/shareledger/swap/past_tx_event";
+import {
+  QuerySchemasResponse,
+  QueryBatchesResponse,
+  QueryClientImpl,
+  QuerySwapResponse,
+  QueryPastTxEventsResponse
+} from "../../codec/shareledger/swap/query";
+import {TxEvent} from "../../codec/shareledger/swap/request";
 import {Schema} from "../../codec/shareledger/swap/schema";
 import {
   MsgApproveIn,
@@ -35,8 +43,7 @@ import {
   MsgWithdrawEncodeObject,
   MsgCancelBatchesEncodeObject,
   MsgCompleteBatchEncodeObject,
-  MsgUpdateSwapFeeEncodeObject,
-  RequestInTransaction
+  MsgUpdateSwapFeeEncodeObject
 } from "./amino";
 
 export type SwapQueryExtension = {
@@ -55,7 +62,9 @@ export type SwapQueryExtension = {
       height?: number
     ) => Promise<QuerySwapResponse>;
     readonly schema: (network: string, height?: number) => Promise<Schema | undefined>;
-    readonly schemas: (paginationKey?: Uint8Array, height?: number) => Promise<QueryAllSchemasResponse>;
+    readonly schemas: (paginationKey?: Uint8Array, height?: number) => Promise<QuerySchemasResponse>;
+    readonly pastEvent: (txHash: string, logIndex: number, height?: number) => Promise<PastTxEvent | undefined>;
+    readonly pastEvents: (txHash?: string, paginationKey?: Uint8Array, height?: number) => Promise<QueryPastTxEventsResponse>;
   };
 };
 
@@ -67,16 +76,14 @@ export type SwapTxExtension = {
       destAddress: string,
       network: string,
       amount: DecCoin,
-      fee: DecCoin,
-      transactions: RequestInTransaction[]
+      events: TxEvent[]
     ) => MsgRequestInEncodeObject;
     readonly requestSwapOut: (
       creator: string,
       srcAddress: string,
       destAddress: string,
       network: string,
-      amount: DecCoin,
-      fee: DecCoin
+      amount: DecCoin
     ) => MsgRequestOutEncodeObject;
     readonly approveSwapIn: (creator: string, ids: Long[]) => MsgApproveInEncodeObject;
     readonly approveSwapOut: (creator: string, ids: Long[], signature: string) => MsgApproveOutEncodeObject;
@@ -158,7 +165,18 @@ export function SwapQueryExtension<T extends {new (...args: any[]): Client & Swa
         },
         schemas: async (paginationKey?: Uint8Array, height?: number) => {
           rpcClient.withHeight(height);
-          return queryService.AllSchemas({pagination: createPagination(paginationKey)});
+          return queryService.Schemas({pagination: createPagination(paginationKey)});
+        },
+        pastEvent: async (txHash: string, logIndex: number, height?: number) => {
+          rpcClient.withHeight(height);
+          return queryService.PastTxEvent({txHash, logIndex: Long.fromNumber(logIndex)}).then((res) => res.event);
+        },
+        pastEvents: async (txHash?: string, paginationKey?: Uint8Array, height?: number) => {
+          rpcClient.withHeight(height);
+          if (txHash) {
+            return queryService.PastTxEventsByTxHash({txHash});
+          }
+          return queryService.PastTxEvents({pagination: createPagination(paginationKey)});
         }
       };
     }
@@ -176,8 +194,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
           destAddress: string,
           network: string,
           amount: DecCoin,
-          fee: DecCoin,
-          transactions: RequestInTransaction[]
+          events: TxEvent[]
         ): MsgRequestInEncodeObject => {
           return {
             typeUrl: "/shareledger.swap.MsgRequestIn",
@@ -187,12 +204,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
               destAddress,
               network,
               amount,
-              fee,
-              txHashes: transactions.map((value) => ({
-                sender: value.sender,
-                logEventIdx: value.logIndex,
-                txHash: value.transactionHash
-              }))
+              txEvents: [...events]
             })
           };
         },
@@ -201,8 +213,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
           srcAddress: string,
           destAddress: string,
           network: string,
-          amount: DecCoin,
-          fee: DecCoin
+          amount: DecCoin
         ): MsgRequestOutEncodeObject => {
           return {
             typeUrl: "/shareledger.swap.MsgRequestOut",
@@ -211,8 +222,7 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
               srcAddress,
               destAddress,
               network,
-              amount,
-              fee
+              amount
             })
           };
         },
