@@ -31,13 +31,17 @@ export function makeAuthInfoBytes(
   signers: ReadonlyArray<{readonly pubkey: Any; readonly sequence: number}>,
   feeAmount: readonly Coin[],
   gasLimit: number,
+  feeGranter?: string,
+  feePayer?: string,
   signMode = SignMode.SIGN_MODE_DIRECT
 ): Uint8Array {
   const authInfo = {
     signerInfos: makeSignerInfos(signers, signMode),
     fee: {
       amount: [...feeAmount],
-      gasLimit: Long.fromNumber(gasLimit)
+      gasLimit: Long.fromNumber(gasLimit),
+      granter: feeGranter,
+      payer: feePayer
     }
   };
   return AuthInfo.encode(AuthInfo.fromPartial(authInfo)).finish();

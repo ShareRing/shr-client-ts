@@ -1,8 +1,8 @@
-import {StdFee} from "@cosmjs/amino";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
 import {BroadcastTxResponse} from "./client";
 import {toNshr} from "./denoms";
+import {StdFee} from "./amino";
 import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
@@ -152,11 +152,12 @@ export class ShareledgerSigningClient extends SigningClient {
   public async signAndBroadcast(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: StdFee,
+    fee?: Partial<StdFee>,
     memo?: string
   ): Promise<BroadcastTxResponse> {
-    if (!fee) {
-      fee = await this.estimate(signerAddress, messages, memo);
+    if (!fee || (!fee.amount && !fee.gas)) {
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo);
+      fee = {...fee, amount, gas};
     }
     return super.signAndBroadcast(signerAddress, messages, fee, memo);
   }
@@ -164,12 +165,13 @@ export class ShareledgerSigningClient extends SigningClient {
   public async sign(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: StdFee,
+    fee?: Partial<StdFee>,
     memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
-    if (!fee) {
-      fee = await this.estimate(signerAddress, messages, memo);
+    if (!fee || (!fee.amount && !fee.gas)) {
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo);
+      fee = {...fee, amount, gas};
     }
     return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
   }

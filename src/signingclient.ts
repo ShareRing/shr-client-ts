@@ -1,9 +1,9 @@
-import {Coin, encodeSecp256k1Pubkey, makeSignDoc as makeSignDocAmino, StdFee} from "@cosmjs/amino";
+import {Coin, encodeSecp256k1Pubkey} from "@cosmjs/amino";
 import {fromBase64} from "@cosmjs/encoding";
 import {Decimal, Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {assert, assertDefined} from "@cosmjs/utils";
-import {AminoTypes} from "./amino";
+import {AminoTypes, StdFee, makeSignDoc as makeSignDocAmino} from "./amino";
 import {BroadcastTxResponse, Client, ClientOptions} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
@@ -149,7 +149,7 @@ export class SigningClient extends Client {
   public async signAndBroadcast(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: StdFee,
+    fee?: Partial<StdFee>,
     memo?: string
   ): Promise<BroadcastTxResponse> {
     const txBytes = await this.sign(signerAddress, messages, fee, memo);
@@ -169,7 +169,7 @@ export class SigningClient extends Client {
   public async sign(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: StdFee,
+    fee?: Partial<StdFee>,
     memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
@@ -186,7 +186,7 @@ export class SigningClient extends Client {
       };
     }
 
-    if (!fee) {
+    if (!fee || (!fee.amount && !fee.gas)) {
       assertDefined(this.minTxFee, "Min tx fee must be set in the client options when auto gas is used.");
       const gasEstimation = await this.simulate(signerAddress, messages, memo);
       const buff = Math.round(gasEstimation * 1.275);
@@ -194,13 +194,13 @@ export class SigningClient extends Client {
         Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(this.minTxFee.amount, 18).atomics / buff).toString(), 18),
         this.minTxFee.denom
       );
-      fee = calculateFee(buff, gasPrice);
+      fee = {...calculateFee(buff, gasPrice), granter: fee?.granter, payer: fee?.payer};
     }
 
     const signer = this.forceGetSigner();
     return isOfflineDirectSigner(signer)
-      ? this.signDirect(signerAddress, messages, fee, memo ?? "", signerData)
-      : this.signAmino(signerAddress, messages, fee, memo ?? "", signerData);
+      ? this.signDirect(signerAddress, messages, <StdFee>fee, memo ?? "", signerData)
+      : this.signAmino(signerAddress, messages, <StdFee>fee, memo ?? "", signerData);
   }
 
   private async signAmino(
@@ -232,7 +232,14 @@ export class SigningClient extends Client {
     const signedTxBodyBytes = this.registry.encode(signedTxBodyEncodeObject);
     const signedGasLimit = Int53.fromString(signed.fee.gas).toNumber();
     const signedSequence = Int53.fromString(signed.sequence).toNumber();
-    const signedAuthInfoBytes = makeAuthInfoBytes([{pubkey, sequence: signedSequence}], signed.fee.amount, signedGasLimit, signMode);
+    const signedAuthInfoBytes = makeAuthInfoBytes(
+      [{pubkey, sequence: signedSequence}],
+      signed.fee.amount,
+      signedGasLimit,
+      signed.fee.granter,
+      signed.fee.payer,
+      signMode
+    );
     return TxRaw.encode(
       TxRaw.fromPartial({
         bodyBytes: signedTxBodyBytes,
@@ -265,7 +272,7 @@ export class SigningClient extends Client {
     };
     const txBodyBytes = this.registry.encode(txBodyEncodeObject);
     const gasLimit = Int53.fromString(fee.gas).toNumber();
-    const authInfoBytes = makeAuthInfoBytes([{pubkey, sequence}], fee.amount, gasLimit);
+    const authInfoBytes = makeAuthInfoBytes([{pubkey, sequence}], fee.amount, gasLimit, fee.granter, fee.payer);
     const signDoc = makeSignDoc(txBodyBytes, authInfoBytes, chainId, accountNumber);
     const {signature, signed} = await signer.signDirect(signerAddress, signDoc);
     return TxRaw.encode(

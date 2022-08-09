@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {AminoMsg} from "@cosmjs/amino";
+import {AminoMsg} from "./signdoc";
 import {EncodeObject} from "../signing";
 import {AminoConverter, AminoTypesOptions} from "./types";
 
@@ -76,3 +76,6 @@ export class AminoTypes {
     }
   }
 }
+
+export * from "./signdoc";
+export * from "./signer";
