@@ -156,7 +156,7 @@ export class ShareledgerSigningClient extends SigningClient {
     memo?: string
   ): Promise<BroadcastTxResponse> {
     if (!fee || (!fee.amount && !fee.gas)) {
-      const {amount, gas} = await this.estimate(signerAddress, messages, memo);
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
       fee = {...fee, amount, gas};
     }
     return super.signAndBroadcast(signerAddress, messages, fee, memo);
@@ -170,13 +170,13 @@ export class ShareledgerSigningClient extends SigningClient {
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
     if (!fee || (!fee.amount && !fee.gas)) {
-      const {amount, gas} = await this.estimate(signerAddress, messages, memo);
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
       fee = {...fee, amount, gas};
     }
     return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
   }
 
-  public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string) {
+  public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, granter?: string, payer?: string) {
     const feeEstimation = await this.gentlemint.estimateFee(
       signerAddress,
       messages.map((msg) => actions[msg.typeUrl])
@@ -189,7 +189,7 @@ export class ShareledgerSigningClient extends SigningClient {
         feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
       }
     }
-    const gasEstimation = await this.simulate(signerAddress, messages, memo, [feeByNshr]);
+    const gasEstimation = await this.simulate(signerAddress, messages, memo, {amount: [feeByNshr], granter, payer});
     const buff = Math.round(gasEstimation * 1.275);
     return {
       gas: buff.toString(),

@@ -133,7 +133,7 @@ export class SigningClient extends Client {
     return account;
   }
 
-  public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: Coin[]): Promise<number> {
+  public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: Partial<StdFee>): Promise<number> {
     const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
     const accountFromSigner = (await this.forceGetSigner().getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
@@ -188,7 +188,7 @@ export class SigningClient extends Client {
 
     if (!fee || (!fee.amount && !fee.gas)) {
       assertDefined(this.minTxFee, "Min tx fee must be set in the client options when auto gas is used.");
-      const gasEstimation = await this.simulate(signerAddress, messages, memo);
+      const gasEstimation = await this.simulate(signerAddress, messages, memo, fee);
       const buff = Math.round(gasEstimation * 1.275);
       const gasPrice = new GasPrice(
         Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(this.minTxFee.amount, 18).atomics / buff).toString(), 18),
