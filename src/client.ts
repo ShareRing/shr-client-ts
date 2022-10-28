@@ -341,7 +341,7 @@ export class Client {
     if (broadcasted.code) {
       return Promise.reject(
         new Error(
-          `Broadcasting transaction failed with code ${broadcasted.code} (codespace: ${broadcasted.codeSpace}). Log: ${broadcasted.log}`
+          `Broadcasting transaction failed with code ${broadcasted.code} (codespace: ${broadcasted.codespace}). Log: ${broadcasted.log}`
         )
       );
     }
