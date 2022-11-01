@@ -27,13 +27,13 @@ export function toBech32ConsAddress(pubkey: Uint8Array, prefix = "shareledgerval
 
 export function createPagination(paginationKey?: Uint8Array): PageRequest | undefined {
   return paginationKey
-    ? {
+    ? PageRequest.fromPartial({
         key: paginationKey,
         offset: Long.fromNumber(0, true),
         limit: Long.fromNumber(0, true),
         countTotal: false,
         reverse: false
-      }
+      })
     : undefined;
 }
 
