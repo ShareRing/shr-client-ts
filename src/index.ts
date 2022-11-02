@@ -17,7 +17,7 @@ export {
 } from "./client";
 export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
 export {calculateFee, GasPrice} from "./fee";
-export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
+export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress, decodeCosmosSdkDecFromProto} from "./query";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
