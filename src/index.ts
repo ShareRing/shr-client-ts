@@ -3,16 +3,16 @@ export {Account, accountFromAny, AccountParser} from "./account";
 export {StdFee} from "./amino";
 export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 export {
-  assertIsBroadcastTxSuccess,
+  assertIsDeliverTxSuccess,
   Block,
   BlockHeader,
-  BroadcastTxFailure,
-  BroadcastTxResponse,
-  BroadcastTxSuccess,
+  DeliverTxFailure,
+  DeliverTxResponse,
+  DeliverTxSuccess,
   Client,
   IndexedTx,
-  isBroadcastTxFailure,
-  isBroadcastTxSuccess,
+  isDeliverTxFailure,
+  isDeliverTxSuccess,
   SequenceResponse,
   TimeoutError
 } from "./client";

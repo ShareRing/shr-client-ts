@@ -1,7 +1,7 @@
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
 import {StdFee} from "./amino";
-import {BroadcastTxResponse} from "./client";
+import {DeliverTxResponse} from "./client";
 import {toNshr} from "./denoms";
 import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
@@ -157,7 +157,7 @@ export class ShareledgerSigningClient extends SigningClient {
     messages: readonly EncodeObject[],
     fee?: Partial<StdFee>,
     memo?: string
-  ): Promise<BroadcastTxResponse> {
+  ): Promise<DeliverTxResponse> {
     if (!fee || (!fee.amount && !fee.gas)) {
       const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
       fee = {...fee, amount, gas};

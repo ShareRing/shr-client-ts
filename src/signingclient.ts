@@ -4,7 +4,7 @@ import {Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {assert, assertDefined} from "@cosmjs/utils";
 import {AminoTypes, StdFee, makeSignDoc as makeSignDocAmino} from "./amino";
-import {BroadcastTxResponse, Client, ClientOptions} from "./client";
+import {DeliverTxResponse, Client, ClientOptions} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
 import {calculateFee, GasPrice} from "./fee";
@@ -146,7 +146,7 @@ export class SigningClient extends Client {
     messages: readonly EncodeObject[],
     fee?: Partial<StdFee>,
     memo?: string
-  ): Promise<BroadcastTxResponse> {
+  ): Promise<DeliverTxResponse> {
     const txBytes = await this.sign(signerAddress, messages, fee, memo);
     return this.broadcastTx(txBytes, this.broadcastTimeoutMs, this.broadcastPollIntervalMs);
   }
