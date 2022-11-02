@@ -1,13 +1,12 @@
-import {Coin, encodeSecp256k1Pubkey} from "@cosmjs/amino";
+import {encodeSecp256k1Pubkey} from "@cosmjs/amino";
 import {fromBase64} from "@cosmjs/encoding";
-import {Decimal, Int53, Uint53} from "@cosmjs/math";
+import {Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {assert, assertDefined} from "@cosmjs/utils";
 import {AminoTypes, StdFee, makeSignDoc as makeSignDocAmino} from "./amino";
 import {BroadcastTxResponse, Client, ClientOptions} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
-import {toNshr} from "./denoms";
 import {calculateFee, GasPrice} from "./fee";
 import {createRegistryTypes as A} from "./modules/auth";
 import {createActions as BB, createRegistryTypes as B} from "./modules/bank";
@@ -44,7 +43,7 @@ export interface SigningOptions extends ClientOptions {
   readonly prefix?: string;
   readonly broadcastTimeoutMs?: number;
   readonly broadcastPollIntervalMs?: number;
-  readonly minTxFee?: Coin;
+  readonly gasPrice?: GasPrice;
 }
 
 /** */
@@ -66,10 +65,10 @@ function createDefaultRegistry(): Registry {
 
 export class SigningClient extends Client {
   public readonly registry: Registry;
-  public readonly broadcastTimeoutMs: number | undefined;
-  public readonly broadcastPollIntervalMs: number | undefined;
+  public readonly broadcastTimeoutMs?: number;
+  public readonly broadcastPollIntervalMs?: number;
 
-  protected readonly minTxFee?: Coin;
+  protected readonly gasPrice?: GasPrice;
 
   private signer?: OfflineSigner;
   private readonly aminoTypes: AminoTypes;
@@ -94,17 +93,13 @@ export class SigningClient extends Client {
 
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, options);
-    const {
-      registry = createDefaultRegistry(),
-      aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"}),
-      minTxFee = toNshr(2)
-    } = options;
+    const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"})} = options;
     this.registry = registry;
     this.aminoTypes = aminoTypes;
     this.signer = signer;
     this.broadcastTimeoutMs = options.broadcastTimeoutMs;
     this.broadcastPollIntervalMs = options.broadcastPollIntervalMs;
-    this.minTxFee = minTxFee;
+    this.gasPrice = options.gasPrice;
   }
 
   protected forceGetSigner(): OfflineSigner {
@@ -187,14 +182,10 @@ export class SigningClient extends Client {
     }
 
     if (!fee || (!fee.amount && !fee.gas)) {
-      assertDefined(this.minTxFee, "Min tx fee must be set in the client options when auto gas is used.");
+      assertDefined(this.gasPrice, "Gas price must be set in the client options when fee amount and gas is not specified.");
       const gasEstimation = await this.simulate(signerAddress, messages, memo, fee);
       const buff = Math.round(gasEstimation * 1.275);
-      const gasPrice = new GasPrice(
-        Decimal.fromAtomics(Math.floor(+Decimal.fromUserInput(this.minTxFee.amount, 18).atomics / buff).toString(), 18),
-        this.minTxFee.denom
-      );
-      fee = {...calculateFee(buff, gasPrice), granter: fee?.granter, payer: fee?.payer};
+      fee = {...calculateFee(buff, this.gasPrice), granter: fee?.granter, payer: fee?.payer};
     }
 
     const signer = this.forceGetSigner();

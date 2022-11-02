@@ -186,11 +186,8 @@ export class ShareledgerSigningClient extends SigningClient {
     );
     let feeByNshr = feeEstimation.fee;
     if (!feeByNshr) {
-      feeByNshr = this.minTxFee;
-      if (!feeByNshr) {
-        const fees = await this.gentlemint.feeLevels();
-        feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
-      }
+      const fees = await this.gentlemint.feeLevels();
+      feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
     }
     const gasEstimation = await this.simulate(signerAddress, messages, memo, {amount: [feeByNshr], granter, payer});
     const buff = Math.round(gasEstimation * 1.275);
