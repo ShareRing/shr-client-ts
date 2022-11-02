@@ -216,8 +216,8 @@ export class Client {
     try {
       const account = await this.auth.account(searchAddress);
       return account ? this.accountParser(account) : null;
-    } catch (error) {
-      if (/rpc error: code = NotFound/i.test(error)) {
+    } catch (error: any) {
+      if (/rpc error: code = NotFound/i.test(error.toString())) {
         return null;
       }
       throw error;
