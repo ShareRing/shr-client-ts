@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {MultisigThresholdPubkey, pubkeyToAddress} from "@cosmjs/amino";
-import {Bech32} from "@cosmjs/encoding";
+import {fromBech32} from "@cosmjs/encoding";
 import {encodePubkey} from "./signing";
 import {CompactBitArray, MultiSignature} from "./codec/cosmos/crypto/multisig/v1beta1/multisig";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
@@ -33,7 +33,7 @@ export function makeMultisignedTx(
   signatures: Map<string, Uint8Array>
 ): TxRaw {
   const addresses = Array.from(signatures.keys());
-  const prefix = Bech32.decode(addresses[0]).prefix;
+  const prefix = fromBech32(addresses[0]).prefix;
 
   const signers: boolean[] = Array(multisigPubkey.value.pubkeys.length).fill(false);
   const signaturesList = new Array<Uint8Array>();
