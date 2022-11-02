@@ -4,11 +4,10 @@ export {StdFee} from "./amino";
 export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 export {
   assertIsDeliverTxSuccess,
+  assertIsDeliverTxFailure,
   Block,
   BlockHeader,
-  DeliverTxFailure,
   DeliverTxResponse,
-  DeliverTxSuccess,
   Client,
   IndexedTx,
   isDeliverTxFailure,
