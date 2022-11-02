@@ -2,7 +2,7 @@
 
 import {assert} from "@cosmjs/utils";
 import {Client} from "../../client";
-import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
+import {Input, Metadata, Output} from "../../codec/cosmos/bank/v1beta1/bank";
 import {QueryClientImpl} from "../../codec/cosmos/bank/v1beta1/query";
 import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
@@ -15,6 +15,8 @@ export type BankQueryExtension = {
     readonly allBalances: (address: string, height?: number) => Promise<Coin[]>;
     readonly totalSupply: (height?: number) => Promise<Coin[]>;
     readonly supplyOf: (denom: string, height?: number) => Promise<Coin>;
+    readonly denomMetadata: (denom: string, height?: number) => Promise<Metadata>;
+    readonly denomsMetadata: (height?: number) => Promise<Metadata[]>;
   };
 };
 
@@ -62,6 +64,19 @@ export function BankQueryExtension<T extends {new (...args: any[]): Client & Ban
           const {amount} = await queryService.SupplyOf({denom: denom});
           assert(amount);
           return amount;
+        },
+        denomMetadata: async (denom: string, height?: number) => {
+          rpcClient.withHeight(height);
+          const {metadata} = await queryService.DenomMetadata({denom});
+          assert(metadata);
+          return metadata;
+        },
+        denomsMetadata: async (height?: number) => {
+          rpcClient.withHeight(height);
+          const {metadatas} = await queryService.DenomsMetadata({
+            pagination: undefined // Not implemented
+          });
+          return metadatas;
         }
       };
     }
