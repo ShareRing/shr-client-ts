@@ -18,15 +18,16 @@ import {createActions as FF, createRegistryTypes as F, SwapExtension} from "./mo
 import {TxExtension} from "./modules/tx";
 import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
 import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+import {createActions as GG, createRegistryTypes as G, FeegrantExtension} from "./modules/feegrant";
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E, F].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[A, B, C, D, E, F, G].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
 export const actions: Record<string, string> = {
   ...defaultActions,
-  ...[AA, BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {})
+  ...[AA, BB, CC, DD, EE, FF, GG].reduce((prev, curr) => ({...prev, ...curr()}), {})
 };
 
 function createRegistry(): Registry {
@@ -50,7 +51,8 @@ export interface ShareledgerSigningClient
     ElectoralExtension,
     GentlemintExtension,
     IdExtension,
-    SwapExtension {}
+    SwapExtension,
+    FeegrantExtension {}
 
 @AuthExtension
 @BankExtension
@@ -65,6 +67,7 @@ export interface ShareledgerSigningClient
 @GentlemintExtension
 @IdExtension
 @SwapExtension
+@FeegrantExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
