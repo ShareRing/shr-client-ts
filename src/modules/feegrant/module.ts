@@ -27,8 +27,8 @@ export type FeegrantQueryExtension = {
 
 export type FeegrantTxExtension = {
   get feegrant(): {
-    readonly grantAllowanceTx: (granter: string, grantee: string, allowance?: Any) => MsgGrantAllowanceEncodeObject;
-    readonly revokeAllowanceTx: (granter: string, grantee: string) => MsgRevokeAllowanceEncodeObject;
+    readonly grantAllowance: (granter: string, grantee: string, allowance?: Any) => MsgGrantAllowanceEncodeObject;
+    readonly revokeAllowance: (granter: string, grantee: string) => MsgRevokeAllowanceEncodeObject;
   };
 };
 
@@ -97,13 +97,13 @@ export function FeegrantTxExtension<T extends {new (...args: any[]): Client & Fe
     get feegrant() {
       return {
         ...super["feegrant"],
-        grantAllowanceTx: (granter: string, grantee: string, allowance?: Any): MsgGrantAllowanceEncodeObject => {
+        grantAllowance: (granter: string, grantee: string, allowance?: Any): MsgGrantAllowanceEncodeObject => {
           return {
             typeUrl: "/cosmos.feegrant.v1beta1.MsgGrantAllowance",
             value: MsgGrantAllowance.fromPartial({granter, grantee, allowance})
           };
         },
-        revokeAllowanceTx: (granter: string, grantee: string): MsgRevokeAllowanceEncodeObject => {
+        revokeAllowance: (granter: string, grantee: string): MsgRevokeAllowanceEncodeObject => {
           return {
             typeUrl: "/cosmos.feegrant.v1beta1.MsgRevokeAllowance",
             value: MsgRevokeAllowance.fromPartial({granter, grantee})
