@@ -13,6 +13,7 @@ import {SlashingQueryExtension} from "./modules/slashing";
 import {StakingQueryExtension} from "./modules/staking";
 import {SwapQueryExtension} from "./modules/swap";
 import {TxQueryExtension} from "./modules/tx";
+import {WasmQueryExtension} from "./modules/wasm";
 
 export interface ShareledgerClient
   extends AuthQueryExtension,
@@ -27,7 +28,8 @@ export interface ShareledgerClient
     ElectoralQueryExtension,
     GentlemintQueryExtension,
     IdQueryExtension,
-    SwapQueryExtension {}
+    SwapQueryExtension,
+    WasmQueryExtension {}
 
 @AuthQueryExtension
 @BankQueryExtension
@@ -42,6 +44,7 @@ export interface ShareledgerClient
 @GentlemintQueryExtension
 @IdQueryExtension
 @SwapQueryExtension
+@WasmQueryExtension
 export class ShareledgerClient extends Client {
   public static async connect(endpoint: string, options: ClientOptions = {}): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);

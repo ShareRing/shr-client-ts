@@ -15,18 +15,19 @@ import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modu
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
 import {createActions as FF, createRegistryTypes as F, SwapExtension} from "./modules/swap";
+import {createActions as HH, createRegistryTypes as H, WasmExtension} from "./modules/wasm";
 import {TxExtension} from "./modules/tx";
 import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
 import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E, F].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[A, B, C, D, E, F, H].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
 export const actions: Record<string, string> = {
   ...defaultActions,
-  ...[AA, BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {})
+  ...[AA, BB, CC, DD, EE, FF, HH].reduce((prev, curr) => ({...prev, ...curr()}), {})
 };
 
 function createRegistry(): Registry {
@@ -50,7 +51,8 @@ export interface ShareledgerSigningClient
     ElectoralExtension,
     GentlemintExtension,
     IdExtension,
-    SwapExtension {}
+    SwapExtension,
+    WasmExtension {}
 
 @AuthExtension
 @BankExtension
@@ -65,6 +67,7 @@ export interface ShareledgerSigningClient
 @GentlemintExtension
 @IdExtension
 @SwapExtension
+@WasmExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
