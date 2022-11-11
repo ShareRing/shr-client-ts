@@ -128,7 +128,7 @@ export class SigningClient extends Client {
     return account;
   }
 
-  public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: Partial<StdFee>): Promise<number> {
+  public async simulate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: StdFee): Promise<number> {
     const anyMsgs = messages.map((m) => this.registry.encodeAsAny(m));
     const accountFromSigner = (await this.forceGetSigner().getAccounts()).find((account) => account.address === signerAddress);
     if (!accountFromSigner) {
@@ -144,7 +144,7 @@ export class SigningClient extends Client {
   public async signAndBroadcast(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: Partial<StdFee>,
+    fee?: StdFee,
     memo?: string
   ): Promise<DeliverTxResponse> {
     const txBytes = await this.sign(signerAddress, messages, fee, memo);
@@ -164,7 +164,7 @@ export class SigningClient extends Client {
   public async sign(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: Partial<StdFee>,
+    fee?: StdFee,
     memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
@@ -190,8 +190,8 @@ export class SigningClient extends Client {
 
     const signer = this.forceGetSigner();
     return isOfflineDirectSigner(signer)
-      ? this.signDirect(signerAddress, messages, <StdFee>fee, memo ?? "", signerData)
-      : this.signAmino(signerAddress, messages, <StdFee>fee, memo ?? "", signerData);
+      ? this.signDirect(signerAddress, messages, fee, memo ?? "", signerData)
+      : this.signAmino(signerAddress, messages, fee, memo ?? "", signerData);
   }
 
   private async signAmino(
@@ -201,6 +201,8 @@ export class SigningClient extends Client {
     memo: string,
     {accountNumber, sequence, chainId}: SignerData
   ): Promise<Uint8Array> {
+    assert(fee.amount);
+    assert(fee.gas);
     const signer = this.forceGetSigner();
     assert(!isOfflineDirectSigner(signer));
     const accountFromSigner = (await signer.getAccounts()).find((account) => account.address === signerAddress);
@@ -212,6 +214,8 @@ export class SigningClient extends Client {
     const msgs = messages.map((msg) => this.aminoTypes.toAmino(msg));
     const signDoc = makeSignDocAmino(msgs, fee, chainId, memo, accountNumber, sequence);
     const {signature, signed} = await signer.signAmino(signerAddress, signDoc);
+    assert(signed.fee.amount);
+    assert(signed.fee.gas);
     const signedTxBody = {
       messages: signed.msgs.map((msg) => this.aminoTypes.fromAmino(msg)),
       memo: signed.memo
@@ -247,6 +251,8 @@ export class SigningClient extends Client {
     memo: string,
     {accountNumber, sequence, chainId}: SignerData
   ): Promise<Uint8Array> {
+    assert(fee.amount);
+    assert(fee.gas);
     const signer = this.forceGetSigner();
     assert(isOfflineDirectSigner(signer));
     const accountFromSigner = (await signer.getAccounts()).find((account) => account.address === signerAddress);

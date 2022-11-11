@@ -21,13 +21,7 @@ export type TxQueryExtension = {
   get tx(): {
     getTx: (hash: string) => Promise<GetTxResponse>;
     getTxs: (events: string[], orderBy?: OrderBy, paginationKey?: Uint8Array) => Promise<GetTxsEventResponse>;
-    simulate: (
-      signer: Pubkey,
-      sequence: number,
-      messages: readonly Any[],
-      memo?: string,
-      fee?: Partial<StdFee>
-    ) => Promise<SimulateResponse>;
+    simulate: (signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: StdFee) => Promise<SimulateResponse>;
   };
 };
 
@@ -55,7 +49,7 @@ export function TxQueryExtension<T extends {new (...args: any[]): Client & TxQue
           });
           return response;
         },
-        simulate: async (signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: Partial<StdFee>) => {
+        simulate: async (signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: StdFee) => {
           const response = await serviceClient.Simulate(
             SimulateRequest.fromPartial({
               tx: Tx.fromPartial({

@@ -9,8 +9,8 @@ export interface AminoMsg {
 }
 
 export interface StdFee {
-  readonly amount: readonly Coin[];
-  readonly gas: string;
+  readonly amount?: readonly Coin[];
+  readonly gas?: string;
   readonly payer?: string;
   readonly granter?: string;
 }
