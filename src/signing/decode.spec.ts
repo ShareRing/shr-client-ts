@@ -46,7 +46,7 @@ describe("decode", () => {
                   mode: SignMode.SIGN_MODE_DIRECT
                 }
               },
-              sequence: Long.fromNumber(0, true)
+              sequence: Long.UZERO
             }
           ],
           fee: {
