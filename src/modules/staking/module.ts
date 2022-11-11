@@ -30,7 +30,7 @@ import {MsgBeginRedelegate, MsgDelegate, MsgUndelegate} from "../../codec/cosmos
 import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgBeginRedelegateEncodeObject, MsgDelegateEncodeObject, MsgUndelegateEncodeObject} from "./amino";
 
-export type BondStatusString = Exclude<keyof typeof BondStatus, "BOND_STATUS_UNSPECIFIED">;
+export type BondStatusString = keyof Pick<typeof BondStatus, "BOND_STATUS_BONDED" | "BOND_STATUS_UNBONDED" | "BOND_STATUS_UNBONDING"> | "";
 
 export type StakingQueryExtension = {
   get staking(): {
