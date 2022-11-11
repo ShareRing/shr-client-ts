@@ -1,4 +1,5 @@
 export {fromBech32, toBech32} from "@cosmjs/encoding";
+export {HttpEndpoint} from "@cosmjs/tendermint-rpc";
 export {Account, accountFromAny, AccountParser} from "./account";
 export {StdFee} from "./amino";
 export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
