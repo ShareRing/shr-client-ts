@@ -316,7 +316,7 @@ export class Client {
       if (timedOut) {
         throw new TimeoutError(
           `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later. There was a wait of ${
-            timeoutMs / 10000
+            timeoutMs / 1000
           } seconds.`,
           txId
         );
