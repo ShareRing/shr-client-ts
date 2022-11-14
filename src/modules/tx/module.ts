@@ -50,33 +50,31 @@ export function TxQueryExtension<T extends {new (...args: any[]): Client & TxQue
           return response;
         },
         simulate: async (signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: StdFee) => {
+          const tx = Tx.fromPartial({
+            authInfo: AuthInfo.fromPartial({
+              fee: Fee.fromPartial({
+                amount: fee?.amount ? [...fee.amount] : undefined,
+                gasLimit: fee?.gas ? Int53.fromString(fee.gas).toNumber() : undefined,
+                granter: fee?.granter,
+                payer: fee?.payer
+              }),
+              signerInfos: [
+                {
+                  publicKey: encodePubkey(signer),
+                  sequence: Long.fromNumber(sequence, true),
+                  modeInfo: {single: {mode: SignMode.SIGN_MODE_UNSPECIFIED}}
+                }
+              ]
+            }),
+            body: TxBody.fromPartial({
+              messages: Array.from(messages),
+              memo: memo
+            }),
+            signatures: [new Uint8Array()]
+          });
           const response = await serviceClient.Simulate(
             SimulateRequest.fromPartial({
-              tx: Tx.fromPartial({
-                authInfo: AuthInfo.fromPartial({
-                  fee: Fee.fromPartial({
-                    amount: fee?.amount ? [...fee.amount] : undefined,
-                    gasLimit: fee?.gas ? Int53.fromString(fee.gas).toNumber() : undefined,
-                    granter: fee?.granter,
-                    payer: fee?.payer
-                  }),
-                  signerInfos: [
-                    {
-                      publicKey: encodePubkey(signer),
-                      sequence: Long.fromNumber(sequence, true),
-                      modeInfo: {single: {mode: SignMode.SIGN_MODE_UNSPECIFIED}}
-                    }
-                  ]
-                }),
-                body: TxBody.fromPartial({
-                  messages: Array.from(messages),
-                  memo: memo
-                }),
-                signatures: [new Uint8Array()]
-              }),
-              // Sending serialized `txBytes` is the future. But
-              // this is not available in Comsos SDK 0.42.
-              txBytes: undefined
+              txBytes: Tx.encode(tx).finish()
             })
           );
           return response;
