@@ -47,7 +47,7 @@ describe("Secp256k1Wallet", () => {
         value: account.pubkey
       };
       const fee = coins(1, "stake");
-      const gasLimit = 180000;
+      const gasLimit = 222000;
       const chainId = "planet";
       const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{pubkey, sequence}], fee, gasLimit), chainId, accountNumber);
       const signDocBytes = makeSignBytes(signDoc);
@@ -69,7 +69,7 @@ describe("Secp256k1Wallet", () => {
         value: fromHex(testAccounts[1].pubkey) // this is where the pubkey goes wrong
       };
       const fee = coins(1, "stake");
-      const gasLimit = 180000;
+      const gasLimit = 222000;
       const chainId = "planet";
       const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{pubkey, sequence}], fee, gasLimit), chainId, accountNumber);
       const signDocBytes = makeSignBytes(signDoc);
@@ -91,7 +91,7 @@ describe("Secp256k1Wallet", () => {
         value: account.pubkey
       };
       const fee = coins(1, "stake");
-      const gasLimit = 180000;
+      const gasLimit = 222000;
       const chainId = "planet";
       const signDoc = makeSignDoc(fromHex(bodyBytes), makeAuthInfoBytes([{pubkey, sequence}], fee, gasLimit), chainId, accountNumber);
       expect(wallet.signDirect(testAccounts[1].address, signDoc)).to.eventually.be.rejectedWith(/not found in wallet/);
