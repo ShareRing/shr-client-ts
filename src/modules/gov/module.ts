@@ -6,10 +6,10 @@ import {Client} from "../../client";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {Deposit, Proposal, ProposalStatus, TallyResult, Vote} from "../../codec/cosmos/gov/v1beta1/gov";
 import {QueryClientImpl, QueryDepositsResponse, QueryProposalsResponse, QueryVotesResponse} from "../../codec/cosmos/gov/v1beta1/query";
-import {MsgDeposit, MsgSubmitProposal, MsgVote} from "../../codec/cosmos/gov/v1beta1/tx";
+import {MsgDeposit, MsgSubmitProposal, MsgVote, MsgVoteWeighted} from "../../codec/cosmos/gov/v1beta1/tx";
 import {Any} from "../../codec/google/protobuf/any";
 import {createPagination, createProtobufRpcClient, longify, ProtobufRpcClient} from "../../query";
-import {MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, MsgVoteEncodeObject, VoteOption} from "./amino";
+import {MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, MsgVoteEncodeObject, MsgVoteWeightedEncodeObject, VoteOption} from "./amino";
 
 export type GovParamsType = "deposit" | "tallying" | "voting";
 
@@ -41,6 +41,11 @@ export type GovTxExtension = {
       content?: {title: string; description: string}
     ) => MsgSubmitProposalEncodeObject;
     readonly voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption) => MsgVoteEncodeObject;
+    readonly voteWeightedTx: (
+      proposalId: GovProposalId,
+      voter: string,
+      options: Array<{option: VoteOption; weight: string}>
+    ) => MsgVoteWeightedEncodeObject;
     readonly depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]) => MsgDepositEncodeObject;
   };
 };
@@ -162,6 +167,20 @@ export function GovTxExtension<T extends {new (...args: any[]): Client & GovTxEx
               proposalId: longify(proposalId),
               voter,
               option
+            })
+          };
+        },
+        voteWeightedTx: (
+          proposalId: GovProposalId,
+          voter: string,
+          options: Array<{option: VoteOption; weight: string}>
+        ): MsgVoteWeightedEncodeObject => {
+          return {
+            typeUrl: "/cosmos.gov.v1beta1.MsgVoteWeighted",
+            value: MsgVoteWeighted.fromPartial({
+              proposalId: longify(proposalId),
+              voter,
+              options
             })
           };
         },
