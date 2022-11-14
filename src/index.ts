@@ -18,6 +18,7 @@ export {
 } from "./client";
 export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
 export {calculateFee, GasPrice} from "./fee";
+export {makeMultisignedTx, makeMultisignedTxBytes} from "./multisig";
 export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress, decodeCosmosSdkDecFromProto} from "./query";
 export {
   isSearchByHeightQuery,
