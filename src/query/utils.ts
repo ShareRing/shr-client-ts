@@ -26,15 +26,7 @@ export function toBech32ConsAddress(pubkey: Uint8Array, prefix = "shareledgerval
 }
 
 export function createPagination(paginationKey?: Uint8Array): PageRequest | undefined {
-  return paginationKey
-    ? PageRequest.fromPartial({
-        key: paginationKey,
-        offset: Long.UZERO,
-        limit: Long.UZERO,
-        countTotal: false,
-        reverse: false
-      })
-    : undefined;
+  return paginationKey ? PageRequest.fromPartial({key: paginationKey}) : undefined;
 }
 
 export interface ProtobufRpcClient {
