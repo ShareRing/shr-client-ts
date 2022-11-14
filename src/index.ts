@@ -8,6 +8,7 @@ export {
   assertIsDeliverTxFailure,
   Block,
   BlockHeader,
+  BroadcastTxError,
   DeliverTxResponse,
   Client,
   IndexedTx,
