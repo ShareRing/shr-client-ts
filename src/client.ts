@@ -7,6 +7,7 @@ import {Tendermint34Client, toRfc3339WithNanoseconds} from "@cosmjs/tendermint-r
 import {sleep} from "@cosmjs/utils";
 import {Account, accountFromAny, AccountParser} from "./account";
 import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
+import {Event, fromTendermint34Event} from "./events";
 import {AuthExtension} from "./modules/auth/module";
 import {TxExtension} from "./modules/tx/module";
 import {QueryClient} from "./query";
@@ -58,6 +59,15 @@ export interface IndexedTx {
   readonly hash: string;
   /** Transaction execution error code. 0 on success. */
   readonly code: number;
+  readonly events: readonly Event[];
+  /**
+   * A string-based log document.
+   *
+   * This currently seems to merge attributes of multiple events into one event per type
+   * (https://github.com/tendermint/tendermint/issues/9595). You might want to use the `events`
+   * field instead.
+   */
+
   readonly rawLog: string;
   /**
    * Raw transaction bytes stored in Tendermint.
@@ -92,6 +102,14 @@ export interface DeliverTxResponse {
   /** Error code. The transaction suceeded iff code is 0. */
   readonly code: number;
   readonly transactionHash: string;
+  readonly events: readonly Event[];
+  /**
+   * A string-based log document.
+   *
+   * This currently seems to merge attributes of multiple events into one event per type
+   * (https://github.com/tendermint/tendermint/issues/9595). You might want to use the `events`
+   * field instead.
+   */
   readonly rawLog?: string;
   readonly data?: readonly MsgData[];
   readonly gasUsed: number;
@@ -268,6 +286,7 @@ export class Client {
           gasWanted: result.txResponse.gasWanted.toNumber(),
           hash: result.txResponse.txhash,
           height: result.txResponse.height.toNumber(),
+          events: result.txResponse.events.map(fromTendermint34Event),
           rawLog: result.txResponse.rawLog,
           tx: result.txResponse.tx?.value
         }
@@ -345,6 +364,7 @@ export class Client {
         ? {
             code: result.code,
             height: result.height,
+            events: result.events,
             rawLog: result.rawLog,
             transactionHash: txId,
             gasUsed: result.gasUsed,
@@ -379,6 +399,7 @@ export class Client {
         height: tx.height,
         hash: toHex(tx.hash).toUpperCase(),
         code: tx.result.code,
+        events: tx.result.events.map(fromTendermint34Event),
         rawLog: tx.result.log || "",
         tx: tx.tx,
         gasUsed: tx.result.gasUsed,

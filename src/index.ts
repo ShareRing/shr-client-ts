@@ -18,7 +18,9 @@ export {
   TimeoutError
 } from "./client";
 export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
+export {Attribute, Event, fromTendermint34Event} from "./events";
 export {calculateFee, GasPrice} from "./fee";
+export {findAttribute, parseAttribute, parseEvent, parseLog, parseLogs, parseRawLog} from "./logs";
 export {makeMultisignedTx, makeMultisignedTxBytes} from "./multisig";
 export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress, decodeCosmosSdkDecFromProto} from "./query";
 export {
