@@ -3,10 +3,10 @@
 import {assert} from "@cosmjs/utils";
 import {Client} from "../../client";
 import {Input, Metadata, Output} from "../../codec/cosmos/bank/v1beta1/bank";
-import {QueryClientImpl} from "../../codec/cosmos/bank/v1beta1/query";
+import {QueryClientImpl, QueryTotalSupplyResponse} from "../../codec/cosmos/bank/v1beta1/query";
 import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
-import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
+import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {MsgMultiSendEncodeObject, MsgSendEncodeObject} from "./amino";
 
 export type BankQueryExtension = {
@@ -56,7 +56,13 @@ export function BankQueryExtension<T extends {new (...args: any[]): Client & Ban
         },
         totalSupply: async (height?: number) => {
           rpcClient.withHeight(height);
-          const {supply} = await queryService.TotalSupply({});
+          const supply: Coin[] = [];
+          let paginationKey = undefined;
+          do {
+            const res: QueryTotalSupplyResponse = await queryService.TotalSupply({pagination: createPagination(paginationKey)});
+            supply.push(...res.supply);
+            paginationKey = res.pagination?.nextKey;
+          } while (paginationKey && paginationKey.length);
           return supply;
         },
         supplyOf: async (denom: string, height?: number) => {
