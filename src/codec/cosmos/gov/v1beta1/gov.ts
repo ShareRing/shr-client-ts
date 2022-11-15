@@ -1,4 +1,5 @@
 /* eslint-disable */
+import {Decimal} from "@cosmjs/math";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
 import {Any} from "../../../google/protobuf/any";
@@ -261,7 +262,7 @@ export const WeightedVoteOption = {
       writer.uint32(8).int32(message.option);
     }
     if (message.weight !== "") {
-      writer.uint32(18).string(message.weight);
+      writer.uint32(18).string(Decimal.fromUserInput(message.weight, 18).atomics);
     }
     return writer;
   },
@@ -277,7 +278,7 @@ export const WeightedVoteOption = {
           message.option = reader.int32() as any;
           break;
         case 2:
-          message.weight = reader.string();
+          message.weight = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
