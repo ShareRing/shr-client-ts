@@ -45,6 +45,8 @@ export function TxQueryExtension<T extends {new (...args: any[]): Client & TxQue
           const response = await serviceClient.GetTxsEvent({
             events,
             orderBy,
+            page: Long.UZERO,
+            limit: Long.UZERO,
             pagination: createPagination(paginationKey)
           });
           return response;
