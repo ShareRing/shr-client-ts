@@ -39,7 +39,9 @@ export interface MsgUpdateDocument {
 
 export interface MsgUpdateDocumentResponse {}
 
-const baseMsgCreateDocument: object = {data: "", holder: "", issuer: "", proof: ""};
+function createBaseMsgCreateDocument(): MsgCreateDocument {
+  return {data: "", holder: "", issuer: "", proof: ""};
+}
 
 export const MsgCreateDocument = {
   encode(message: MsgCreateDocument, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -61,7 +63,7 @@ export const MsgCreateDocument = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocument {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateDocument} as MsgCreateDocument;
+    const message = createBaseMsgCreateDocument();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -86,12 +88,12 @@ export const MsgCreateDocument = {
   },
 
   fromJSON(object: any): MsgCreateDocument {
-    const message = {...baseMsgCreateDocument} as MsgCreateDocument;
-    message.data = object.data !== undefined && object.data !== null ? String(object.data) : "";
-    message.holder = object.holder !== undefined && object.holder !== null ? String(object.holder) : "";
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    message.proof = object.proof !== undefined && object.proof !== null ? String(object.proof) : "";
-    return message;
+    return {
+      data: isSet(object.data) ? String(object.data) : "",
+      holder: isSet(object.holder) ? String(object.holder) : "",
+      issuer: isSet(object.issuer) ? String(object.issuer) : "",
+      proof: isSet(object.proof) ? String(object.proof) : ""
+    };
   },
 
   toJSON(message: MsgCreateDocument): unknown {
@@ -104,7 +106,7 @@ export const MsgCreateDocument = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateDocument>, I>>(object: I): MsgCreateDocument {
-    const message = {...baseMsgCreateDocument} as MsgCreateDocument;
+    const message = createBaseMsgCreateDocument();
     message.data = object.data ?? "";
     message.holder = object.holder ?? "";
     message.issuer = object.issuer ?? "";
@@ -113,7 +115,9 @@ export const MsgCreateDocument = {
   }
 };
 
-const baseMsgCreateDocumentResponse: object = {};
+function createBaseMsgCreateDocumentResponse(): MsgCreateDocumentResponse {
+  return {};
+}
 
 export const MsgCreateDocumentResponse = {
   encode(_: MsgCreateDocumentResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -123,7 +127,7 @@ export const MsgCreateDocumentResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocumentResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateDocumentResponse} as MsgCreateDocumentResponse;
+    const message = createBaseMsgCreateDocumentResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -136,8 +140,7 @@ export const MsgCreateDocumentResponse = {
   },
 
   fromJSON(_: any): MsgCreateDocumentResponse {
-    const message = {...baseMsgCreateDocumentResponse} as MsgCreateDocumentResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateDocumentResponse): unknown {
@@ -146,12 +149,14 @@ export const MsgCreateDocumentResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateDocumentResponse>, I>>(_: I): MsgCreateDocumentResponse {
-    const message = {...baseMsgCreateDocumentResponse} as MsgCreateDocumentResponse;
+    const message = createBaseMsgCreateDocumentResponse();
     return message;
   }
 };
 
-const baseMsgCreateDocuments: object = {data: "", holder: "", issuer: "", proof: ""};
+function createBaseMsgCreateDocuments(): MsgCreateDocuments {
+  return {data: [], holder: [], issuer: "", proof: []};
+}
 
 export const MsgCreateDocuments = {
   encode(message: MsgCreateDocuments, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -173,10 +178,7 @@ export const MsgCreateDocuments = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocuments {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateDocuments} as MsgCreateDocuments;
-    message.data = [];
-    message.holder = [];
-    message.proof = [];
+    const message = createBaseMsgCreateDocuments();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -201,12 +203,12 @@ export const MsgCreateDocuments = {
   },
 
   fromJSON(object: any): MsgCreateDocuments {
-    const message = {...baseMsgCreateDocuments} as MsgCreateDocuments;
-    message.data = (object.data ?? []).map((e: any) => String(e));
-    message.holder = (object.holder ?? []).map((e: any) => String(e));
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    message.proof = (object.proof ?? []).map((e: any) => String(e));
-    return message;
+    return {
+      data: Array.isArray(object?.data) ? object.data.map((e: any) => String(e)) : [],
+      holder: Array.isArray(object?.holder) ? object.holder.map((e: any) => String(e)) : [],
+      issuer: isSet(object.issuer) ? String(object.issuer) : "",
+      proof: Array.isArray(object?.proof) ? object.proof.map((e: any) => String(e)) : []
+    };
   },
 
   toJSON(message: MsgCreateDocuments): unknown {
@@ -231,7 +233,7 @@ export const MsgCreateDocuments = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateDocuments>, I>>(object: I): MsgCreateDocuments {
-    const message = {...baseMsgCreateDocuments} as MsgCreateDocuments;
+    const message = createBaseMsgCreateDocuments();
     message.data = object.data?.map((e) => e) || [];
     message.holder = object.holder?.map((e) => e) || [];
     message.issuer = object.issuer ?? "";
@@ -240,7 +242,9 @@ export const MsgCreateDocuments = {
   }
 };
 
-const baseMsgCreateDocumentsResponse: object = {};
+function createBaseMsgCreateDocumentsResponse(): MsgCreateDocumentsResponse {
+  return {};
+}
 
 export const MsgCreateDocumentsResponse = {
   encode(_: MsgCreateDocumentsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -250,7 +254,7 @@ export const MsgCreateDocumentsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateDocumentsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateDocumentsResponse} as MsgCreateDocumentsResponse;
+    const message = createBaseMsgCreateDocumentsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -263,8 +267,7 @@ export const MsgCreateDocumentsResponse = {
   },
 
   fromJSON(_: any): MsgCreateDocumentsResponse {
-    const message = {...baseMsgCreateDocumentsResponse} as MsgCreateDocumentsResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateDocumentsResponse): unknown {
@@ -273,12 +276,14 @@ export const MsgCreateDocumentsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateDocumentsResponse>, I>>(_: I): MsgCreateDocumentsResponse {
-    const message = {...baseMsgCreateDocumentsResponse} as MsgCreateDocumentsResponse;
+    const message = createBaseMsgCreateDocumentsResponse();
     return message;
   }
 };
 
-const baseMsgRevokeDocument: object = {holder: "", issuer: "", proof: ""};
+function createBaseMsgRevokeDocument(): MsgRevokeDocument {
+  return {holder: "", issuer: "", proof: ""};
+}
 
 export const MsgRevokeDocument = {
   encode(message: MsgRevokeDocument, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -297,7 +302,7 @@ export const MsgRevokeDocument = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDocument {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeDocument} as MsgRevokeDocument;
+    const message = createBaseMsgRevokeDocument();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -319,11 +324,11 @@ export const MsgRevokeDocument = {
   },
 
   fromJSON(object: any): MsgRevokeDocument {
-    const message = {...baseMsgRevokeDocument} as MsgRevokeDocument;
-    message.holder = object.holder !== undefined && object.holder !== null ? String(object.holder) : "";
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    message.proof = object.proof !== undefined && object.proof !== null ? String(object.proof) : "";
-    return message;
+    return {
+      holder: isSet(object.holder) ? String(object.holder) : "",
+      issuer: isSet(object.issuer) ? String(object.issuer) : "",
+      proof: isSet(object.proof) ? String(object.proof) : ""
+    };
   },
 
   toJSON(message: MsgRevokeDocument): unknown {
@@ -335,7 +340,7 @@ export const MsgRevokeDocument = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRevokeDocument>, I>>(object: I): MsgRevokeDocument {
-    const message = {...baseMsgRevokeDocument} as MsgRevokeDocument;
+    const message = createBaseMsgRevokeDocument();
     message.holder = object.holder ?? "";
     message.issuer = object.issuer ?? "";
     message.proof = object.proof ?? "";
@@ -343,7 +348,9 @@ export const MsgRevokeDocument = {
   }
 };
 
-const baseMsgRevokeDocumentResponse: object = {};
+function createBaseMsgRevokeDocumentResponse(): MsgRevokeDocumentResponse {
+  return {};
+}
 
 export const MsgRevokeDocumentResponse = {
   encode(_: MsgRevokeDocumentResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -353,7 +360,7 @@ export const MsgRevokeDocumentResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeDocumentResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeDocumentResponse} as MsgRevokeDocumentResponse;
+    const message = createBaseMsgRevokeDocumentResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -366,8 +373,7 @@ export const MsgRevokeDocumentResponse = {
   },
 
   fromJSON(_: any): MsgRevokeDocumentResponse {
-    const message = {...baseMsgRevokeDocumentResponse} as MsgRevokeDocumentResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgRevokeDocumentResponse): unknown {
@@ -376,12 +382,14 @@ export const MsgRevokeDocumentResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRevokeDocumentResponse>, I>>(_: I): MsgRevokeDocumentResponse {
-    const message = {...baseMsgRevokeDocumentResponse} as MsgRevokeDocumentResponse;
+    const message = createBaseMsgRevokeDocumentResponse();
     return message;
   }
 };
 
-const baseMsgUpdateDocument: object = {data: "", holder: "", issuer: "", proof: ""};
+function createBaseMsgUpdateDocument(): MsgUpdateDocument {
+  return {data: "", holder: "", issuer: "", proof: ""};
+}
 
 export const MsgUpdateDocument = {
   encode(message: MsgUpdateDocument, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -403,7 +411,7 @@ export const MsgUpdateDocument = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateDocument {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateDocument} as MsgUpdateDocument;
+    const message = createBaseMsgUpdateDocument();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -428,12 +436,12 @@ export const MsgUpdateDocument = {
   },
 
   fromJSON(object: any): MsgUpdateDocument {
-    const message = {...baseMsgUpdateDocument} as MsgUpdateDocument;
-    message.data = object.data !== undefined && object.data !== null ? String(object.data) : "";
-    message.holder = object.holder !== undefined && object.holder !== null ? String(object.holder) : "";
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    message.proof = object.proof !== undefined && object.proof !== null ? String(object.proof) : "";
-    return message;
+    return {
+      data: isSet(object.data) ? String(object.data) : "",
+      holder: isSet(object.holder) ? String(object.holder) : "",
+      issuer: isSet(object.issuer) ? String(object.issuer) : "",
+      proof: isSet(object.proof) ? String(object.proof) : ""
+    };
   },
 
   toJSON(message: MsgUpdateDocument): unknown {
@@ -446,7 +454,7 @@ export const MsgUpdateDocument = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUpdateDocument>, I>>(object: I): MsgUpdateDocument {
-    const message = {...baseMsgUpdateDocument} as MsgUpdateDocument;
+    const message = createBaseMsgUpdateDocument();
     message.data = object.data ?? "";
     message.holder = object.holder ?? "";
     message.issuer = object.issuer ?? "";
@@ -455,7 +463,9 @@ export const MsgUpdateDocument = {
   }
 };
 
-const baseMsgUpdateDocumentResponse: object = {};
+function createBaseMsgUpdateDocumentResponse(): MsgUpdateDocumentResponse {
+  return {};
+}
 
 export const MsgUpdateDocumentResponse = {
   encode(_: MsgUpdateDocumentResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -465,7 +475,7 @@ export const MsgUpdateDocumentResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateDocumentResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateDocumentResponse} as MsgUpdateDocumentResponse;
+    const message = createBaseMsgUpdateDocumentResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -478,8 +488,7 @@ export const MsgUpdateDocumentResponse = {
   },
 
   fromJSON(_: any): MsgUpdateDocumentResponse {
-    const message = {...baseMsgUpdateDocumentResponse} as MsgUpdateDocumentResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgUpdateDocumentResponse): unknown {
@@ -488,7 +497,7 @@ export const MsgUpdateDocumentResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUpdateDocumentResponse>, I>>(_: I): MsgUpdateDocumentResponse {
-    const message = {...baseMsgUpdateDocumentResponse} as MsgUpdateDocumentResponse;
+    const message = createBaseMsgUpdateDocumentResponse();
     return message;
   }
 };
@@ -504,7 +513,9 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.document.Msg";
     this.rpc = rpc;
     this.CreateDocument = this.CreateDocument.bind(this);
     this.CreateDocuments = this.CreateDocuments.bind(this);
@@ -513,25 +524,25 @@ export class MsgClientImpl implements Msg {
   }
   CreateDocument(request: MsgCreateDocument): Promise<MsgCreateDocumentResponse> {
     const data = MsgCreateDocument.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Msg", "CreateDocument", data);
+    const promise = this.rpc.request(this.service, "CreateDocument", data);
     return promise.then((data) => MsgCreateDocumentResponse.decode(new _m0.Reader(data)));
   }
 
   CreateDocuments(request: MsgCreateDocuments): Promise<MsgCreateDocumentsResponse> {
     const data = MsgCreateDocuments.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Msg", "CreateDocuments", data);
+    const promise = this.rpc.request(this.service, "CreateDocuments", data);
     return promise.then((data) => MsgCreateDocumentsResponse.decode(new _m0.Reader(data)));
   }
 
   RevokeDocument(request: MsgRevokeDocument): Promise<MsgRevokeDocumentResponse> {
     const data = MsgRevokeDocument.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Msg", "RevokeDocument", data);
+    const promise = this.rpc.request(this.service, "RevokeDocument", data);
     return promise.then((data) => MsgRevokeDocumentResponse.decode(new _m0.Reader(data)));
   }
 
   UpdateDocument(request: MsgUpdateDocument): Promise<MsgUpdateDocumentResponse> {
     const data = MsgUpdateDocument.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Msg", "UpdateDocument", data);
+    const promise = this.rpc.request(this.service, "UpdateDocument", data);
     return promise.then((data) => MsgUpdateDocumentResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -557,9 +568,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

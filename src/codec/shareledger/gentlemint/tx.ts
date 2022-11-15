@@ -81,7 +81,9 @@ export interface MsgBurn {
 
 export interface MsgBurnResponse {}
 
-const baseMsgBuyShr: object = {creator: "", amount: ""};
+function createBaseMsgBuyShr(): MsgBuyShr {
+  return {creator: "", amount: ""};
+}
 
 export const MsgBuyShr = {
   encode(message: MsgBuyShr, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -97,7 +99,7 @@ export const MsgBuyShr = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBuyShr {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBuyShr} as MsgBuyShr;
+    const message = createBaseMsgBuyShr();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -116,10 +118,10 @@ export const MsgBuyShr = {
   },
 
   fromJSON(object: any): MsgBuyShr {
-    const message = {...baseMsgBuyShr} as MsgBuyShr;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      amount: isSet(object.amount) ? String(object.amount) : ""
+    };
   },
 
   toJSON(message: MsgBuyShr): unknown {
@@ -130,14 +132,16 @@ export const MsgBuyShr = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgBuyShr>, I>>(object: I): MsgBuyShr {
-    const message = {...baseMsgBuyShr} as MsgBuyShr;
+    const message = createBaseMsgBuyShr();
     message.creator = object.creator ?? "";
     message.amount = object.amount ?? "";
     return message;
   }
 };
 
-const baseMsgBuyShrResponse: object = {log: ""};
+function createBaseMsgBuyShrResponse(): MsgBuyShrResponse {
+  return {log: ""};
+}
 
 export const MsgBuyShrResponse = {
   encode(message: MsgBuyShrResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -150,7 +154,7 @@ export const MsgBuyShrResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBuyShrResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBuyShrResponse} as MsgBuyShrResponse;
+    const message = createBaseMsgBuyShrResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -166,9 +170,7 @@ export const MsgBuyShrResponse = {
   },
 
   fromJSON(object: any): MsgBuyShrResponse {
-    const message = {...baseMsgBuyShrResponse} as MsgBuyShrResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
+    return {log: isSet(object.log) ? String(object.log) : ""};
   },
 
   toJSON(message: MsgBuyShrResponse): unknown {
@@ -178,13 +180,15 @@ export const MsgBuyShrResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgBuyShrResponse>, I>>(object: I): MsgBuyShrResponse {
-    const message = {...baseMsgBuyShrResponse} as MsgBuyShrResponse;
+    const message = createBaseMsgBuyShrResponse();
     message.log = object.log ?? "";
     return message;
   }
 };
 
-const baseMsgSetExchange: object = {creator: "", rate: ""};
+function createBaseMsgSetExchange(): MsgSetExchange {
+  return {creator: "", rate: ""};
+}
 
 export const MsgSetExchange = {
   encode(message: MsgSetExchange, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -200,7 +204,7 @@ export const MsgSetExchange = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetExchange {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSetExchange} as MsgSetExchange;
+    const message = createBaseMsgSetExchange();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -219,10 +223,10 @@ export const MsgSetExchange = {
   },
 
   fromJSON(object: any): MsgSetExchange {
-    const message = {...baseMsgSetExchange} as MsgSetExchange;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.rate = object.rate !== undefined && object.rate !== null ? String(object.rate) : "";
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      rate: isSet(object.rate) ? String(object.rate) : ""
+    };
   },
 
   toJSON(message: MsgSetExchange): unknown {
@@ -233,14 +237,16 @@ export const MsgSetExchange = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSetExchange>, I>>(object: I): MsgSetExchange {
-    const message = {...baseMsgSetExchange} as MsgSetExchange;
+    const message = createBaseMsgSetExchange();
     message.creator = object.creator ?? "";
     message.rate = object.rate ?? "";
     return message;
   }
 };
 
-const baseMsgSetExchangeResponse: object = {};
+function createBaseMsgSetExchangeResponse(): MsgSetExchangeResponse {
+  return {};
+}
 
 export const MsgSetExchangeResponse = {
   encode(_: MsgSetExchangeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -250,7 +256,7 @@ export const MsgSetExchangeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetExchangeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSetExchangeResponse} as MsgSetExchangeResponse;
+    const message = createBaseMsgSetExchangeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -263,8 +269,7 @@ export const MsgSetExchangeResponse = {
   },
 
   fromJSON(_: any): MsgSetExchangeResponse {
-    const message = {...baseMsgSetExchangeResponse} as MsgSetExchangeResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSetExchangeResponse): unknown {
@@ -273,12 +278,14 @@ export const MsgSetExchangeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSetExchangeResponse>, I>>(_: I): MsgSetExchangeResponse {
-    const message = {...baseMsgSetExchangeResponse} as MsgSetExchangeResponse;
+    const message = createBaseMsgSetExchangeResponse();
     return message;
   }
 };
 
-const baseMsgSetLevelFee: object = {creator: "", level: ""};
+function createBaseMsgSetLevelFee(): MsgSetLevelFee {
+  return {creator: "", level: "", fee: undefined};
+}
 
 export const MsgSetLevelFee = {
   encode(message: MsgSetLevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -297,7 +304,7 @@ export const MsgSetLevelFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetLevelFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSetLevelFee} as MsgSetLevelFee;
+    const message = createBaseMsgSetLevelFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -319,11 +326,11 @@ export const MsgSetLevelFee = {
   },
 
   fromJSON(object: any): MsgSetLevelFee {
-    const message = {...baseMsgSetLevelFee} as MsgSetLevelFee;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      level: isSet(object.level) ? String(object.level) : "",
+      fee: isSet(object.fee) ? DecCoin.fromJSON(object.fee) : undefined
+    };
   },
 
   toJSON(message: MsgSetLevelFee): unknown {
@@ -335,7 +342,7 @@ export const MsgSetLevelFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSetLevelFee>, I>>(object: I): MsgSetLevelFee {
-    const message = {...baseMsgSetLevelFee} as MsgSetLevelFee;
+    const message = createBaseMsgSetLevelFee();
     message.creator = object.creator ?? "";
     message.level = object.level ?? "";
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
@@ -343,7 +350,9 @@ export const MsgSetLevelFee = {
   }
 };
 
-const baseMsgSetLevelFeeResponse: object = {};
+function createBaseMsgSetLevelFeeResponse(): MsgSetLevelFeeResponse {
+  return {};
+}
 
 export const MsgSetLevelFeeResponse = {
   encode(_: MsgSetLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -353,7 +362,7 @@ export const MsgSetLevelFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetLevelFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSetLevelFeeResponse} as MsgSetLevelFeeResponse;
+    const message = createBaseMsgSetLevelFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -366,8 +375,7 @@ export const MsgSetLevelFeeResponse = {
   },
 
   fromJSON(_: any): MsgSetLevelFeeResponse {
-    const message = {...baseMsgSetLevelFeeResponse} as MsgSetLevelFeeResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSetLevelFeeResponse): unknown {
@@ -376,12 +384,14 @@ export const MsgSetLevelFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSetLevelFeeResponse>, I>>(_: I): MsgSetLevelFeeResponse {
-    const message = {...baseMsgSetLevelFeeResponse} as MsgSetLevelFeeResponse;
+    const message = createBaseMsgSetLevelFeeResponse();
     return message;
   }
 };
 
-const baseMsgDeleteLevelFee: object = {creator: "", level: ""};
+function createBaseMsgDeleteLevelFee(): MsgDeleteLevelFee {
+  return {creator: "", level: ""};
+}
 
 export const MsgDeleteLevelFee = {
   encode(message: MsgDeleteLevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -397,7 +407,7 @@ export const MsgDeleteLevelFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteLevelFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteLevelFee} as MsgDeleteLevelFee;
+    const message = createBaseMsgDeleteLevelFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -416,10 +426,10 @@ export const MsgDeleteLevelFee = {
   },
 
   fromJSON(object: any): MsgDeleteLevelFee {
-    const message = {...baseMsgDeleteLevelFee} as MsgDeleteLevelFee;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      level: isSet(object.level) ? String(object.level) : ""
+    };
   },
 
   toJSON(message: MsgDeleteLevelFee): unknown {
@@ -430,14 +440,16 @@ export const MsgDeleteLevelFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDeleteLevelFee>, I>>(object: I): MsgDeleteLevelFee {
-    const message = {...baseMsgDeleteLevelFee} as MsgDeleteLevelFee;
+    const message = createBaseMsgDeleteLevelFee();
     message.creator = object.creator ?? "";
     message.level = object.level ?? "";
     return message;
   }
 };
 
-const baseMsgDeleteLevelFeeResponse: object = {};
+function createBaseMsgDeleteLevelFeeResponse(): MsgDeleteLevelFeeResponse {
+  return {};
+}
 
 export const MsgDeleteLevelFeeResponse = {
   encode(_: MsgDeleteLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -447,7 +459,7 @@ export const MsgDeleteLevelFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteLevelFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteLevelFeeResponse} as MsgDeleteLevelFeeResponse;
+    const message = createBaseMsgDeleteLevelFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -460,8 +472,7 @@ export const MsgDeleteLevelFeeResponse = {
   },
 
   fromJSON(_: any): MsgDeleteLevelFeeResponse {
-    const message = {...baseMsgDeleteLevelFeeResponse} as MsgDeleteLevelFeeResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDeleteLevelFeeResponse): unknown {
@@ -470,12 +481,14 @@ export const MsgDeleteLevelFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDeleteLevelFeeResponse>, I>>(_: I): MsgDeleteLevelFeeResponse {
-    const message = {...baseMsgDeleteLevelFeeResponse} as MsgDeleteLevelFeeResponse;
+    const message = createBaseMsgDeleteLevelFeeResponse();
     return message;
   }
 };
 
-const baseMsgSetActionLevelFee: object = {creator: "", action: "", level: ""};
+function createBaseMsgSetActionLevelFee(): MsgSetActionLevelFee {
+  return {creator: "", action: "", level: ""};
+}
 
 export const MsgSetActionLevelFee = {
   encode(message: MsgSetActionLevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -494,7 +507,7 @@ export const MsgSetActionLevelFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetActionLevelFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSetActionLevelFee} as MsgSetActionLevelFee;
+    const message = createBaseMsgSetActionLevelFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -516,11 +529,11 @@ export const MsgSetActionLevelFee = {
   },
 
   fromJSON(object: any): MsgSetActionLevelFee {
-    const message = {...baseMsgSetActionLevelFee} as MsgSetActionLevelFee;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.action = object.action !== undefined && object.action !== null ? String(object.action) : "";
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      action: isSet(object.action) ? String(object.action) : "",
+      level: isSet(object.level) ? String(object.level) : ""
+    };
   },
 
   toJSON(message: MsgSetActionLevelFee): unknown {
@@ -532,7 +545,7 @@ export const MsgSetActionLevelFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSetActionLevelFee>, I>>(object: I): MsgSetActionLevelFee {
-    const message = {...baseMsgSetActionLevelFee} as MsgSetActionLevelFee;
+    const message = createBaseMsgSetActionLevelFee();
     message.creator = object.creator ?? "";
     message.action = object.action ?? "";
     message.level = object.level ?? "";
@@ -540,7 +553,9 @@ export const MsgSetActionLevelFee = {
   }
 };
 
-const baseMsgSetActionLevelFeeResponse: object = {};
+function createBaseMsgSetActionLevelFeeResponse(): MsgSetActionLevelFeeResponse {
+  return {};
+}
 
 export const MsgSetActionLevelFeeResponse = {
   encode(_: MsgSetActionLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -550,7 +565,7 @@ export const MsgSetActionLevelFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSetActionLevelFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSetActionLevelFeeResponse} as MsgSetActionLevelFeeResponse;
+    const message = createBaseMsgSetActionLevelFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -563,8 +578,7 @@ export const MsgSetActionLevelFeeResponse = {
   },
 
   fromJSON(_: any): MsgSetActionLevelFeeResponse {
-    const message = {...baseMsgSetActionLevelFeeResponse} as MsgSetActionLevelFeeResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSetActionLevelFeeResponse): unknown {
@@ -573,12 +587,14 @@ export const MsgSetActionLevelFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSetActionLevelFeeResponse>, I>>(_: I): MsgSetActionLevelFeeResponse {
-    const message = {...baseMsgSetActionLevelFeeResponse} as MsgSetActionLevelFeeResponse;
+    const message = createBaseMsgSetActionLevelFeeResponse();
     return message;
   }
 };
 
-const baseMsgDeleteActionLevelFee: object = {creator: "", action: ""};
+function createBaseMsgDeleteActionLevelFee(): MsgDeleteActionLevelFee {
+  return {creator: "", action: ""};
+}
 
 export const MsgDeleteActionLevelFee = {
   encode(message: MsgDeleteActionLevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -594,7 +610,7 @@ export const MsgDeleteActionLevelFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteActionLevelFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteActionLevelFee} as MsgDeleteActionLevelFee;
+    const message = createBaseMsgDeleteActionLevelFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -613,10 +629,10 @@ export const MsgDeleteActionLevelFee = {
   },
 
   fromJSON(object: any): MsgDeleteActionLevelFee {
-    const message = {...baseMsgDeleteActionLevelFee} as MsgDeleteActionLevelFee;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.action = object.action !== undefined && object.action !== null ? String(object.action) : "";
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      action: isSet(object.action) ? String(object.action) : ""
+    };
   },
 
   toJSON(message: MsgDeleteActionLevelFee): unknown {
@@ -627,14 +643,16 @@ export const MsgDeleteActionLevelFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDeleteActionLevelFee>, I>>(object: I): MsgDeleteActionLevelFee {
-    const message = {...baseMsgDeleteActionLevelFee} as MsgDeleteActionLevelFee;
+    const message = createBaseMsgDeleteActionLevelFee();
     message.creator = object.creator ?? "";
     message.action = object.action ?? "";
     return message;
   }
 };
 
-const baseMsgDeleteActionLevelFeeResponse: object = {};
+function createBaseMsgDeleteActionLevelFeeResponse(): MsgDeleteActionLevelFeeResponse {
+  return {};
+}
 
 export const MsgDeleteActionLevelFeeResponse = {
   encode(_: MsgDeleteActionLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -644,7 +662,7 @@ export const MsgDeleteActionLevelFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteActionLevelFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteActionLevelFeeResponse} as MsgDeleteActionLevelFeeResponse;
+    const message = createBaseMsgDeleteActionLevelFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -657,8 +675,7 @@ export const MsgDeleteActionLevelFeeResponse = {
   },
 
   fromJSON(_: any): MsgDeleteActionLevelFeeResponse {
-    const message = {...baseMsgDeleteActionLevelFeeResponse} as MsgDeleteActionLevelFeeResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDeleteActionLevelFeeResponse): unknown {
@@ -667,12 +684,14 @@ export const MsgDeleteActionLevelFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDeleteActionLevelFeeResponse>, I>>(_: I): MsgDeleteActionLevelFeeResponse {
-    const message = {...baseMsgDeleteActionLevelFeeResponse} as MsgDeleteActionLevelFeeResponse;
+    const message = createBaseMsgDeleteActionLevelFeeResponse();
     return message;
   }
 };
 
-const baseMsgLoadFee: object = {creator: ""};
+function createBaseMsgLoadFee(): MsgLoadFee {
+  return {creator: "", shrp: undefined};
+}
 
 export const MsgLoadFee = {
   encode(message: MsgLoadFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -688,7 +707,7 @@ export const MsgLoadFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadFee} as MsgLoadFee;
+    const message = createBaseMsgLoadFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -707,10 +726,10 @@ export const MsgLoadFee = {
   },
 
   fromJSON(object: any): MsgLoadFee {
-    const message = {...baseMsgLoadFee} as MsgLoadFee;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.shrp = object.shrp !== undefined && object.shrp !== null ? DecCoin.fromJSON(object.shrp) : undefined;
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      shrp: isSet(object.shrp) ? DecCoin.fromJSON(object.shrp) : undefined
+    };
   },
 
   toJSON(message: MsgLoadFee): unknown {
@@ -721,14 +740,16 @@ export const MsgLoadFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgLoadFee>, I>>(object: I): MsgLoadFee {
-    const message = {...baseMsgLoadFee} as MsgLoadFee;
+    const message = createBaseMsgLoadFee();
     message.creator = object.creator ?? "";
     message.shrp = object.shrp !== undefined && object.shrp !== null ? DecCoin.fromPartial(object.shrp) : undefined;
     return message;
   }
 };
 
-const baseMsgLoadFeeResponse: object = {};
+function createBaseMsgLoadFeeResponse(): MsgLoadFeeResponse {
+  return {};
+}
 
 export const MsgLoadFeeResponse = {
   encode(_: MsgLoadFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -738,7 +759,7 @@ export const MsgLoadFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadFeeResponse} as MsgLoadFeeResponse;
+    const message = createBaseMsgLoadFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -751,8 +772,7 @@ export const MsgLoadFeeResponse = {
   },
 
   fromJSON(_: any): MsgLoadFeeResponse {
-    const message = {...baseMsgLoadFeeResponse} as MsgLoadFeeResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgLoadFeeResponse): unknown {
@@ -761,12 +781,14 @@ export const MsgLoadFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgLoadFeeResponse>, I>>(_: I): MsgLoadFeeResponse {
-    const message = {...baseMsgLoadFeeResponse} as MsgLoadFeeResponse;
+    const message = createBaseMsgLoadFeeResponse();
     return message;
   }
 };
 
-const baseMsgLoad: object = {creator: "", address: ""};
+function createBaseMsgLoad(): MsgLoad {
+  return {creator: "", address: "", coins: []};
+}
 
 export const MsgLoad = {
   encode(message: MsgLoad, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -785,8 +807,7 @@ export const MsgLoad = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoad {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoad} as MsgLoad;
-    message.coins = [];
+    const message = createBaseMsgLoad();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -808,11 +829,11 @@ export const MsgLoad = {
   },
 
   fromJSON(object: any): MsgLoad {
-    const message = {...baseMsgLoad} as MsgLoad;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      address: isSet(object.address) ? String(object.address) : "",
+      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => DecCoin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: MsgLoad): unknown {
@@ -828,7 +849,7 @@ export const MsgLoad = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgLoad>, I>>(object: I): MsgLoad {
-    const message = {...baseMsgLoad} as MsgLoad;
+    const message = createBaseMsgLoad();
     message.creator = object.creator ?? "";
     message.address = object.address ?? "";
     message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
@@ -836,7 +857,9 @@ export const MsgLoad = {
   }
 };
 
-const baseMsgLoadResponse: object = {};
+function createBaseMsgLoadResponse(): MsgLoadResponse {
+  return {};
+}
 
 export const MsgLoadResponse = {
   encode(_: MsgLoadResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -846,7 +869,7 @@ export const MsgLoadResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadResponse} as MsgLoadResponse;
+    const message = createBaseMsgLoadResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -859,8 +882,7 @@ export const MsgLoadResponse = {
   },
 
   fromJSON(_: any): MsgLoadResponse {
-    const message = {...baseMsgLoadResponse} as MsgLoadResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgLoadResponse): unknown {
@@ -869,12 +891,14 @@ export const MsgLoadResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgLoadResponse>, I>>(_: I): MsgLoadResponse {
-    const message = {...baseMsgLoadResponse} as MsgLoadResponse;
+    const message = createBaseMsgLoadResponse();
     return message;
   }
 };
 
-const baseMsgSend: object = {creator: "", address: ""};
+function createBaseMsgSend(): MsgSend {
+  return {creator: "", address: "", coins: []};
+}
 
 export const MsgSend = {
   encode(message: MsgSend, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -893,8 +917,7 @@ export const MsgSend = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSend {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSend} as MsgSend;
-    message.coins = [];
+    const message = createBaseMsgSend();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -916,11 +939,11 @@ export const MsgSend = {
   },
 
   fromJSON(object: any): MsgSend {
-    const message = {...baseMsgSend} as MsgSend;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      address: isSet(object.address) ? String(object.address) : "",
+      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => DecCoin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: MsgSend): unknown {
@@ -936,7 +959,7 @@ export const MsgSend = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSend>, I>>(object: I): MsgSend {
-    const message = {...baseMsgSend} as MsgSend;
+    const message = createBaseMsgSend();
     message.creator = object.creator ?? "";
     message.address = object.address ?? "";
     message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
@@ -944,7 +967,9 @@ export const MsgSend = {
   }
 };
 
-const baseMsgSendResponse: object = {};
+function createBaseMsgSendResponse(): MsgSendResponse {
+  return {};
+}
 
 export const MsgSendResponse = {
   encode(_: MsgSendResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -954,7 +979,7 @@ export const MsgSendResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSendResponse} as MsgSendResponse;
+    const message = createBaseMsgSendResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -967,8 +992,7 @@ export const MsgSendResponse = {
   },
 
   fromJSON(_: any): MsgSendResponse {
-    const message = {...baseMsgSendResponse} as MsgSendResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgSendResponse): unknown {
@@ -977,12 +1001,14 @@ export const MsgSendResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSendResponse>, I>>(_: I): MsgSendResponse {
-    const message = {...baseMsgSendResponse} as MsgSendResponse;
+    const message = createBaseMsgSendResponse();
     return message;
   }
 };
 
-const baseMsgBurn: object = {creator: ""};
+function createBaseMsgBurn(): MsgBurn {
+  return {creator: "", coins: []};
+}
 
 export const MsgBurn = {
   encode(message: MsgBurn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -998,8 +1024,7 @@ export const MsgBurn = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurn {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBurn} as MsgBurn;
-    message.coins = [];
+    const message = createBaseMsgBurn();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1018,10 +1043,10 @@ export const MsgBurn = {
   },
 
   fromJSON(object: any): MsgBurn {
-    const message = {...baseMsgBurn} as MsgBurn;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => DecCoin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: MsgBurn): unknown {
@@ -1036,14 +1061,16 @@ export const MsgBurn = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgBurn>, I>>(object: I): MsgBurn {
-    const message = {...baseMsgBurn} as MsgBurn;
+    const message = createBaseMsgBurn();
     message.creator = object.creator ?? "";
     message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseMsgBurnResponse: object = {};
+function createBaseMsgBurnResponse(): MsgBurnResponse {
+  return {};
+}
 
 export const MsgBurnResponse = {
   encode(_: MsgBurnResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1053,7 +1080,7 @@ export const MsgBurnResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBurnResponse} as MsgBurnResponse;
+    const message = createBaseMsgBurnResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1066,8 +1093,7 @@ export const MsgBurnResponse = {
   },
 
   fromJSON(_: any): MsgBurnResponse {
-    const message = {...baseMsgBurnResponse} as MsgBurnResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgBurnResponse): unknown {
@@ -1076,7 +1102,7 @@ export const MsgBurnResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgBurnResponse>, I>>(_: I): MsgBurnResponse {
-    const message = {...baseMsgBurnResponse} as MsgBurnResponse;
+    const message = createBaseMsgBurnResponse();
     return message;
   }
 };
@@ -1098,7 +1124,9 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.gentlemint.Msg";
     this.rpc = rpc;
     this.BuyShr = this.BuyShr.bind(this);
     this.SetExchange = this.SetExchange.bind(this);
@@ -1113,61 +1141,61 @@ export class MsgClientImpl implements Msg {
   }
   BuyShr(request: MsgBuyShr): Promise<MsgBuyShrResponse> {
     const data = MsgBuyShr.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "BuyShr", data);
+    const promise = this.rpc.request(this.service, "BuyShr", data);
     return promise.then((data) => MsgBuyShrResponse.decode(new _m0.Reader(data)));
   }
 
   SetExchange(request: MsgSetExchange): Promise<MsgSetExchangeResponse> {
     const data = MsgSetExchange.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "SetExchange", data);
+    const promise = this.rpc.request(this.service, "SetExchange", data);
     return promise.then((data) => MsgSetExchangeResponse.decode(new _m0.Reader(data)));
   }
 
   SetLevelFee(request: MsgSetLevelFee): Promise<MsgSetLevelFeeResponse> {
     const data = MsgSetLevelFee.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "SetLevelFee", data);
+    const promise = this.rpc.request(this.service, "SetLevelFee", data);
     return promise.then((data) => MsgSetLevelFeeResponse.decode(new _m0.Reader(data)));
   }
 
   DeleteLevelFee(request: MsgDeleteLevelFee): Promise<MsgDeleteLevelFeeResponse> {
     const data = MsgDeleteLevelFee.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "DeleteLevelFee", data);
+    const promise = this.rpc.request(this.service, "DeleteLevelFee", data);
     return promise.then((data) => MsgDeleteLevelFeeResponse.decode(new _m0.Reader(data)));
   }
 
   SetActionLevelFee(request: MsgSetActionLevelFee): Promise<MsgSetActionLevelFeeResponse> {
     const data = MsgSetActionLevelFee.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "SetActionLevelFee", data);
+    const promise = this.rpc.request(this.service, "SetActionLevelFee", data);
     return promise.then((data) => MsgSetActionLevelFeeResponse.decode(new _m0.Reader(data)));
   }
 
   DeleteActionLevelFee(request: MsgDeleteActionLevelFee): Promise<MsgDeleteActionLevelFeeResponse> {
     const data = MsgDeleteActionLevelFee.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "DeleteActionLevelFee", data);
+    const promise = this.rpc.request(this.service, "DeleteActionLevelFee", data);
     return promise.then((data) => MsgDeleteActionLevelFeeResponse.decode(new _m0.Reader(data)));
   }
 
   LoadFee(request: MsgLoadFee): Promise<MsgLoadFeeResponse> {
     const data = MsgLoadFee.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "LoadFee", data);
+    const promise = this.rpc.request(this.service, "LoadFee", data);
     return promise.then((data) => MsgLoadFeeResponse.decode(new _m0.Reader(data)));
   }
 
   Load(request: MsgLoad): Promise<MsgLoadResponse> {
     const data = MsgLoad.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "Load", data);
+    const promise = this.rpc.request(this.service, "Load", data);
     return promise.then((data) => MsgLoadResponse.decode(new _m0.Reader(data)));
   }
 
   Send(request: MsgSend): Promise<MsgSendResponse> {
     const data = MsgSend.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "Send", data);
+    const promise = this.rpc.request(this.service, "Send", data);
     return promise.then((data) => MsgSendResponse.decode(new _m0.Reader(data)));
   }
 
   Burn(request: MsgBurn): Promise<MsgBurnResponse> {
     const data = MsgBurn.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "Burn", data);
+    const promise = this.rpc.request(this.service, "Burn", data);
     return promise.then((data) => MsgBurnResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -1193,9 +1221,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

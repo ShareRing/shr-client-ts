@@ -15,7 +15,9 @@ export interface LegacyAminoPubKey {
   publicKeys: Any[];
 }
 
-const baseLegacyAminoPubKey: object = {threshold: 0};
+function createBaseLegacyAminoPubKey(): LegacyAminoPubKey {
+  return {threshold: 0, publicKeys: []};
+}
 
 export const LegacyAminoPubKey = {
   encode(message: LegacyAminoPubKey, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -31,8 +33,7 @@ export const LegacyAminoPubKey = {
   decode(input: _m0.Reader | Uint8Array, length?: number): LegacyAminoPubKey {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseLegacyAminoPubKey} as LegacyAminoPubKey;
-    message.publicKeys = [];
+    const message = createBaseLegacyAminoPubKey();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -51,15 +52,15 @@ export const LegacyAminoPubKey = {
   },
 
   fromJSON(object: any): LegacyAminoPubKey {
-    const message = {...baseLegacyAminoPubKey} as LegacyAminoPubKey;
-    message.threshold = object.threshold !== undefined && object.threshold !== null ? Number(object.threshold) : 0;
-    message.publicKeys = (object.publicKeys ?? []).map((e: any) => Any.fromJSON(e));
-    return message;
+    return {
+      threshold: isSet(object.threshold) ? Number(object.threshold) : 0,
+      publicKeys: Array.isArray(object?.publicKeys) ? object.publicKeys.map((e: any) => Any.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: LegacyAminoPubKey): unknown {
     const obj: any = {};
-    message.threshold !== undefined && (obj.threshold = message.threshold);
+    message.threshold !== undefined && (obj.threshold = Math.round(message.threshold));
     if (message.publicKeys) {
       obj.publicKeys = message.publicKeys.map((e) => (e ? Any.toJSON(e) : undefined));
     } else {
@@ -69,7 +70,7 @@ export const LegacyAminoPubKey = {
   },
 
   fromPartial<I extends Exact<DeepPartial<LegacyAminoPubKey>, I>>(object: I): LegacyAminoPubKey {
-    const message = {...baseLegacyAminoPubKey} as LegacyAminoPubKey;
+    const message = createBaseLegacyAminoPubKey();
     message.threshold = object.threshold ?? 0;
     message.publicKeys = object.publicKeys?.map((e) => Any.fromPartial(e)) || [];
     return message;
@@ -93,9 +94,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

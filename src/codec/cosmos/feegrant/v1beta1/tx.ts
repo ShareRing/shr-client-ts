@@ -16,7 +16,7 @@ export interface MsgGrantAllowance {
   granter: string;
   /** grantee is the address of the user being granted an allowance of another user's funds. */
   grantee: string;
-  /** allowance can be any of basic and filtered fee allowance. */
+  /** allowance can be any of basic, periodic, allowed fee allowance. */
   allowance?: Any;
 }
 
@@ -34,7 +34,9 @@ export interface MsgRevokeAllowance {
 /** MsgRevokeAllowanceResponse defines the Msg/RevokeAllowanceResponse response type. */
 export interface MsgRevokeAllowanceResponse {}
 
-const baseMsgGrantAllowance: object = {granter: "", grantee: ""};
+function createBaseMsgGrantAllowance(): MsgGrantAllowance {
+  return {granter: "", grantee: "", allowance: undefined};
+}
 
 export const MsgGrantAllowance = {
   encode(message: MsgGrantAllowance, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -53,7 +55,7 @@ export const MsgGrantAllowance = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantAllowance {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgGrantAllowance} as MsgGrantAllowance;
+    const message = createBaseMsgGrantAllowance();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -75,11 +77,11 @@ export const MsgGrantAllowance = {
   },
 
   fromJSON(object: any): MsgGrantAllowance {
-    const message = {...baseMsgGrantAllowance} as MsgGrantAllowance;
-    message.granter = object.granter !== undefined && object.granter !== null ? String(object.granter) : "";
-    message.grantee = object.grantee !== undefined && object.grantee !== null ? String(object.grantee) : "";
-    message.allowance = object.allowance !== undefined && object.allowance !== null ? Any.fromJSON(object.allowance) : undefined;
-    return message;
+    return {
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : "",
+      allowance: isSet(object.allowance) ? Any.fromJSON(object.allowance) : undefined
+    };
   },
 
   toJSON(message: MsgGrantAllowance): unknown {
@@ -91,7 +93,7 @@ export const MsgGrantAllowance = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgGrantAllowance>, I>>(object: I): MsgGrantAllowance {
-    const message = {...baseMsgGrantAllowance} as MsgGrantAllowance;
+    const message = createBaseMsgGrantAllowance();
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
     message.allowance = object.allowance !== undefined && object.allowance !== null ? Any.fromPartial(object.allowance) : undefined;
@@ -99,7 +101,9 @@ export const MsgGrantAllowance = {
   }
 };
 
-const baseMsgGrantAllowanceResponse: object = {};
+function createBaseMsgGrantAllowanceResponse(): MsgGrantAllowanceResponse {
+  return {};
+}
 
 export const MsgGrantAllowanceResponse = {
   encode(_: MsgGrantAllowanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -109,7 +113,7 @@ export const MsgGrantAllowanceResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgGrantAllowanceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgGrantAllowanceResponse} as MsgGrantAllowanceResponse;
+    const message = createBaseMsgGrantAllowanceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -122,8 +126,7 @@ export const MsgGrantAllowanceResponse = {
   },
 
   fromJSON(_: any): MsgGrantAllowanceResponse {
-    const message = {...baseMsgGrantAllowanceResponse} as MsgGrantAllowanceResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgGrantAllowanceResponse): unknown {
@@ -132,12 +135,14 @@ export const MsgGrantAllowanceResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgGrantAllowanceResponse>, I>>(_: I): MsgGrantAllowanceResponse {
-    const message = {...baseMsgGrantAllowanceResponse} as MsgGrantAllowanceResponse;
+    const message = createBaseMsgGrantAllowanceResponse();
     return message;
   }
 };
 
-const baseMsgRevokeAllowance: object = {granter: "", grantee: ""};
+function createBaseMsgRevokeAllowance(): MsgRevokeAllowance {
+  return {granter: "", grantee: ""};
+}
 
 export const MsgRevokeAllowance = {
   encode(message: MsgRevokeAllowance, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -153,7 +158,7 @@ export const MsgRevokeAllowance = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeAllowance {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeAllowance} as MsgRevokeAllowance;
+    const message = createBaseMsgRevokeAllowance();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -172,10 +177,10 @@ export const MsgRevokeAllowance = {
   },
 
   fromJSON(object: any): MsgRevokeAllowance {
-    const message = {...baseMsgRevokeAllowance} as MsgRevokeAllowance;
-    message.granter = object.granter !== undefined && object.granter !== null ? String(object.granter) : "";
-    message.grantee = object.grantee !== undefined && object.grantee !== null ? String(object.grantee) : "";
-    return message;
+    return {
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : ""
+    };
   },
 
   toJSON(message: MsgRevokeAllowance): unknown {
@@ -186,14 +191,16 @@ export const MsgRevokeAllowance = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRevokeAllowance>, I>>(object: I): MsgRevokeAllowance {
-    const message = {...baseMsgRevokeAllowance} as MsgRevokeAllowance;
+    const message = createBaseMsgRevokeAllowance();
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
     return message;
   }
 };
 
-const baseMsgRevokeAllowanceResponse: object = {};
+function createBaseMsgRevokeAllowanceResponse(): MsgRevokeAllowanceResponse {
+  return {};
+}
 
 export const MsgRevokeAllowanceResponse = {
   encode(_: MsgRevokeAllowanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -203,7 +210,7 @@ export const MsgRevokeAllowanceResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRevokeAllowanceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRevokeAllowanceResponse} as MsgRevokeAllowanceResponse;
+    const message = createBaseMsgRevokeAllowanceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -216,8 +223,7 @@ export const MsgRevokeAllowanceResponse = {
   },
 
   fromJSON(_: any): MsgRevokeAllowanceResponse {
-    const message = {...baseMsgRevokeAllowanceResponse} as MsgRevokeAllowanceResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgRevokeAllowanceResponse): unknown {
@@ -226,7 +232,7 @@ export const MsgRevokeAllowanceResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRevokeAllowanceResponse>, I>>(_: I): MsgRevokeAllowanceResponse {
-    const message = {...baseMsgRevokeAllowanceResponse} as MsgRevokeAllowanceResponse;
+    const message = createBaseMsgRevokeAllowanceResponse();
     return message;
   }
 };
@@ -247,20 +253,22 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "cosmos.feegrant.v1beta1.Msg";
     this.rpc = rpc;
     this.GrantAllowance = this.GrantAllowance.bind(this);
     this.RevokeAllowance = this.RevokeAllowance.bind(this);
   }
   GrantAllowance(request: MsgGrantAllowance): Promise<MsgGrantAllowanceResponse> {
     const data = MsgGrantAllowance.encode(request).finish();
-    const promise = this.rpc.request("cosmos.feegrant.v1beta1.Msg", "GrantAllowance", data);
+    const promise = this.rpc.request(this.service, "GrantAllowance", data);
     return promise.then((data) => MsgGrantAllowanceResponse.decode(new _m0.Reader(data)));
   }
 
   RevokeAllowance(request: MsgRevokeAllowance): Promise<MsgRevokeAllowanceResponse> {
     const data = MsgRevokeAllowance.encode(request).finish();
-    const promise = this.rpc.request("cosmos.feegrant.v1beta1.Msg", "RevokeAllowance", data);
+    const promise = this.rpc.request(this.service, "RevokeAllowance", data);
     return promise.then((data) => MsgRevokeAllowanceResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -286,9 +294,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

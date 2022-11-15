@@ -42,7 +42,9 @@ export interface MerkleProof {
   proofs: CommitmentProof[];
 }
 
-const baseMerkleRoot: object = {};
+function createBaseMerkleRoot(): MerkleRoot {
+  return {hash: new Uint8Array()};
+}
 
 export const MerkleRoot = {
   encode(message: MerkleRoot, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -55,8 +57,7 @@ export const MerkleRoot = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MerkleRoot {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMerkleRoot} as MerkleRoot;
-    message.hash = new Uint8Array();
+    const message = createBaseMerkleRoot();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -72,9 +73,7 @@ export const MerkleRoot = {
   },
 
   fromJSON(object: any): MerkleRoot {
-    const message = {...baseMerkleRoot} as MerkleRoot;
-    message.hash = object.hash !== undefined && object.hash !== null ? bytesFromBase64(object.hash) : new Uint8Array();
-    return message;
+    return {hash: isSet(object.hash) ? bytesFromBase64(object.hash) : new Uint8Array()};
   },
 
   toJSON(message: MerkleRoot): unknown {
@@ -84,13 +83,15 @@ export const MerkleRoot = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MerkleRoot>, I>>(object: I): MerkleRoot {
-    const message = {...baseMerkleRoot} as MerkleRoot;
+    const message = createBaseMerkleRoot();
     message.hash = object.hash ?? new Uint8Array();
     return message;
   }
 };
 
-const baseMerklePrefix: object = {};
+function createBaseMerklePrefix(): MerklePrefix {
+  return {keyPrefix: new Uint8Array()};
+}
 
 export const MerklePrefix = {
   encode(message: MerklePrefix, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -103,8 +104,7 @@ export const MerklePrefix = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MerklePrefix {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMerklePrefix} as MerklePrefix;
-    message.keyPrefix = new Uint8Array();
+    const message = createBaseMerklePrefix();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -120,9 +120,7 @@ export const MerklePrefix = {
   },
 
   fromJSON(object: any): MerklePrefix {
-    const message = {...baseMerklePrefix} as MerklePrefix;
-    message.keyPrefix = object.keyPrefix !== undefined && object.keyPrefix !== null ? bytesFromBase64(object.keyPrefix) : new Uint8Array();
-    return message;
+    return {keyPrefix: isSet(object.keyPrefix) ? bytesFromBase64(object.keyPrefix) : new Uint8Array()};
   },
 
   toJSON(message: MerklePrefix): unknown {
@@ -133,13 +131,15 @@ export const MerklePrefix = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MerklePrefix>, I>>(object: I): MerklePrefix {
-    const message = {...baseMerklePrefix} as MerklePrefix;
+    const message = createBaseMerklePrefix();
     message.keyPrefix = object.keyPrefix ?? new Uint8Array();
     return message;
   }
 };
 
-const baseMerklePath: object = {keyPath: ""};
+function createBaseMerklePath(): MerklePath {
+  return {keyPath: []};
+}
 
 export const MerklePath = {
   encode(message: MerklePath, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -152,8 +152,7 @@ export const MerklePath = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MerklePath {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMerklePath} as MerklePath;
-    message.keyPath = [];
+    const message = createBaseMerklePath();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -169,9 +168,7 @@ export const MerklePath = {
   },
 
   fromJSON(object: any): MerklePath {
-    const message = {...baseMerklePath} as MerklePath;
-    message.keyPath = (object.keyPath ?? []).map((e: any) => String(e));
-    return message;
+    return {keyPath: Array.isArray(object?.keyPath) ? object.keyPath.map((e: any) => String(e)) : []};
   },
 
   toJSON(message: MerklePath): unknown {
@@ -185,13 +182,15 @@ export const MerklePath = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MerklePath>, I>>(object: I): MerklePath {
-    const message = {...baseMerklePath} as MerklePath;
+    const message = createBaseMerklePath();
     message.keyPath = object.keyPath?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseMerkleProof: object = {};
+function createBaseMerkleProof(): MerkleProof {
+  return {proofs: []};
+}
 
 export const MerkleProof = {
   encode(message: MerkleProof, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -204,8 +203,7 @@ export const MerkleProof = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MerkleProof {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMerkleProof} as MerkleProof;
-    message.proofs = [];
+    const message = createBaseMerkleProof();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -221,9 +219,7 @@ export const MerkleProof = {
   },
 
   fromJSON(object: any): MerkleProof {
-    const message = {...baseMerkleProof} as MerkleProof;
-    message.proofs = (object.proofs ?? []).map((e: any) => CommitmentProof.fromJSON(e));
-    return message;
+    return {proofs: Array.isArray(object?.proofs) ? object.proofs.map((e: any) => CommitmentProof.fromJSON(e)) : []};
   },
 
   toJSON(message: MerkleProof): unknown {
@@ -237,7 +233,7 @@ export const MerkleProof = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MerkleProof>, I>>(object: I): MerkleProof {
-    const message = {...baseMerkleProof} as MerkleProof;
+    const message = createBaseMerkleProof();
     message.proofs = object.proofs?.map((e) => CommitmentProof.fromPartial(e)) || [];
     return message;
   }
@@ -247,30 +243,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -290,9 +300,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

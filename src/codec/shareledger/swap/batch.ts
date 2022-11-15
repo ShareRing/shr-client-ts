@@ -12,7 +12,9 @@ export interface Batch {
   network: string;
 }
 
-const baseBatch: object = {id: Long.UZERO, signature: "", requestIds: Long.UZERO, status: "", network: ""};
+function createBaseBatch(): Batch {
+  return {id: Long.UZERO, signature: "", requestIds: [], status: "", network: ""};
+}
 
 export const Batch = {
   encode(message: Batch, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -39,8 +41,7 @@ export const Batch = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Batch {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseBatch} as Batch;
-    message.requestIds = [];
+    const message = createBaseBatch();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -75,13 +76,13 @@ export const Batch = {
   },
 
   fromJSON(object: any): Batch {
-    const message = {...baseBatch} as Batch;
-    message.id = object.id !== undefined && object.id !== null ? Long.fromString(object.id) : Long.UZERO;
-    message.signature = object.signature !== undefined && object.signature !== null ? String(object.signature) : "";
-    message.requestIds = (object.requestIds ?? []).map((e: any) => Long.fromString(e));
-    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
-    return message;
+    return {
+      id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
+      signature: isSet(object.signature) ? String(object.signature) : "",
+      requestIds: Array.isArray(object?.requestIds) ? object.requestIds.map((e: any) => Long.fromValue(e)) : [],
+      status: isSet(object.status) ? String(object.status) : "",
+      network: isSet(object.network) ? String(object.network) : ""
+    };
   },
 
   toJSON(message: Batch): unknown {
@@ -99,7 +100,7 @@ export const Batch = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Batch>, I>>(object: I): Batch {
-    const message = {...baseBatch} as Batch;
+    const message = createBaseBatch();
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.signature = object.signature ?? "";
     message.requestIds = object.requestIds?.map((e) => Long.fromValue(e)) || [];
@@ -126,9 +127,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

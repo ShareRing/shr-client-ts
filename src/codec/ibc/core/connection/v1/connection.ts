@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {MerklePrefix} from "../../../../ibc/core/commitment/v1/commitment";
+import {MerklePrefix} from "../../commitment/v1/commitment";
 
 export const protobufPackage = "ibc.core.connection.v1";
 
@@ -55,8 +55,9 @@ export function stateToJSON(object: State): string {
       return "STATE_TRYOPEN";
     case State.STATE_OPEN:
       return "STATE_OPEN";
+    case State.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -159,7 +160,9 @@ export interface Params {
   maxExpectedTimePerBlock: Long;
 }
 
-const baseConnectionEnd: object = {clientId: "", state: 0, delayPeriod: Long.UZERO};
+function createBaseConnectionEnd(): ConnectionEnd {
+  return {clientId: "", versions: [], state: 0, counterparty: undefined, delayPeriod: Long.UZERO};
+}
 
 export const ConnectionEnd = {
   encode(message: ConnectionEnd, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -184,8 +187,7 @@ export const ConnectionEnd = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionEnd {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseConnectionEnd} as ConnectionEnd;
-    message.versions = [];
+    const message = createBaseConnectionEnd();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -213,15 +215,13 @@ export const ConnectionEnd = {
   },
 
   fromJSON(object: any): ConnectionEnd {
-    const message = {...baseConnectionEnd} as ConnectionEnd;
-    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
-    message.versions = (object.versions ?? []).map((e: any) => Version.fromJSON(e));
-    message.state = object.state !== undefined && object.state !== null ? stateFromJSON(object.state) : 0;
-    message.counterparty =
-      object.counterparty !== undefined && object.counterparty !== null ? Counterparty.fromJSON(object.counterparty) : undefined;
-    message.delayPeriod =
-      object.delayPeriod !== undefined && object.delayPeriod !== null ? Long.fromString(object.delayPeriod) : Long.UZERO;
-    return message;
+    return {
+      clientId: isSet(object.clientId) ? String(object.clientId) : "",
+      versions: Array.isArray(object?.versions) ? object.versions.map((e: any) => Version.fromJSON(e)) : [],
+      state: isSet(object.state) ? stateFromJSON(object.state) : 0,
+      counterparty: isSet(object.counterparty) ? Counterparty.fromJSON(object.counterparty) : undefined,
+      delayPeriod: isSet(object.delayPeriod) ? Long.fromValue(object.delayPeriod) : Long.UZERO
+    };
   },
 
   toJSON(message: ConnectionEnd): unknown {
@@ -239,7 +239,7 @@ export const ConnectionEnd = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ConnectionEnd>, I>>(object: I): ConnectionEnd {
-    const message = {...baseConnectionEnd} as ConnectionEnd;
+    const message = createBaseConnectionEnd();
     message.clientId = object.clientId ?? "";
     message.versions = object.versions?.map((e) => Version.fromPartial(e)) || [];
     message.state = object.state ?? 0;
@@ -250,7 +250,9 @@ export const ConnectionEnd = {
   }
 };
 
-const baseIdentifiedConnection: object = {id: "", clientId: "", state: 0, delayPeriod: Long.UZERO};
+function createBaseIdentifiedConnection(): IdentifiedConnection {
+  return {id: "", clientId: "", versions: [], state: 0, counterparty: undefined, delayPeriod: Long.UZERO};
+}
 
 export const IdentifiedConnection = {
   encode(message: IdentifiedConnection, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -278,8 +280,7 @@ export const IdentifiedConnection = {
   decode(input: _m0.Reader | Uint8Array, length?: number): IdentifiedConnection {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseIdentifiedConnection} as IdentifiedConnection;
-    message.versions = [];
+    const message = createBaseIdentifiedConnection();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -310,16 +311,14 @@ export const IdentifiedConnection = {
   },
 
   fromJSON(object: any): IdentifiedConnection {
-    const message = {...baseIdentifiedConnection} as IdentifiedConnection;
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
-    message.versions = (object.versions ?? []).map((e: any) => Version.fromJSON(e));
-    message.state = object.state !== undefined && object.state !== null ? stateFromJSON(object.state) : 0;
-    message.counterparty =
-      object.counterparty !== undefined && object.counterparty !== null ? Counterparty.fromJSON(object.counterparty) : undefined;
-    message.delayPeriod =
-      object.delayPeriod !== undefined && object.delayPeriod !== null ? Long.fromString(object.delayPeriod) : Long.UZERO;
-    return message;
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      clientId: isSet(object.clientId) ? String(object.clientId) : "",
+      versions: Array.isArray(object?.versions) ? object.versions.map((e: any) => Version.fromJSON(e)) : [],
+      state: isSet(object.state) ? stateFromJSON(object.state) : 0,
+      counterparty: isSet(object.counterparty) ? Counterparty.fromJSON(object.counterparty) : undefined,
+      delayPeriod: isSet(object.delayPeriod) ? Long.fromValue(object.delayPeriod) : Long.UZERO
+    };
   },
 
   toJSON(message: IdentifiedConnection): unknown {
@@ -338,7 +337,7 @@ export const IdentifiedConnection = {
   },
 
   fromPartial<I extends Exact<DeepPartial<IdentifiedConnection>, I>>(object: I): IdentifiedConnection {
-    const message = {...baseIdentifiedConnection} as IdentifiedConnection;
+    const message = createBaseIdentifiedConnection();
     message.id = object.id ?? "";
     message.clientId = object.clientId ?? "";
     message.versions = object.versions?.map((e) => Version.fromPartial(e)) || [];
@@ -350,7 +349,9 @@ export const IdentifiedConnection = {
   }
 };
 
-const baseCounterparty: object = {clientId: "", connectionId: ""};
+function createBaseCounterparty(): Counterparty {
+  return {clientId: "", connectionId: "", prefix: undefined};
+}
 
 export const Counterparty = {
   encode(message: Counterparty, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -369,7 +370,7 @@ export const Counterparty = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Counterparty {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseCounterparty} as Counterparty;
+    const message = createBaseCounterparty();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -391,11 +392,11 @@ export const Counterparty = {
   },
 
   fromJSON(object: any): Counterparty {
-    const message = {...baseCounterparty} as Counterparty;
-    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
-    message.connectionId = object.connectionId !== undefined && object.connectionId !== null ? String(object.connectionId) : "";
-    message.prefix = object.prefix !== undefined && object.prefix !== null ? MerklePrefix.fromJSON(object.prefix) : undefined;
-    return message;
+    return {
+      clientId: isSet(object.clientId) ? String(object.clientId) : "",
+      connectionId: isSet(object.connectionId) ? String(object.connectionId) : "",
+      prefix: isSet(object.prefix) ? MerklePrefix.fromJSON(object.prefix) : undefined
+    };
   },
 
   toJSON(message: Counterparty): unknown {
@@ -407,7 +408,7 @@ export const Counterparty = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Counterparty>, I>>(object: I): Counterparty {
-    const message = {...baseCounterparty} as Counterparty;
+    const message = createBaseCounterparty();
     message.clientId = object.clientId ?? "";
     message.connectionId = object.connectionId ?? "";
     message.prefix = object.prefix !== undefined && object.prefix !== null ? MerklePrefix.fromPartial(object.prefix) : undefined;
@@ -415,7 +416,9 @@ export const Counterparty = {
   }
 };
 
-const baseClientPaths: object = {paths: ""};
+function createBaseClientPaths(): ClientPaths {
+  return {paths: []};
+}
 
 export const ClientPaths = {
   encode(message: ClientPaths, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -428,8 +431,7 @@ export const ClientPaths = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ClientPaths {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseClientPaths} as ClientPaths;
-    message.paths = [];
+    const message = createBaseClientPaths();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -445,9 +447,7 @@ export const ClientPaths = {
   },
 
   fromJSON(object: any): ClientPaths {
-    const message = {...baseClientPaths} as ClientPaths;
-    message.paths = (object.paths ?? []).map((e: any) => String(e));
-    return message;
+    return {paths: Array.isArray(object?.paths) ? object.paths.map((e: any) => String(e)) : []};
   },
 
   toJSON(message: ClientPaths): unknown {
@@ -461,13 +461,15 @@ export const ClientPaths = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ClientPaths>, I>>(object: I): ClientPaths {
-    const message = {...baseClientPaths} as ClientPaths;
+    const message = createBaseClientPaths();
     message.paths = object.paths?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseConnectionPaths: object = {clientId: "", paths: ""};
+function createBaseConnectionPaths(): ConnectionPaths {
+  return {clientId: "", paths: []};
+}
 
 export const ConnectionPaths = {
   encode(message: ConnectionPaths, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -483,8 +485,7 @@ export const ConnectionPaths = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionPaths {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseConnectionPaths} as ConnectionPaths;
-    message.paths = [];
+    const message = createBaseConnectionPaths();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -503,10 +504,10 @@ export const ConnectionPaths = {
   },
 
   fromJSON(object: any): ConnectionPaths {
-    const message = {...baseConnectionPaths} as ConnectionPaths;
-    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
-    message.paths = (object.paths ?? []).map((e: any) => String(e));
-    return message;
+    return {
+      clientId: isSet(object.clientId) ? String(object.clientId) : "",
+      paths: Array.isArray(object?.paths) ? object.paths.map((e: any) => String(e)) : []
+    };
   },
 
   toJSON(message: ConnectionPaths): unknown {
@@ -521,14 +522,16 @@ export const ConnectionPaths = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ConnectionPaths>, I>>(object: I): ConnectionPaths {
-    const message = {...baseConnectionPaths} as ConnectionPaths;
+    const message = createBaseConnectionPaths();
     message.clientId = object.clientId ?? "";
     message.paths = object.paths?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseVersion: object = {identifier: "", features: ""};
+function createBaseVersion(): Version {
+  return {identifier: "", features: []};
+}
 
 export const Version = {
   encode(message: Version, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -544,8 +547,7 @@ export const Version = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Version {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseVersion} as Version;
-    message.features = [];
+    const message = createBaseVersion();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -564,10 +566,10 @@ export const Version = {
   },
 
   fromJSON(object: any): Version {
-    const message = {...baseVersion} as Version;
-    message.identifier = object.identifier !== undefined && object.identifier !== null ? String(object.identifier) : "";
-    message.features = (object.features ?? []).map((e: any) => String(e));
-    return message;
+    return {
+      identifier: isSet(object.identifier) ? String(object.identifier) : "",
+      features: Array.isArray(object?.features) ? object.features.map((e: any) => String(e)) : []
+    };
   },
 
   toJSON(message: Version): unknown {
@@ -582,14 +584,16 @@ export const Version = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Version>, I>>(object: I): Version {
-    const message = {...baseVersion} as Version;
+    const message = createBaseVersion();
     message.identifier = object.identifier ?? "";
     message.features = object.features?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseParams: object = {maxExpectedTimePerBlock: Long.UZERO};
+function createBaseParams(): Params {
+  return {maxExpectedTimePerBlock: Long.UZERO};
+}
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -602,7 +606,7 @@ export const Params = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -618,12 +622,9 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    const message = {...baseParams} as Params;
-    message.maxExpectedTimePerBlock =
-      object.maxExpectedTimePerBlock !== undefined && object.maxExpectedTimePerBlock !== null
-        ? Long.fromString(object.maxExpectedTimePerBlock)
-        : Long.UZERO;
-    return message;
+    return {
+      maxExpectedTimePerBlock: isSet(object.maxExpectedTimePerBlock) ? Long.fromValue(object.maxExpectedTimePerBlock) : Long.UZERO
+    };
   },
 
   toJSON(message: Params): unknown {
@@ -634,7 +635,7 @@ export const Params = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     message.maxExpectedTimePerBlock =
       object.maxExpectedTimePerBlock !== undefined && object.maxExpectedTimePerBlock !== null
         ? Long.fromValue(object.maxExpectedTimePerBlock)
@@ -660,9 +661,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

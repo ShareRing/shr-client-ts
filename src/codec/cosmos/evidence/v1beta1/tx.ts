@@ -20,7 +20,9 @@ export interface MsgSubmitEvidenceResponse {
   hash: Uint8Array;
 }
 
-const baseMsgSubmitEvidence: object = {submitter: ""};
+function createBaseMsgSubmitEvidence(): MsgSubmitEvidence {
+  return {submitter: "", evidence: undefined};
+}
 
 export const MsgSubmitEvidence = {
   encode(message: MsgSubmitEvidence, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -36,7 +38,7 @@ export const MsgSubmitEvidence = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSubmitEvidence {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSubmitEvidence} as MsgSubmitEvidence;
+    const message = createBaseMsgSubmitEvidence();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -55,10 +57,10 @@ export const MsgSubmitEvidence = {
   },
 
   fromJSON(object: any): MsgSubmitEvidence {
-    const message = {...baseMsgSubmitEvidence} as MsgSubmitEvidence;
-    message.submitter = object.submitter !== undefined && object.submitter !== null ? String(object.submitter) : "";
-    message.evidence = object.evidence !== undefined && object.evidence !== null ? Any.fromJSON(object.evidence) : undefined;
-    return message;
+    return {
+      submitter: isSet(object.submitter) ? String(object.submitter) : "",
+      evidence: isSet(object.evidence) ? Any.fromJSON(object.evidence) : undefined
+    };
   },
 
   toJSON(message: MsgSubmitEvidence): unknown {
@@ -69,14 +71,16 @@ export const MsgSubmitEvidence = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSubmitEvidence>, I>>(object: I): MsgSubmitEvidence {
-    const message = {...baseMsgSubmitEvidence} as MsgSubmitEvidence;
+    const message = createBaseMsgSubmitEvidence();
     message.submitter = object.submitter ?? "";
     message.evidence = object.evidence !== undefined && object.evidence !== null ? Any.fromPartial(object.evidence) : undefined;
     return message;
   }
 };
 
-const baseMsgSubmitEvidenceResponse: object = {};
+function createBaseMsgSubmitEvidenceResponse(): MsgSubmitEvidenceResponse {
+  return {hash: new Uint8Array()};
+}
 
 export const MsgSubmitEvidenceResponse = {
   encode(message: MsgSubmitEvidenceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -89,8 +93,7 @@ export const MsgSubmitEvidenceResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgSubmitEvidenceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSubmitEvidenceResponse} as MsgSubmitEvidenceResponse;
-    message.hash = new Uint8Array();
+    const message = createBaseMsgSubmitEvidenceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -106,9 +109,7 @@ export const MsgSubmitEvidenceResponse = {
   },
 
   fromJSON(object: any): MsgSubmitEvidenceResponse {
-    const message = {...baseMsgSubmitEvidenceResponse} as MsgSubmitEvidenceResponse;
-    message.hash = object.hash !== undefined && object.hash !== null ? bytesFromBase64(object.hash) : new Uint8Array();
-    return message;
+    return {hash: isSet(object.hash) ? bytesFromBase64(object.hash) : new Uint8Array()};
   },
 
   toJSON(message: MsgSubmitEvidenceResponse): unknown {
@@ -118,7 +119,7 @@ export const MsgSubmitEvidenceResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgSubmitEvidenceResponse>, I>>(object: I): MsgSubmitEvidenceResponse {
-    const message = {...baseMsgSubmitEvidenceResponse} as MsgSubmitEvidenceResponse;
+    const message = createBaseMsgSubmitEvidenceResponse();
     message.hash = object.hash ?? new Uint8Array();
     return message;
   }
@@ -135,13 +136,15 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "cosmos.evidence.v1beta1.Msg";
     this.rpc = rpc;
     this.SubmitEvidence = this.SubmitEvidence.bind(this);
   }
   SubmitEvidence(request: MsgSubmitEvidence): Promise<MsgSubmitEvidenceResponse> {
     const data = MsgSubmitEvidence.encode(request).finish();
-    const promise = this.rpc.request("cosmos.evidence.v1beta1.Msg", "SubmitEvidence", data);
+    const promise = this.rpc.request(this.service, "SubmitEvidence", data);
     return promise.then((data) => MsgSubmitEvidenceResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -154,30 +157,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -197,9 +214,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

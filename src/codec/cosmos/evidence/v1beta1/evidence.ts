@@ -16,7 +16,9 @@ export interface Equivocation {
   consensusAddress: string;
 }
 
-const baseEquivocation: object = {height: Long.ZERO, power: Long.ZERO, consensusAddress: ""};
+function createBaseEquivocation(): Equivocation {
+  return {height: Long.ZERO, time: undefined, power: Long.ZERO, consensusAddress: ""};
+}
 
 export const Equivocation = {
   encode(message: Equivocation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -38,7 +40,7 @@ export const Equivocation = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Equivocation {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseEquivocation} as Equivocation;
+    const message = createBaseEquivocation();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -63,13 +65,12 @@ export const Equivocation = {
   },
 
   fromJSON(object: any): Equivocation {
-    const message = {...baseEquivocation} as Equivocation;
-    message.height = object.height !== undefined && object.height !== null ? Long.fromString(object.height) : Long.ZERO;
-    message.time = object.time !== undefined && object.time !== null ? fromJsonTimestamp(object.time) : undefined;
-    message.power = object.power !== undefined && object.power !== null ? Long.fromString(object.power) : Long.ZERO;
-    message.consensusAddress =
-      object.consensusAddress !== undefined && object.consensusAddress !== null ? String(object.consensusAddress) : "";
-    return message;
+    return {
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO,
+      time: isSet(object.time) ? fromJsonTimestamp(object.time) : undefined,
+      power: isSet(object.power) ? Long.fromValue(object.power) : Long.ZERO,
+      consensusAddress: isSet(object.consensusAddress) ? String(object.consensusAddress) : ""
+    };
   },
 
   toJSON(message: Equivocation): unknown {
@@ -82,7 +83,7 @@ export const Equivocation = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Equivocation>, I>>(object: I): Equivocation {
-    const message = {...baseEquivocation} as Equivocation;
+    const message = createBaseEquivocation();
     message.height = object.height !== undefined && object.height !== null ? Long.fromValue(object.height) : Long.ZERO;
     message.time = object.time ?? undefined;
     message.power = object.power !== undefined && object.power !== null ? Long.fromValue(object.power) : Long.ZERO;
@@ -108,7 +109,7 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = numberToLong(date.getTime() / 1_000);
@@ -139,4 +140,8 @@ function numberToLong(number: number) {
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

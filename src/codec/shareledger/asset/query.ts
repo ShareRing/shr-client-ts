@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Asset} from "../../shareledger/asset/asset";
+import {Asset} from "./asset";
 
 export const protobufPackage = "shareledger.asset";
 
@@ -13,7 +13,9 @@ export interface QueryAssetByUUIDResponse {
   asset?: Asset;
 }
 
-const baseQueryAssetByUUIDRequest: object = {uuid: ""};
+function createBaseQueryAssetByUUIDRequest(): QueryAssetByUUIDRequest {
+  return {uuid: ""};
+}
 
 export const QueryAssetByUUIDRequest = {
   encode(message: QueryAssetByUUIDRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -26,7 +28,7 @@ export const QueryAssetByUUIDRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAssetByUUIDRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAssetByUUIDRequest} as QueryAssetByUUIDRequest;
+    const message = createBaseQueryAssetByUUIDRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -42,9 +44,7 @@ export const QueryAssetByUUIDRequest = {
   },
 
   fromJSON(object: any): QueryAssetByUUIDRequest {
-    const message = {...baseQueryAssetByUUIDRequest} as QueryAssetByUUIDRequest;
-    message.uuid = object.uuid !== undefined && object.uuid !== null ? String(object.uuid) : "";
-    return message;
+    return {uuid: isSet(object.uuid) ? String(object.uuid) : ""};
   },
 
   toJSON(message: QueryAssetByUUIDRequest): unknown {
@@ -54,13 +54,15 @@ export const QueryAssetByUUIDRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAssetByUUIDRequest>, I>>(object: I): QueryAssetByUUIDRequest {
-    const message = {...baseQueryAssetByUUIDRequest} as QueryAssetByUUIDRequest;
+    const message = createBaseQueryAssetByUUIDRequest();
     message.uuid = object.uuid ?? "";
     return message;
   }
 };
 
-const baseQueryAssetByUUIDResponse: object = {};
+function createBaseQueryAssetByUUIDResponse(): QueryAssetByUUIDResponse {
+  return {asset: undefined};
+}
 
 export const QueryAssetByUUIDResponse = {
   encode(message: QueryAssetByUUIDResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -73,7 +75,7 @@ export const QueryAssetByUUIDResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAssetByUUIDResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAssetByUUIDResponse} as QueryAssetByUUIDResponse;
+    const message = createBaseQueryAssetByUUIDResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -89,9 +91,7 @@ export const QueryAssetByUUIDResponse = {
   },
 
   fromJSON(object: any): QueryAssetByUUIDResponse {
-    const message = {...baseQueryAssetByUUIDResponse} as QueryAssetByUUIDResponse;
-    message.asset = object.asset !== undefined && object.asset !== null ? Asset.fromJSON(object.asset) : undefined;
-    return message;
+    return {asset: isSet(object.asset) ? Asset.fromJSON(object.asset) : undefined};
   },
 
   toJSON(message: QueryAssetByUUIDResponse): unknown {
@@ -101,7 +101,7 @@ export const QueryAssetByUUIDResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAssetByUUIDResponse>, I>>(object: I): QueryAssetByUUIDResponse {
-    const message = {...baseQueryAssetByUUIDResponse} as QueryAssetByUUIDResponse;
+    const message = createBaseQueryAssetByUUIDResponse();
     message.asset = object.asset !== undefined && object.asset !== null ? Asset.fromPartial(object.asset) : undefined;
     return message;
   }
@@ -115,13 +115,15 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.asset.Query";
     this.rpc = rpc;
     this.AssetByUUID = this.AssetByUUID.bind(this);
   }
   AssetByUUID(request: QueryAssetByUUIDRequest): Promise<QueryAssetByUUIDResponse> {
     const data = QueryAssetByUUIDRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.asset.Query", "AssetByUUID", data);
+    const promise = this.rpc.request(this.service, "AssetByUUID", data);
     return promise.then((data) => QueryAssetByUUIDResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -147,9 +149,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

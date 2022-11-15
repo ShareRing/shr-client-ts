@@ -1,8 +1,8 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {AccState} from "../../shareledger/electoral/acc_state";
 import {PageRequest, PageResponse} from "../../cosmos/base/query/v1beta1/pagination";
+import {AccState} from "./acc_state";
 
 export const protobufPackage = "shareledger.electoral";
 
@@ -121,7 +121,9 @@ export interface QueryApproversResponse {
   approvers: AccState[];
 }
 
-const baseQueryAccStateRequest: object = {key: ""};
+function createBaseQueryAccStateRequest(): QueryAccStateRequest {
+  return {key: ""};
+}
 
 export const QueryAccStateRequest = {
   encode(message: QueryAccStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -134,7 +136,7 @@ export const QueryAccStateRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccStateRequest} as QueryAccStateRequest;
+    const message = createBaseQueryAccStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -150,9 +152,7 @@ export const QueryAccStateRequest = {
   },
 
   fromJSON(object: any): QueryAccStateRequest {
-    const message = {...baseQueryAccStateRequest} as QueryAccStateRequest;
-    message.key = object.key !== undefined && object.key !== null ? String(object.key) : "";
-    return message;
+    return {key: isSet(object.key) ? String(object.key) : ""};
   },
 
   toJSON(message: QueryAccStateRequest): unknown {
@@ -162,13 +162,15 @@ export const QueryAccStateRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccStateRequest>, I>>(object: I): QueryAccStateRequest {
-    const message = {...baseQueryAccStateRequest} as QueryAccStateRequest;
+    const message = createBaseQueryAccStateRequest();
     message.key = object.key ?? "";
     return message;
   }
 };
 
-const baseQueryAccStateResponse: object = {};
+function createBaseQueryAccStateResponse(): QueryAccStateResponse {
+  return {accState: undefined};
+}
 
 export const QueryAccStateResponse = {
   encode(message: QueryAccStateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -181,7 +183,7 @@ export const QueryAccStateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccStateResponse} as QueryAccStateResponse;
+    const message = createBaseQueryAccStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -197,9 +199,7 @@ export const QueryAccStateResponse = {
   },
 
   fromJSON(object: any): QueryAccStateResponse {
-    const message = {...baseQueryAccStateResponse} as QueryAccStateResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryAccStateResponse): unknown {
@@ -209,13 +209,15 @@ export const QueryAccStateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccStateResponse>, I>>(object: I): QueryAccStateResponse {
-    const message = {...baseQueryAccStateResponse} as QueryAccStateResponse;
+    const message = createBaseQueryAccStateResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryAccStatesRequest: object = {};
+function createBaseQueryAccStatesRequest(): QueryAccStatesRequest {
+  return {pagination: undefined};
+}
 
 export const QueryAccStatesRequest = {
   encode(message: QueryAccStatesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -228,7 +230,7 @@ export const QueryAccStatesRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccStatesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccStatesRequest} as QueryAccStatesRequest;
+    const message = createBaseQueryAccStatesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -244,10 +246,7 @@ export const QueryAccStatesRequest = {
   },
 
   fromJSON(object: any): QueryAccStatesRequest {
-    const message = {...baseQueryAccStatesRequest} as QueryAccStatesRequest;
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageRequest.fromJSON(object.pagination) : undefined;
-    return message;
+    return {pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined};
   },
 
   toJSON(message: QueryAccStatesRequest): unknown {
@@ -257,14 +256,16 @@ export const QueryAccStatesRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccStatesRequest>, I>>(object: I): QueryAccStatesRequest {
-    const message = {...baseQueryAccStatesRequest} as QueryAccStatesRequest;
+    const message = createBaseQueryAccStatesRequest();
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   }
 };
 
-const baseQueryAccStatesResponse: object = {};
+function createBaseQueryAccStatesResponse(): QueryAccStatesResponse {
+  return {accState: [], pagination: undefined};
+}
 
 export const QueryAccStatesResponse = {
   encode(message: QueryAccStatesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -280,8 +281,7 @@ export const QueryAccStatesResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccStatesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccStatesResponse} as QueryAccStatesResponse;
-    message.accState = [];
+    const message = createBaseQueryAccStatesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -300,11 +300,10 @@ export const QueryAccStatesResponse = {
   },
 
   fromJSON(object: any): QueryAccStatesResponse {
-    const message = {...baseQueryAccStatesResponse} as QueryAccStatesResponse;
-    message.accState = (object.accState ?? []).map((e: any) => AccState.fromJSON(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageResponse.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      accState: Array.isArray(object?.accState) ? object.accState.map((e: any) => AccState.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QueryAccStatesResponse): unknown {
@@ -319,7 +318,7 @@ export const QueryAccStatesResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccStatesResponse>, I>>(object: I): QueryAccStatesResponse {
-    const message = {...baseQueryAccStatesResponse} as QueryAccStatesResponse;
+    const message = createBaseQueryAccStatesResponse();
     message.accState = object.accState?.map((e) => AccState.fromPartial(e)) || [];
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -327,7 +326,9 @@ export const QueryAccStatesResponse = {
   }
 };
 
-const baseQueryVoterRequest: object = {address: ""};
+function createBaseQueryVoterRequest(): QueryVoterRequest {
+  return {address: ""};
+}
 
 export const QueryVoterRequest = {
   encode(message: QueryVoterRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -340,7 +341,7 @@ export const QueryVoterRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryVoterRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryVoterRequest} as QueryVoterRequest;
+    const message = createBaseQueryVoterRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -356,9 +357,7 @@ export const QueryVoterRequest = {
   },
 
   fromJSON(object: any): QueryVoterRequest {
-    const message = {...baseQueryVoterRequest} as QueryVoterRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryVoterRequest): unknown {
@@ -368,13 +367,15 @@ export const QueryVoterRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryVoterRequest>, I>>(object: I): QueryVoterRequest {
-    const message = {...baseQueryVoterRequest} as QueryVoterRequest;
+    const message = createBaseQueryVoterRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryVoterResponse: object = {};
+function createBaseQueryVoterResponse(): QueryVoterResponse {
+  return {voter: undefined};
+}
 
 export const QueryVoterResponse = {
   encode(message: QueryVoterResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -387,7 +388,7 @@ export const QueryVoterResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryVoterResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryVoterResponse} as QueryVoterResponse;
+    const message = createBaseQueryVoterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -403,9 +404,7 @@ export const QueryVoterResponse = {
   },
 
   fromJSON(object: any): QueryVoterResponse {
-    const message = {...baseQueryVoterResponse} as QueryVoterResponse;
-    message.voter = object.voter !== undefined && object.voter !== null ? AccState.fromJSON(object.voter) : undefined;
-    return message;
+    return {voter: isSet(object.voter) ? AccState.fromJSON(object.voter) : undefined};
   },
 
   toJSON(message: QueryVoterResponse): unknown {
@@ -415,13 +414,15 @@ export const QueryVoterResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryVoterResponse>, I>>(object: I): QueryVoterResponse {
-    const message = {...baseQueryVoterResponse} as QueryVoterResponse;
+    const message = createBaseQueryVoterResponse();
     message.voter = object.voter !== undefined && object.voter !== null ? AccState.fromPartial(object.voter) : undefined;
     return message;
   }
 };
 
-const baseQueryLoaderRequest: object = {address: ""};
+function createBaseQueryLoaderRequest(): QueryLoaderRequest {
+  return {address: ""};
+}
 
 export const QueryLoaderRequest = {
   encode(message: QueryLoaderRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -434,7 +435,7 @@ export const QueryLoaderRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLoaderRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLoaderRequest} as QueryLoaderRequest;
+    const message = createBaseQueryLoaderRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -450,9 +451,7 @@ export const QueryLoaderRequest = {
   },
 
   fromJSON(object: any): QueryLoaderRequest {
-    const message = {...baseQueryLoaderRequest} as QueryLoaderRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryLoaderRequest): unknown {
@@ -462,13 +461,15 @@ export const QueryLoaderRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLoaderRequest>, I>>(object: I): QueryLoaderRequest {
-    const message = {...baseQueryLoaderRequest} as QueryLoaderRequest;
+    const message = createBaseQueryLoaderRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryLoaderResponse: object = {};
+function createBaseQueryLoaderResponse(): QueryLoaderResponse {
+  return {accState: undefined};
+}
 
 export const QueryLoaderResponse = {
   encode(message: QueryLoaderResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -481,7 +482,7 @@ export const QueryLoaderResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLoaderResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLoaderResponse} as QueryLoaderResponse;
+    const message = createBaseQueryLoaderResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -497,9 +498,7 @@ export const QueryLoaderResponse = {
   },
 
   fromJSON(object: any): QueryLoaderResponse {
-    const message = {...baseQueryLoaderResponse} as QueryLoaderResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryLoaderResponse): unknown {
@@ -509,13 +508,15 @@ export const QueryLoaderResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLoaderResponse>, I>>(object: I): QueryLoaderResponse {
-    const message = {...baseQueryLoaderResponse} as QueryLoaderResponse;
+    const message = createBaseQueryLoaderResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryIdSignerRequest: object = {address: ""};
+function createBaseQueryIdSignerRequest(): QueryIdSignerRequest {
+  return {address: ""};
+}
 
 export const QueryIdSignerRequest = {
   encode(message: QueryIdSignerRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -528,7 +529,7 @@ export const QueryIdSignerRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdSignerRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdSignerRequest} as QueryIdSignerRequest;
+    const message = createBaseQueryIdSignerRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -544,9 +545,7 @@ export const QueryIdSignerRequest = {
   },
 
   fromJSON(object: any): QueryIdSignerRequest {
-    const message = {...baseQueryIdSignerRequest} as QueryIdSignerRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryIdSignerRequest): unknown {
@@ -556,13 +555,15 @@ export const QueryIdSignerRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdSignerRequest>, I>>(object: I): QueryIdSignerRequest {
-    const message = {...baseQueryIdSignerRequest} as QueryIdSignerRequest;
+    const message = createBaseQueryIdSignerRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryIdSignerResponse: object = {};
+function createBaseQueryIdSignerResponse(): QueryIdSignerResponse {
+  return {accState: undefined};
+}
 
 export const QueryIdSignerResponse = {
   encode(message: QueryIdSignerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -575,7 +576,7 @@ export const QueryIdSignerResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdSignerResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdSignerResponse} as QueryIdSignerResponse;
+    const message = createBaseQueryIdSignerResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -591,9 +592,7 @@ export const QueryIdSignerResponse = {
   },
 
   fromJSON(object: any): QueryIdSignerResponse {
-    const message = {...baseQueryIdSignerResponse} as QueryIdSignerResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryIdSignerResponse): unknown {
@@ -603,13 +602,15 @@ export const QueryIdSignerResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdSignerResponse>, I>>(object: I): QueryIdSignerResponse {
-    const message = {...baseQueryIdSignerResponse} as QueryIdSignerResponse;
+    const message = createBaseQueryIdSignerResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryIdSignersRequest: object = {};
+function createBaseQueryIdSignersRequest(): QueryIdSignersRequest {
+  return {};
+}
 
 export const QueryIdSignersRequest = {
   encode(_: QueryIdSignersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -619,7 +620,7 @@ export const QueryIdSignersRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdSignersRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdSignersRequest} as QueryIdSignersRequest;
+    const message = createBaseQueryIdSignersRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -632,8 +633,7 @@ export const QueryIdSignersRequest = {
   },
 
   fromJSON(_: any): QueryIdSignersRequest {
-    const message = {...baseQueryIdSignersRequest} as QueryIdSignersRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryIdSignersRequest): unknown {
@@ -642,12 +642,14 @@ export const QueryIdSignersRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdSignersRequest>, I>>(_: I): QueryIdSignersRequest {
-    const message = {...baseQueryIdSignersRequest} as QueryIdSignersRequest;
+    const message = createBaseQueryIdSignersRequest();
     return message;
   }
 };
 
-const baseQueryIdSignersResponse: object = {};
+function createBaseQueryIdSignersResponse(): QueryIdSignersResponse {
+  return {accStates: []};
+}
 
 export const QueryIdSignersResponse = {
   encode(message: QueryIdSignersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -660,8 +662,7 @@ export const QueryIdSignersResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdSignersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdSignersResponse} as QueryIdSignersResponse;
-    message.accStates = [];
+    const message = createBaseQueryIdSignersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -677,9 +678,9 @@ export const QueryIdSignersResponse = {
   },
 
   fromJSON(object: any): QueryIdSignersResponse {
-    const message = {...baseQueryIdSignersResponse} as QueryIdSignersResponse;
-    message.accStates = (object.accStates ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {
+      accStates: Array.isArray(object?.accStates) ? object.accStates.map((e: any) => AccState.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryIdSignersResponse): unknown {
@@ -693,13 +694,15 @@ export const QueryIdSignersResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdSignersResponse>, I>>(object: I): QueryIdSignersResponse {
-    const message = {...baseQueryIdSignersResponse} as QueryIdSignersResponse;
+    const message = createBaseQueryIdSignersResponse();
     message.accStates = object.accStates?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryAccountOperatorRequest: object = {address: ""};
+function createBaseQueryAccountOperatorRequest(): QueryAccountOperatorRequest {
+  return {address: ""};
+}
 
 export const QueryAccountOperatorRequest = {
   encode(message: QueryAccountOperatorRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -712,7 +715,7 @@ export const QueryAccountOperatorRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccountOperatorRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccountOperatorRequest} as QueryAccountOperatorRequest;
+    const message = createBaseQueryAccountOperatorRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -728,9 +731,7 @@ export const QueryAccountOperatorRequest = {
   },
 
   fromJSON(object: any): QueryAccountOperatorRequest {
-    const message = {...baseQueryAccountOperatorRequest} as QueryAccountOperatorRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryAccountOperatorRequest): unknown {
@@ -740,13 +741,15 @@ export const QueryAccountOperatorRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccountOperatorRequest>, I>>(object: I): QueryAccountOperatorRequest {
-    const message = {...baseQueryAccountOperatorRequest} as QueryAccountOperatorRequest;
+    const message = createBaseQueryAccountOperatorRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryAccountOperatorResponse: object = {};
+function createBaseQueryAccountOperatorResponse(): QueryAccountOperatorResponse {
+  return {accState: undefined};
+}
 
 export const QueryAccountOperatorResponse = {
   encode(message: QueryAccountOperatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -759,7 +762,7 @@ export const QueryAccountOperatorResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccountOperatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccountOperatorResponse} as QueryAccountOperatorResponse;
+    const message = createBaseQueryAccountOperatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -775,9 +778,7 @@ export const QueryAccountOperatorResponse = {
   },
 
   fromJSON(object: any): QueryAccountOperatorResponse {
-    const message = {...baseQueryAccountOperatorResponse} as QueryAccountOperatorResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryAccountOperatorResponse): unknown {
@@ -787,13 +788,15 @@ export const QueryAccountOperatorResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccountOperatorResponse>, I>>(object: I): QueryAccountOperatorResponse {
-    const message = {...baseQueryAccountOperatorResponse} as QueryAccountOperatorResponse;
+    const message = createBaseQueryAccountOperatorResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryAccountOperatorsRequest: object = {};
+function createBaseQueryAccountOperatorsRequest(): QueryAccountOperatorsRequest {
+  return {};
+}
 
 export const QueryAccountOperatorsRequest = {
   encode(_: QueryAccountOperatorsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -803,7 +806,7 @@ export const QueryAccountOperatorsRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccountOperatorsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccountOperatorsRequest} as QueryAccountOperatorsRequest;
+    const message = createBaseQueryAccountOperatorsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -816,8 +819,7 @@ export const QueryAccountOperatorsRequest = {
   },
 
   fromJSON(_: any): QueryAccountOperatorsRequest {
-    const message = {...baseQueryAccountOperatorsRequest} as QueryAccountOperatorsRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryAccountOperatorsRequest): unknown {
@@ -826,12 +828,14 @@ export const QueryAccountOperatorsRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccountOperatorsRequest>, I>>(_: I): QueryAccountOperatorsRequest {
-    const message = {...baseQueryAccountOperatorsRequest} as QueryAccountOperatorsRequest;
+    const message = createBaseQueryAccountOperatorsRequest();
     return message;
   }
 };
 
-const baseQueryAccountOperatorsResponse: object = {};
+function createBaseQueryAccountOperatorsResponse(): QueryAccountOperatorsResponse {
+  return {accStates: []};
+}
 
 export const QueryAccountOperatorsResponse = {
   encode(message: QueryAccountOperatorsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -844,8 +848,7 @@ export const QueryAccountOperatorsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAccountOperatorsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAccountOperatorsResponse} as QueryAccountOperatorsResponse;
-    message.accStates = [];
+    const message = createBaseQueryAccountOperatorsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -861,9 +864,9 @@ export const QueryAccountOperatorsResponse = {
   },
 
   fromJSON(object: any): QueryAccountOperatorsResponse {
-    const message = {...baseQueryAccountOperatorsResponse} as QueryAccountOperatorsResponse;
-    message.accStates = (object.accStates ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {
+      accStates: Array.isArray(object?.accStates) ? object.accStates.map((e: any) => AccState.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryAccountOperatorsResponse): unknown {
@@ -877,13 +880,15 @@ export const QueryAccountOperatorsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAccountOperatorsResponse>, I>>(object: I): QueryAccountOperatorsResponse {
-    const message = {...baseQueryAccountOperatorsResponse} as QueryAccountOperatorsResponse;
+    const message = createBaseQueryAccountOperatorsResponse();
     message.accStates = object.accStates?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryDocumentIssuerRequest: object = {address: ""};
+function createBaseQueryDocumentIssuerRequest(): QueryDocumentIssuerRequest {
+  return {address: ""};
+}
 
 export const QueryDocumentIssuerRequest = {
   encode(message: QueryDocumentIssuerRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -896,7 +901,7 @@ export const QueryDocumentIssuerRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentIssuerRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentIssuerRequest} as QueryDocumentIssuerRequest;
+    const message = createBaseQueryDocumentIssuerRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -912,9 +917,7 @@ export const QueryDocumentIssuerRequest = {
   },
 
   fromJSON(object: any): QueryDocumentIssuerRequest {
-    const message = {...baseQueryDocumentIssuerRequest} as QueryDocumentIssuerRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryDocumentIssuerRequest): unknown {
@@ -924,13 +927,15 @@ export const QueryDocumentIssuerRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentIssuerRequest>, I>>(object: I): QueryDocumentIssuerRequest {
-    const message = {...baseQueryDocumentIssuerRequest} as QueryDocumentIssuerRequest;
+    const message = createBaseQueryDocumentIssuerRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryDocumentIssuerResponse: object = {};
+function createBaseQueryDocumentIssuerResponse(): QueryDocumentIssuerResponse {
+  return {accState: undefined};
+}
 
 export const QueryDocumentIssuerResponse = {
   encode(message: QueryDocumentIssuerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -943,7 +948,7 @@ export const QueryDocumentIssuerResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentIssuerResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentIssuerResponse} as QueryDocumentIssuerResponse;
+    const message = createBaseQueryDocumentIssuerResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -959,9 +964,7 @@ export const QueryDocumentIssuerResponse = {
   },
 
   fromJSON(object: any): QueryDocumentIssuerResponse {
-    const message = {...baseQueryDocumentIssuerResponse} as QueryDocumentIssuerResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryDocumentIssuerResponse): unknown {
@@ -971,13 +974,15 @@ export const QueryDocumentIssuerResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentIssuerResponse>, I>>(object: I): QueryDocumentIssuerResponse {
-    const message = {...baseQueryDocumentIssuerResponse} as QueryDocumentIssuerResponse;
+    const message = createBaseQueryDocumentIssuerResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryDocumentIssuersRequest: object = {};
+function createBaseQueryDocumentIssuersRequest(): QueryDocumentIssuersRequest {
+  return {};
+}
 
 export const QueryDocumentIssuersRequest = {
   encode(_: QueryDocumentIssuersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -987,7 +992,7 @@ export const QueryDocumentIssuersRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentIssuersRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentIssuersRequest} as QueryDocumentIssuersRequest;
+    const message = createBaseQueryDocumentIssuersRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1000,8 +1005,7 @@ export const QueryDocumentIssuersRequest = {
   },
 
   fromJSON(_: any): QueryDocumentIssuersRequest {
-    const message = {...baseQueryDocumentIssuersRequest} as QueryDocumentIssuersRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryDocumentIssuersRequest): unknown {
@@ -1010,12 +1014,14 @@ export const QueryDocumentIssuersRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentIssuersRequest>, I>>(_: I): QueryDocumentIssuersRequest {
-    const message = {...baseQueryDocumentIssuersRequest} as QueryDocumentIssuersRequest;
+    const message = createBaseQueryDocumentIssuersRequest();
     return message;
   }
 };
 
-const baseQueryDocumentIssuersResponse: object = {};
+function createBaseQueryDocumentIssuersResponse(): QueryDocumentIssuersResponse {
+  return {accStates: []};
+}
 
 export const QueryDocumentIssuersResponse = {
   encode(message: QueryDocumentIssuersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1028,8 +1034,7 @@ export const QueryDocumentIssuersResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentIssuersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentIssuersResponse} as QueryDocumentIssuersResponse;
-    message.accStates = [];
+    const message = createBaseQueryDocumentIssuersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1045,9 +1050,9 @@ export const QueryDocumentIssuersResponse = {
   },
 
   fromJSON(object: any): QueryDocumentIssuersResponse {
-    const message = {...baseQueryDocumentIssuersResponse} as QueryDocumentIssuersResponse;
-    message.accStates = (object.accStates ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {
+      accStates: Array.isArray(object?.accStates) ? object.accStates.map((e: any) => AccState.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryDocumentIssuersResponse): unknown {
@@ -1061,13 +1066,15 @@ export const QueryDocumentIssuersResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentIssuersResponse>, I>>(object: I): QueryDocumentIssuersResponse {
-    const message = {...baseQueryDocumentIssuersResponse} as QueryDocumentIssuersResponse;
+    const message = createBaseQueryDocumentIssuersResponse();
     message.accStates = object.accStates?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryVotersRequest: object = {};
+function createBaseQueryVotersRequest(): QueryVotersRequest {
+  return {};
+}
 
 export const QueryVotersRequest = {
   encode(_: QueryVotersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1077,7 +1084,7 @@ export const QueryVotersRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryVotersRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryVotersRequest} as QueryVotersRequest;
+    const message = createBaseQueryVotersRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1090,8 +1097,7 @@ export const QueryVotersRequest = {
   },
 
   fromJSON(_: any): QueryVotersRequest {
-    const message = {...baseQueryVotersRequest} as QueryVotersRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryVotersRequest): unknown {
@@ -1100,12 +1106,14 @@ export const QueryVotersRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryVotersRequest>, I>>(_: I): QueryVotersRequest {
-    const message = {...baseQueryVotersRequest} as QueryVotersRequest;
+    const message = createBaseQueryVotersRequest();
     return message;
   }
 };
 
-const baseQueryVotersResponse: object = {};
+function createBaseQueryVotersResponse(): QueryVotersResponse {
+  return {voters: []};
+}
 
 export const QueryVotersResponse = {
   encode(message: QueryVotersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1118,8 +1126,7 @@ export const QueryVotersResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryVotersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryVotersResponse} as QueryVotersResponse;
-    message.voters = [];
+    const message = createBaseQueryVotersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1135,9 +1142,7 @@ export const QueryVotersResponse = {
   },
 
   fromJSON(object: any): QueryVotersResponse {
-    const message = {...baseQueryVotersResponse} as QueryVotersResponse;
-    message.voters = (object.voters ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {voters: Array.isArray(object?.voters) ? object.voters.map((e: any) => AccState.fromJSON(e)) : []};
   },
 
   toJSON(message: QueryVotersResponse): unknown {
@@ -1151,13 +1156,15 @@ export const QueryVotersResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryVotersResponse>, I>>(object: I): QueryVotersResponse {
-    const message = {...baseQueryVotersResponse} as QueryVotersResponse;
+    const message = createBaseQueryVotersResponse();
     message.voters = object.voters?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryLoadersRequest: object = {};
+function createBaseQueryLoadersRequest(): QueryLoadersRequest {
+  return {};
+}
 
 export const QueryLoadersRequest = {
   encode(_: QueryLoadersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1167,7 +1174,7 @@ export const QueryLoadersRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLoadersRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLoadersRequest} as QueryLoadersRequest;
+    const message = createBaseQueryLoadersRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1180,8 +1187,7 @@ export const QueryLoadersRequest = {
   },
 
   fromJSON(_: any): QueryLoadersRequest {
-    const message = {...baseQueryLoadersRequest} as QueryLoadersRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryLoadersRequest): unknown {
@@ -1190,12 +1196,14 @@ export const QueryLoadersRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLoadersRequest>, I>>(_: I): QueryLoadersRequest {
-    const message = {...baseQueryLoadersRequest} as QueryLoadersRequest;
+    const message = createBaseQueryLoadersRequest();
     return message;
   }
 };
 
-const baseQueryLoadersResponse: object = {};
+function createBaseQueryLoadersResponse(): QueryLoadersResponse {
+  return {loaders: []};
+}
 
 export const QueryLoadersResponse = {
   encode(message: QueryLoadersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1208,8 +1216,7 @@ export const QueryLoadersResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLoadersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLoadersResponse} as QueryLoadersResponse;
-    message.loaders = [];
+    const message = createBaseQueryLoadersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1225,9 +1232,7 @@ export const QueryLoadersResponse = {
   },
 
   fromJSON(object: any): QueryLoadersResponse {
-    const message = {...baseQueryLoadersResponse} as QueryLoadersResponse;
-    message.loaders = (object.loaders ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {loaders: Array.isArray(object?.loaders) ? object.loaders.map((e: any) => AccState.fromJSON(e)) : []};
   },
 
   toJSON(message: QueryLoadersResponse): unknown {
@@ -1241,13 +1246,15 @@ export const QueryLoadersResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLoadersResponse>, I>>(object: I): QueryLoadersResponse {
-    const message = {...baseQueryLoadersResponse} as QueryLoadersResponse;
+    const message = createBaseQueryLoadersResponse();
     message.loaders = object.loaders?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryApproverRequest: object = {address: ""};
+function createBaseQueryApproverRequest(): QueryApproverRequest {
+  return {address: ""};
+}
 
 export const QueryApproverRequest = {
   encode(message: QueryApproverRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1260,7 +1267,7 @@ export const QueryApproverRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryApproverRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryApproverRequest} as QueryApproverRequest;
+    const message = createBaseQueryApproverRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1276,9 +1283,7 @@ export const QueryApproverRequest = {
   },
 
   fromJSON(object: any): QueryApproverRequest {
-    const message = {...baseQueryApproverRequest} as QueryApproverRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryApproverRequest): unknown {
@@ -1288,13 +1293,15 @@ export const QueryApproverRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryApproverRequest>, I>>(object: I): QueryApproverRequest {
-    const message = {...baseQueryApproverRequest} as QueryApproverRequest;
+    const message = createBaseQueryApproverRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryApproverResponse: object = {};
+function createBaseQueryApproverResponse(): QueryApproverResponse {
+  return {accState: undefined};
+}
 
 export const QueryApproverResponse = {
   encode(message: QueryApproverResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1307,7 +1314,7 @@ export const QueryApproverResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryApproverResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryApproverResponse} as QueryApproverResponse;
+    const message = createBaseQueryApproverResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1323,9 +1330,7 @@ export const QueryApproverResponse = {
   },
 
   fromJSON(object: any): QueryApproverResponse {
-    const message = {...baseQueryApproverResponse} as QueryApproverResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryApproverResponse): unknown {
@@ -1335,13 +1340,15 @@ export const QueryApproverResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryApproverResponse>, I>>(object: I): QueryApproverResponse {
-    const message = {...baseQueryApproverResponse} as QueryApproverResponse;
+    const message = createBaseQueryApproverResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryRelayerRequest: object = {address: ""};
+function createBaseQueryRelayerRequest(): QueryRelayerRequest {
+  return {address: ""};
+}
 
 export const QueryRelayerRequest = {
   encode(message: QueryRelayerRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1354,7 +1361,7 @@ export const QueryRelayerRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryRelayerRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryRelayerRequest} as QueryRelayerRequest;
+    const message = createBaseQueryRelayerRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1370,9 +1377,7 @@ export const QueryRelayerRequest = {
   },
 
   fromJSON(object: any): QueryRelayerRequest {
-    const message = {...baseQueryRelayerRequest} as QueryRelayerRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryRelayerRequest): unknown {
@@ -1382,13 +1387,15 @@ export const QueryRelayerRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryRelayerRequest>, I>>(object: I): QueryRelayerRequest {
-    const message = {...baseQueryRelayerRequest} as QueryRelayerRequest;
+    const message = createBaseQueryRelayerRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryRelayerResponse: object = {};
+function createBaseQueryRelayerResponse(): QueryRelayerResponse {
+  return {accState: undefined};
+}
 
 export const QueryRelayerResponse = {
   encode(message: QueryRelayerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1401,7 +1408,7 @@ export const QueryRelayerResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryRelayerResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryRelayerResponse} as QueryRelayerResponse;
+    const message = createBaseQueryRelayerResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1417,9 +1424,7 @@ export const QueryRelayerResponse = {
   },
 
   fromJSON(object: any): QueryRelayerResponse {
-    const message = {...baseQueryRelayerResponse} as QueryRelayerResponse;
-    message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromJSON(object.accState) : undefined;
-    return message;
+    return {accState: isSet(object.accState) ? AccState.fromJSON(object.accState) : undefined};
   },
 
   toJSON(message: QueryRelayerResponse): unknown {
@@ -1429,13 +1434,15 @@ export const QueryRelayerResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryRelayerResponse>, I>>(object: I): QueryRelayerResponse {
-    const message = {...baseQueryRelayerResponse} as QueryRelayerResponse;
+    const message = createBaseQueryRelayerResponse();
     message.accState = object.accState !== undefined && object.accState !== null ? AccState.fromPartial(object.accState) : undefined;
     return message;
   }
 };
 
-const baseQueryRelayersRequest: object = {};
+function createBaseQueryRelayersRequest(): QueryRelayersRequest {
+  return {};
+}
 
 export const QueryRelayersRequest = {
   encode(_: QueryRelayersRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1445,7 +1452,7 @@ export const QueryRelayersRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryRelayersRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryRelayersRequest} as QueryRelayersRequest;
+    const message = createBaseQueryRelayersRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1458,8 +1465,7 @@ export const QueryRelayersRequest = {
   },
 
   fromJSON(_: any): QueryRelayersRequest {
-    const message = {...baseQueryRelayersRequest} as QueryRelayersRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryRelayersRequest): unknown {
@@ -1468,12 +1474,14 @@ export const QueryRelayersRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryRelayersRequest>, I>>(_: I): QueryRelayersRequest {
-    const message = {...baseQueryRelayersRequest} as QueryRelayersRequest;
+    const message = createBaseQueryRelayersRequest();
     return message;
   }
 };
 
-const baseQueryRelayersResponse: object = {};
+function createBaseQueryRelayersResponse(): QueryRelayersResponse {
+  return {relayers: []};
+}
 
 export const QueryRelayersResponse = {
   encode(message: QueryRelayersResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1486,8 +1494,7 @@ export const QueryRelayersResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryRelayersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryRelayersResponse} as QueryRelayersResponse;
-    message.relayers = [];
+    const message = createBaseQueryRelayersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1503,9 +1510,7 @@ export const QueryRelayersResponse = {
   },
 
   fromJSON(object: any): QueryRelayersResponse {
-    const message = {...baseQueryRelayersResponse} as QueryRelayersResponse;
-    message.relayers = (object.relayers ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {relayers: Array.isArray(object?.relayers) ? object.relayers.map((e: any) => AccState.fromJSON(e)) : []};
   },
 
   toJSON(message: QueryRelayersResponse): unknown {
@@ -1519,13 +1524,15 @@ export const QueryRelayersResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryRelayersResponse>, I>>(object: I): QueryRelayersResponse {
-    const message = {...baseQueryRelayersResponse} as QueryRelayersResponse;
+    const message = createBaseQueryRelayersResponse();
     message.relayers = object.relayers?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryApproversRequest: object = {};
+function createBaseQueryApproversRequest(): QueryApproversRequest {
+  return {};
+}
 
 export const QueryApproversRequest = {
   encode(_: QueryApproversRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1535,7 +1542,7 @@ export const QueryApproversRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryApproversRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryApproversRequest} as QueryApproversRequest;
+    const message = createBaseQueryApproversRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1548,8 +1555,7 @@ export const QueryApproversRequest = {
   },
 
   fromJSON(_: any): QueryApproversRequest {
-    const message = {...baseQueryApproversRequest} as QueryApproversRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryApproversRequest): unknown {
@@ -1558,12 +1564,14 @@ export const QueryApproversRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryApproversRequest>, I>>(_: I): QueryApproversRequest {
-    const message = {...baseQueryApproversRequest} as QueryApproversRequest;
+    const message = createBaseQueryApproversRequest();
     return message;
   }
 };
 
-const baseQueryApproversResponse: object = {};
+function createBaseQueryApproversResponse(): QueryApproversResponse {
+  return {approvers: []};
+}
 
 export const QueryApproversResponse = {
   encode(message: QueryApproversResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1576,8 +1584,7 @@ export const QueryApproversResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryApproversResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryApproversResponse} as QueryApproversResponse;
-    message.approvers = [];
+    const message = createBaseQueryApproversResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1593,9 +1600,9 @@ export const QueryApproversResponse = {
   },
 
   fromJSON(object: any): QueryApproversResponse {
-    const message = {...baseQueryApproversResponse} as QueryApproversResponse;
-    message.approvers = (object.approvers ?? []).map((e: any) => AccState.fromJSON(e));
-    return message;
+    return {
+      approvers: Array.isArray(object?.approvers) ? object.approvers.map((e: any) => AccState.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryApproversResponse): unknown {
@@ -1609,7 +1616,7 @@ export const QueryApproversResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryApproversResponse>, I>>(object: I): QueryApproversResponse {
-    const message = {...baseQueryApproversResponse} as QueryApproversResponse;
+    const message = createBaseQueryApproversResponse();
     message.approvers = object.approvers?.map((e) => AccState.fromPartial(e)) || [];
     return message;
   }
@@ -1653,7 +1660,9 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.electoral.Query";
     this.rpc = rpc;
     this.AccState = this.AccState.bind(this);
     this.AccStates = this.AccStates.bind(this);
@@ -1674,97 +1683,97 @@ export class QueryClientImpl implements Query {
   }
   AccState(request: QueryAccStateRequest): Promise<QueryAccStateResponse> {
     const data = QueryAccStateRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "AccState", data);
+    const promise = this.rpc.request(this.service, "AccState", data);
     return promise.then((data) => QueryAccStateResponse.decode(new _m0.Reader(data)));
   }
 
   AccStates(request: QueryAccStatesRequest): Promise<QueryAccStatesResponse> {
     const data = QueryAccStatesRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "AccStates", data);
+    const promise = this.rpc.request(this.service, "AccStates", data);
     return promise.then((data) => QueryAccStatesResponse.decode(new _m0.Reader(data)));
   }
 
   Voter(request: QueryVoterRequest): Promise<QueryVoterResponse> {
     const data = QueryVoterRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Voter", data);
+    const promise = this.rpc.request(this.service, "Voter", data);
     return promise.then((data) => QueryVoterResponse.decode(new _m0.Reader(data)));
   }
 
   Loader(request: QueryLoaderRequest): Promise<QueryLoaderResponse> {
     const data = QueryLoaderRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Loader", data);
+    const promise = this.rpc.request(this.service, "Loader", data);
     return promise.then((data) => QueryLoaderResponse.decode(new _m0.Reader(data)));
   }
 
   IdSigner(request: QueryIdSignerRequest): Promise<QueryIdSignerResponse> {
     const data = QueryIdSignerRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "IdSigner", data);
+    const promise = this.rpc.request(this.service, "IdSigner", data);
     return promise.then((data) => QueryIdSignerResponse.decode(new _m0.Reader(data)));
   }
 
   IdSigners(request: QueryIdSignersRequest): Promise<QueryIdSignersResponse> {
     const data = QueryIdSignersRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "IdSigners", data);
+    const promise = this.rpc.request(this.service, "IdSigners", data);
     return promise.then((data) => QueryIdSignersResponse.decode(new _m0.Reader(data)));
   }
 
   AccountOperator(request: QueryAccountOperatorRequest): Promise<QueryAccountOperatorResponse> {
     const data = QueryAccountOperatorRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "AccountOperator", data);
+    const promise = this.rpc.request(this.service, "AccountOperator", data);
     return promise.then((data) => QueryAccountOperatorResponse.decode(new _m0.Reader(data)));
   }
 
   AccountOperators(request: QueryAccountOperatorsRequest): Promise<QueryAccountOperatorsResponse> {
     const data = QueryAccountOperatorsRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "AccountOperators", data);
+    const promise = this.rpc.request(this.service, "AccountOperators", data);
     return promise.then((data) => QueryAccountOperatorsResponse.decode(new _m0.Reader(data)));
   }
 
   DocumentIssuer(request: QueryDocumentIssuerRequest): Promise<QueryDocumentIssuerResponse> {
     const data = QueryDocumentIssuerRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "DocumentIssuer", data);
+    const promise = this.rpc.request(this.service, "DocumentIssuer", data);
     return promise.then((data) => QueryDocumentIssuerResponse.decode(new _m0.Reader(data)));
   }
 
   DocumentIssuers(request: QueryDocumentIssuersRequest): Promise<QueryDocumentIssuersResponse> {
     const data = QueryDocumentIssuersRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "DocumentIssuers", data);
+    const promise = this.rpc.request(this.service, "DocumentIssuers", data);
     return promise.then((data) => QueryDocumentIssuersResponse.decode(new _m0.Reader(data)));
   }
 
   Voters(request: QueryVotersRequest): Promise<QueryVotersResponse> {
     const data = QueryVotersRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Voters", data);
+    const promise = this.rpc.request(this.service, "Voters", data);
     return promise.then((data) => QueryVotersResponse.decode(new _m0.Reader(data)));
   }
 
   Loaders(request: QueryLoadersRequest): Promise<QueryLoadersResponse> {
     const data = QueryLoadersRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Loaders", data);
+    const promise = this.rpc.request(this.service, "Loaders", data);
     return promise.then((data) => QueryLoadersResponse.decode(new _m0.Reader(data)));
   }
 
   Approver(request: QueryApproverRequest): Promise<QueryApproverResponse> {
     const data = QueryApproverRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Approver", data);
+    const promise = this.rpc.request(this.service, "Approver", data);
     return promise.then((data) => QueryApproverResponse.decode(new _m0.Reader(data)));
   }
 
   Relayer(request: QueryRelayerRequest): Promise<QueryRelayerResponse> {
     const data = QueryRelayerRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Relayer", data);
+    const promise = this.rpc.request(this.service, "Relayer", data);
     return promise.then((data) => QueryRelayerResponse.decode(new _m0.Reader(data)));
   }
 
   Relayers(request: QueryRelayersRequest): Promise<QueryRelayersResponse> {
     const data = QueryRelayersRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Relayers", data);
+    const promise = this.rpc.request(this.service, "Relayers", data);
     return promise.then((data) => QueryRelayersResponse.decode(new _m0.Reader(data)));
   }
 
   Approvers(request: QueryApproversRequest): Promise<QueryApproversResponse> {
     const data = QueryApproversRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.electoral.Query", "Approvers", data);
+    const promise = this.rpc.request(this.service, "Approvers", data);
     return promise.then((data) => QueryApproversResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -1790,9 +1799,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

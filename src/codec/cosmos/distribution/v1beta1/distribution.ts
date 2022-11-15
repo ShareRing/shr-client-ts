@@ -1,8 +1,7 @@
 /* eslint-disable */
-import {Decimal} from "@cosmjs/math";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {DecCoin, Coin} from "../../../cosmos/base/v1beta1/coin";
+import {Coin, DecCoin} from "../../base/v1beta1/coin";
 
 export const protobufPackage = "cosmos.distribution.v1beta1";
 
@@ -127,18 +126,20 @@ export interface CommunityPoolSpendProposalWithDeposit {
   deposit: string;
 }
 
-const baseParams: object = {communityTax: "", baseProposerReward: "", bonusProposerReward: "", withdrawAddrEnabled: false};
+function createBaseParams(): Params {
+  return {communityTax: "", baseProposerReward: "", bonusProposerReward: "", withdrawAddrEnabled: false};
+}
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.communityTax !== "") {
-      writer.uint32(10).string(Decimal.fromUserInput(message.communityTax, 18).atomics);
+      writer.uint32(10).string(message.communityTax);
     }
     if (message.baseProposerReward !== "") {
-      writer.uint32(18).string(Decimal.fromUserInput(message.baseProposerReward, 18).atomics);
+      writer.uint32(18).string(message.baseProposerReward);
     }
     if (message.bonusProposerReward !== "") {
-      writer.uint32(26).string(Decimal.fromUserInput(message.bonusProposerReward, 18).atomics);
+      writer.uint32(26).string(message.bonusProposerReward);
     }
     if (message.withdrawAddrEnabled === true) {
       writer.uint32(32).bool(message.withdrawAddrEnabled);
@@ -149,18 +150,18 @@ export const Params = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.communityTax = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.communityTax = reader.string();
           break;
         case 2:
-          message.baseProposerReward = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.baseProposerReward = reader.string();
           break;
         case 3:
-          message.bonusProposerReward = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.bonusProposerReward = reader.string();
           break;
         case 4:
           message.withdrawAddrEnabled = reader.bool();
@@ -174,15 +175,12 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    const message = {...baseParams} as Params;
-    message.communityTax = object.communityTax !== undefined && object.communityTax !== null ? String(object.communityTax) : "";
-    message.baseProposerReward =
-      object.baseProposerReward !== undefined && object.baseProposerReward !== null ? String(object.baseProposerReward) : "";
-    message.bonusProposerReward =
-      object.bonusProposerReward !== undefined && object.bonusProposerReward !== null ? String(object.bonusProposerReward) : "";
-    message.withdrawAddrEnabled =
-      object.withdrawAddrEnabled !== undefined && object.withdrawAddrEnabled !== null ? Boolean(object.withdrawAddrEnabled) : false;
-    return message;
+    return {
+      communityTax: isSet(object.communityTax) ? String(object.communityTax) : "",
+      baseProposerReward: isSet(object.baseProposerReward) ? String(object.baseProposerReward) : "",
+      bonusProposerReward: isSet(object.bonusProposerReward) ? String(object.bonusProposerReward) : "",
+      withdrawAddrEnabled: isSet(object.withdrawAddrEnabled) ? Boolean(object.withdrawAddrEnabled) : false
+    };
   },
 
   toJSON(message: Params): unknown {
@@ -195,7 +193,7 @@ export const Params = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     message.communityTax = object.communityTax ?? "";
     message.baseProposerReward = object.baseProposerReward ?? "";
     message.bonusProposerReward = object.bonusProposerReward ?? "";
@@ -204,7 +202,9 @@ export const Params = {
   }
 };
 
-const baseValidatorHistoricalRewards: object = {referenceCount: 0};
+function createBaseValidatorHistoricalRewards(): ValidatorHistoricalRewards {
+  return {cumulativeRewardRatio: [], referenceCount: 0};
+}
 
 export const ValidatorHistoricalRewards = {
   encode(message: ValidatorHistoricalRewards, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -220,8 +220,7 @@ export const ValidatorHistoricalRewards = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorHistoricalRewards {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorHistoricalRewards} as ValidatorHistoricalRewards;
-    message.cumulativeRewardRatio = [];
+    const message = createBaseValidatorHistoricalRewards();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -240,10 +239,12 @@ export const ValidatorHistoricalRewards = {
   },
 
   fromJSON(object: any): ValidatorHistoricalRewards {
-    const message = {...baseValidatorHistoricalRewards} as ValidatorHistoricalRewards;
-    message.cumulativeRewardRatio = (object.cumulativeRewardRatio ?? []).map((e: any) => DecCoin.fromJSON(e));
-    message.referenceCount = object.referenceCount !== undefined && object.referenceCount !== null ? Number(object.referenceCount) : 0;
-    return message;
+    return {
+      cumulativeRewardRatio: Array.isArray(object?.cumulativeRewardRatio)
+        ? object.cumulativeRewardRatio.map((e: any) => DecCoin.fromJSON(e))
+        : [],
+      referenceCount: isSet(object.referenceCount) ? Number(object.referenceCount) : 0
+    };
   },
 
   toJSON(message: ValidatorHistoricalRewards): unknown {
@@ -253,19 +254,21 @@ export const ValidatorHistoricalRewards = {
     } else {
       obj.cumulativeRewardRatio = [];
     }
-    message.referenceCount !== undefined && (obj.referenceCount = message.referenceCount);
+    message.referenceCount !== undefined && (obj.referenceCount = Math.round(message.referenceCount));
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorHistoricalRewards>, I>>(object: I): ValidatorHistoricalRewards {
-    const message = {...baseValidatorHistoricalRewards} as ValidatorHistoricalRewards;
+    const message = createBaseValidatorHistoricalRewards();
     message.cumulativeRewardRatio = object.cumulativeRewardRatio?.map((e) => DecCoin.fromPartial(e)) || [];
     message.referenceCount = object.referenceCount ?? 0;
     return message;
   }
 };
 
-const baseValidatorCurrentRewards: object = {period: Long.UZERO};
+function createBaseValidatorCurrentRewards(): ValidatorCurrentRewards {
+  return {rewards: [], period: Long.UZERO};
+}
 
 export const ValidatorCurrentRewards = {
   encode(message: ValidatorCurrentRewards, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -281,8 +284,7 @@ export const ValidatorCurrentRewards = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorCurrentRewards {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorCurrentRewards} as ValidatorCurrentRewards;
-    message.rewards = [];
+    const message = createBaseValidatorCurrentRewards();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -301,10 +303,10 @@ export const ValidatorCurrentRewards = {
   },
 
   fromJSON(object: any): ValidatorCurrentRewards {
-    const message = {...baseValidatorCurrentRewards} as ValidatorCurrentRewards;
-    message.rewards = (object.rewards ?? []).map((e: any) => DecCoin.fromJSON(e));
-    message.period = object.period !== undefined && object.period !== null ? Long.fromString(object.period) : Long.UZERO;
-    return message;
+    return {
+      rewards: Array.isArray(object?.rewards) ? object.rewards.map((e: any) => DecCoin.fromJSON(e)) : [],
+      period: isSet(object.period) ? Long.fromValue(object.period) : Long.UZERO
+    };
   },
 
   toJSON(message: ValidatorCurrentRewards): unknown {
@@ -319,14 +321,16 @@ export const ValidatorCurrentRewards = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorCurrentRewards>, I>>(object: I): ValidatorCurrentRewards {
-    const message = {...baseValidatorCurrentRewards} as ValidatorCurrentRewards;
+    const message = createBaseValidatorCurrentRewards();
     message.rewards = object.rewards?.map((e) => DecCoin.fromPartial(e)) || [];
     message.period = object.period !== undefined && object.period !== null ? Long.fromValue(object.period) : Long.UZERO;
     return message;
   }
 };
 
-const baseValidatorAccumulatedCommission: object = {};
+function createBaseValidatorAccumulatedCommission(): ValidatorAccumulatedCommission {
+  return {commission: []};
+}
 
 export const ValidatorAccumulatedCommission = {
   encode(message: ValidatorAccumulatedCommission, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -339,8 +343,7 @@ export const ValidatorAccumulatedCommission = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorAccumulatedCommission {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorAccumulatedCommission} as ValidatorAccumulatedCommission;
-    message.commission = [];
+    const message = createBaseValidatorAccumulatedCommission();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -356,9 +359,9 @@ export const ValidatorAccumulatedCommission = {
   },
 
   fromJSON(object: any): ValidatorAccumulatedCommission {
-    const message = {...baseValidatorAccumulatedCommission} as ValidatorAccumulatedCommission;
-    message.commission = (object.commission ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {
+      commission: Array.isArray(object?.commission) ? object.commission.map((e: any) => DecCoin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: ValidatorAccumulatedCommission): unknown {
@@ -372,13 +375,15 @@ export const ValidatorAccumulatedCommission = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorAccumulatedCommission>, I>>(object: I): ValidatorAccumulatedCommission {
-    const message = {...baseValidatorAccumulatedCommission} as ValidatorAccumulatedCommission;
+    const message = createBaseValidatorAccumulatedCommission();
     message.commission = object.commission?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseValidatorOutstandingRewards: object = {};
+function createBaseValidatorOutstandingRewards(): ValidatorOutstandingRewards {
+  return {rewards: []};
+}
 
 export const ValidatorOutstandingRewards = {
   encode(message: ValidatorOutstandingRewards, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -391,8 +396,7 @@ export const ValidatorOutstandingRewards = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorOutstandingRewards {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorOutstandingRewards} as ValidatorOutstandingRewards;
-    message.rewards = [];
+    const message = createBaseValidatorOutstandingRewards();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -408,9 +412,7 @@ export const ValidatorOutstandingRewards = {
   },
 
   fromJSON(object: any): ValidatorOutstandingRewards {
-    const message = {...baseValidatorOutstandingRewards} as ValidatorOutstandingRewards;
-    message.rewards = (object.rewards ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {rewards: Array.isArray(object?.rewards) ? object.rewards.map((e: any) => DecCoin.fromJSON(e)) : []};
   },
 
   toJSON(message: ValidatorOutstandingRewards): unknown {
@@ -424,13 +426,15 @@ export const ValidatorOutstandingRewards = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorOutstandingRewards>, I>>(object: I): ValidatorOutstandingRewards {
-    const message = {...baseValidatorOutstandingRewards} as ValidatorOutstandingRewards;
+    const message = createBaseValidatorOutstandingRewards();
     message.rewards = object.rewards?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseValidatorSlashEvent: object = {validatorPeriod: Long.UZERO, fraction: ""};
+function createBaseValidatorSlashEvent(): ValidatorSlashEvent {
+  return {validatorPeriod: Long.UZERO, fraction: ""};
+}
 
 export const ValidatorSlashEvent = {
   encode(message: ValidatorSlashEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -438,7 +442,7 @@ export const ValidatorSlashEvent = {
       writer.uint32(8).uint64(message.validatorPeriod);
     }
     if (message.fraction !== "") {
-      writer.uint32(18).string(Decimal.fromUserInput(message.fraction, 18).atomics);
+      writer.uint32(18).string(message.fraction);
     }
     return writer;
   },
@@ -446,7 +450,7 @@ export const ValidatorSlashEvent = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorSlashEvent {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorSlashEvent} as ValidatorSlashEvent;
+    const message = createBaseValidatorSlashEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -454,7 +458,7 @@ export const ValidatorSlashEvent = {
           message.validatorPeriod = reader.uint64() as Long;
           break;
         case 2:
-          message.fraction = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.fraction = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -465,11 +469,10 @@ export const ValidatorSlashEvent = {
   },
 
   fromJSON(object: any): ValidatorSlashEvent {
-    const message = {...baseValidatorSlashEvent} as ValidatorSlashEvent;
-    message.validatorPeriod =
-      object.validatorPeriod !== undefined && object.validatorPeriod !== null ? Long.fromString(object.validatorPeriod) : Long.UZERO;
-    message.fraction = object.fraction !== undefined && object.fraction !== null ? String(object.fraction) : "";
-    return message;
+    return {
+      validatorPeriod: isSet(object.validatorPeriod) ? Long.fromValue(object.validatorPeriod) : Long.UZERO,
+      fraction: isSet(object.fraction) ? String(object.fraction) : ""
+    };
   },
 
   toJSON(message: ValidatorSlashEvent): unknown {
@@ -480,7 +483,7 @@ export const ValidatorSlashEvent = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorSlashEvent>, I>>(object: I): ValidatorSlashEvent {
-    const message = {...baseValidatorSlashEvent} as ValidatorSlashEvent;
+    const message = createBaseValidatorSlashEvent();
     message.validatorPeriod =
       object.validatorPeriod !== undefined && object.validatorPeriod !== null ? Long.fromValue(object.validatorPeriod) : Long.UZERO;
     message.fraction = object.fraction ?? "";
@@ -488,7 +491,9 @@ export const ValidatorSlashEvent = {
   }
 };
 
-const baseValidatorSlashEvents: object = {};
+function createBaseValidatorSlashEvents(): ValidatorSlashEvents {
+  return {validatorSlashEvents: []};
+}
 
 export const ValidatorSlashEvents = {
   encode(message: ValidatorSlashEvents, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -501,8 +506,7 @@ export const ValidatorSlashEvents = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorSlashEvents {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorSlashEvents} as ValidatorSlashEvents;
-    message.validatorSlashEvents = [];
+    const message = createBaseValidatorSlashEvents();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -518,9 +522,11 @@ export const ValidatorSlashEvents = {
   },
 
   fromJSON(object: any): ValidatorSlashEvents {
-    const message = {...baseValidatorSlashEvents} as ValidatorSlashEvents;
-    message.validatorSlashEvents = (object.validatorSlashEvents ?? []).map((e: any) => ValidatorSlashEvent.fromJSON(e));
-    return message;
+    return {
+      validatorSlashEvents: Array.isArray(object?.validatorSlashEvents)
+        ? object.validatorSlashEvents.map((e: any) => ValidatorSlashEvent.fromJSON(e))
+        : []
+    };
   },
 
   toJSON(message: ValidatorSlashEvents): unknown {
@@ -534,13 +540,15 @@ export const ValidatorSlashEvents = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorSlashEvents>, I>>(object: I): ValidatorSlashEvents {
-    const message = {...baseValidatorSlashEvents} as ValidatorSlashEvents;
+    const message = createBaseValidatorSlashEvents();
     message.validatorSlashEvents = object.validatorSlashEvents?.map((e) => ValidatorSlashEvent.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseFeePool: object = {};
+function createBaseFeePool(): FeePool {
+  return {communityPool: []};
+}
 
 export const FeePool = {
   encode(message: FeePool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -553,8 +561,7 @@ export const FeePool = {
   decode(input: _m0.Reader | Uint8Array, length?: number): FeePool {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseFeePool} as FeePool;
-    message.communityPool = [];
+    const message = createBaseFeePool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -570,9 +577,9 @@ export const FeePool = {
   },
 
   fromJSON(object: any): FeePool {
-    const message = {...baseFeePool} as FeePool;
-    message.communityPool = (object.communityPool ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {
+      communityPool: Array.isArray(object?.communityPool) ? object.communityPool.map((e: any) => DecCoin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: FeePool): unknown {
@@ -586,13 +593,15 @@ export const FeePool = {
   },
 
   fromPartial<I extends Exact<DeepPartial<FeePool>, I>>(object: I): FeePool {
-    const message = {...baseFeePool} as FeePool;
+    const message = createBaseFeePool();
     message.communityPool = object.communityPool?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseCommunityPoolSpendProposal: object = {title: "", description: "", recipient: ""};
+function createBaseCommunityPoolSpendProposal(): CommunityPoolSpendProposal {
+  return {title: "", description: "", recipient: "", amount: []};
+}
 
 export const CommunityPoolSpendProposal = {
   encode(message: CommunityPoolSpendProposal, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -614,8 +623,7 @@ export const CommunityPoolSpendProposal = {
   decode(input: _m0.Reader | Uint8Array, length?: number): CommunityPoolSpendProposal {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseCommunityPoolSpendProposal} as CommunityPoolSpendProposal;
-    message.amount = [];
+    const message = createBaseCommunityPoolSpendProposal();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -640,12 +648,12 @@ export const CommunityPoolSpendProposal = {
   },
 
   fromJSON(object: any): CommunityPoolSpendProposal {
-    const message = {...baseCommunityPoolSpendProposal} as CommunityPoolSpendProposal;
-    message.title = object.title !== undefined && object.title !== null ? String(object.title) : "";
-    message.description = object.description !== undefined && object.description !== null ? String(object.description) : "";
-    message.recipient = object.recipient !== undefined && object.recipient !== null ? String(object.recipient) : "";
-    message.amount = (object.amount ?? []).map((e: any) => Coin.fromJSON(e));
-    return message;
+    return {
+      title: isSet(object.title) ? String(object.title) : "",
+      description: isSet(object.description) ? String(object.description) : "",
+      recipient: isSet(object.recipient) ? String(object.recipient) : "",
+      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: CommunityPoolSpendProposal): unknown {
@@ -662,7 +670,7 @@ export const CommunityPoolSpendProposal = {
   },
 
   fromPartial<I extends Exact<DeepPartial<CommunityPoolSpendProposal>, I>>(object: I): CommunityPoolSpendProposal {
-    const message = {...baseCommunityPoolSpendProposal} as CommunityPoolSpendProposal;
+    const message = createBaseCommunityPoolSpendProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
     message.recipient = object.recipient ?? "";
@@ -671,7 +679,9 @@ export const CommunityPoolSpendProposal = {
   }
 };
 
-const baseDelegatorStartingInfo: object = {previousPeriod: Long.UZERO, stake: "", height: Long.UZERO};
+function createBaseDelegatorStartingInfo(): DelegatorStartingInfo {
+  return {previousPeriod: Long.UZERO, stake: "", height: Long.UZERO};
+}
 
 export const DelegatorStartingInfo = {
   encode(message: DelegatorStartingInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -690,7 +700,7 @@ export const DelegatorStartingInfo = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DelegatorStartingInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDelegatorStartingInfo} as DelegatorStartingInfo;
+    const message = createBaseDelegatorStartingInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -712,12 +722,11 @@ export const DelegatorStartingInfo = {
   },
 
   fromJSON(object: any): DelegatorStartingInfo {
-    const message = {...baseDelegatorStartingInfo} as DelegatorStartingInfo;
-    message.previousPeriod =
-      object.previousPeriod !== undefined && object.previousPeriod !== null ? Long.fromString(object.previousPeriod) : Long.UZERO;
-    message.stake = object.stake !== undefined && object.stake !== null ? String(object.stake) : "";
-    message.height = object.height !== undefined && object.height !== null ? Long.fromString(object.height) : Long.UZERO;
-    return message;
+    return {
+      previousPeriod: isSet(object.previousPeriod) ? Long.fromValue(object.previousPeriod) : Long.UZERO,
+      stake: isSet(object.stake) ? String(object.stake) : "",
+      height: isSet(object.height) ? Long.fromValue(object.height) : Long.UZERO
+    };
   },
 
   toJSON(message: DelegatorStartingInfo): unknown {
@@ -729,7 +738,7 @@ export const DelegatorStartingInfo = {
   },
 
   fromPartial<I extends Exact<DeepPartial<DelegatorStartingInfo>, I>>(object: I): DelegatorStartingInfo {
-    const message = {...baseDelegatorStartingInfo} as DelegatorStartingInfo;
+    const message = createBaseDelegatorStartingInfo();
     message.previousPeriod =
       object.previousPeriod !== undefined && object.previousPeriod !== null ? Long.fromValue(object.previousPeriod) : Long.UZERO;
     message.stake = object.stake ?? "";
@@ -738,7 +747,9 @@ export const DelegatorStartingInfo = {
   }
 };
 
-const baseDelegationDelegatorReward: object = {validatorAddress: ""};
+function createBaseDelegationDelegatorReward(): DelegationDelegatorReward {
+  return {validatorAddress: "", reward: []};
+}
 
 export const DelegationDelegatorReward = {
   encode(message: DelegationDelegatorReward, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -754,8 +765,7 @@ export const DelegationDelegatorReward = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DelegationDelegatorReward {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDelegationDelegatorReward} as DelegationDelegatorReward;
-    message.reward = [];
+    const message = createBaseDelegationDelegatorReward();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -774,11 +784,10 @@ export const DelegationDelegatorReward = {
   },
 
   fromJSON(object: any): DelegationDelegatorReward {
-    const message = {...baseDelegationDelegatorReward} as DelegationDelegatorReward;
-    message.validatorAddress =
-      object.validatorAddress !== undefined && object.validatorAddress !== null ? String(object.validatorAddress) : "";
-    message.reward = (object.reward ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {
+      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
+      reward: Array.isArray(object?.reward) ? object.reward.map((e: any) => DecCoin.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: DelegationDelegatorReward): unknown {
@@ -793,14 +802,16 @@ export const DelegationDelegatorReward = {
   },
 
   fromPartial<I extends Exact<DeepPartial<DelegationDelegatorReward>, I>>(object: I): DelegationDelegatorReward {
-    const message = {...baseDelegationDelegatorReward} as DelegationDelegatorReward;
+    const message = createBaseDelegationDelegatorReward();
     message.validatorAddress = object.validatorAddress ?? "";
     message.reward = object.reward?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseCommunityPoolSpendProposalWithDeposit: object = {title: "", description: "", recipient: "", amount: "", deposit: ""};
+function createBaseCommunityPoolSpendProposalWithDeposit(): CommunityPoolSpendProposalWithDeposit {
+  return {title: "", description: "", recipient: "", amount: "", deposit: ""};
+}
 
 export const CommunityPoolSpendProposalWithDeposit = {
   encode(message: CommunityPoolSpendProposalWithDeposit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -825,7 +836,7 @@ export const CommunityPoolSpendProposalWithDeposit = {
   decode(input: _m0.Reader | Uint8Array, length?: number): CommunityPoolSpendProposalWithDeposit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseCommunityPoolSpendProposalWithDeposit} as CommunityPoolSpendProposalWithDeposit;
+    const message = createBaseCommunityPoolSpendProposalWithDeposit();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -853,13 +864,13 @@ export const CommunityPoolSpendProposalWithDeposit = {
   },
 
   fromJSON(object: any): CommunityPoolSpendProposalWithDeposit {
-    const message = {...baseCommunityPoolSpendProposalWithDeposit} as CommunityPoolSpendProposalWithDeposit;
-    message.title = object.title !== undefined && object.title !== null ? String(object.title) : "";
-    message.description = object.description !== undefined && object.description !== null ? String(object.description) : "";
-    message.recipient = object.recipient !== undefined && object.recipient !== null ? String(object.recipient) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    message.deposit = object.deposit !== undefined && object.deposit !== null ? String(object.deposit) : "";
-    return message;
+    return {
+      title: isSet(object.title) ? String(object.title) : "",
+      description: isSet(object.description) ? String(object.description) : "",
+      recipient: isSet(object.recipient) ? String(object.recipient) : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+      deposit: isSet(object.deposit) ? String(object.deposit) : ""
+    };
   },
 
   toJSON(message: CommunityPoolSpendProposalWithDeposit): unknown {
@@ -873,7 +884,7 @@ export const CommunityPoolSpendProposalWithDeposit = {
   },
 
   fromPartial<I extends Exact<DeepPartial<CommunityPoolSpendProposalWithDeposit>, I>>(object: I): CommunityPoolSpendProposalWithDeposit {
-    const message = {...baseCommunityPoolSpendProposalWithDeposit} as CommunityPoolSpendProposalWithDeposit;
+    const message = createBaseCommunityPoolSpendProposalWithDeposit();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
     message.recipient = object.recipient ?? "";
@@ -900,9 +911,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

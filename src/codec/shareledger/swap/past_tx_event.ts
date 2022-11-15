@@ -12,7 +12,9 @@ export interface PastTxEvent {
   destAddr: string;
 }
 
-const basePastTxEvent: object = {srcAddr: "", destAddr: ""};
+function createBasePastTxEvent(): PastTxEvent {
+  return {srcAddr: "", destAddr: ""};
+}
 
 export const PastTxEvent = {
   encode(message: PastTxEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -28,7 +30,7 @@ export const PastTxEvent = {
   decode(input: _m0.Reader | Uint8Array, length?: number): PastTxEvent {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...basePastTxEvent} as PastTxEvent;
+    const message = createBasePastTxEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -47,10 +49,10 @@ export const PastTxEvent = {
   },
 
   fromJSON(object: any): PastTxEvent {
-    const message = {...basePastTxEvent} as PastTxEvent;
-    message.srcAddr = object.srcAddr !== undefined && object.srcAddr !== null ? String(object.srcAddr) : "";
-    message.destAddr = object.destAddr !== undefined && object.destAddr !== null ? String(object.destAddr) : "";
-    return message;
+    return {
+      srcAddr: isSet(object.srcAddr) ? String(object.srcAddr) : "",
+      destAddr: isSet(object.destAddr) ? String(object.destAddr) : ""
+    };
   },
 
   toJSON(message: PastTxEvent): unknown {
@@ -61,7 +63,7 @@ export const PastTxEvent = {
   },
 
   fromPartial<I extends Exact<DeepPartial<PastTxEvent>, I>>(object: I): PastTxEvent {
-    const message = {...basePastTxEvent} as PastTxEvent;
+    const message = createBasePastTxEvent();
     message.srcAddr = object.srcAddr ?? "";
     message.destAddr = object.destAddr ?? "";
     return message;
@@ -85,9 +87,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

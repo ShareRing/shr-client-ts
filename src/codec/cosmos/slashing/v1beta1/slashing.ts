@@ -43,13 +43,16 @@ export interface Params {
   slashFractionDowntime: Uint8Array;
 }
 
-const baseValidatorSigningInfo: object = {
-  address: "",
-  startHeight: Long.ZERO,
-  indexOffset: Long.ZERO,
-  tombstoned: false,
-  missedBlocksCounter: Long.ZERO
-};
+function createBaseValidatorSigningInfo(): ValidatorSigningInfo {
+  return {
+    address: "",
+    startHeight: Long.ZERO,
+    indexOffset: Long.ZERO,
+    jailedUntil: undefined,
+    tombstoned: false,
+    missedBlocksCounter: Long.ZERO
+  };
+}
 
 export const ValidatorSigningInfo = {
   encode(message: ValidatorSigningInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -77,7 +80,7 @@ export const ValidatorSigningInfo = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorSigningInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorSigningInfo} as ValidatorSigningInfo;
+    const message = createBaseValidatorSigningInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -108,18 +111,14 @@ export const ValidatorSigningInfo = {
   },
 
   fromJSON(object: any): ValidatorSigningInfo {
-    const message = {...baseValidatorSigningInfo} as ValidatorSigningInfo;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.startHeight = object.startHeight !== undefined && object.startHeight !== null ? Long.fromString(object.startHeight) : Long.ZERO;
-    message.indexOffset = object.indexOffset !== undefined && object.indexOffset !== null ? Long.fromString(object.indexOffset) : Long.ZERO;
-    message.jailedUntil =
-      object.jailedUntil !== undefined && object.jailedUntil !== null ? fromJsonTimestamp(object.jailedUntil) : undefined;
-    message.tombstoned = object.tombstoned !== undefined && object.tombstoned !== null ? Boolean(object.tombstoned) : false;
-    message.missedBlocksCounter =
-      object.missedBlocksCounter !== undefined && object.missedBlocksCounter !== null
-        ? Long.fromString(object.missedBlocksCounter)
-        : Long.ZERO;
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      startHeight: isSet(object.startHeight) ? Long.fromValue(object.startHeight) : Long.ZERO,
+      indexOffset: isSet(object.indexOffset) ? Long.fromValue(object.indexOffset) : Long.ZERO,
+      jailedUntil: isSet(object.jailedUntil) ? fromJsonTimestamp(object.jailedUntil) : undefined,
+      tombstoned: isSet(object.tombstoned) ? Boolean(object.tombstoned) : false,
+      missedBlocksCounter: isSet(object.missedBlocksCounter) ? Long.fromValue(object.missedBlocksCounter) : Long.ZERO
+    };
   },
 
   toJSON(message: ValidatorSigningInfo): unknown {
@@ -134,7 +133,7 @@ export const ValidatorSigningInfo = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorSigningInfo>, I>>(object: I): ValidatorSigningInfo {
-    const message = {...baseValidatorSigningInfo} as ValidatorSigningInfo;
+    const message = createBaseValidatorSigningInfo();
     message.address = object.address ?? "";
     message.startHeight = object.startHeight !== undefined && object.startHeight !== null ? Long.fromValue(object.startHeight) : Long.ZERO;
     message.indexOffset = object.indexOffset !== undefined && object.indexOffset !== null ? Long.fromValue(object.indexOffset) : Long.ZERO;
@@ -148,7 +147,15 @@ export const ValidatorSigningInfo = {
   }
 };
 
-const baseParams: object = {signedBlocksWindow: Long.ZERO};
+function createBaseParams(): Params {
+  return {
+    signedBlocksWindow: Long.ZERO,
+    minSignedPerWindow: new Uint8Array(),
+    downtimeJailDuration: undefined,
+    slashFractionDoubleSign: new Uint8Array(),
+    slashFractionDowntime: new Uint8Array()
+  };
+}
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -173,10 +180,7 @@ export const Params = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseParams} as Params;
-    message.minSignedPerWindow = new Uint8Array();
-    message.slashFractionDoubleSign = new Uint8Array();
-    message.slashFractionDowntime = new Uint8Array();
+    const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -204,28 +208,13 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    const message = {...baseParams} as Params;
-    message.signedBlocksWindow =
-      object.signedBlocksWindow !== undefined && object.signedBlocksWindow !== null
-        ? Long.fromString(object.signedBlocksWindow)
-        : Long.ZERO;
-    message.minSignedPerWindow =
-      object.minSignedPerWindow !== undefined && object.minSignedPerWindow !== null
-        ? bytesFromBase64(object.minSignedPerWindow)
-        : new Uint8Array();
-    message.downtimeJailDuration =
-      object.downtimeJailDuration !== undefined && object.downtimeJailDuration !== null
-        ? Duration.fromJSON(object.downtimeJailDuration)
-        : undefined;
-    message.slashFractionDoubleSign =
-      object.slashFractionDoubleSign !== undefined && object.slashFractionDoubleSign !== null
-        ? bytesFromBase64(object.slashFractionDoubleSign)
-        : new Uint8Array();
-    message.slashFractionDowntime =
-      object.slashFractionDowntime !== undefined && object.slashFractionDowntime !== null
-        ? bytesFromBase64(object.slashFractionDowntime)
-        : new Uint8Array();
-    return message;
+    return {
+      signedBlocksWindow: isSet(object.signedBlocksWindow) ? Long.fromValue(object.signedBlocksWindow) : Long.ZERO,
+      minSignedPerWindow: isSet(object.minSignedPerWindow) ? bytesFromBase64(object.minSignedPerWindow) : new Uint8Array(),
+      downtimeJailDuration: isSet(object.downtimeJailDuration) ? Duration.fromJSON(object.downtimeJailDuration) : undefined,
+      slashFractionDoubleSign: isSet(object.slashFractionDoubleSign) ? bytesFromBase64(object.slashFractionDoubleSign) : new Uint8Array(),
+      slashFractionDowntime: isSet(object.slashFractionDowntime) ? bytesFromBase64(object.slashFractionDowntime) : new Uint8Array()
+    };
   },
 
   toJSON(message: Params): unknown {
@@ -247,7 +236,7 @@ export const Params = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     message.signedBlocksWindow =
       object.signedBlocksWindow !== undefined && object.signedBlocksWindow !== null ? Long.fromValue(object.signedBlocksWindow) : Long.ZERO;
     message.minSignedPerWindow = object.minSignedPerWindow ?? new Uint8Array();
@@ -265,30 +254,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -308,7 +311,7 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = numberToLong(date.getTime() / 1_000);
@@ -339,4 +342,8 @@ function numberToLong(number: number) {
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

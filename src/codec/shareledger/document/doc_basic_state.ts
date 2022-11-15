@@ -9,7 +9,9 @@ export interface DocBasicState {
   issuer: string;
 }
 
-const baseDocBasicState: object = {holder: "", issuer: ""};
+function createBaseDocBasicState(): DocBasicState {
+  return {holder: "", issuer: ""};
+}
 
 export const DocBasicState = {
   encode(message: DocBasicState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -25,7 +27,7 @@ export const DocBasicState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DocBasicState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDocBasicState} as DocBasicState;
+    const message = createBaseDocBasicState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -44,10 +46,10 @@ export const DocBasicState = {
   },
 
   fromJSON(object: any): DocBasicState {
-    const message = {...baseDocBasicState} as DocBasicState;
-    message.holder = object.holder !== undefined && object.holder !== null ? String(object.holder) : "";
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    return message;
+    return {
+      holder: isSet(object.holder) ? String(object.holder) : "",
+      issuer: isSet(object.issuer) ? String(object.issuer) : ""
+    };
   },
 
   toJSON(message: DocBasicState): unknown {
@@ -58,7 +60,7 @@ export const DocBasicState = {
   },
 
   fromPartial<I extends Exact<DeepPartial<DocBasicState>, I>>(object: I): DocBasicState {
-    const message = {...baseDocBasicState} as DocBasicState;
+    const message = createBaseDocBasicState();
     message.holder = object.holder ?? "";
     message.issuer = object.issuer ?? "";
     return message;
@@ -82,9 +84,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

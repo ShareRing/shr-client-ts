@@ -8,7 +8,9 @@ export interface Treasurer {
   address: string;
 }
 
-const baseTreasurer: object = {address: ""};
+function createBaseTreasurer(): Treasurer {
+  return {address: ""};
+}
 
 export const Treasurer = {
   encode(message: Treasurer, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -21,7 +23,7 @@ export const Treasurer = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Treasurer {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseTreasurer} as Treasurer;
+    const message = createBaseTreasurer();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -37,9 +39,7 @@ export const Treasurer = {
   },
 
   fromJSON(object: any): Treasurer {
-    const message = {...baseTreasurer} as Treasurer;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: Treasurer): unknown {
@@ -49,7 +49,7 @@ export const Treasurer = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Treasurer>, I>>(object: I): Treasurer {
-    const message = {...baseTreasurer} as Treasurer;
+    const message = createBaseTreasurer();
     message.address = object.address ?? "";
     return message;
   }
@@ -72,9 +72,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

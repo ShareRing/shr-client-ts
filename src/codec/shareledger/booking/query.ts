@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Booking} from "../../shareledger/booking/booking";
+import {Booking} from "./booking";
 
 export const protobufPackage = "shareledger.booking";
 
@@ -13,7 +13,9 @@ export interface QueryBookingResponse {
   booking?: Booking;
 }
 
-const baseQueryBookingRequest: object = {bookID: ""};
+function createBaseQueryBookingRequest(): QueryBookingRequest {
+  return {bookID: ""};
+}
 
 export const QueryBookingRequest = {
   encode(message: QueryBookingRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -26,7 +28,7 @@ export const QueryBookingRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBookingRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBookingRequest} as QueryBookingRequest;
+    const message = createBaseQueryBookingRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -42,9 +44,7 @@ export const QueryBookingRequest = {
   },
 
   fromJSON(object: any): QueryBookingRequest {
-    const message = {...baseQueryBookingRequest} as QueryBookingRequest;
-    message.bookID = object.bookID !== undefined && object.bookID !== null ? String(object.bookID) : "";
-    return message;
+    return {bookID: isSet(object.bookID) ? String(object.bookID) : ""};
   },
 
   toJSON(message: QueryBookingRequest): unknown {
@@ -54,13 +54,15 @@ export const QueryBookingRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBookingRequest>, I>>(object: I): QueryBookingRequest {
-    const message = {...baseQueryBookingRequest} as QueryBookingRequest;
+    const message = createBaseQueryBookingRequest();
     message.bookID = object.bookID ?? "";
     return message;
   }
 };
 
-const baseQueryBookingResponse: object = {};
+function createBaseQueryBookingResponse(): QueryBookingResponse {
+  return {booking: undefined};
+}
 
 export const QueryBookingResponse = {
   encode(message: QueryBookingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -73,7 +75,7 @@ export const QueryBookingResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBookingResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBookingResponse} as QueryBookingResponse;
+    const message = createBaseQueryBookingResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -89,9 +91,7 @@ export const QueryBookingResponse = {
   },
 
   fromJSON(object: any): QueryBookingResponse {
-    const message = {...baseQueryBookingResponse} as QueryBookingResponse;
-    message.booking = object.booking !== undefined && object.booking !== null ? Booking.fromJSON(object.booking) : undefined;
-    return message;
+    return {booking: isSet(object.booking) ? Booking.fromJSON(object.booking) : undefined};
   },
 
   toJSON(message: QueryBookingResponse): unknown {
@@ -101,7 +101,7 @@ export const QueryBookingResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBookingResponse>, I>>(object: I): QueryBookingResponse {
-    const message = {...baseQueryBookingResponse} as QueryBookingResponse;
+    const message = createBaseQueryBookingResponse();
     message.booking = object.booking !== undefined && object.booking !== null ? Booking.fromPartial(object.booking) : undefined;
     return message;
   }
@@ -115,13 +115,15 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.booking.Query";
     this.rpc = rpc;
     this.Booking = this.Booking.bind(this);
   }
   Booking(request: QueryBookingRequest): Promise<QueryBookingResponse> {
     const data = QueryBookingRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.booking.Query", "Booking", data);
+    const promise = this.rpc.request(this.service, "Booking", data);
     return promise.then((data) => QueryBookingResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -147,9 +149,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -1,9 +1,9 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Authority} from "../../shareledger/electoral/authority";
-import {Treasurer} from "../../shareledger/electoral/treasurer";
-import {AccState} from "../../shareledger/electoral/acc_state";
+import {AccState} from "./acc_state";
+import {Authority} from "./authority";
+import {Treasurer} from "./treasurer";
 
 export const protobufPackage = "shareledger.electoral";
 
@@ -15,7 +15,9 @@ export interface GenesisState {
   treasurer?: Treasurer;
 }
 
-const baseGenesisState: object = {};
+function createBaseGenesisState(): GenesisState {
+  return {accStateList: [], authority: undefined, treasurer: undefined};
+}
 
 export const GenesisState = {
   encode(message: GenesisState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -34,8 +36,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseGenesisState} as GenesisState;
-    message.accStateList = [];
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -57,11 +58,11 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = {...baseGenesisState} as GenesisState;
-    message.accStateList = (object.accStateList ?? []).map((e: any) => AccState.fromJSON(e));
-    message.authority = object.authority !== undefined && object.authority !== null ? Authority.fromJSON(object.authority) : undefined;
-    message.treasurer = object.treasurer !== undefined && object.treasurer !== null ? Treasurer.fromJSON(object.treasurer) : undefined;
-    return message;
+    return {
+      accStateList: Array.isArray(object?.accStateList) ? object.accStateList.map((e: any) => AccState.fromJSON(e)) : [],
+      authority: isSet(object.authority) ? Authority.fromJSON(object.authority) : undefined,
+      treasurer: isSet(object.treasurer) ? Treasurer.fromJSON(object.treasurer) : undefined
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -77,7 +78,7 @@ export const GenesisState = {
   },
 
   fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
-    const message = {...baseGenesisState} as GenesisState;
+    const message = createBaseGenesisState();
     message.accStateList = object.accStateList?.map((e) => AccState.fromPartial(e)) || [];
     message.authority = object.authority !== undefined && object.authority !== null ? Authority.fromPartial(object.authority) : undefined;
     message.treasurer = object.treasurer !== undefined && object.treasurer !== null ? Treasurer.fromPartial(object.treasurer) : undefined;
@@ -102,9 +103,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

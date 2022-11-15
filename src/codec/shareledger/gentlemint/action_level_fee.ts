@@ -10,7 +10,9 @@ export interface ActionLevelFee {
   creator: string;
 }
 
-const baseActionLevelFee: object = {action: "", level: "", creator: ""};
+function createBaseActionLevelFee(): ActionLevelFee {
+  return {action: "", level: "", creator: ""};
+}
 
 export const ActionLevelFee = {
   encode(message: ActionLevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -29,7 +31,7 @@ export const ActionLevelFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ActionLevelFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseActionLevelFee} as ActionLevelFee;
+    const message = createBaseActionLevelFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -51,11 +53,11 @@ export const ActionLevelFee = {
   },
 
   fromJSON(object: any): ActionLevelFee {
-    const message = {...baseActionLevelFee} as ActionLevelFee;
-    message.action = object.action !== undefined && object.action !== null ? String(object.action) : "";
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    return message;
+    return {
+      action: isSet(object.action) ? String(object.action) : "",
+      level: isSet(object.level) ? String(object.level) : "",
+      creator: isSet(object.creator) ? String(object.creator) : ""
+    };
   },
 
   toJSON(message: ActionLevelFee): unknown {
@@ -67,7 +69,7 @@ export const ActionLevelFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ActionLevelFee>, I>>(object: I): ActionLevelFee {
-    const message = {...baseActionLevelFee} as ActionLevelFee;
+    const message = createBaseActionLevelFee();
     message.action = object.action ?? "";
     message.level = object.level ?? "";
     message.creator = object.creator ?? "";
@@ -92,9 +94,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }
