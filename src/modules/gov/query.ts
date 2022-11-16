@@ -2,18 +2,14 @@
 
 import {Uint64} from "@cosmjs/math";
 import Long from "long";
-import {Client} from "../../client";
-import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import {BaseClient} from "../../baseclient";
 import {Deposit, Proposal, ProposalStatus, TallyResult, Vote} from "../../codec/cosmos/gov/v1beta1/gov";
 import {QueryClientImpl, QueryDepositsResponse, QueryProposalsResponse, QueryVotesResponse} from "../../codec/cosmos/gov/v1beta1/query";
-import {MsgDeposit, MsgSubmitProposal, MsgVote, MsgVoteWeighted} from "../../codec/cosmos/gov/v1beta1/tx";
-import {Any} from "../../codec/google/protobuf/any";
 import {createPagination, createProtobufRpcClient, longify, ProtobufRpcClient} from "../../query";
-import {MsgDepositEncodeObject, MsgSubmitProposalEncodeObject, MsgVoteEncodeObject, MsgVoteWeightedEncodeObject, VoteOption} from "./amino";
 
 export type GovParamsType = "deposit" | "tallying" | "voting";
 
-export type GovProposalId = string | number | Long | Uint64;
+type GovProposalId = string | number | Long | Uint64;
 
 export type GovQueryExtension = {
   get gov(): {
@@ -33,26 +29,7 @@ export type GovQueryExtension = {
   };
 };
 
-export type GovTxExtension = {
-  get gov(): {
-    readonly submitProposal: (
-      proposer: string,
-      initialDeposit: Coin[],
-      content?: {title: string; description: string}
-    ) => MsgSubmitProposalEncodeObject;
-    readonly voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption) => MsgVoteEncodeObject;
-    readonly voteWeightedTx: (
-      proposalId: GovProposalId,
-      voter: string,
-      options: Array<{option: VoteOption; weight: string}>
-    ) => MsgVoteWeightedEncodeObject;
-    readonly depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]) => MsgDepositEncodeObject;
-  };
-};
-
-export type GovExtension = GovQueryExtension & GovTxExtension;
-
-export function GovQueryExtension<T extends {new (...args: any[]): Client & GovQueryExtension}>(constructor: T): T {
+export function GovQueryExtension<T extends {new (...args: any[]): BaseClient & GovQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   let rpcClient: ProtobufRpcClient;
   return class extends constructor {
@@ -130,83 +107,5 @@ export function GovQueryExtension<T extends {new (...args: any[]): Client & GovQ
         }
       };
     }
-  };
-}
-
-export function GovTxExtension<T extends {new (...args: any[]): Client & GovTxExtension}>(constructor: T): T {
-  return class extends constructor {
-    get gov() {
-      return {
-        ...super["gov"],
-        submitProposal: (
-          proposer: string,
-          initialDeposit: Coin[],
-          content?: {title: string; description: string}
-        ): MsgSubmitProposalEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: MsgSubmitProposal.fromPartial({
-              proposer,
-              initialDeposit: [...initialDeposit],
-              content: content
-                ? Any.fromJSON({
-                    typeUrl: "/cosmos.gov.v1beta1.TextProposal",
-                    value: {
-                      title: content.title,
-                      description: content.description
-                    }
-                  })
-                : undefined
-            })
-          };
-        },
-        voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption): MsgVoteEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgVote",
-            value: MsgVote.fromPartial({
-              proposalId: longify(proposalId),
-              voter,
-              option
-            })
-          };
-        },
-        voteWeightedTx: (
-          proposalId: GovProposalId,
-          voter: string,
-          options: Array<{option: VoteOption; weight: string}>
-        ): MsgVoteWeightedEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgVoteWeighted",
-            value: MsgVoteWeighted.fromPartial({
-              proposalId: longify(proposalId),
-              voter,
-              options
-            })
-          };
-        },
-        depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]): MsgDepositEncodeObject => {
-          return {
-            typeUrl: "/cosmos.gov.v1beta1.MsgDeposit",
-            value: MsgDeposit.fromPartial({
-              proposalId: longify(proposalId),
-              depositor,
-              amount: [...amount]
-            })
-          };
-        }
-      };
-    }
-  };
-}
-
-export function GovExtension<T extends {new (...args: any[]): Client & GovExtension}>(constructor: T): T {
-  return class extends GovTxExtension(GovQueryExtension(constructor)) {};
-}
-
-export function createActions(): Record<string, string> {
-  return {
-    "/cosmos.gov.v1beta1.MsgSubmitProposal": "gov_submit-proposal",
-    "/cosmos.gov.v1beta1.MsgDeposit": "gov_deposit",
-    "/cosmos.gov.v1beta1.MsgVote": "gov_vote"
   };
 }

@@ -1,21 +1,13 @@
 import Long from "long";
-import {Client} from "../../client";
+import {BaseClient} from "../../baseclient";
 import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
-import {Params} from "../../codec/shareledger/swap/params";
-import {PastTxEvent} from "../../codec/shareledger/swap/past_tx_event";
-import {
-  QuerySchemasResponse,
-  QueryBatchesResponse,
-  QueryClientImpl,
-  QuerySwapResponse,
-  QueryPastTxEventsResponse
-} from "../../codec/shareledger/swap/query";
 import {TxEvent} from "../../codec/shareledger/swap/request";
-import {Schema} from "../../codec/shareledger/swap/schema";
 import {
   MsgApproveIn,
   MsgApproveOut,
   MsgCancel,
+  MsgCancelBatches,
+  MsgCompleteBatch,
   MsgCreateSchema,
   MsgDeleteSchema,
   MsgDeposit,
@@ -23,50 +15,174 @@ import {
   MsgRequestIn,
   MsgRequestOut,
   MsgUpdateSchema,
-  MsgWithdraw,
-  MsgCancelBatches,
-  MsgCompleteBatch,
-  MsgUpdateSwapFee
+  MsgUpdateSwapFee,
+  MsgWithdraw
 } from "../../codec/shareledger/swap/tx";
-import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
-import {
-  MsgApproveInEncodeObject,
-  MsgApproveOutEncodeObject,
-  MsgCancelEncodeObject,
-  MsgCreateSchemaEncodeObject,
-  MsgDeleteSchemaEncodeObject,
-  MsgDepositEncodeObject,
-  MsgRejectEncodeObject,
-  MsgRequestInEncodeObject,
-  MsgRequestOutEncodeObject,
-  MsgUpdateSchemaEncodeObject,
-  MsgWithdrawEncodeObject,
-  MsgCancelBatchesEncodeObject,
-  MsgCompleteBatchEncodeObject,
-  MsgUpdateSwapFeeEncodeObject
-} from "./amino";
+import {EncodeObject, GeneratedType} from "../../signing";
 
-export type SwapQueryExtension = {
-  get swap(): {
-    readonly params: (height?: number) => Promise<Params | undefined>;
-    readonly batches: (ids?: Long[], network?: string, paginationKey?: Uint8Array, height?: number) => Promise<QueryBatchesResponse>;
-    readonly tokensAvailable: (height?: number) => Promise<DecCoin | undefined>;
-    readonly requests: (
-      ids?: Long[],
-      destAddr?: string,
-      destNetwork?: string,
-      srcAddr?: string,
-      srcNetwork?: string,
-      status?: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QuerySwapResponse>;
-    readonly schema: (network: string, height?: number) => Promise<Schema | undefined>;
-    readonly schemas: (paginationKey?: Uint8Array, height?: number) => Promise<QuerySchemasResponse>;
-    readonly pastEvent: (txHash: string, logIndex: number, height?: number) => Promise<PastTxEvent | undefined>;
-    readonly pastEvents: (txHash?: string, paginationKey?: Uint8Array, height?: number) => Promise<QueryPastTxEventsResponse>;
+export function createSwapTypes(): ReadonlyArray<[string, GeneratedType]> {
+  return [
+    ["/shareledger.swap.MsgRequestIn", MsgRequestIn],
+    ["/shareledger.swap.MsgRequestOut", MsgRequestOut],
+    ["/shareledger.swap.MsgApproveIn", MsgApproveIn],
+    ["/shareledger.swap.MsgApproveOut", MsgApproveOut],
+    ["/shareledger.swap.MsgCancel", MsgCancel],
+    ["/shareledger.swap.MsgReject", MsgReject],
+    ["/shareledger.swap.MsgDeposit", MsgDeposit],
+    ["/shareledger.swap.MsgWithdraw", MsgWithdraw],
+    ["/shareledger.swap.MsgCreateSchema", MsgCreateSchema],
+    ["/shareledger.swap.MsgUpdateSchema", MsgUpdateSchema],
+    ["/shareledger.swap.MsgDeleteSchema", MsgDeleteSchema],
+    ["/shareledger.swap.MsgCancelBatches", MsgCancelBatches],
+    ["/shareledger.swap.MsgCompleteBatch", MsgCompleteBatch],
+    ["/shareledger.swap.MsgUpdateSwapFee", MsgUpdateSwapFee]
+  ];
+}
+
+export function createSwapActions(): Record<string, string> {
+  return {
+    "/shareledger.swap.MsgRequestIn": "swap_request-in",
+    "/shareledger.swap.MsgRequestOut": "swap_request-out",
+    "/shareledger.swap.MsgApproveIn": "swap_approve-in",
+    "/shareledger.swap.MsgApproveOut": "swap_approve-out",
+    "/shareledger.swap.MsgCancel": "swap_cancel",
+    "/shareledger.swap.MsgReject": "swap_reject",
+    "/shareledger.swap.MsgDeposit": "swap_deposit",
+    "/shareledger.swap.MsgWithdraw": "swap_withdraw",
+    "/shareledger.swap.MsgCreateSchema": "swap_create-schema",
+    "/shareledger.swap.MsgUpdateSchema": "swap_update-schema",
+    "/shareledger.swap.MsgDeleteSchema": "swap_delete-schema",
+    "/shareledger.swap.MsgCancelBatches": "swap_cancel-batches",
+    "/shareledger.swap.MsgCompleteBatch": "swap_update-batch",
+    "/shareledger.swap.MsgUpdateSwapFee": "swap_update-swap-fee"
   };
-};
+}
+
+export interface MsgRequestInEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgRequestIn";
+  readonly value: Partial<MsgRequestIn>;
+}
+
+export function isMsgRequestInEncodeObject(encodeObject: EncodeObject): encodeObject is MsgRequestInEncodeObject {
+  return (encodeObject as MsgRequestInEncodeObject).typeUrl === "/shareledger.swap.MsgRequestIn";
+}
+
+export interface MsgRequestOutEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgRequestOut";
+  readonly value: Partial<MsgRequestOut>;
+}
+
+export function isMsgRequestOutEncodeObject(encodeObject: EncodeObject): encodeObject is MsgRequestOutEncodeObject {
+  return (encodeObject as MsgRequestOutEncodeObject).typeUrl === "/shareledger.swap.MsgRequestOut";
+}
+
+export interface MsgApproveInEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgApproveIn";
+  readonly value: Partial<MsgApproveIn>;
+}
+
+export function isMsgApproveInEncodeObject(encodeObject: EncodeObject): encodeObject is MsgApproveInEncodeObject {
+  return (encodeObject as MsgApproveInEncodeObject).typeUrl === "/shareledger.swap.MsgApproveIn";
+}
+
+export interface MsgApproveOutEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgApproveOut";
+  readonly value: Partial<MsgApproveOut>;
+}
+
+export function isMsgApproveOutEncodeObject(encodeObject: EncodeObject): encodeObject is MsgApproveOutEncodeObject {
+  return (encodeObject as MsgApproveOutEncodeObject).typeUrl === "/shareledger.swap.MsgApproveOut";
+}
+
+export interface MsgCancelEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCancel";
+  readonly value: Partial<MsgCancel>;
+}
+
+export function isMsgCancelEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCancelEncodeObject {
+  return (encodeObject as MsgCancelEncodeObject).typeUrl === "/shareledger.swap.MsgCancel";
+}
+
+export interface MsgRejectEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgReject";
+  readonly value: Partial<MsgReject>;
+}
+
+export function isMsgRejectEncodeObject(encodeObject: EncodeObject): encodeObject is MsgRejectEncodeObject {
+  return (encodeObject as MsgRejectEncodeObject).typeUrl === "/shareledger.swap.MsgReject";
+}
+
+export interface MsgDepositEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgDeposit";
+  readonly value: Partial<MsgDeposit>;
+}
+
+export function isMsgDepositEncodeObject(encodeObject: EncodeObject): encodeObject is MsgDepositEncodeObject {
+  return (encodeObject as MsgDepositEncodeObject).typeUrl === "/shareledger.swap.MsgDeposit";
+}
+
+export interface MsgWithdrawEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgWithdraw";
+  readonly value: Partial<MsgWithdraw>;
+}
+
+export function isMsgWithdrawEncodeObject(encodeObject: EncodeObject): encodeObject is MsgWithdrawEncodeObject {
+  return (encodeObject as MsgWithdrawEncodeObject).typeUrl === "/shareledger.swap.MsgWithdraw";
+}
+
+export interface MsgCreateSchemaEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCreateSchema";
+  readonly value: Partial<MsgCreateSchema>;
+}
+
+export function isMsgCreateSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateSchemaEncodeObject {
+  return (encodeObject as MsgCreateSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgCreateSchema";
+}
+
+export interface MsgUpdateSchemaEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgUpdateSchema";
+  readonly value: Partial<MsgUpdateSchema>;
+}
+
+export function isMsgUpdateSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateSchemaEncodeObject {
+  return (encodeObject as MsgUpdateSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateSchema";
+}
+
+export interface MsgDeleteSchemaEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgDeleteSchema";
+  readonly value: Partial<MsgDeleteSchema>;
+}
+
+export function isMsgDeleteSchemaEncodeObject(encodeObject: EncodeObject): encodeObject is MsgDeleteSchemaEncodeObject {
+  return (encodeObject as MsgDeleteSchemaEncodeObject).typeUrl === "/shareledger.swap.MsgDeleteSchema";
+}
+
+export interface MsgCancelBatchesEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCancelBatches";
+  readonly value: Partial<MsgCancelBatches>;
+}
+
+export function isMsgCancelBatchesEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCancelBatchesEncodeObject {
+  return (encodeObject as MsgCancelBatchesEncodeObject).typeUrl === "/shareledger.swap.MsgCancelBatches";
+}
+
+export interface MsgCompleteBatchEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgCompleteBatch";
+  readonly value: Partial<MsgCompleteBatch>;
+}
+
+export function isMsgCompleteBatchEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCompleteBatchEncodeObject {
+  return (encodeObject as MsgCompleteBatchEncodeObject).typeUrl === "/shareledger.swap.MsgCompleteBatch";
+}
+
+export interface MsgUpdateSwapFeeEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.swap.MsgUpdateSwapFee";
+  readonly value: Partial<MsgUpdateSwapFee>;
+}
+
+export function isMsgUpdateSwapFeeEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateSwapFeeEncodeObject {
+  return (encodeObject as MsgUpdateSwapFeeEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateSwapFee";
+}
 
 export type SwapTxExtension = {
   get swap(): {
@@ -112,78 +228,7 @@ export type SwapTxExtension = {
   };
 };
 
-export type SwapExtension = SwapQueryExtension & SwapTxExtension;
-
-export function SwapQueryExtension<T extends {new (...args: any[]): Client & SwapQueryExtension}>(constructor: T): T {
-  let queryService: QueryClientImpl;
-  let rpcClient: ProtobufRpcClient;
-  return class extends constructor {
-    constructor(...args: any[]) {
-      super(...args);
-      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
-      queryService = new QueryClientImpl(rpcClient);
-    }
-    get swap() {
-      return {
-        ...super["swap"],
-        batches: async (ids?: Long[], network?: string, paginationKey?: Uint8Array, height?: number) => {
-          rpcClient.withHeight(height);
-          return queryService.Batches({
-            ids: ids || [],
-            network: network || "",
-            pagination: createPagination(paginationKey)
-          });
-        },
-        tokensAvailable: async (height?: number) => {
-          rpcClient.withHeight(height);
-          return queryService.Balance({}).then((res) => res.balance);
-        },
-        requests: async (
-          ids?: Long[],
-          destAddr?: string,
-          destNetwork?: string,
-          srcAddr?: string,
-          srcNetwork?: string,
-          status?: string,
-          paginationKey?: Uint8Array,
-          height?: number
-        ) => {
-          rpcClient.withHeight(height);
-          return queryService.Swap({
-            ids: ids || [],
-            destAddr: destAddr || "",
-            destNetwork: destNetwork || "",
-            srcAddr: srcAddr || "",
-            srcNetwork: srcNetwork || "",
-            status: status || "pending", // cannot be empty
-            pagination: createPagination(paginationKey)
-          });
-        },
-        schema: async (network: string, height?: number) => {
-          rpcClient.withHeight(height);
-          return queryService.Schema({network}).then((res) => res.schema);
-        },
-        schemas: async (paginationKey?: Uint8Array, height?: number) => {
-          rpcClient.withHeight(height);
-          return queryService.Schemas({pagination: createPagination(paginationKey)});
-        },
-        pastEvent: async (txHash: string, logIndex: number, height?: number) => {
-          rpcClient.withHeight(height);
-          return queryService.PastTxEvent({txHash, logIndex: Long.fromNumber(logIndex)}).then((res) => res.event);
-        },
-        pastEvents: async (txHash?: string, paginationKey?: Uint8Array, height?: number) => {
-          rpcClient.withHeight(height);
-          if (txHash) {
-            return queryService.PastTxEventsByTxHash({txHash});
-          }
-          return queryService.PastTxEvents({pagination: createPagination(paginationKey)});
-        }
-      };
-    }
-  };
-}
-
-export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTxExtension}>(constructor: T): T {
+export function SwapTxExtension<T extends {new (...args: any[]): BaseClient & SwapTxExtension}>(constructor: T): T {
   return class extends constructor {
     get swap() {
       return {
@@ -360,28 +405,5 @@ export function SwapTxExtension<T extends {new (...args: any[]): Client & SwapTx
         }
       };
     }
-  };
-}
-
-export function SwapExtension<T extends {new (...args: any[]): Client & SwapExtension}>(constructor: T): T {
-  return class extends SwapTxExtension(SwapQueryExtension(constructor)) {};
-}
-
-export function createActions(): Record<string, string> {
-  return {
-    "/shareledger.swap.MsgRequestIn": "swap_request-in",
-    "/shareledger.swap.MsgRequestOut": "swap_request-out",
-    "/shareledger.swap.MsgApproveIn": "swap_approve-in",
-    "/shareledger.swap.MsgApproveOut": "swap_approve-out",
-    "/shareledger.swap.MsgCancel": "swap_cancel",
-    "/shareledger.swap.MsgReject": "swap_reject",
-    "/shareledger.swap.MsgDeposit": "swap_deposit",
-    "/shareledger.swap.MsgWithdraw": "swap_withdraw",
-    "/shareledger.swap.MsgCreateSchema": "swap_create-schema",
-    "/shareledger.swap.MsgUpdateSchema": "swap_update-schema",
-    "/shareledger.swap.MsgDeleteSchema": "swap_delete-schema",
-    "/shareledger.swap.MsgCancelBatches": "swap_cancel-batches",
-    "/shareledger.swap.MsgCompleteBatch": "swap_update-batch",
-    "/shareledger.swap.MsgUpdateSwapFee": "swap_update-swap-fee"
   };
 }

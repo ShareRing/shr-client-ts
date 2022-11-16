@@ -1,12 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import {AminoConverter} from "../../amino";
 
-import {AminoConverter} from "../../amino/types";
-import {GeneratedType} from "../../signing";
-
-export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
+export function createFeegrantAminoConverters(): Record<string, AminoConverter | "not_supported_by_chain"> {
   return {};
-}
-
-export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
-  return [];
 }

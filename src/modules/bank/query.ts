@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {assert} from "@cosmjs/utils";
-import {Client} from "../../client";
-import {Input, Metadata, Output} from "../../codec/cosmos/bank/v1beta1/bank";
+import {BaseClient} from "../../baseclient";
+import {Metadata} from "../../codec/cosmos/bank/v1beta1/bank";
 import {QueryClientImpl, QueryTotalSupplyResponse} from "../../codec/cosmos/bank/v1beta1/query";
-import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
-import {MsgMultiSendEncodeObject, MsgSendEncodeObject} from "./amino";
 
 export type BankQueryExtension = {
   get bank(): {
@@ -20,16 +18,7 @@ export type BankQueryExtension = {
   };
 };
 
-export type BankTxExtension = {
-  get bank(): {
-    readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]) => MsgSendEncodeObject;
-    readonly multiSend: (inputs: Input[], outputs: Output[]) => MsgMultiSendEncodeObject;
-  };
-};
-
-export type BankExtension = BankQueryExtension & BankTxExtension;
-
-export function BankQueryExtension<T extends {new (...args: any[]): Client & BankQueryExtension}>(constructor: T): T {
+export function BankQueryExtension<T extends {new (...args: any[]): BaseClient & BankQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   let rpcClient: ProtobufRpcClient;
   return class extends constructor {
@@ -86,51 +75,5 @@ export function BankQueryExtension<T extends {new (...args: any[]): Client & Ban
         }
       };
     }
-  };
-}
-
-export function BankTxExtension<T extends {new (...args: any[]): Client & BankTxExtension}>(constructor: T): T {
-  return class extends constructor {
-    get bank() {
-      return {
-        ...super["bank"],
-        send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]): MsgSendEncodeObject => {
-          return {
-            typeUrl: "/cosmos.bank.v1beta1.MsgSend",
-            value: MsgSend.fromPartial({
-              fromAddress: senderAddress,
-              toAddress: recipientAddress,
-              amount: [...amount]
-            })
-          };
-        },
-        multiSend: (inputs: Input[], outputs: Output[]): MsgMultiSendEncodeObject => {
-          return {
-            typeUrl: "/cosmos.bank.v1beta1.MsgMuliSend",
-            value: MsgMultiSend.fromPartial({
-              inputs: inputs.map((input) => ({
-                address: input.address,
-                coins: [...input.coins]
-              })),
-              outputs: outputs.map((output) => ({
-                address: output.address,
-                coins: [...output.coins]
-              }))
-            })
-          };
-        }
-      };
-    }
-  };
-}
-
-export function BankExtension<T extends {new (...args: any[]): Client & BankExtension}>(constructor: T): T {
-  return class extends BankTxExtension(BankQueryExtension(constructor)) {};
-}
-
-export function createActions(): Record<string, string> {
-  return {
-    "/cosmos.bank.v1beta1.MsgSend": "bank_send",
-    "/cosmos.bank.v1beta1.MsgMultiSend": "bank_multi-send"
   };
 }

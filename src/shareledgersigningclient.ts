@@ -1,42 +1,55 @@
 import {HttpEndpoint, Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
-import {StdFee} from "./amino";
+import {AminoConverters, AminoTypes, StdFee} from "./amino";
 import {DeliverTxResponse} from "./client";
 import {toNshr} from "./denoms";
-import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
+import {AssetExtension, createAssetActions, createAssetTypes} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
 import {DistributionExtension} from "./modules/distribution";
-import {createActions as BB, createRegistryTypes as B, DocumentExtension} from "./modules/document";
-import {createActions as CC, createRegistryTypes as C, ElectoralExtension} from "./modules/electoral";
-import {createActions as GG, createRegistryTypes as G, FeegrantExtension} from "./modules/feegrant";
-import {createActions as DD, createRegistryTypes as D, GentlemintExtension} from "./modules/gentlemint";
+import {createDocumentActions, createDocumentTypes, DocumentExtension} from "./modules/document";
+import {createElectoralActions, createElectoralTypes, ElectoralExtension} from "./modules/electoral";
+import {FeegrantExtension} from "./modules/feegrant";
+import {createGentlemintActions, createGentlemintTypes, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
-import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modules/id";
+import {createIdActions, createIdTypes, IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
-import {createActions as FF, createRegistryTypes as F, SwapExtension} from "./modules/swap";
+import {createSwapActions, createSwapTypes, SwapExtension} from "./modules/swap";
 import {TxExtension} from "./modules/tx";
 import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
-import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+import {defaultRegistryTypes, createDefaultAminoTypes, SignerData, SigningClient, SigningOptions, defaultActions} from "./signingclient";
 
-export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
+const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E, F, G].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[createAssetTypes, createDocumentTypes, createElectoralTypes, createGentlemintTypes, createIdTypes, createSwapTypes].reduce(
+    (prev, curr) => [...prev, ...curr()],
+    []
+  )
 ];
 
-export const actions: Record<string, string> = {
-  ...defaultActions,
-  ...[AA, BB, CC, DD, EE, FF, GG].reduce((prev, curr) => ({...prev, ...curr()}), {})
-};
-
 function createRegistry(): Registry {
-  const registry = new Registry();
-  registryTypes.forEach(([typeUrl, type]) => {
-    registry.register(typeUrl, type);
-  });
-  return registry;
+  return new Registry(registryTypes);
 }
+
+function createAminoTypes(prefix: string): AminoConverters {
+  return [
+    createDefaultAminoTypes
+    // not support amino
+  ].reduce((prev, curr) => ({...prev, ...curr(prefix)}), {});
+}
+
+const actions: Record<string, string> = {
+  ...defaultActions,
+  ...[
+    createAssetActions,
+    createDocumentActions,
+    createElectoralActions,
+    createGentlemintActions,
+    createIdActions,
+    createSwapActions
+  ].reduce((prev, curr) => ({...prev, ...curr()}), {})
+};
 
 export interface ShareledgerSigningClient
   extends AuthExtension,
@@ -58,19 +71,23 @@ export interface ShareledgerSigningClient
 @BankExtension
 @DistributionExtension
 @GovExtension
-@SwapExtension
+@FeegrantExtension
 @SlashingExtension
 @StakingExtension
 @TxExtension
-@FeegrantExtension
 @AssetExtension
 @DocumentExtension
 @ElectoralExtension
 @GentlemintExtension
 @IdExtension
+@SwapExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
-    super(tmClient, signer, {...options, registry: createRegistry()});
+    super(tmClient, signer, {
+      ...options,
+      aminoTypes: new AminoTypes(createAminoTypes(options.prefix ?? "shareledger")),
+      registry: createRegistry()
+    });
   }
 
   public static async connect(endpoint: string | HttpEndpoint, options?: SigningOptions): Promise<ShareledgerSigningClient> {

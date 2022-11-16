@@ -1,5 +1,6 @@
 import {HttpEndpoint, Tendermint34Client} from "@cosmjs/tendermint-rpc";
-import {Client, ClientOptions} from "./client";
+import {ClientOptions} from "./baseclient";
+import {Client} from "./client";
 import {AssetQueryExtension} from "./modules/asset";
 import {AuthQueryExtension} from "./modules/auth";
 import {BankQueryExtension} from "./modules/bank";

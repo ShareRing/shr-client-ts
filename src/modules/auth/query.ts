@@ -1,4 +1,4 @@
-import {Client} from "../../client";
+import {BaseClient} from "../../baseclient";
 import {QueryClientImpl} from "../../codec/cosmos/auth/v1beta1/query";
 import {Any} from "../../codec/google/protobuf/any";
 import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
@@ -16,9 +16,7 @@ export type AuthQueryExtension = {
   };
 };
 
-export type AuthExtension = AuthQueryExtension;
-
-export function AuthQueryExtension<T extends {new (...args: any[]): Client & AuthQueryExtension}>(constructor: T): T {
+export function AuthQueryExtension<T extends {new (...args: any[]): BaseClient & AuthQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   let rpcClient: ProtobufRpcClient;
   return class extends constructor {
@@ -40,8 +38,4 @@ export function AuthQueryExtension<T extends {new (...args: any[]): Client & Aut
       };
     }
   };
-}
-
-export function AuthExtension<T extends {new (...args: any[]): Client & AuthExtension}>(constructor: T): T {
-  return class extends AuthQueryExtension(constructor) {};
 }

@@ -3,17 +3,19 @@ import {fromBase64} from "@cosmjs/encoding";
 import {Int53, Uint53} from "@cosmjs/math";
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {assert, assertDefined} from "@cosmjs/utils";
-import {AminoTypes, StdFee, makeSignDoc as makeSignDocAmino} from "./amino";
-import {DeliverTxResponse, Client, ClientOptions} from "./client";
+import {AminoTypes, StdFee, makeSignDoc as makeSignDocAmino, AminoConverters} from "./amino";
+import {ClientOptions} from "./baseclient";
+import {DeliverTxResponse, Client} from "./client";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
 import {calculateFee, GasPrice} from "./fee";
-import {createRegistryTypes as A} from "./modules/auth";
-import {createActions as BB, createRegistryTypes as B} from "./modules/bank";
-import {createActions as CC, createRegistryTypes as C} from "./modules/distribution";
-import {createActions as DD, createRegistryTypes as D} from "./modules/gov";
-import {createActions as EE, createRegistryTypes as E} from "./modules/slashing";
-import {createActions as FF, createRegistryTypes as F} from "./modules/staking";
+import {createAuthTypes} from "./modules/auth";
+import {createBankTypes, createBankAminoConverters, createBankActions} from "./modules/bank";
+import {createDistributionTypes, createDistributionAminoConverters, createDistributionActions} from "./modules/distribution";
+import {createGovActions, createGovAminoConverters, createGovTypes} from "./modules/gov";
+//import {createActions as DD, createRegistryTypes as D} from "./modules/gov";
+import {createSlashingTypes, createSlashingAminoConverters, createSlashingActions} from "./modules/slashing";
+import {createStakingTypes, createStakingAminoConverters, createStakingActions} from "./modules/staking";
 import {
   EncodeObject,
   encodePubkey,
@@ -48,20 +50,36 @@ export interface SigningOptions extends ClientOptions {
 
 /** */
 
-export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [A, B, C, D, E, F].reduce(
-  (prev, curr) => [...prev, ...curr()],
-  []
-);
-
-export const defaultActions: Record<string, string> = [BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {});
+export const defaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
+  createAuthTypes,
+  createBankTypes,
+  createDistributionTypes,
+  createGovTypes,
+  createSlashingTypes,
+  createStakingTypes
+].reduce((prev, curr) => [...prev, ...curr()], []);
 
 function createDefaultRegistry(): Registry {
-  const registry = new Registry();
-  defaultRegistryTypes.forEach(([typeUrl, type]) => {
-    registry.register(typeUrl, type);
-  });
-  return registry;
+  return new Registry(defaultRegistryTypes);
 }
+
+export function createDefaultAminoTypes(prefix: string): AminoConverters {
+  return [
+    createBankAminoConverters,
+    createDistributionAminoConverters,
+    createGovAminoConverters,
+    createSlashingAminoConverters,
+    createStakingAminoConverters
+  ].reduce((prev, curr) => ({...prev, ...curr(prefix)}), {});
+}
+
+export const defaultActions: Record<string, string> = [
+  createBankActions,
+  createDistributionActions,
+  createGovActions,
+  createSlashingActions,
+  createStakingActions
+].reduce((prev, curr) => ({...prev, ...curr()}), {});
 
 export class SigningClient extends Client {
   public readonly registry: Registry;
@@ -93,7 +111,8 @@ export class SigningClient extends Client {
 
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, options);
-    const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes({prefix: options.prefix ?? "shareledger"})} = options;
+    const {registry = createDefaultRegistry(), aminoTypes = new AminoTypes(createDefaultAminoTypes(options.prefix ?? "shareledger"))} =
+      options;
     this.registry = registry;
     this.aminoTypes = aminoTypes;
     this.signer = signer;

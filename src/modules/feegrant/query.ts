@@ -1,4 +1,4 @@
-import {Client} from "../../client";
+import {BaseClient} from "../../baseclient";
 import {PageResponse} from "../../codec/cosmos/base/query/v1beta1/pagination";
 import {BasicAllowance, PeriodicAllowance} from "../../codec/cosmos/feegrant/v1beta1/feegrant";
 import {QueryClientImpl} from "../../codec/cosmos/feegrant/v1beta1/query";
@@ -23,8 +23,6 @@ export type FeegrantQueryExtension = {
   };
 };
 
-export type FeegrantExtension = FeegrantQueryExtension;
-
 function decodeAllowance(allowance?: Any): BasicAllowance | PeriodicAllowance | undefined {
   if (!allowance) {
     return undefined;
@@ -39,7 +37,7 @@ function decodeAllowance(allowance?: Any): BasicAllowance | PeriodicAllowance | 
   }
 }
 
-export function FeegrantQueryExtension<T extends {new (...args: any[]): Client & FeegrantQueryExtension}>(constructor: T): T {
+export function FeegrantQueryExtension<T extends {new (...args: any[]): BaseClient & FeegrantQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
   let rpcClient: ProtobufRpcClient;
   return class extends constructor {
@@ -81,12 +79,4 @@ export function FeegrantQueryExtension<T extends {new (...args: any[]): Client &
       };
     }
   };
-}
-
-export function FeegrantExtension<T extends {new (...args: any[]): Client & FeegrantExtension}>(constructor: T): T {
-  return class extends FeegrantQueryExtension(constructor) {};
-}
-
-export function createActions(): Record<string, string> {
-  return {};
 }

@@ -3,20 +3,15 @@
 import {sha256} from "@cosmjs/crypto";
 import {toHex} from "@cosmjs/encoding";
 import {Uint53} from "@cosmjs/math";
-import {Tendermint34Client, toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
+import {toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
 import {sleep} from "@cosmjs/utils";
-import {Account, accountFromAny, AccountParser} from "./account";
+import {Account} from "./account";
+import {BaseClient} from "./baseclient";
 import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
 import {Event, fromTendermint34Event} from "./events";
-import {AuthExtension} from "./modules/auth/module";
-import {TxExtension} from "./modules/tx/module";
-import {QueryClient} from "./query";
+import {AuthExtension} from "./modules/auth";
+import {TxExtension} from "./modules/tx";
 import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery, SearchTxFilter, SearchTxQuery} from "./search";
-// import { BankExtension } from "./modules/bank";
-// import { DistributionExtension } from "./modules/distribution";
-// import { GovExtension } from "./modules/gov";
-// import { SlashingExtension } from "./modules/slashing";
-// import { StakingExtension } from "./modules/staking";
 
 export class TimeoutError extends Error {
   public readonly txId: string;
@@ -164,56 +159,12 @@ export class BroadcastTxError extends Error {
   }
 }
 
-export interface ClientOptions {
-  readonly accountParser?: AccountParser;
-}
-
-// export interface Client extends AuthExtension, BankExtension, DistributionExtension, GovExtension, SlashingExtension, StakingExtension {}
 export interface Client extends AuthExtension, TxExtension {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 @AuthExtension
 @TxExtension
-// @BankExtension
-// @DistributionExtension
-// @GovExtension
-// @SlashingExtension
-// @StakingExtension
-export class Client {
-  private readonly tmClient: Tendermint34Client | undefined;
-  private readonly queryClient: QueryClient | undefined;
+export class Client extends BaseClient {
   private chainId: string | undefined;
-  private readonly accountParser: AccountParser;
-
-  public constructor(tmClient: Tendermint34Client | undefined, options: ClientOptions) {
-    if (tmClient) {
-      this.tmClient = tmClient;
-      this.queryClient = new QueryClient(tmClient);
-    }
-    const {accountParser = accountFromAny} = options;
-    this.accountParser = accountParser;
-  }
-
-  protected getTmClient(): Tendermint34Client | undefined {
-    return this.tmClient;
-  }
-
-  protected forceGetTmClient(): Tendermint34Client {
-    if (!this.tmClient) {
-      throw new Error("Tendermint client not available. You cannot use online functionality in offline mode.");
-    }
-    return this.tmClient;
-  }
-
-  protected getQueryClient(): QueryClient | undefined {
-    return this.queryClient;
-  }
-
-  protected forceGetQueryClient(): QueryClient {
-    if (!this.queryClient) {
-      throw new Error("Query client not available. You cannot use online functionality in offline mode.");
-    }
-    return this.queryClient;
-  }
 
   public async getChainId(): Promise<string> {
     if (!this.chainId) {

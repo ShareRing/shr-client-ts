@@ -1,16 +1,60 @@
-import {Client} from "../../client";
-import {Id} from "../../codec/shareledger/id/id";
-import {QueryClientImpl} from "../../codec/shareledger/id/query";
+import {BaseClient} from "../../baseclient";
 import {MsgCreateId, MsgCreateIds, MsgReplaceIdOwner, MsgUpdateId} from "../../codec/shareledger/id/tx";
-import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
-import {MsgCreateIdEncodeObject, MsgCreateIdsEncodeObject, MsgReplaceIdOwnerEncodeObject, MsgUpdateIdEncodeObject} from "./amino";
+import {EncodeObject, GeneratedType} from "../../signing";
 
-export type IdQueryExtension = {
-  get id(): {
-    readonly id: (id: string, height?: number) => Promise<Id | undefined>;
-    readonly idByAddress: (address: string, height?: number) => Promise<Id | undefined>;
+export function createIdTypes(): ReadonlyArray<[string, GeneratedType]> {
+  return [
+    ["/shareledger.id.MsgCreateId", MsgCreateId],
+    ["/shareledger.id.MsgCreateIds", MsgCreateIds],
+    ["/shareledger.id.MsgUpdateId", MsgUpdateId],
+    ["/shareledger.id.MsgReplaceIdOwner", MsgReplaceIdOwner]
+  ];
+}
+
+export function createIdActions(): Record<string, string> {
+  return {
+    "/shareledger.id.MsgCreateId": "id_create",
+    "/shareledger.id.MsgCreateIds": "id_create-ids",
+    "/shareledger.id.MsgUpdateId": "id_update",
+    "/shareledger.id.MsgReplaceIdOwner": "id_replace"
   };
-};
+}
+
+export interface MsgCreateIdEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.id.MsgCreateId";
+  readonly value: Partial<MsgCreateId>;
+}
+
+export function isMsgCreateIdEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateIdEncodeObject {
+  return (encodeObject as MsgCreateIdEncodeObject).typeUrl === "/shareledger.id.MsgCreateId";
+}
+
+export interface MsgCreateIdsEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.id.MsgCreateIds";
+  readonly value: Partial<MsgCreateIds>;
+}
+
+export function isMsgCreateIdsEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateIdsEncodeObject {
+  return (encodeObject as MsgCreateIdsEncodeObject).typeUrl === "/shareledger.id.MsgCreateIds";
+}
+
+export interface MsgUpdateIdEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.id.MsgUpdateId";
+  readonly value: Partial<MsgUpdateId>;
+}
+
+export function isMsgUpdateIdEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUpdateIdEncodeObject {
+  return (encodeObject as MsgUpdateIdEncodeObject).typeUrl === "/shareledger.id.MsgUpdateId";
+}
+
+export interface MsgReplaceIdOwnerEncodeObject extends EncodeObject {
+  readonly typeUrl: "/shareledger.id.MsgReplaceIdOwner";
+  readonly value: Partial<MsgReplaceIdOwner>;
+}
+
+export function isMsgReplaceIdOwnerEncodeObject(encodeObject: EncodeObject): encodeObject is MsgReplaceIdOwnerEncodeObject {
+  return (encodeObject as MsgReplaceIdOwnerEncodeObject).typeUrl === "/shareledger.id.MsgReplaceIdOwner";
+}
 
 export type IdTxExtension = {
   get id(): {
@@ -27,38 +71,7 @@ export type IdTxExtension = {
   };
 };
 
-export type IdExtension = IdQueryExtension & IdTxExtension;
-
-export function IdQueryExtension<T extends {new (...args: any[]): Client & IdQueryExtension}>(constructor: T): T {
-  let queryService: QueryClientImpl;
-  let rpcClient: ProtobufRpcClient;
-  return class extends constructor {
-    constructor(...args: any[]) {
-      super(...args);
-      // Use this service to get easy typed access to query methods
-      // This cannot be used for proof verification
-      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
-      queryService = new QueryClientImpl(rpcClient);
-    }
-    get id() {
-      return {
-        ...super["id"],
-        id: async (id: string, height?: number) => {
-          rpcClient.withHeight(height);
-          const response = await queryService.IdById({id});
-          return response.id;
-        },
-        idByAddress: async (address: string, height?: number) => {
-          rpcClient.withHeight(height);
-          const response = await queryService.IdByAddress({address});
-          return response.id;
-        }
-      };
-    }
-  };
-}
-
-export function IdTxExtension<T extends {new (...args: any[]): Client & IdTxExtension}>(constructor: T): T {
+export function IdTxExtension<T extends {new (...args: any[]): BaseClient & IdTxExtension}>(constructor: T): T {
   return class extends constructor {
     get id() {
       return {
@@ -121,18 +134,5 @@ export function IdTxExtension<T extends {new (...args: any[]): Client & IdTxExte
         }
       };
     }
-  };
-}
-
-export function IdExtension<T extends {new (...args: any[]): Client & IdExtension}>(constructor: T): T {
-  return class extends IdTxExtension(IdQueryExtension(constructor)) {};
-}
-
-export function createActions(): Record<string, string> {
-  return {
-    "/shareledger.id.MsgCreateId": "id_create",
-    "/shareledger.id.MsgCreateIds": "id_create-ids",
-    "/shareledger.id.MsgUpdateId": "id_update",
-    "/shareledger.id.MsgReplaceIdOwner": "id_replace"
   };
 }

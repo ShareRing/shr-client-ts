@@ -4,10 +4,9 @@ import {AminoMsg} from "@cosmjs/amino";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {Any} from "../../codec/google/protobuf/any";
 import {VoteOption, voteOptionFromJSON} from "../../codec/cosmos/gov/v1beta1/gov";
-import {EncodeObject, GeneratedType} from "../../signing";
 import {MsgDeposit, MsgSubmitProposal, MsgVote, MsgVoteWeighted} from "../../codec/cosmos/gov/v1beta1/tx";
 import {TextProposal} from "../../codec/cosmos/gov/v1beta1/gov";
-import {AminoConverter} from "../../amino/types";
+import {AminoConverter} from "../../amino";
 import Long from "long";
 import {assert, assertDefinedAndNotNull, isNonNullObject} from "@cosmjs/utils";
 import {decodeCosmosSdkDecFromProto} from "../../query";
@@ -25,15 +24,6 @@ export interface AminoTextProposal extends AminoMsg {
 
 export function isAminoTextProposal(msg: AminoMsg): msg is AminoTextProposal {
   return msg.type === "cosmos-sdk/TextProposal";
-}
-
-export interface TextProposalEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.gov.v1beta1.TextProposal";
-  readonly value: Partial<TextProposal>;
-}
-
-export function isMsgTextProposalEncodeObject(encodeObject: EncodeObject): encodeObject is TextProposalEncodeObject {
-  return (encodeObject as TextProposalEncodeObject).typeUrl === "/cosmos.gov.v1beta1.TextProposal";
 }
 
 /** Supports submitting arbitrary proposal content. */
@@ -57,15 +47,6 @@ export function isAminoMsgSubmitProposal(msg: AminoMsg): msg is AminoMsgSubmitPr
   return msg.type === "cosmos-sdk/MsgSubmitProposal";
 }
 
-export interface MsgSubmitProposalEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal";
-  readonly value: Partial<MsgSubmitProposal>;
-}
-
-export function isMsgSubmitProposalEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSubmitProposalEncodeObject {
-  return (encodeObject as MsgSubmitProposalEncodeObject).typeUrl === "/cosmos.gov.v1beta1.MsgSubmitProposal";
-}
-
 /** Casts a vote */
 export interface AminoMsgVote extends AminoMsg {
   readonly type: "cosmos-sdk/MsgVote";
@@ -79,15 +60,6 @@ export interface AminoMsgVote extends AminoMsg {
 
 export function isAminoMsgVote(msg: AminoMsg): msg is AminoMsgVote {
   return msg.type === "cosmos-sdk/MsgVote";
-}
-
-export interface MsgVoteEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.gov.v1beta1.MsgVote";
-  readonly value: Partial<MsgVote>;
-}
-
-export function isMsgVoteEncodeObject(encodeObject: EncodeObject): encodeObject is MsgVoteEncodeObject {
-  return (encodeObject as MsgVoteEncodeObject).typeUrl === "/cosmos.gov.v1beta1.MsgVote";
 }
 
 export interface AminoMsgVoteWeighted extends AminoMsg {
@@ -112,15 +84,6 @@ export function isAminoMsgVoteWeighted(msg: AminoMsg): msg is AminoMsgVoteWeight
   return msg.type === "cosmos-sdk/MsgVoteWeighted";
 }
 
-export interface MsgVoteWeightedEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.gov.v1beta1.MsgVoteWeighted";
-  readonly value: Partial<MsgVoteWeighted>;
-}
-
-export function isMsgVoteWeightedEncodeObject(encodeObject: EncodeObject): encodeObject is MsgVoteWeightedEncodeObject {
-  return (encodeObject as MsgVoteWeightedEncodeObject).typeUrl === "/cosmos.gov.v1beta1.MsgVoteWeighted";
-}
-
 /** Submits a deposit to an existing proposal */
 export interface AminoMsgDeposit extends AminoMsg {
   readonly type: "cosmos-sdk/MsgDeposit";
@@ -136,16 +99,7 @@ export function isAminoMsgDeposit(msg: AminoMsg): msg is AminoMsgDeposit {
   return msg.type === "cosmos-sdk/MsgDeposit";
 }
 
-export interface MsgDepositEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.gov.v1beta1.MsgDeposit";
-  readonly value: Partial<MsgDeposit>;
-}
-
-export function isMsgDepositEncodeObject(encodeObject: EncodeObject): encodeObject is MsgDepositEncodeObject {
-  return (encodeObject as MsgDepositEncodeObject).typeUrl === "/cosmos.gov.v1beta1.MsgDeposit";
-}
-
-export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
+export function createGovAminoConverters(prefix: string): Record<string, AminoConverter | "not_supported_by_chain"> {
   return {
     "/cosmos.gov.v1beta1.MsgSubmitProposal": {
       aminoType: "cosmos-sdk/MsgSubmitProposal",
@@ -251,13 +205,4 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       })
     }
   };
-}
-
-export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
-  return [
-    ["/cosmos.gov.v1beta1.MsgSubmitProposal", MsgSubmitProposal],
-    ["/cosmos.gov.v1beta1.MsgDeposit", MsgDeposit],
-    ["/cosmos.gov.v1beta1.MsgVote", MsgVote],
-    ["/cosmos.gov.v1beta1.MsgVoteWeighted", MsgVoteWeighted]
-  ];
 }
