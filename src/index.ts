@@ -22,7 +22,7 @@ export {Attribute, Event, fromTendermint34Event} from "./events";
 export {calculateFee, GasPrice} from "./fee";
 export {findAttribute, parseAttribute, parseEvent, parseLog, parseLogs, parseRawLog} from "./logs";
 export {AssetExtension, AssetQueryExtension, AssetTxExtension} from "./modules/asset";
-export {AuthExtension, AuthQueryExtension} from "./modules/auth";
+export type {AuthExtension, AuthQueryExtension, AuthQueryMethods} from "./modules/auth";
 export {BankExtension, BankQueryExtension, BankTxExtension} from "./modules/bank";
 export {DistributionExtension, DistributionQueryExtension, DistributionTxExtension} from "./modules/distribution";
 export {DocumentExtension, DocumentQueryExtension, DocumentTxExtension} from "./modules/document";
