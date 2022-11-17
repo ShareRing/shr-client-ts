@@ -23,10 +23,16 @@ import {defaultRegistryTypes, createDefaultAminoTypes, SignerData, SigningClient
 
 const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[createAssetTypes, createDocumentTypes, createElectoralTypes, createGentlemintTypes, createIdTypes, createSwapTypes].reduce(
-    (prev, curr) => [...prev, ...curr()],
-    []
-  )
+  ...[
+    createAssetTypes,
+    createDocumentTypes,
+    createElectoralTypes,
+    createGentlemintTypes,
+    createIdTypes,
+    createSwapTypes,
+    createFeegrantTypes,
+    createWasmTypes
+  ].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
 function createRegistry(): Registry {
@@ -49,7 +55,7 @@ const actions: Record<string, string> = {
     createGentlemintActions,
     createIdActions,
     createSwapActions,
-    createFeegrantActions
+    createFeegrantActions,
     createWasmActions
   ].reduce((prev, curr) => ({...prev, ...curr()}), {})
 };
