@@ -205,26 +205,28 @@ export function isMsgRevokeSwapManagersEncodeObject(encodeObject: EncodeObject):
   return (encodeObject as MsgRevokeSwapManagersEncodeObject).typeUrl === "/shareledger.electoral.MsgRevokeSwapManagers";
 }
 
-export type ElectoralTxExtension = {
-  get electoral(): {
-    readonly enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
-    readonly revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
-    readonly enrollDocIssuers: (addresses: string[], creator: string) => MsgEnrollDocIssuersEncodeObject;
-    readonly revokeDocIssuers: (addresses: string[], creator: string) => MsgRevokeDocIssuersEncodeObject;
-    readonly enrollLoaders: (addresses: string[], creator: string) => MsgEnrollLoadersEncodeObject;
-    readonly revokeLoaders: (addresses: string[], creator: string) => MsgRevokeLoadersEncodeObject;
-    readonly enrollVoter: (address: string, creator: string) => MsgEnrollVoterEncodeObject;
-    readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
-    readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
-    readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
-    readonly enrollRelayers: (addresses: string[], creator: string) => MsgEnrollRelayersEncodeObject;
-    readonly revokeRelayers: (addresses: string[], creator: string) => MsgRevokeRelayersEncodeObject;
-    readonly enrollApprovers: (addresses: string[], creator: string) => MsgEnrollApproversEncodeObject;
-    readonly revokeApprovers: (addresses: string[], creator: string) => MsgRevokeApproversEncodeObject;
-    readonly enrollSwapManagers: (addresses: string[], creator: string) => MsgEnrollSwapManagersEncodeObject;
-    readonly revokeSwapManagers: (addresses: string[], creator: string) => MsgRevokeSwapManagersEncodeObject;
-  };
-};
+export interface ElectoralTxExtensionMethods {
+  enrollAccountOperators(addresses: string[], creator: string): MsgEnrollAccountOperatorsEncodeObject;
+  revokeAccountOperators(addresses: string[], creator: string): MsgRevokeAccountOperatorsEncodeObject;
+  enrollDocIssuers(addresses: string[], creator: string): MsgEnrollDocIssuersEncodeObject;
+  revokeDocIssuers(addresses: string[], creator: string): MsgRevokeDocIssuersEncodeObject;
+  enrollLoaders(addresses: string[], creator: string): MsgEnrollLoadersEncodeObject;
+  revokeLoaders(addresses: string[], creator: string): MsgRevokeLoadersEncodeObject;
+  enrollVoter(address: string, creator: string): MsgEnrollVoterEncodeObject;
+  revokeVoter(address: string, creator: string): MsgRevokeVoterEncodeObject;
+  enrollIdSigners(addresses: string[], creator: string): MsgEnrollIdSignersEncodeObject;
+  revokeIdSigners(addresses: string[], creator: string): MsgRevokeIdSignersEncodeObject;
+  enrollRelayers(addresses: string[], creator: string): MsgEnrollRelayersEncodeObject;
+  revokeRelayers(addresses: string[], creator: string): MsgRevokeRelayersEncodeObject;
+  enrollApprovers(addresses: string[], creator: string): MsgEnrollApproversEncodeObject;
+  revokeApprovers(addresses: string[], creator: string): MsgRevokeApproversEncodeObject;
+  enrollSwapManagers(addresses: string[], creator: string): MsgEnrollSwapManagersEncodeObject;
+  revokeSwapManagers(addresses: string[], creator: string): MsgRevokeSwapManagersEncodeObject;
+}
+
+export interface ElectoralTxExtension {
+  readonly electoral: ElectoralTxExtensionMethods;
+}
 
 export function ElectoralTxExtension<T extends {new (...args: any[]): BaseClient & ElectoralTxExtension}>(constructor: T): T {
   return class extends constructor {

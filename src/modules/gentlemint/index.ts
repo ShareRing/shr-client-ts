@@ -1,8 +1,9 @@
 import {BaseClient} from "../../baseclient";
-import {GentlemintQueryExtension} from "./query";
-import {GentlemintTxExtension} from "./tx";
+import {GentlemintQueryExtension, GentlemintQueryExtensionMethods} from "./query";
+import {GentlemintTxExtension, GentlemintTxExtensionMethods} from "./tx";
 
 export type GentlemintExtension = GentlemintQueryExtension & GentlemintTxExtension;
+export type GentlemintExtensionMethods = GentlemintQueryExtensionMethods & GentlemintTxExtensionMethods;
 
 export function GentlemintExtension<T extends {new (...args: any[]): BaseClient & GentlemintExtension}>(constructor: T): T {
   return class extends GentlemintTxExtension(GentlemintQueryExtension(constructor)) {};

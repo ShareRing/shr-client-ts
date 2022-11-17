@@ -5,13 +5,15 @@ import {QueryClientImpl, QuerySigningInfosResponse} from "../../codec/cosmos/sla
 import {Params, ValidatorSigningInfo} from "../../codec/cosmos/slashing/v1beta1/slashing";
 import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export type SlashingQueryExtension = {
-  get slashing(): {
-    readonly signingInfo: (consAddress: string, height?: number) => Promise<ValidatorSigningInfo | undefined>;
-    readonly signingInfos: (paginationKey?: Uint8Array, height?: number) => Promise<QuerySigningInfosResponse>;
-    readonly params: (height?: number) => Promise<Params | undefined>;
-  };
-};
+export interface SlashingQueryExtensionMethods {
+  signingInfo(consAddress: string, height?: number): Promise<ValidatorSigningInfo | undefined>;
+  signingInfos(paginationKey?: Uint8Array, height?: number): Promise<QuerySigningInfosResponse>;
+  params(height?: number): Promise<Params | undefined>;
+}
+
+export interface SlashingQueryExtension {
+  readonly slashing: SlashingQueryExtensionMethods;
+}
 
 export function SlashingQueryExtension<T extends {new (...args: any[]): BaseClient & SlashingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;

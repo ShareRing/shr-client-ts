@@ -68,18 +68,20 @@ export function isMsgUndelegateEncodeObject(encodeObject: EncodeObject): encodeO
   return (encodeObject as MsgUndelegateEncodeObject).typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate";
 }
 
-export type StakingTxExtension = {
-  get staking(): {
-    readonly delegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgDelegateEncodeObject;
-    readonly undelegate: (delegatorAddress: string, validatorAddress: string, amount: Coin) => MsgUndelegateEncodeObject;
-    readonly beginRedelegate: (
-      delegatorAddress: string,
-      validatorSrcAddress: string,
-      validatorDstAddress: string,
-      amount: Coin
-    ) => MsgBeginRedelegateEncodeObject;
-  };
-};
+export interface StakingTxExtensionMethods {
+  delegate(delegatorAddress: string, validatorAddress: string, amount: Coin): MsgDelegateEncodeObject;
+  undelegate(delegatorAddress: string, validatorAddress: string, amount: Coin): MsgUndelegateEncodeObject;
+  beginRedelegate(
+    delegatorAddress: string,
+    validatorSrcAddress: string,
+    validatorDstAddress: string,
+    amount: Coin
+  ): MsgBeginRedelegateEncodeObject;
+}
+
+export interface StakingTxExtension {
+  readonly staking: StakingTxExtensionMethods;
+}
 
 export function StakingTxExtension<T extends {new (...args: any[]): BaseClient & StakingTxExtension}>(constructor: T): T {
   return class extends constructor {

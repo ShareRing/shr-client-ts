@@ -4,19 +4,20 @@ import {assert} from "@cosmjs/utils";
 import {BaseClient} from "../../baseclient";
 import {Metadata} from "../../codec/cosmos/bank/v1beta1/bank";
 import {QueryClientImpl, QueryTotalSupplyResponse} from "../../codec/cosmos/bank/v1beta1/query";
-import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
+import type {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export type BankQueryExtension = {
-  get bank(): {
-    readonly balance: (address: string, denom: string, height?: number) => Promise<Coin>;
-    readonly allBalances: (address: string, height?: number) => Promise<Coin[]>;
-    readonly totalSupply: (height?: number) => Promise<Coin[]>;
-    readonly supplyOf: (denom: string, height?: number) => Promise<Coin>;
-    readonly denomMetadata: (denom: string, height?: number) => Promise<Metadata>;
-    readonly denomsMetadata: (height?: number) => Promise<Metadata[]>;
-  };
-};
+export interface BankQueryExtensionMethods {
+  balance(address: string, denom: string, height?: number): Promise<Coin>;
+  allBalances(address: string, height?: number): Promise<Coin[]>;
+  totalSupply(height?: number): Promise<Coin[]>;
+  supplyOf(denom: string, height?: number): Promise<Coin>;
+  denomMetadata(denom: string, height?: number): Promise<Metadata>;
+  denomsMetadata(height?: number): Promise<Metadata[]>;
+}
+export interface BankQueryExtension {
+  readonly bank: BankQueryExtensionMethods;
+}
 
 export function BankQueryExtension<T extends {new (...args: any[]): BaseClient & BankQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
