@@ -87,23 +87,25 @@ export function isMsgExecuteEncodeObject(object: EncodeObject): object is MsgExe
   return (object as MsgExecuteContractEncodeObject).typeUrl === "/cosmwasm.wasm.v1.MsgExecuteContract";
 }
 
-export type WasmTxExtension = {
-  get wasm(): {
-    readonly storeCode: (sender: string, wasmByteCode: Uint8Array, instantiatePermission?: AccessConfig) => MsgStoreCodeEncodeObject;
-    readonly instantiateContract: (
-      sender: string,
-      admin: string,
-      codeId: Long,
-      label: string,
-      msg: Uint8Array,
-      funds: Coin[]
-    ) => MsgInstantiateContractEncodeObject;
-    readonly executeContract: (sender: string, contract: string, msg: Uint8Array, funds: Coin[]) => MsgExecuteContractEncodeObject;
-    readonly migrateContract: (sender: string, contract: string, codeId: Long, msg: Uint8Array) => MsgMigrateContractEncodeObject;
-    readonly updateAdmin: (sender: string, newAdmin: string, contract: string) => MsgUpdateAdminEncodeObject;
-    readonly clearAdmin: (sender: string, contract: string) => MsgClearAdminEncodeObject;
-  };
-};
+export interface WasmTxExtensionMethods {
+  storeCode(sender: string, wasmByteCode: Uint8Array, instantiatePermission?: AccessConfig): MsgStoreCodeEncodeObject;
+  instantiateContract(
+    sender: string,
+    admin: string,
+    codeId: Long,
+    label: string,
+    msg: Uint8Array,
+    funds: Coin[]
+  ): MsgInstantiateContractEncodeObject;
+  executeContract(sender: string, contract: string, msg: Uint8Array, funds: Coin[]): MsgExecuteContractEncodeObject;
+  migrateContract(sender: string, contract: string, codeId: Long, msg: Uint8Array): MsgMigrateContractEncodeObject;
+  updateAdmin(sender: string, newAdmin: string, contract: string): MsgUpdateAdminEncodeObject;
+  clearAdmin(sender: string, contract: string): MsgClearAdminEncodeObject;
+}
+
+export interface WasmTxExtension {
+  readonly wasm: WasmTxExtensionMethods;
+}
 
 export function WasmTxExtension<T extends {new (...args: any[]): BaseClient & WasmTxExtension}>(constructor: T): T {
   return class extends constructor {

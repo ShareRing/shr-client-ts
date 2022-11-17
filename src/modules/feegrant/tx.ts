@@ -27,12 +27,14 @@ export interface MsgRevokeAllowanceEncodeObject extends EncodeObject {
   readonly value: Partial<MsgRevokeAllowance>;
 }
 
-export type FeegrantTxExtension = {
-  get feegrant(): {
-    readonly grantAllowance: (granter: string, grantee: string, allowance?: Any) => MsgGrantAllowanceEncodeObject;
-    readonly revokeAllowance: (granter: string, grantee: string) => MsgRevokeAllowanceEncodeObject;
-  };
-};
+export interface FeegrantTxExtensionMethods {
+  grantAllowance(granter: string, grantee: string, allowance?: Any): MsgGrantAllowanceEncodeObject;
+  revokeAllowance(granter: string, grantee: string): MsgRevokeAllowanceEncodeObject;
+}
+
+export interface FeegrantTxExtension {
+  readonly feegrant: FeegrantTxExtensionMethods;
+}
 
 export function FeegrantTxExtension<T extends {new (...args: any[]): BaseClient & FeegrantTxExtension}>(constructor: T): T {
   return class extends constructor {

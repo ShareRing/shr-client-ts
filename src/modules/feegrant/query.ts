@@ -16,14 +16,6 @@ export type AllowancesResponse = {
   pagination?: PageResponse;
 };
 
-export type FeegrantQueryExtension = {
-  get feegrant(): {
-    allowance(grantee: string, granter: string, height?: number): Promise<Allowance | undefined>;
-    allowances(grantee: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse>;
-    allowancesByGranter(granter: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse>;
-  };
-};
-
 function decodeAllowance(allowance?: Any): BasicAllowance | PeriodicAllowance | undefined {
   if (!allowance) {
     return undefined;
@@ -36,6 +28,16 @@ function decodeAllowance(allowance?: Any): BasicAllowance | PeriodicAllowance | 
     default:
       throw new Error(`Unsupported type: '${allowance.typeUrl}'`);
   }
+}
+
+export interface FeegrantQueryExtensionMethods {
+  allowance(grantee: string, granter: string, height?: number): Promise<Allowance | undefined>;
+  allowances(grantee: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse>;
+  allowancesByGranter(granter: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse>;
+}
+
+export interface FeegrantQueryExtension {
+  readonly feegrant: FeegrantQueryExtensionMethods;
 }
 
 export function FeegrantQueryExtension<T extends {new (...args: any[]): BaseClient & FeegrantQueryExtension}>(constructor: T): T {

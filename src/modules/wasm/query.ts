@@ -1,8 +1,6 @@
 import {fromUtf8, toUtf8} from "@cosmjs/encoding";
 import Long from "long";
 import {BaseClient} from "../../baseclient";
-import {PageResponse} from "../../codec/cosmos/base/query/v1beta1/pagination";
-import {BasicAllowance, PeriodicAllowance} from "../../codec/cosmos/feegrant/v1beta1/feegrant";
 import {
   QueryAllContractStateResponse,
   QueryClientImpl,
@@ -22,41 +20,44 @@ import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../.
  * This type is returned by `queryContractSmart`.
  */
 export type JsonObject = any;
-export type WasmQueryExtension = {
-  get wasm(): {
-    readonly listCodeInfo: (paginationKey?: Uint8Array) => Promise<QueryCodesResponse>;
-    /**
-     * Downloads the original wasm bytecode by code ID.
-     *
-     * Throws an error if no code with this id
-     */
-    readonly getCode: (id: number) => Promise<QueryCodeResponse>;
-    readonly listContractsByCodeId: (id: number, paginationKey?: Uint8Array) => Promise<QueryContractsByCodeResponse>;
-    /**
-     * Returns null when contract was not found at this address.
-     */
-    readonly getContractInfo: (address: string) => Promise<QueryContractInfoResponse>;
-    /**
-     * Returns null when contract history was not found for this address.
-     */
-    readonly getContractCodeHistory: (address: string, paginationKey?: Uint8Array) => Promise<QueryContractHistoryResponse>;
-    /**
-     * Returns all contract state.
-     * This is an empty array if no such contract, or contract has no data.
-     */
-    readonly getAllContractState: (address: string, paginationKey?: Uint8Array) => Promise<QueryAllContractStateResponse>;
-    /**
-     * Returns the data at the key if present (unknown decoded json),
-     * or null if no data at this (contract address, key) pair
-     */
-    readonly queryContractRaw: (address: string, key: Uint8Array) => Promise<QueryRawContractStateResponse>;
-    /**
-     * Makes a smart query on the contract and parses the response as JSON.
-     * Throws error if no such contract exists, the query format is invalid or the response is invalid.
-     */
-    readonly queryContractSmart: (address: string, query: JsonObject) => Promise<JsonObject>;
-  };
-};
+
+export interface WasmQueryExtensionMethods {
+  codes(paginationKey?: Uint8Array): Promise<QueryCodesResponse>;
+  /**
+   * Downloads the original wasm bytecode by code ID.
+   *
+   * Throws an error if no code with this id
+   */
+  code(id: number): Promise<QueryCodeResponse>;
+  contractsByCode(id: number, paginationKey?: Uint8Array): Promise<QueryContractsByCodeResponse>;
+  /**
+   * Returns null when contract was not found at this address.
+   */
+  contractInfo(address: string): Promise<QueryContractInfoResponse>;
+  /**
+   * Returns null when contract history was not found for this address.
+   */
+  contractHistory(address: string, paginationKey?: Uint8Array): Promise<QueryContractHistoryResponse>;
+  /**
+   * Returns all contract state.
+   * This is an empty array if no such contract, or contract has no data.
+   */
+  allContractState(address: string, paginationKey?: Uint8Array): Promise<QueryAllContractStateResponse>;
+  /**
+   * Returns the data at the key if present (unknown decoded json),
+   * or null if no data at this (contract address, key) pair
+   */
+  rawContractState(address: string, key: Uint8Array): Promise<QueryRawContractStateResponse>;
+  /**
+   * Makes a smart query on the contract and parses the response as JSON.
+   * Throws error if no such contract exists, the query format is invalid or the response is invalid.
+   */
+  smartContractState(address: string, query: JsonObject): Promise<JsonObject>;
+}
+
+export interface WasmQueryExtension {
+  readonly wasm: WasmQueryExtensionMethods;
+}
 
 export function WasmQueryExtension<T extends {new (...args: any[]): BaseClient & WasmQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
@@ -70,46 +71,46 @@ export function WasmQueryExtension<T extends {new (...args: any[]): BaseClient &
     get wasm() {
       return {
         ...super["wasm"],
-        listCodeInfo: async (paginationKey?: Uint8Array) => {
+        codes: async (paginationKey?: Uint8Array) => {
           const request = {
             pagination: createPagination(paginationKey)
           };
           return queryService.Codes(request);
         },
-        getCode: async (id: number) => {
+        code: async (id: number) => {
           const request = {codeId: Long.fromNumber(id)};
           return queryService.Code(request);
         },
-        listContractsByCodeId: async (id: number, paginationKey?: Uint8Array) => {
+        contractsByCode: async (id: number, paginationKey?: Uint8Array) => {
           const request = {
             codeId: Long.fromNumber(id),
             pagination: createPagination(paginationKey)
           };
           return queryService.ContractsByCode(request);
         },
-        getContractInfo: async (address: string) => {
+        contractInfo: async (address: string) => {
           const request = {address: address};
           return queryService.ContractInfo(request);
         },
-        getContractCodeHistory: async (address: string, paginationKey?: Uint8Array) => {
+        contractHistory: async (address: string, paginationKey?: Uint8Array) => {
           const request = {
             address: address,
             pagination: createPagination(paginationKey)
           };
           return queryService.ContractHistory(request);
         },
-        getAllContractState: async (address: string, paginationKey?: Uint8Array) => {
+        allContractState: async (address: string, paginationKey?: Uint8Array) => {
           const request = {
             address: address,
             pagination: createPagination(paginationKey)
           };
           return queryService.AllContractState(request);
         },
-        queryContractRaw: async (address: string, key: Uint8Array) => {
+        rawContractState: async (address: string, key: Uint8Array) => {
           const request = {address: address, queryData: key};
           return queryService.RawContractState(request);
         },
-        queryContractSmart: async (address: string, query: JsonObject) => {
+        smartContractState: async (address: string, query: JsonObject) => {
           const request = {address: address, queryData: toUtf8(JSON.stringify(query))};
           const {data} = await queryService.SmartContractState(request);
           // By convention, smart queries must return a valid JSON document (see https://github.com/CosmWasm/cosmwasm/issues/144)
