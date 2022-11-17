@@ -72,22 +72,20 @@ export function isMsgDepositEncodeObject(encodeObject: EncodeObject): encodeObje
   return (encodeObject as MsgDepositEncodeObject).typeUrl === "/cosmos.gov.v1beta1.MsgDeposit";
 }
 
-export type GovTxExtension = {
-  get gov(): {
-    readonly submitProposal: (
-      proposer: string,
-      initialDeposit: Coin[],
-      content?: {title: string; description: string}
-    ) => MsgSubmitProposalEncodeObject;
-    readonly voteTx: (proposalId: GovProposalId, voter: string, option: VoteOption) => MsgVoteEncodeObject;
-    readonly voteWeightedTx: (
-      proposalId: GovProposalId,
-      voter: string,
-      options: Array<{option: VoteOption; weight: string}>
-    ) => MsgVoteWeightedEncodeObject;
-    readonly depositTx: (proposalId: GovProposalId, depositor: string, amount: Coin[]) => MsgDepositEncodeObject;
-  };
-};
+export interface GovTxExtensionMethods {
+  submitProposal(proposer: string, initialDeposit: Coin[], content?: {title: string; description: string}): MsgSubmitProposalEncodeObject;
+  voteTx(proposalId: GovProposalId, voter: string, option: VoteOption): MsgVoteEncodeObject;
+  voteWeightedTx(
+    proposalId: GovProposalId,
+    voter: string,
+    options: Array<{option: VoteOption; weight: string}>
+  ): MsgVoteWeightedEncodeObject;
+  depositTx(proposalId: GovProposalId, depositor: string, amount: Coin[]): MsgDepositEncodeObject;
+}
+
+export interface GovTxExtension {
+  readonly gov: GovTxExtensionMethods;
+}
 
 export function GovTxExtension<T extends {new (...args: any[]): BaseClient & GovTxExtension}>(constructor: T): T {
   return class extends constructor {

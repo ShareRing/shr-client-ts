@@ -13,7 +13,6 @@ import {createAuthTypes} from "./modules/auth";
 import {createBankTypes, createBankAminoConverters, createBankActions} from "./modules/bank";
 import {createDistributionTypes, createDistributionAminoConverters, createDistributionActions} from "./modules/distribution";
 import {createGovActions, createGovAminoConverters, createGovTypes} from "./modules/gov";
-//import {createActions as DD, createRegistryTypes as D} from "./modules/gov";
 import {createSlashingTypes, createSlashingAminoConverters, createSlashingActions} from "./modules/slashing";
 import {createStakingTypes, createStakingAminoConverters, createStakingActions} from "./modules/staking";
 import {

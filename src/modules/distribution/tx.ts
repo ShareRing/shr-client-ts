@@ -68,14 +68,16 @@ export function isMsgFundCommunityPoolEncodeObject(encodeObject: EncodeObject): 
   return (encodeObject as MsgFundCommunityPoolEncodeObject).typeUrl === "/cosmos.distribution.v1beta1.MsgFundCommunityPool";
 }
 
-export type DistributionTxExtension = {
-  get distribution(): {
-    readonly setWithdrawAddress: (delegatorAddress: string, withdrawAdress: string) => MsgSetWithdrawAddressEncodeObject;
-    readonly withdrawRewards: (delegatorAddress: string, validatorAddress: string) => MsgWithdrawDelegatorRewardEncodeObject;
-    readonly withdrawCommissions: (validatorAddress: string) => MsgWithdrawValidatorCommissionEncodeObject;
-    readonly fundCommunityPool: (depositor: string, amount: Coin[]) => MsgFundCommunityPoolEncodeObject;
-  };
-};
+export interface DistributionTxExtensionMethods {
+  setWithdrawAddress(delegatorAddress: string, withdrawAdress: string): MsgSetWithdrawAddressEncodeObject;
+  withdrawRewards(delegatorAddress: string, validatorAddress: string): MsgWithdrawDelegatorRewardEncodeObject;
+  withdrawCommissions(validatorAddress: string): MsgWithdrawValidatorCommissionEncodeObject;
+  fundCommunityPool(depositor: string, amount: Coin[]): MsgFundCommunityPoolEncodeObject;
+}
+
+export interface DistributionTxExtension {
+  readonly distribution: DistributionTxExtensionMethods;
+}
 
 export function DistributionTxExtension<T extends {new (...args: any[]): BaseClient & DistributionTxExtension}>(constructor: T): T {
   return class extends constructor {

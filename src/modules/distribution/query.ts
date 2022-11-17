@@ -11,24 +11,26 @@ import {
 } from "../../codec/cosmos/distribution/v1beta1/query";
 import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export type DistributionQueryExtension = {
-  get distribution(): {
-    readonly communityPool: (height?: number) => Promise<DecCoin[]>;
-    readonly delegationRewards: (delegatorAddress: string, validatorAddress: string, height?: number) => Promise<DecCoin[]>;
-    readonly delegationTotalRewards: (delegatorAddress: string, height?: number) => Promise<QueryDelegationTotalRewardsResponse>;
-    readonly delegatorValidators: (delegatorAddress: string, height?: number) => Promise<string[]>;
-    readonly delegatorWithdrawAddress: (delegatorAddress: string, height?: number) => Promise<string>;
-    readonly validatorCommission: (validatorAddress: string, height?: number) => Promise<ValidatorAccumulatedCommission | undefined>;
-    readonly validatorOutstandingRewards: (validatorAddress: string, height?: number) => Promise<ValidatorOutstandingRewards | undefined>;
-    readonly validatorSlashes: (
-      validatorAddress: string,
-      startingHeight: number,
-      endingHeight: number,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryValidatorSlashesResponse>;
-  };
-};
+export interface DistributionQueryExtensionMethods {
+  communityPool(height?: number): Promise<DecCoin[]>;
+  delegationRewards(delegatorAddress: string, validatorAddress: string, height?: number): Promise<DecCoin[]>;
+  delegationTotalRewards(delegatorAddress: string, height?: number): Promise<QueryDelegationTotalRewardsResponse>;
+  delegatorValidators(delegatorAddress: string, height?: number): Promise<string[]>;
+  delegatorWithdrawAddress(delegatorAddress: string, height?: number): Promise<string>;
+  validatorCommission(validatorAddress: string, height?: number): Promise<ValidatorAccumulatedCommission | undefined>;
+  validatorOutstandingRewards(validatorAddress: string, height?: number): Promise<ValidatorOutstandingRewards | undefined>;
+  validatorSlashes(
+    validatorAddress: string,
+    startingHeight: number,
+    endingHeight: number,
+    paginationKey?: Uint8Array,
+    height?: number
+  ): Promise<QueryValidatorSlashesResponse>;
+}
+
+export interface DistributionQueryExtension {
+  readonly distribution: DistributionQueryExtensionMethods;
+}
 
 export function DistributionQueryExtension<T extends {new (...args: any[]): BaseClient & DistributionQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;

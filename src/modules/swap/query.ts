@@ -13,27 +13,29 @@ import {
 import {Schema} from "../../codec/shareledger/swap/schema";
 import {createPagination, createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export type SwapQueryExtension = {
-  get swap(): {
-    readonly params: (height?: number) => Promise<Params | undefined>;
-    readonly batches: (ids?: Long[], network?: string, paginationKey?: Uint8Array, height?: number) => Promise<QueryBatchesResponse>;
-    readonly tokensAvailable: (height?: number) => Promise<DecCoin | undefined>;
-    readonly requests: (
-      ids?: Long[],
-      destAddr?: string,
-      destNetwork?: string,
-      srcAddr?: string,
-      srcNetwork?: string,
-      status?: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QuerySwapResponse>;
-    readonly schema: (network: string, height?: number) => Promise<Schema | undefined>;
-    readonly schemas: (paginationKey?: Uint8Array, height?: number) => Promise<QuerySchemasResponse>;
-    readonly pastEvent: (txHash: string, logIndex: number, height?: number) => Promise<PastTxEvent | undefined>;
-    readonly pastEvents: (txHash?: string, paginationKey?: Uint8Array, height?: number) => Promise<QueryPastTxEventsResponse>;
-  };
-};
+export interface SwapQueryExtensionMethods {
+  params(height?: number): Promise<Params | undefined>;
+  batches(ids?: Long[], network?: string, paginationKey?: Uint8Array, height?: number): Promise<QueryBatchesResponse>;
+  tokensAvailable(height?: number): Promise<DecCoin | undefined>;
+  requests(
+    ids?: Long[],
+    destAddr?: string,
+    destNetwork?: string,
+    srcAddr?: string,
+    srcNetwork?: string,
+    status?: string,
+    paginationKey?: Uint8Array,
+    height?: number
+  ): Promise<QuerySwapResponse>;
+  schema(network: string, height?: number): Promise<Schema | undefined>;
+  schemas(paginationKey?: Uint8Array, height?: number): Promise<QuerySchemasResponse>;
+  pastEvent(txHash: string, logIndex: number, height?: number): Promise<PastTxEvent | undefined>;
+  pastEvents(txHash?: string, paginationKey?: Uint8Array, height?: number): Promise<QueryPastTxEventsResponse>;
+}
+
+export interface SwapQueryExtension {
+  readonly swap: SwapQueryExtensionMethods;
+}
 
 export function SwapQueryExtension<T extends {new (...args: any[]): BaseClient & SwapQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;

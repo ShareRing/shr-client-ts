@@ -184,49 +184,45 @@ export function isMsgUpdateSwapFeeEncodeObject(encodeObject: EncodeObject): enco
   return (encodeObject as MsgUpdateSwapFeeEncodeObject).typeUrl === "/shareledger.swap.MsgUpdateSwapFee";
 }
 
-export type SwapTxExtension = {
-  get swap(): {
-    readonly requestSwapIn: (
-      creator: string,
-      srcAddress: string,
-      destAddress: string,
-      network: string,
-      amount: DecCoin,
-      events: TxEvent[]
-    ) => MsgRequestInEncodeObject;
-    readonly requestSwapOut: (
-      creator: string,
-      srcAddress: string,
-      destAddress: string,
-      network: string,
-      amount: DecCoin
-    ) => MsgRequestOutEncodeObject;
-    readonly approveSwapIn: (creator: string, ids: Long[]) => MsgApproveInEncodeObject;
-    readonly approveSwapOut: (creator: string, ids: Long[], signature: string) => MsgApproveOutEncodeObject;
-    readonly deposit: (creator: string, amount: DecCoin) => MsgDepositEncodeObject;
-    readonly withdraw: (creator: string, to: string, amount: DecCoin) => MsgWithdrawEncodeObject;
-    readonly cancelSwap: (creator: string, ids: Long[]) => MsgCancelEncodeObject;
-    readonly rejectSwap: (creator: string, ids: Long[]) => MsgRejectEncodeObject;
-    readonly createSchema: (
-      creator: string,
-      network: string,
-      schema: string,
-      decimals: number,
-      fee?: {in?: DecCoin; out?: DecCoin}
-    ) => MsgCreateSchemaEncodeObject;
-    readonly updateSchema: (
-      creator: string,
-      network: string,
-      schema: string,
-      decimals: number,
-      fee?: {in?: DecCoin; out?: DecCoin}
-    ) => MsgUpdateSchemaEncodeObject;
-    readonly deleteSchema: (creator: string, network: string) => MsgDeleteSchemaEncodeObject;
-    readonly cancelBatches: (creator: string, ids: Long[]) => MsgCancelBatchesEncodeObject;
-    readonly completeBatch: (batchId: Long, creator: string) => MsgCompleteBatchEncodeObject;
-    readonly updateSwapFee: (creator: string, network: string, fee?: {in?: DecCoin; out?: DecCoin}) => MsgUpdateSwapFeeEncodeObject;
-  };
-};
+export interface SwapTxExtensionMethods {
+  requestSwapIn(
+    creator: string,
+    srcAddress: string,
+    destAddress: string,
+    network: string,
+    amount: DecCoin,
+    events: TxEvent[]
+  ): MsgRequestInEncodeObject;
+  requestSwapOut(creator: string, srcAddress: string, destAddress: string, network: string, amount: DecCoin): MsgRequestOutEncodeObject;
+  approveSwapIn(creator: string, ids: Long[]): MsgApproveInEncodeObject;
+  approveSwapOut(creator: string, ids: Long[], signature: string): MsgApproveOutEncodeObject;
+  deposit(creator: string, amount: DecCoin): MsgDepositEncodeObject;
+  withdraw(creator: string, to: string, amount: DecCoin): MsgWithdrawEncodeObject;
+  cancelSwap(creator: string, ids: Long[]): MsgCancelEncodeObject;
+  rejectSwap(creator: string, ids: Long[]): MsgRejectEncodeObject;
+  createSchema(
+    creator: string,
+    network: string,
+    schema: string,
+    decimals: number,
+    fee?: {in?: DecCoin; out?: DecCoin}
+  ): MsgCreateSchemaEncodeObject;
+  updateSchema(
+    creator: string,
+    network: string,
+    schema: string,
+    decimals: number,
+    fee?: {in?: DecCoin; out?: DecCoin}
+  ): MsgUpdateSchemaEncodeObject;
+  deleteSchema(creator: string, network: string): MsgDeleteSchemaEncodeObject;
+  cancelBatches(creator: string, ids: Long[]): MsgCancelBatchesEncodeObject;
+  completeBatch(batchId: Long, creator: string): MsgCompleteBatchEncodeObject;
+  updateSwapFee(creator: string, network: string, fee?: {in?: DecCoin; out?: DecCoin}): MsgUpdateSwapFeeEncodeObject;
+}
+
+export interface SwapTxExtension {
+  readonly swap: SwapTxExtensionMethods;
+}
 
 export function SwapTxExtension<T extends {new (...args: any[]): BaseClient & SwapTxExtension}>(constructor: T): T {
   return class extends constructor {

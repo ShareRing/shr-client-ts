@@ -3,13 +3,15 @@ import {Document} from "../../codec/shareledger/document/document";
 import {QueryClientImpl} from "../../codec/shareledger/document/query";
 import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export type DocumentQueryExtension = {
-  get document(): {
-    readonly documentsByHolder: (holder: string, height?: number) => Promise<Document[]>;
-    readonly documentByProof: (proof: string, height?: number) => Promise<Document | undefined>;
-    readonly documentsByIssuer: (holder: string, issuer: string, height?: number) => Promise<Document[]>;
-  };
-};
+export interface DocumentQueryExtensionMethods {
+  documentsByHolder(holder: string, height?: number): Promise<Document[]>;
+  documentByProof(proof: string, height?: number): Promise<Document | undefined>;
+  documentsByIssuer(holder: string, issuer: string, height?: number): Promise<Document[]>;
+}
+
+export interface DocumentQueryExtension {
+  readonly document: DocumentQueryExtensionMethods;
+}
 
 export function DocumentQueryExtension<T extends {new (...args: any[]): BaseClient & DocumentQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;

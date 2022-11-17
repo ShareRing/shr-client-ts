@@ -29,56 +29,42 @@ import {BaseClient} from "../../baseclient";
 
 export type BondStatusString = keyof Pick<typeof BondStatus, "BOND_STATUS_BONDED" | "BOND_STATUS_UNBONDED" | "BOND_STATUS_UNBONDING"> | "";
 
-export type StakingQueryExtension = {
-  get staking(): {
-    readonly delegation: (delegatorAddress: string, validatorAddress: string, height?: number) => Promise<DelegationResponse | undefined>;
-    readonly delegatorDelegations: (
-      delegatorAddress: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryDelegatorDelegationsResponse>;
-    readonly delegatorUnbondingDelegations: (
-      delegatorAddress: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryDelegatorUnbondingDelegationsResponse>;
-    readonly delegatorValidator: (delegatorAddress: string, validatorAddress: string, height?: number) => Promise<Validator | undefined>;
-    readonly delegatorValidators: (
-      delegatorAddress: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryDelegatorValidatorsResponse>;
-    readonly historicalInfo: (height: number) => Promise<HistoricalInfo | undefined>;
-    readonly pool: (height?: number) => Promise<Pool | undefined>;
-    readonly redelegations: (
-      delegatorAddress: string,
-      sourceValidatorAddress: string,
-      destinationValidatorAddress: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryRedelegationsResponse>;
-    readonly unbondingDelegation: (
-      delegatorAddress: string,
-      validatorAddress: string,
-      height?: number
-    ) => Promise<UnbondingDelegation | undefined>;
-    readonly validator: (validatorAddress: string, height?: number) => Promise<Validator | undefined>;
-    readonly validatorDelegations: (
-      validatorAddress: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryValidatorDelegationsResponse>;
-    readonly validators: (status: BondStatusString, paginationKey?: Uint8Array, height?: number) => Promise<QueryValidatorsResponse>;
-    readonly validatorUnbondingDelegations: (
-      validatorAddress: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryValidatorUnbondingDelegationsResponse>;
-    readonly validatorSetByHeight: (height: Long, paginationKey?: Uint8Array) => Promise<GetValidatorSetByHeightResponse>;
-    readonly latestValidatorSet: (paginationKey?: Uint8Array) => Promise<GetLatestValidatorSetResponse>;
-    readonly params: (height?: number) => Promise<Params | undefined>;
-  };
-};
+export interface StakingQueryExtensionMethods {
+  delegation(delegatorAddress: string, validatorAddress: string, height?: number): Promise<DelegationResponse | undefined>;
+  delegatorDelegations(delegatorAddress: string, paginationKey?: Uint8Array, height?: number): Promise<QueryDelegatorDelegationsResponse>;
+  delegatorUnbondingDelegations(
+    delegatorAddress: string,
+    paginationKey?: Uint8Array,
+    height?: number
+  ): Promise<QueryDelegatorUnbondingDelegationsResponse>;
+  delegatorValidator(delegatorAddress: string, validatorAddress: string, height?: number): Promise<Validator | undefined>;
+  delegatorValidators(delegatorAddress: string, paginationKey?: Uint8Array, height?: number): Promise<QueryDelegatorValidatorsResponse>;
+  historicalInfo(height: number): Promise<HistoricalInfo | undefined>;
+  pool(height?: number): Promise<Pool | undefined>;
+  redelegations(
+    delegatorAddress: string,
+    sourceValidatorAddress: string,
+    destinationValidatorAddress: string,
+    paginationKey?: Uint8Array,
+    height?: number
+  ): Promise<QueryRedelegationsResponse>;
+  unbondingDelegation(delegatorAddress: string, validatorAddress: string, height?: number): Promise<UnbondingDelegation | undefined>;
+  validator(validatorAddress: string, height?: number): Promise<Validator | undefined>;
+  validatorDelegations(validatorAddress: string, paginationKey?: Uint8Array, height?: number): Promise<QueryValidatorDelegationsResponse>;
+  validators(status: BondStatusString, paginationKey?: Uint8Array, height?: number): Promise<QueryValidatorsResponse>;
+  validatorUnbondingDelegations(
+    validatorAddress: string,
+    paginationKey?: Uint8Array,
+    height?: number
+  ): Promise<QueryValidatorUnbondingDelegationsResponse>;
+  validatorSetByHeight(height: Long, paginationKey?: Uint8Array): Promise<GetValidatorSetByHeightResponse>;
+  latestValidatorSet(paginationKey?: Uint8Array): Promise<GetLatestValidatorSetResponse>;
+  params(height?: number): Promise<Params | undefined>;
+}
+
+export interface StakingQueryExtension {
+  readonly staking: StakingQueryExtensionMethods;
+}
 
 export function StakingQueryExtension<T extends {new (...args: any[]): BaseClient & StakingQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;

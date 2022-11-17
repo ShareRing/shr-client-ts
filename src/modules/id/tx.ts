@@ -56,20 +56,22 @@ export function isMsgReplaceIdOwnerEncodeObject(encodeObject: EncodeObject): enc
   return (encodeObject as MsgReplaceIdOwnerEncodeObject).typeUrl === "/shareledger.id.MsgReplaceIdOwner";
 }
 
-export type IdTxExtension = {
-  get id(): {
-    create: (id: string, ownerAddress: string, backupAddress: string, issuerAddress: string, extraData?: string) => MsgCreateIdEncodeObject;
-    createMany: (
-      id: string[],
-      ownerAddress: string[],
-      backupAddress: string[],
-      issuerAddress: string,
-      extraData?: string[]
-    ) => MsgCreateIdsEncodeObject;
-    update: (id: string, issuerAddress: string, extraData?: string) => MsgUpdateIdEncodeObject;
-    replaceOwner: (id: string, ownerAddress: string, backupAddress: string) => MsgReplaceIdOwnerEncodeObject;
-  };
-};
+export interface IdTxExtensionMethods {
+  create(id: string, ownerAddress: string, backupAddress: string, issuerAddress: string, extraData?: string): MsgCreateIdEncodeObject;
+  createMany(
+    id: string[],
+    ownerAddress: string[],
+    backupAddress: string[],
+    issuerAddress: string,
+    extraData?: string[]
+  ): MsgCreateIdsEncodeObject;
+  update(id: string, issuerAddress: string, extraData?: string): MsgUpdateIdEncodeObject;
+  replaceOwner(id: string, ownerAddress: string, backupAddress: string): MsgReplaceIdOwnerEncodeObject;
+}
+
+export interface IdTxExtension {
+  readonly id: IdTxExtensionMethods;
+}
 
 export function IdTxExtension<T extends {new (...args: any[]): BaseClient & IdTxExtension}>(constructor: T): T {
   return class extends constructor {

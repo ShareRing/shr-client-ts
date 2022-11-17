@@ -1,7 +1,14 @@
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Pellentesque nec imperdiet nisi. Pellentesque aliquet turpis vestibulum orci condimentum faucibus
+ *
+ * @group test
+ */
+
 export {fromBech32, toBech32} from "@cosmjs/encoding";
 export {HttpEndpoint} from "@cosmjs/tendermint-rpc";
 export {Account, accountFromAny, AccountParser} from "./account";
-export {StdFee} from "./amino";
+export {StdFee, AminoConverter, AminoConverters, AminoMsg} from "./amino";
 export {
   assertIsDeliverTxFailure,
   assertIsDeliverTxSuccess,
@@ -16,25 +23,13 @@ export {
   SequenceResponse,
   TimeoutError
 } from "./client";
-export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
+export {BaseClient} from "./baseclient";
+export type {Coin, DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
 export {Attribute, Event, fromTendermint34Event} from "./events";
 export {calculateFee, GasPrice} from "./fee";
 export {findAttribute, parseAttribute, parseEvent, parseLog, parseLogs, parseRawLog} from "./logs";
-export {AssetExtension, AssetQueryExtension, AssetTxExtension} from "./modules/asset";
-export {AuthExtension, AuthQueryExtension} from "./modules/auth";
-export {BankExtension, BankQueryExtension, BankTxExtension} from "./modules/bank";
-export {DistributionExtension, DistributionQueryExtension, DistributionTxExtension} from "./modules/distribution";
-export {DocumentExtension, DocumentQueryExtension, DocumentTxExtension} from "./modules/document";
-export {ElectoralExtension, ElectoralQueryExtension, ElectoralTxExtension} from "./modules/electoral";
-export {FeegrantExtension, FeegrantQueryExtension} from "./modules/feegrant";
-export {GentlemintExtension, GentlemintQueryExtension, GentlemintTxExtension} from "./modules/gentlemint";
-export {GovExtension, GovQueryExtension, GovTxExtension} from "./modules/gov";
-export {IdExtension, IdQueryExtension, IdTxExtension} from "./modules/id";
-export {SlashingExtension, SlashingQueryExtension, SlashingTxExtension} from "./modules/slashing";
-export {StakingExtension, StakingQueryExtension, StakingTxExtension} from "./modules/staking";
-export {SwapExtension, SwapQueryExtension, SwapTxExtension} from "./modules/swap";
-export {TxExtension, TxQueryExtension} from "./modules/tx";
+export * from "./modules";
 export {makeMultisignedTx, makeMultisignedTxBytes} from "./multisig";
 export {decodeCosmosSdkDecFromProto, longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
 export {
@@ -50,7 +45,6 @@ export {
 export {ShareledgerClient} from "./shareledgerclient";
 export {ShareledgerSigningClient} from "./shareledgersigningclient";
 export {
-  Coin,
   coin,
   coins,
   decodePubkey,

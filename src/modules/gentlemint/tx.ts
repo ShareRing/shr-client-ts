@@ -79,16 +79,18 @@ export function isMsgLoadFeeEncodeObject(encodeObject: EncodeObject): encodeObje
   return (encodeObject as MsgLoadFeeEncodeObject).typeUrl === "/shareledger.gentlemint.MsgLoadFee";
 }
 
-export type GentlemintTxExtension = {
-  get gentlemint(): {
-    readonly burn: (fromAddress: string, coins: DecCoin[]) => MsgBurnEncodeObject;
-    readonly load: (fromAddress: string, toAddress: string, coins: DecCoin[]) => MsgLoadEncodeObject;
-    readonly send: (fromAddress: string, toAddress: string, coins: DecCoin[]) => MsgSendEncodeObject;
-    readonly buyShr: (toAddress: string, amount: Long) => MsgBuyShrEncodeObject;
-    readonly setExchangeRate: (rate: string, creator: string) => MsgSetExchangeEncodeObject;
-    readonly loadFee: (address: string, fee: DecCoin) => MsgLoadFeeEncodeObject;
-  };
-};
+export interface GentlemintTxExtensionMethods {
+  burn(fromAddress: string, coins: DecCoin[]): MsgBurnEncodeObject;
+  load(fromAddress: string, toAddress: string, coins: DecCoin[]): MsgLoadEncodeObject;
+  send(fromAddress: string, toAddress: string, coins: DecCoin[]): MsgSendEncodeObject;
+  buyShr(toAddress: string, amount: Long): MsgBuyShrEncodeObject;
+  setExchangeRate(rate: string, creator: string): MsgSetExchangeEncodeObject;
+  loadFee(address: string, fee: DecCoin): MsgLoadFeeEncodeObject;
+}
+
+export interface GentlemintTxExtension {
+  readonly gentlemint: GentlemintTxExtensionMethods;
+}
 
 export function GentlemintTxExtension<T extends {new (...args: any[]): BaseClient & GentlemintTxExtension}>(constructor: T): T {
   return class extends constructor {

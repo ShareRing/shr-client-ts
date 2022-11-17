@@ -11,23 +11,25 @@ export type GovParamsType = "deposit" | "tallying" | "voting";
 
 type GovProposalId = string | number | Long | Uint64;
 
-export type GovQueryExtension = {
-  get gov(): {
-    readonly deposit: (proposalId: GovProposalId, depositor: string, height?: number) => Promise<Deposit | undefined>;
-    readonly deposits: (proposalId: GovProposalId, paginationKey?: Uint8Array, height?: number) => Promise<QueryDepositsResponse>;
-    readonly proposal: (proposalId: GovProposalId, height?: number) => Promise<Proposal | undefined>;
-    readonly proposals: (
-      proposalStatus: ProposalStatus,
-      voter: string,
-      depositor: string,
-      paginationKey?: Uint8Array,
-      height?: number
-    ) => Promise<QueryProposalsResponse>;
-    readonly tallyResult: (proposalId: GovProposalId, height?: number) => Promise<TallyResult | undefined>;
-    readonly vote: (proposalId: GovProposalId, voter: string, height?: number) => Promise<Vote | undefined>;
-    readonly votes: (proposalId: GovProposalId, paginationKey?: Uint8Array, height?: number) => Promise<QueryVotesResponse>;
-  };
-};
+export interface GovQueryExtensionMethods {
+  deposit(proposalId: GovProposalId, depositor: string, height?: number): Promise<Deposit | undefined>;
+  deposits(proposalId: GovProposalId, paginationKey?: Uint8Array, height?: number): Promise<QueryDepositsResponse>;
+  proposal(proposalId: GovProposalId, height?: number): Promise<Proposal | undefined>;
+  proposals(
+    proposalStatus: ProposalStatus,
+    voter: string,
+    depositor: string,
+    paginationKey?: Uint8Array,
+    height?: number
+  ): Promise<QueryProposalsResponse>;
+  tallyResult(proposalId: GovProposalId, height?: number): Promise<TallyResult | undefined>;
+  vote(proposalId: GovProposalId, voter: string, height?: number): Promise<Vote | undefined>;
+  votes(proposalId: GovProposalId, paginationKey?: Uint8Array, height?: number): Promise<QueryVotesResponse>;
+}
+
+export interface GovQueryExtension {
+  readonly gov: GovQueryExtensionMethods;
+}
 
 export function GovQueryExtension<T extends {new (...args: any[]): BaseClient & GovQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;

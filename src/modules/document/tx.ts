@@ -56,14 +56,16 @@ export function isMsgRevokeDocumentEncodeObject(encodeObject: EncodeObject): enc
   return (encodeObject as MsgRevokeDocumentEncodeObject).typeUrl === "/shareledger.document.MsgRevokeDocument";
 }
 
-export type DocumentTxExtension = {
-  get document(): {
-    readonly create: (issuer: string, holder: string, proof: string, data?: string) => MsgCreateDocumentEncodeObject;
-    readonly createMany: (issuer: string, holder: string[], proof: string[], data?: string[]) => MsgCreateDocumentsEncodeObject;
-    readonly update: (issuer: string, holder: string, proof: string, data?: string) => MsgUpdateDocumentEncodeObject;
-    readonly revoke: (issuer: string, holder: string, proof: string) => MsgRevokeDocumentEncodeObject;
-  };
-};
+export interface DocumentTxExtensionMethods {
+  create(issuer: string, holder: string, proof: string, data?: string): MsgCreateDocumentEncodeObject;
+  createMany(issuer: string, holder: string[], proof: string[], data?: string[]): MsgCreateDocumentsEncodeObject;
+  update(issuer: string, holder: string, proof: string, data?: string): MsgUpdateDocumentEncodeObject;
+  revoke(issuer: string, holder: string, proof: string): MsgRevokeDocumentEncodeObject;
+}
+
+export interface DocumentTxExtension {
+  readonly document: DocumentTxExtensionMethods;
+}
 
 export function DocumentTxExtension<T extends {new (...args: any[]): BaseClient & DocumentTxExtension}>(constructor: T): T {
   return class extends constructor {

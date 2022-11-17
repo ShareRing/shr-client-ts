@@ -1,8 +1,8 @@
-import {Coin, coin} from "@cosmjs/amino";
+import {coin} from "@cosmjs/amino";
 import {Decimal} from "@cosmjs/math";
 import {BigNumber} from "bignumber.js";
 import {BaseClient} from "../../baseclient";
-import {DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
+import {Coin, DecCoin} from "../../codec/cosmos/base/v1beta1/coin";
 import {QueryClientImpl} from "../../codec/shareledger/gentlemint/query";
 import {fromCent, fromNshr, toCent, toNshr} from "../../denoms";
 import {GasPrice} from "../../fee";
@@ -15,16 +15,18 @@ export type FeeEstimation = {
   hasEnoughCentForFeeExchange: boolean;
 };
 
-export type GentlemintQueryExtension = {
-  get gentlemint(): {
-    readonly exchangeRate: (height?: number) => Promise<Decimal>;
-    readonly estimateFee: (address: string, actions: string | string[], height?: number) => Promise<FeeEstimation>;
-    readonly feeByLevel: (level: string, height?: number) => Promise<Coin>;
-    readonly feeByAction: (action: string, height?: number) => Promise<Coin>;
-    readonly feeLevels: (height?: number) => Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
-    readonly balances: (address: string, height?: number) => Promise<DecCoin[]>;
-  };
-};
+export interface GentlemintQueryExtensionMethods {
+  exchangeRate(height?: number): Promise<Decimal>;
+  estimateFee(address: string, actions: string | string[], height?: number): Promise<FeeEstimation>;
+  feeByLevel(level: string, height?: number): Promise<Coin>;
+  feeByAction(action: string, height?: number): Promise<Coin>;
+  feeLevels(height?: number): Promise<Record<"zero" | "low" | "medium" | "high" | string, Coin>>;
+  balances(address: string, height?: number): Promise<DecCoin[]>;
+}
+
+export interface GentlemintQueryExtension {
+  readonly gentlemint: GentlemintQueryExtensionMethods;
+}
 
 function normalizeToNshr(amount: string | number, denom = "nshr", exchangeRate: Decimal = Decimal.fromUserInput("1", 18)): Coin {
   switch (denom) {

@@ -32,6 +32,7 @@ export interface ShareledgerClient
     GentlemintQueryExtension,
     IdQueryExtension,
     SwapQueryExtension,
+    FeegrantQueryExtension,
     WasmQueryExtension {}
 
 @AuthQueryExtension
@@ -48,6 +49,7 @@ export interface ShareledgerClient
 @GentlemintQueryExtension
 @IdQueryExtension
 @SwapQueryExtension
+@FeegrantQueryExtension
 @WasmQueryExtension
 export class ShareledgerClient extends Client {
   public static async connect(endpoint: string | HttpEndpoint, options: ClientOptions = {}): Promise<ShareledgerClient> {
