@@ -9,7 +9,7 @@ import {BankExtension} from "./modules/bank";
 import {DistributionExtension} from "./modules/distribution";
 import {createDocumentActions, createDocumentTypes, DocumentExtension} from "./modules/document";
 import {createElectoralActions, createElectoralTypes, ElectoralExtension} from "./modules/electoral";
-import {FeegrantExtension} from "./modules/feegrant";
+import {createFeegrantActions, createFeegrantTypes, FeegrantExtension} from "./modules/feegrant";
 import {createGentlemintActions, createGentlemintTypes, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
 import {createIdActions, createIdTypes, IdExtension} from "./modules/id";
@@ -22,7 +22,7 @@ import {defaultRegistryTypes, createDefaultAminoTypes, SignerData, SigningClient
 
 const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[createAssetTypes, createDocumentTypes, createElectoralTypes, createGentlemintTypes, createIdTypes, createSwapTypes].reduce(
+  ...[createAssetTypes, createDocumentTypes, createElectoralTypes, createGentlemintTypes, createIdTypes, createSwapTypes, createFeegrantTypes].reduce(
     (prev, curr) => [...prev, ...curr()],
     []
   )
@@ -47,7 +47,8 @@ const actions: Record<string, string> = {
     createElectoralActions,
     createGentlemintActions,
     createIdActions,
-    createSwapActions
+    createSwapActions,
+    createFeegrantActions
   ].reduce((prev, curr) => ({...prev, ...curr()}), {})
 };
 

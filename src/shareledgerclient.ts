@@ -30,7 +30,8 @@ export interface ShareledgerClient
     ElectoralQueryExtension,
     GentlemintQueryExtension,
     IdQueryExtension,
-    SwapQueryExtension {}
+    SwapQueryExtension,
+    FeegrantQueryExtension {}
 
 @AuthQueryExtension
 @BankQueryExtension
@@ -46,6 +47,7 @@ export interface ShareledgerClient
 @GentlemintQueryExtension
 @IdQueryExtension
 @SwapQueryExtension
+@FeegrantQueryExtension
 export class ShareledgerClient extends Client {
   public static async connect(endpoint: string | HttpEndpoint, options: ClientOptions = {}): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
