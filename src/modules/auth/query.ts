@@ -3,7 +3,7 @@ import {QueryClientImpl} from "../../codec/cosmos/auth/v1beta1/query";
 import {Any} from "../../codec/google/protobuf/any";
 import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export interface AuthQueryMethods {
+export interface AuthQueryExtensionMethods {
   /**
    * Returns an account if it exists and `null` otherwise.
    *
@@ -13,8 +13,9 @@ export interface AuthQueryMethods {
    */
   account(address: string): Promise<Any | null>;
 }
+
 export interface AuthQueryExtension {
-  get auth(): AuthQueryMethods;
+  readonly auth: AuthQueryExtensionMethods;
 }
 
 export function AuthQueryExtension<T extends {new (...args: any[]): BaseClient & AuthQueryExtension}>(constructor: T): T {

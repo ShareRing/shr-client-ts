@@ -21,11 +21,13 @@ export function isMsgUnjailEncodeObject(encodeObject: EncodeObject): encodeObjec
   return (encodeObject as MsgUnjailEncodeObject).typeUrl === "/cosmos.slashing.v1beta1.MsgUnjail";
 }
 
-export type SlashingTxExtension = {
-  get slashing(): {
-    readonly unjail: (validatorAddress: string) => MsgUnjailEncodeObject;
-  };
-};
+export interface SlashingTxExtensionMethods {
+  unjail(validatorAddress: string): MsgUnjailEncodeObject;
+}
+
+export interface SlashingTxExtension {
+  readonly slashing: SlashingTxExtensionMethods;
+}
 
 export function SlashingTxExtension<T extends {new (...args: any[]): BaseClient & SlashingTxExtension}>(constructor: T): T {
   return class extends constructor {

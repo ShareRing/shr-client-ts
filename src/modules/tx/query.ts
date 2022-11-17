@@ -17,18 +17,14 @@ import {Any} from "../../codec/google/protobuf/any";
 import {createPagination, createProtobufRpcClient} from "../../query";
 import {encodePubkey} from "../../signing";
 
+export interface TxQueryExtensionMethods {
+  getTx(hash: string): Promise<GetTxResponse>;
+  getTxs(events: string[], orderBy?: OrderBy, paginationKey?: Uint8Array): Promise<GetTxsEventResponse>;
+  simulate(signer: Pubkey, sequence: number, messages: readonly Any[], memo?: string, fee?: StdFee): Promise<SimulateResponse>;
+}
+
 export interface TxQueryExtension {
-  readonly tx: {
-    readonly getTx: (hash: string) => Promise<GetTxResponse>;
-    readonly getTxs: (events: string[], orderBy?: OrderBy, paginationKey?: Uint8Array) => Promise<GetTxsEventResponse>;
-    readonly simulate: (
-      signer: Pubkey,
-      sequence: number,
-      messages: readonly Any[],
-      memo?: string,
-      fee?: StdFee
-    ) => Promise<SimulateResponse>;
-  };
+  readonly tx: TxQueryExtensionMethods;
 }
 
 export function TxQueryExtension<T extends {new (...args: any[]): BaseClient & TxQueryExtension}>(constructor: T): T {

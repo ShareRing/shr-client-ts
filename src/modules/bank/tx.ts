@@ -37,12 +37,14 @@ export function isMsgMultiSendEncodeObject(encodeObject: EncodeObject): encodeOb
   return (encodeObject as MsgMultiSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgMuliSend";
 }
 
-export type BankTxExtension = {
-  get bank(): {
-    readonly send: (senderAddress: string, recipientAddress: string, amount: readonly Coin[]) => MsgSendEncodeObject;
-    readonly multiSend: (inputs: Input[], outputs: Output[]) => MsgMultiSendEncodeObject;
-  };
-};
+export interface BankTxExtensionMethods {
+  send(senderAddress: string, recipientAddress: string, amount: readonly Coin[]): MsgSendEncodeObject;
+  multiSend(inputs: Input[], outputs: Output[]): MsgMultiSendEncodeObject;
+}
+
+export interface BankTxExtension {
+  readonly bank: BankTxExtensionMethods;
+}
 
 export function BankTxExtension<T extends {new (...args: any[]): BaseClient & BankTxExtension}>(constructor: T): T {
   return class extends constructor {

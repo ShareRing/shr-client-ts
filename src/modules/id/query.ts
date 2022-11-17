@@ -3,12 +3,16 @@ import {Id} from "../../codec/shareledger/id/id";
 import {QueryClientImpl} from "../../codec/shareledger/id/query";
 import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 
-export type IdQueryExtension = {
-  get id(): {
-    readonly id: (id: string, height?: number) => Promise<Id | undefined>;
-    readonly idByAddress: (address: string, height?: number) => Promise<Id | undefined>;
-  };
-};
+export {Id};
+
+export interface IdQueryExtensionMethods {
+  id(id: string, height?: number): Promise<Id | undefined>;
+  idByAddress(address: string, height?: number): Promise<Id | undefined>;
+}
+
+export interface IdQueryExtension {
+  readonly id: IdQueryExtensionMethods;
+}
 
 export function IdQueryExtension<T extends {new (...args: any[]): BaseClient & IdQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
