@@ -20,6 +20,7 @@ export type FeegrantQueryExtension = {
   get feegrant(): {
     allowance(grantee: string, granter: string, height?: number): Promise<Allowance | undefined>;
     allowances(grantee: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse>;
+    allowancesByGranter(granter: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse>;
   };
 };
 
@@ -49,7 +50,7 @@ export function FeegrantQueryExtension<T extends {new (...args: any[]): BaseClie
     get feegrant() {
       return {
         ...super["feegrant"],
-        async allowance(grantee: string, granter: string, height?: number): Promise<Allowance | undefined> {
+        allowance: async (grantee: string, granter: string, height?: number): Promise<Allowance | undefined> => {
           rpcClient.withHeight(height);
           const {allowance} = await queryService.Allowance({granter, grantee});
           if (!allowance) {
@@ -61,10 +62,25 @@ export function FeegrantQueryExtension<T extends {new (...args: any[]): BaseClie
             allowance: decodeAllowance(allowance.allowance)
           };
         },
-        async allowances(grantee: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse> {
+        allowances: async (grantee: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse> => {
           rpcClient.withHeight(height);
           const response = await queryService.Allowances({
             grantee,
+            pagination: createPagination(paginationKey)
+          });
+          return {
+            allowances: response.allowances.map((a) => ({
+              granter: a.granter,
+              grantee: a.grantee,
+              allowance: decodeAllowance(a.allowance)
+            })),
+            pagination: response.pagination
+          };
+        },
+        allowancesByGranter: async (granter: string, paginationKey?: Uint8Array, height?: number): Promise<AllowancesResponse> => {
+          rpcClient.withHeight(height);
+          const response = await queryService.AllowancesByGranter({
+            granter,
             pagination: createPagination(paginationKey)
           });
           return {
