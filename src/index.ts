@@ -31,7 +31,16 @@ export {calculateFee, GasPrice} from "./fee";
 export {findAttribute, parseAttribute, parseEvent, parseLog, parseLogs, parseRawLog} from "./logs";
 export * from "./modules";
 export {makeMultisignedTx, makeMultisignedTxBytes} from "./multisig";
-export {decodeCosmosSdkDecFromProto, longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
+export {
+  decodeCosmosSdkDecFromProto,
+  longify,
+  QueryAbciResponse,
+  QueryClient,
+  toAccAddress,
+  toBech32Address,
+  toBech32ConsAddress,
+  toBech32ValAddress
+} from "./query";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
