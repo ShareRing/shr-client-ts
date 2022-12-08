@@ -39,9 +39,11 @@ export class ProtobufRpcClientImpl implements ProtobufRpcClient {
 
   constructor(private readonly base: QueryClient) {}
 
-  request(service: string, method: string, data: Uint8Array, height?: number): Promise<Uint8Array> {
+  async request(service: string, method: string, data: Uint8Array, height?: number): Promise<Uint8Array> {
     const path = `/${service}/${method}`;
-    return this.base.queryUnverified(path, data, height || this._height).finally(() => this.withHeight(undefined));
+    const response = await this.base.queryAbci(path, data, height || this._height);
+    this.withHeight(undefined);
+    return response.value;
   }
 
   withHeight(height?: number): ProtobufRpcClient {
