@@ -1,3 +1,4 @@
+import {toUtf8} from "@cosmjs/encoding";
 import Long from "long";
 import {BaseClient} from "../../baseclient";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
@@ -11,6 +12,7 @@ import {
 } from "../../codec/cosmos/wasm/v1beta1/tx";
 import {AccessConfig} from "../../codec/cosmos/wasm/v1beta1/types";
 import {EncodeObject, GeneratedType} from "../../signing";
+import {JsonObject} from "./query";
 
 export function createWasmTypes(): ReadonlyArray<[string, GeneratedType]> {
   return [
@@ -94,11 +96,11 @@ export interface WasmTxExtensionMethods {
     admin: string,
     codeId: Long,
     label: string,
-    msg: Uint8Array,
+    msg: JsonObject,
     funds: Coin[]
   ): MsgInstantiateContractEncodeObject;
-  executeContract(sender: string, contract: string, msg: Uint8Array, funds: Coin[]): MsgExecuteContractEncodeObject;
-  migrateContract(sender: string, contract: string, codeId: Long, msg: Uint8Array): MsgMigrateContractEncodeObject;
+  executeContract(sender: string, contract: string, msg: JsonObject, funds: Coin[]): MsgExecuteContractEncodeObject;
+  migrateContract(sender: string, contract: string, codeId: Long, msg: JsonObject): MsgMigrateContractEncodeObject;
   updateAdmin(sender: string, newAdmin: string, contract: string): MsgUpdateAdminEncodeObject;
   clearAdmin(sender: string, contract: string): MsgClearAdminEncodeObject;
 }
@@ -123,24 +125,24 @@ export function WasmTxExtension<T extends {new (...args: any[]): BaseClient & Wa
           admin: string,
           codeId: Long,
           label: string,
-          msg: Uint8Array,
+          msg: JsonObject,
           funds: Coin[]
         ): MsgInstantiateContractEncodeObject => {
           return {
             typeUrl: "/cosmwasm.wasm.v1.MsgInstantiateContract",
-            value: MsgInstantiateContract.fromPartial({sender, admin, codeId, label, msg, funds})
+            value: MsgInstantiateContract.fromPartial({sender, admin, codeId, label, msg: toUtf8(JSON.stringify(msg)), funds})
           };
         },
-        executeContract: (sender: string, contract: string, msg: Uint8Array, funds: Coin[]): MsgExecuteContractEncodeObject => {
+        executeContract: (sender: string, contract: string, msg: JsonObject, funds: Coin[]): MsgExecuteContractEncodeObject => {
           return {
             typeUrl: "/cosmwasm.wasm.v1.MsgExecuteContract",
-            value: MsgExecuteContract.fromPartial({sender, contract, msg, funds})
+            value: MsgExecuteContract.fromPartial({sender, contract, msg: toUtf8(JSON.stringify(msg)), funds})
           };
         },
-        migrateContract: (sender: string, contract: string, codeId: Long, msg: Uint8Array): MsgMigrateContractEncodeObject => {
+        migrateContract: (sender: string, contract: string, codeId: Long, msg: JsonObject): MsgMigrateContractEncodeObject => {
           return {
             typeUrl: "/cosmwasm.wasm.v1.MsgMigrateContract",
-            value: MsgMigrateContract.fromPartial({sender, contract, codeId, msg})
+            value: MsgMigrateContract.fromPartial({sender, contract, codeId, msg: toUtf8(JSON.stringify(msg))})
           };
         },
         updateAdmin: (sender: string, newAdmin: string, contract: string): MsgUpdateAdminEncodeObject => {
