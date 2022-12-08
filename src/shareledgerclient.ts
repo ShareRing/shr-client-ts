@@ -6,7 +6,6 @@ import {BankQueryExtension} from "./modules/bank";
 import {DistributionQueryExtension} from "./modules/distribution";
 import {DocumentQueryExtension} from "./modules/document";
 import {ElectoralQueryExtension} from "./modules/electoral";
-import {FeegrantQueryExtension} from "./modules/feegrant";
 import {GentlemintQueryExtension} from "./modules/gentlemint";
 import {GovQueryExtension} from "./modules/gov";
 import {IdQueryExtension} from "./modules/id";
@@ -20,7 +19,6 @@ export interface ShareledgerClient
     BankQueryExtension,
     DistributionQueryExtension,
     GovQueryExtension,
-    FeegrantQueryExtension,
     SlashingQueryExtension,
     StakingQueryExtension,
     TxQueryExtension,
@@ -35,7 +33,6 @@ export interface ShareledgerClient
 @BankQueryExtension
 @DistributionQueryExtension
 @GovQueryExtension
-@FeegrantQueryExtension
 @SlashingQueryExtension
 @StakingQueryExtension
 @TxQueryExtension

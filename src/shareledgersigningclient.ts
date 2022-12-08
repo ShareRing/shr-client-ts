@@ -1,15 +1,14 @@
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
-import {StdFee} from "./amino";
 import {BroadcastTxResponse} from "./client";
 import {toNshr} from "./denoms";
+import {StdFee} from "./amino";
 import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
 import {DistributionExtension} from "./modules/distribution";
 import {createActions as BB, createRegistryTypes as B, DocumentExtension} from "./modules/document";
 import {createActions as CC, createRegistryTypes as C, ElectoralExtension} from "./modules/electoral";
-import {createActions as GG, createRegistryTypes as G, FeegrantExtension} from "./modules/feegrant";
 import {createActions as DD, createRegistryTypes as D, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
 import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modules/id";
@@ -22,12 +21,12 @@ import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, Signing
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E, F, G].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[A, B, C, D, E, F].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
 export const actions: Record<string, string> = {
   ...defaultActions,
-  ...[AA, BB, CC, DD, EE, FF, GG].reduce((prev, curr) => ({...prev, ...curr()}), {})
+  ...[AA, BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {})
 };
 
 function createRegistry(): Registry {
@@ -43,7 +42,6 @@ export interface ShareledgerSigningClient
     BankExtension,
     DistributionExtension,
     GovExtension,
-    FeegrantExtension,
     SlashingExtension,
     StakingExtension,
     TxExtension,
@@ -58,16 +56,15 @@ export interface ShareledgerSigningClient
 @BankExtension
 @DistributionExtension
 @GovExtension
-@SwapExtension
 @SlashingExtension
 @StakingExtension
 @TxExtension
-@FeegrantExtension
 @AssetExtension
 @DocumentExtension
 @ElectoralExtension
 @GentlemintExtension
 @IdExtension
+@SwapExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
