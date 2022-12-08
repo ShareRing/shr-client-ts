@@ -36,6 +36,7 @@ export {
   longify,
   QueryAbciResponse,
   QueryClient,
+  QueryStoreResponse,
   toAccAddress,
   toBech32Address,
   toBech32ConsAddress,
