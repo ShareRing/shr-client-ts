@@ -33,7 +33,9 @@ export interface Params {
   sigVerifyCostSecp256k1: Long;
 }
 
-const baseBaseAccount: object = {address: "", accountNumber: Long.UZERO, sequence: Long.UZERO};
+function createBaseBaseAccount(): BaseAccount {
+  return {address: "", pubKey: undefined, accountNumber: Long.UZERO, sequence: Long.UZERO};
+}
 
 export const BaseAccount = {
   encode(message: BaseAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -55,7 +57,7 @@ export const BaseAccount = {
   decode(input: _m0.Reader | Uint8Array, length?: number): BaseAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseBaseAccount} as BaseAccount;
+    const message = createBaseBaseAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -80,13 +82,12 @@ export const BaseAccount = {
   },
 
   fromJSON(object: any): BaseAccount {
-    const message = {...baseBaseAccount} as BaseAccount;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.pubKey = object.pubKey !== undefined && object.pubKey !== null ? Any.fromJSON(object.pubKey) : undefined;
-    message.accountNumber =
-      object.accountNumber !== undefined && object.accountNumber !== null ? Long.fromString(object.accountNumber) : Long.UZERO;
-    message.sequence = object.sequence !== undefined && object.sequence !== null ? Long.fromString(object.sequence) : Long.UZERO;
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      pubKey: isSet(object.pubKey) ? Any.fromJSON(object.pubKey) : undefined,
+      accountNumber: isSet(object.accountNumber) ? Long.fromValue(object.accountNumber) : Long.UZERO,
+      sequence: isSet(object.sequence) ? Long.fromValue(object.sequence) : Long.UZERO
+    };
   },
 
   toJSON(message: BaseAccount): unknown {
@@ -99,7 +100,7 @@ export const BaseAccount = {
   },
 
   fromPartial<I extends Exact<DeepPartial<BaseAccount>, I>>(object: I): BaseAccount {
-    const message = {...baseBaseAccount} as BaseAccount;
+    const message = createBaseBaseAccount();
     message.address = object.address ?? "";
     message.pubKey = object.pubKey !== undefined && object.pubKey !== null ? Any.fromPartial(object.pubKey) : undefined;
     message.accountNumber =
@@ -109,7 +110,9 @@ export const BaseAccount = {
   }
 };
 
-const baseModuleAccount: object = {name: "", permissions: ""};
+function createBaseModuleAccount(): ModuleAccount {
+  return {baseAccount: undefined, name: "", permissions: []};
+}
 
 export const ModuleAccount = {
   encode(message: ModuleAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -128,8 +131,7 @@ export const ModuleAccount = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ModuleAccount {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseModuleAccount} as ModuleAccount;
-    message.permissions = [];
+    const message = createBaseModuleAccount();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -151,12 +153,11 @@ export const ModuleAccount = {
   },
 
   fromJSON(object: any): ModuleAccount {
-    const message = {...baseModuleAccount} as ModuleAccount;
-    message.baseAccount =
-      object.baseAccount !== undefined && object.baseAccount !== null ? BaseAccount.fromJSON(object.baseAccount) : undefined;
-    message.name = object.name !== undefined && object.name !== null ? String(object.name) : "";
-    message.permissions = (object.permissions ?? []).map((e: any) => String(e));
-    return message;
+    return {
+      baseAccount: isSet(object.baseAccount) ? BaseAccount.fromJSON(object.baseAccount) : undefined,
+      name: isSet(object.name) ? String(object.name) : "",
+      permissions: Array.isArray(object?.permissions) ? object.permissions.map((e: any) => String(e)) : []
+    };
   },
 
   toJSON(message: ModuleAccount): unknown {
@@ -172,7 +173,7 @@ export const ModuleAccount = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ModuleAccount>, I>>(object: I): ModuleAccount {
-    const message = {...baseModuleAccount} as ModuleAccount;
+    const message = createBaseModuleAccount();
     message.baseAccount =
       object.baseAccount !== undefined && object.baseAccount !== null ? BaseAccount.fromPartial(object.baseAccount) : undefined;
     message.name = object.name ?? "";
@@ -181,13 +182,15 @@ export const ModuleAccount = {
   }
 };
 
-const baseParams: object = {
-  maxMemoCharacters: Long.UZERO,
-  txSigLimit: Long.UZERO,
-  txSizeCostPerByte: Long.UZERO,
-  sigVerifyCostEd25519: Long.UZERO,
-  sigVerifyCostSecp256k1: Long.UZERO
-};
+function createBaseParams(): Params {
+  return {
+    maxMemoCharacters: Long.UZERO,
+    txSigLimit: Long.UZERO,
+    txSizeCostPerByte: Long.UZERO,
+    sigVerifyCostEd25519: Long.UZERO,
+    sigVerifyCostSecp256k1: Long.UZERO
+  };
+}
 
 export const Params = {
   encode(message: Params, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -212,7 +215,7 @@ export const Params = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Params {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -240,21 +243,13 @@ export const Params = {
   },
 
   fromJSON(object: any): Params {
-    const message = {...baseParams} as Params;
-    message.maxMemoCharacters =
-      object.maxMemoCharacters !== undefined && object.maxMemoCharacters !== null ? Long.fromString(object.maxMemoCharacters) : Long.UZERO;
-    message.txSigLimit = object.txSigLimit !== undefined && object.txSigLimit !== null ? Long.fromString(object.txSigLimit) : Long.UZERO;
-    message.txSizeCostPerByte =
-      object.txSizeCostPerByte !== undefined && object.txSizeCostPerByte !== null ? Long.fromString(object.txSizeCostPerByte) : Long.UZERO;
-    message.sigVerifyCostEd25519 =
-      object.sigVerifyCostEd25519 !== undefined && object.sigVerifyCostEd25519 !== null
-        ? Long.fromString(object.sigVerifyCostEd25519)
-        : Long.UZERO;
-    message.sigVerifyCostSecp256k1 =
-      object.sigVerifyCostSecp256k1 !== undefined && object.sigVerifyCostSecp256k1 !== null
-        ? Long.fromString(object.sigVerifyCostSecp256k1)
-        : Long.UZERO;
-    return message;
+    return {
+      maxMemoCharacters: isSet(object.maxMemoCharacters) ? Long.fromValue(object.maxMemoCharacters) : Long.UZERO,
+      txSigLimit: isSet(object.txSigLimit) ? Long.fromValue(object.txSigLimit) : Long.UZERO,
+      txSizeCostPerByte: isSet(object.txSizeCostPerByte) ? Long.fromValue(object.txSizeCostPerByte) : Long.UZERO,
+      sigVerifyCostEd25519: isSet(object.sigVerifyCostEd25519) ? Long.fromValue(object.sigVerifyCostEd25519) : Long.UZERO,
+      sigVerifyCostSecp256k1: isSet(object.sigVerifyCostSecp256k1) ? Long.fromValue(object.sigVerifyCostSecp256k1) : Long.UZERO
+    };
   },
 
   toJSON(message: Params): unknown {
@@ -269,7 +264,7 @@ export const Params = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Params>, I>>(object: I): Params {
-    const message = {...baseParams} as Params;
+    const message = createBaseParams();
     message.maxMemoCharacters =
       object.maxMemoCharacters !== undefined && object.maxMemoCharacters !== null ? Long.fromValue(object.maxMemoCharacters) : Long.UZERO;
     message.txSigLimit = object.txSigLimit !== undefined && object.txSigLimit !== null ? Long.fromValue(object.txSigLimit) : Long.UZERO;
@@ -304,9 +299,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

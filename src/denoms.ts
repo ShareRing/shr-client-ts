@@ -1,6 +1,6 @@
-import {Coin, coin} from "@cosmjs/amino";
+import {coin} from "@cosmjs/amino";
 import BigNumber from "bignumber.js";
-import {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
+import {Coin, DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 
 export function fromNshr(number: string | number | BigNumber): DecCoin {
   const amount = new BigNumber(number).div(10 ** 9).toFixed();

@@ -9,7 +9,9 @@ export interface DocDetailState {
   version: number;
 }
 
-const baseDocDetailState: object = {data: "", version: 0};
+function createBaseDocDetailState(): DocDetailState {
+  return {data: "", version: 0};
+}
 
 export const DocDetailState = {
   encode(message: DocDetailState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -25,7 +27,7 @@ export const DocDetailState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DocDetailState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDocDetailState} as DocDetailState;
+    const message = createBaseDocDetailState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -44,21 +46,21 @@ export const DocDetailState = {
   },
 
   fromJSON(object: any): DocDetailState {
-    const message = {...baseDocDetailState} as DocDetailState;
-    message.data = object.data !== undefined && object.data !== null ? String(object.data) : "";
-    message.version = object.version !== undefined && object.version !== null ? Number(object.version) : 0;
-    return message;
+    return {
+      data: isSet(object.data) ? String(object.data) : "",
+      version: isSet(object.version) ? Number(object.version) : 0
+    };
   },
 
   toJSON(message: DocDetailState): unknown {
     const obj: any = {};
     message.data !== undefined && (obj.data = message.data);
-    message.version !== undefined && (obj.version = message.version);
+    message.version !== undefined && (obj.version = Math.round(message.version));
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<DocDetailState>, I>>(object: I): DocDetailState {
-    const message = {...baseDocDetailState} as DocDetailState;
+    const message = createBaseDocDetailState();
     message.data = object.data ?? "";
     message.version = object.version ?? 0;
     return message;
@@ -82,9 +84,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

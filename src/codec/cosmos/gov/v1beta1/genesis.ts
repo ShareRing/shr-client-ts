@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {DepositParams, VotingParams, TallyParams, Deposit, Vote, Proposal} from "../../../cosmos/gov/v1beta1/gov";
+import {Deposit, DepositParams, Proposal, TallyParams, Vote, VotingParams} from "./gov";
 
 export const protobufPackage = "cosmos.gov.v1beta1";
 
@@ -23,7 +23,17 @@ export interface GenesisState {
   tallyParams?: TallyParams;
 }
 
-const baseGenesisState: object = {startingProposalId: Long.UZERO};
+function createBaseGenesisState(): GenesisState {
+  return {
+    startingProposalId: Long.UZERO,
+    deposits: [],
+    votes: [],
+    proposals: [],
+    depositParams: undefined,
+    votingParams: undefined,
+    tallyParams: undefined
+  };
+}
 
 export const GenesisState = {
   encode(message: GenesisState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -54,10 +64,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseGenesisState} as GenesisState;
-    message.deposits = [];
-    message.votes = [];
-    message.proposals = [];
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -91,21 +98,15 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = {...baseGenesisState} as GenesisState;
-    message.startingProposalId =
-      object.startingProposalId !== undefined && object.startingProposalId !== null
-        ? Long.fromString(object.startingProposalId)
-        : Long.UZERO;
-    message.deposits = (object.deposits ?? []).map((e: any) => Deposit.fromJSON(e));
-    message.votes = (object.votes ?? []).map((e: any) => Vote.fromJSON(e));
-    message.proposals = (object.proposals ?? []).map((e: any) => Proposal.fromJSON(e));
-    message.depositParams =
-      object.depositParams !== undefined && object.depositParams !== null ? DepositParams.fromJSON(object.depositParams) : undefined;
-    message.votingParams =
-      object.votingParams !== undefined && object.votingParams !== null ? VotingParams.fromJSON(object.votingParams) : undefined;
-    message.tallyParams =
-      object.tallyParams !== undefined && object.tallyParams !== null ? TallyParams.fromJSON(object.tallyParams) : undefined;
-    return message;
+    return {
+      startingProposalId: isSet(object.startingProposalId) ? Long.fromValue(object.startingProposalId) : Long.UZERO,
+      deposits: Array.isArray(object?.deposits) ? object.deposits.map((e: any) => Deposit.fromJSON(e)) : [],
+      votes: Array.isArray(object?.votes) ? object.votes.map((e: any) => Vote.fromJSON(e)) : [],
+      proposals: Array.isArray(object?.proposals) ? object.proposals.map((e: any) => Proposal.fromJSON(e)) : [],
+      depositParams: isSet(object.depositParams) ? DepositParams.fromJSON(object.depositParams) : undefined,
+      votingParams: isSet(object.votingParams) ? VotingParams.fromJSON(object.votingParams) : undefined,
+      tallyParams: isSet(object.tallyParams) ? TallyParams.fromJSON(object.tallyParams) : undefined
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -134,7 +135,7 @@ export const GenesisState = {
   },
 
   fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
-    const message = {...baseGenesisState} as GenesisState;
+    const message = createBaseGenesisState();
     message.startingProposalId =
       object.startingProposalId !== undefined && object.startingProposalId !== null
         ? Long.fromValue(object.startingProposalId)
@@ -169,9 +170,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

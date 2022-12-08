@@ -1,10 +1,10 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {ConnectionEnd, IdentifiedConnection} from "../../../../ibc/core/connection/v1/connection";
-import {Height, IdentifiedClientState} from "../../../../ibc/core/client/v1/client";
 import {PageRequest, PageResponse} from "../../../../cosmos/base/query/v1beta1/pagination";
 import {Any} from "../../../../google/protobuf/any";
+import {Height, IdentifiedClientState} from "../../client/v1/client";
+import {ConnectionEnd, IdentifiedConnection} from "./connection";
 
 export const protobufPackage = "ibc.core.connection.v1";
 
@@ -122,7 +122,9 @@ export interface QueryConnectionConsensusStateResponse {
   proofHeight?: Height;
 }
 
-const baseQueryConnectionRequest: object = {connectionId: ""};
+function createBaseQueryConnectionRequest(): QueryConnectionRequest {
+  return {connectionId: ""};
+}
 
 export const QueryConnectionRequest = {
   encode(message: QueryConnectionRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -135,7 +137,7 @@ export const QueryConnectionRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionRequest} as QueryConnectionRequest;
+    const message = createBaseQueryConnectionRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -151,9 +153,7 @@ export const QueryConnectionRequest = {
   },
 
   fromJSON(object: any): QueryConnectionRequest {
-    const message = {...baseQueryConnectionRequest} as QueryConnectionRequest;
-    message.connectionId = object.connectionId !== undefined && object.connectionId !== null ? String(object.connectionId) : "";
-    return message;
+    return {connectionId: isSet(object.connectionId) ? String(object.connectionId) : ""};
   },
 
   toJSON(message: QueryConnectionRequest): unknown {
@@ -163,13 +163,15 @@ export const QueryConnectionRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionRequest>, I>>(object: I): QueryConnectionRequest {
-    const message = {...baseQueryConnectionRequest} as QueryConnectionRequest;
+    const message = createBaseQueryConnectionRequest();
     message.connectionId = object.connectionId ?? "";
     return message;
   }
 };
 
-const baseQueryConnectionResponse: object = {};
+function createBaseQueryConnectionResponse(): QueryConnectionResponse {
+  return {connection: undefined, proof: new Uint8Array(), proofHeight: undefined};
+}
 
 export const QueryConnectionResponse = {
   encode(message: QueryConnectionResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -188,8 +190,7 @@ export const QueryConnectionResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionResponse} as QueryConnectionResponse;
-    message.proof = new Uint8Array();
+    const message = createBaseQueryConnectionResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -211,12 +212,11 @@ export const QueryConnectionResponse = {
   },
 
   fromJSON(object: any): QueryConnectionResponse {
-    const message = {...baseQueryConnectionResponse} as QueryConnectionResponse;
-    message.connection =
-      object.connection !== undefined && object.connection !== null ? ConnectionEnd.fromJSON(object.connection) : undefined;
-    message.proof = object.proof !== undefined && object.proof !== null ? bytesFromBase64(object.proof) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    return message;
+    return {
+      connection: isSet(object.connection) ? ConnectionEnd.fromJSON(object.connection) : undefined,
+      proof: isSet(object.proof) ? bytesFromBase64(object.proof) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined
+    };
   },
 
   toJSON(message: QueryConnectionResponse): unknown {
@@ -228,7 +228,7 @@ export const QueryConnectionResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionResponse>, I>>(object: I): QueryConnectionResponse {
-    const message = {...baseQueryConnectionResponse} as QueryConnectionResponse;
+    const message = createBaseQueryConnectionResponse();
     message.connection =
       object.connection !== undefined && object.connection !== null ? ConnectionEnd.fromPartial(object.connection) : undefined;
     message.proof = object.proof ?? new Uint8Array();
@@ -238,7 +238,9 @@ export const QueryConnectionResponse = {
   }
 };
 
-const baseQueryConnectionsRequest: object = {};
+function createBaseQueryConnectionsRequest(): QueryConnectionsRequest {
+  return {pagination: undefined};
+}
 
 export const QueryConnectionsRequest = {
   encode(message: QueryConnectionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -251,7 +253,7 @@ export const QueryConnectionsRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionsRequest} as QueryConnectionsRequest;
+    const message = createBaseQueryConnectionsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -267,10 +269,7 @@ export const QueryConnectionsRequest = {
   },
 
   fromJSON(object: any): QueryConnectionsRequest {
-    const message = {...baseQueryConnectionsRequest} as QueryConnectionsRequest;
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageRequest.fromJSON(object.pagination) : undefined;
-    return message;
+    return {pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined};
   },
 
   toJSON(message: QueryConnectionsRequest): unknown {
@@ -280,14 +279,16 @@ export const QueryConnectionsRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionsRequest>, I>>(object: I): QueryConnectionsRequest {
-    const message = {...baseQueryConnectionsRequest} as QueryConnectionsRequest;
+    const message = createBaseQueryConnectionsRequest();
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   }
 };
 
-const baseQueryConnectionsResponse: object = {};
+function createBaseQueryConnectionsResponse(): QueryConnectionsResponse {
+  return {connections: [], pagination: undefined, height: undefined};
+}
 
 export const QueryConnectionsResponse = {
   encode(message: QueryConnectionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -306,8 +307,7 @@ export const QueryConnectionsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionsResponse} as QueryConnectionsResponse;
-    message.connections = [];
+    const message = createBaseQueryConnectionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -329,12 +329,11 @@ export const QueryConnectionsResponse = {
   },
 
   fromJSON(object: any): QueryConnectionsResponse {
-    const message = {...baseQueryConnectionsResponse} as QueryConnectionsResponse;
-    message.connections = (object.connections ?? []).map((e: any) => IdentifiedConnection.fromJSON(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageResponse.fromJSON(object.pagination) : undefined;
-    message.height = object.height !== undefined && object.height !== null ? Height.fromJSON(object.height) : undefined;
-    return message;
+    return {
+      connections: Array.isArray(object?.connections) ? object.connections.map((e: any) => IdentifiedConnection.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined,
+      height: isSet(object.height) ? Height.fromJSON(object.height) : undefined
+    };
   },
 
   toJSON(message: QueryConnectionsResponse): unknown {
@@ -350,7 +349,7 @@ export const QueryConnectionsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionsResponse>, I>>(object: I): QueryConnectionsResponse {
-    const message = {...baseQueryConnectionsResponse} as QueryConnectionsResponse;
+    const message = createBaseQueryConnectionsResponse();
     message.connections = object.connections?.map((e) => IdentifiedConnection.fromPartial(e)) || [];
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -359,7 +358,9 @@ export const QueryConnectionsResponse = {
   }
 };
 
-const baseQueryClientConnectionsRequest: object = {clientId: ""};
+function createBaseQueryClientConnectionsRequest(): QueryClientConnectionsRequest {
+  return {clientId: ""};
+}
 
 export const QueryClientConnectionsRequest = {
   encode(message: QueryClientConnectionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -372,7 +373,7 @@ export const QueryClientConnectionsRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryClientConnectionsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryClientConnectionsRequest} as QueryClientConnectionsRequest;
+    const message = createBaseQueryClientConnectionsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -388,9 +389,7 @@ export const QueryClientConnectionsRequest = {
   },
 
   fromJSON(object: any): QueryClientConnectionsRequest {
-    const message = {...baseQueryClientConnectionsRequest} as QueryClientConnectionsRequest;
-    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
-    return message;
+    return {clientId: isSet(object.clientId) ? String(object.clientId) : ""};
   },
 
   toJSON(message: QueryClientConnectionsRequest): unknown {
@@ -400,13 +399,15 @@ export const QueryClientConnectionsRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryClientConnectionsRequest>, I>>(object: I): QueryClientConnectionsRequest {
-    const message = {...baseQueryClientConnectionsRequest} as QueryClientConnectionsRequest;
+    const message = createBaseQueryClientConnectionsRequest();
     message.clientId = object.clientId ?? "";
     return message;
   }
 };
 
-const baseQueryClientConnectionsResponse: object = {connectionPaths: ""};
+function createBaseQueryClientConnectionsResponse(): QueryClientConnectionsResponse {
+  return {connectionPaths: [], proof: new Uint8Array(), proofHeight: undefined};
+}
 
 export const QueryClientConnectionsResponse = {
   encode(message: QueryClientConnectionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -425,9 +426,7 @@ export const QueryClientConnectionsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryClientConnectionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryClientConnectionsResponse} as QueryClientConnectionsResponse;
-    message.connectionPaths = [];
-    message.proof = new Uint8Array();
+    const message = createBaseQueryClientConnectionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -449,11 +448,11 @@ export const QueryClientConnectionsResponse = {
   },
 
   fromJSON(object: any): QueryClientConnectionsResponse {
-    const message = {...baseQueryClientConnectionsResponse} as QueryClientConnectionsResponse;
-    message.connectionPaths = (object.connectionPaths ?? []).map((e: any) => String(e));
-    message.proof = object.proof !== undefined && object.proof !== null ? bytesFromBase64(object.proof) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    return message;
+    return {
+      connectionPaths: Array.isArray(object?.connectionPaths) ? object.connectionPaths.map((e: any) => String(e)) : [],
+      proof: isSet(object.proof) ? bytesFromBase64(object.proof) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined
+    };
   },
 
   toJSON(message: QueryClientConnectionsResponse): unknown {
@@ -469,7 +468,7 @@ export const QueryClientConnectionsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryClientConnectionsResponse>, I>>(object: I): QueryClientConnectionsResponse {
-    const message = {...baseQueryClientConnectionsResponse} as QueryClientConnectionsResponse;
+    const message = createBaseQueryClientConnectionsResponse();
     message.connectionPaths = object.connectionPaths?.map((e) => e) || [];
     message.proof = object.proof ?? new Uint8Array();
     message.proofHeight =
@@ -478,7 +477,9 @@ export const QueryClientConnectionsResponse = {
   }
 };
 
-const baseQueryConnectionClientStateRequest: object = {connectionId: ""};
+function createBaseQueryConnectionClientStateRequest(): QueryConnectionClientStateRequest {
+  return {connectionId: ""};
+}
 
 export const QueryConnectionClientStateRequest = {
   encode(message: QueryConnectionClientStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -491,7 +492,7 @@ export const QueryConnectionClientStateRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionClientStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionClientStateRequest} as QueryConnectionClientStateRequest;
+    const message = createBaseQueryConnectionClientStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -507,9 +508,7 @@ export const QueryConnectionClientStateRequest = {
   },
 
   fromJSON(object: any): QueryConnectionClientStateRequest {
-    const message = {...baseQueryConnectionClientStateRequest} as QueryConnectionClientStateRequest;
-    message.connectionId = object.connectionId !== undefined && object.connectionId !== null ? String(object.connectionId) : "";
-    return message;
+    return {connectionId: isSet(object.connectionId) ? String(object.connectionId) : ""};
   },
 
   toJSON(message: QueryConnectionClientStateRequest): unknown {
@@ -519,13 +518,15 @@ export const QueryConnectionClientStateRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionClientStateRequest>, I>>(object: I): QueryConnectionClientStateRequest {
-    const message = {...baseQueryConnectionClientStateRequest} as QueryConnectionClientStateRequest;
+    const message = createBaseQueryConnectionClientStateRequest();
     message.connectionId = object.connectionId ?? "";
     return message;
   }
 };
 
-const baseQueryConnectionClientStateResponse: object = {};
+function createBaseQueryConnectionClientStateResponse(): QueryConnectionClientStateResponse {
+  return {identifiedClientState: undefined, proof: new Uint8Array(), proofHeight: undefined};
+}
 
 export const QueryConnectionClientStateResponse = {
   encode(message: QueryConnectionClientStateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -544,8 +545,7 @@ export const QueryConnectionClientStateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionClientStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionClientStateResponse} as QueryConnectionClientStateResponse;
-    message.proof = new Uint8Array();
+    const message = createBaseQueryConnectionClientStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -567,14 +567,11 @@ export const QueryConnectionClientStateResponse = {
   },
 
   fromJSON(object: any): QueryConnectionClientStateResponse {
-    const message = {...baseQueryConnectionClientStateResponse} as QueryConnectionClientStateResponse;
-    message.identifiedClientState =
-      object.identifiedClientState !== undefined && object.identifiedClientState !== null
-        ? IdentifiedClientState.fromJSON(object.identifiedClientState)
-        : undefined;
-    message.proof = object.proof !== undefined && object.proof !== null ? bytesFromBase64(object.proof) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    return message;
+    return {
+      identifiedClientState: isSet(object.identifiedClientState) ? IdentifiedClientState.fromJSON(object.identifiedClientState) : undefined,
+      proof: isSet(object.proof) ? bytesFromBase64(object.proof) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined
+    };
   },
 
   toJSON(message: QueryConnectionClientStateResponse): unknown {
@@ -587,7 +584,7 @@ export const QueryConnectionClientStateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionClientStateResponse>, I>>(object: I): QueryConnectionClientStateResponse {
-    const message = {...baseQueryConnectionClientStateResponse} as QueryConnectionClientStateResponse;
+    const message = createBaseQueryConnectionClientStateResponse();
     message.identifiedClientState =
       object.identifiedClientState !== undefined && object.identifiedClientState !== null
         ? IdentifiedClientState.fromPartial(object.identifiedClientState)
@@ -599,7 +596,9 @@ export const QueryConnectionClientStateResponse = {
   }
 };
 
-const baseQueryConnectionConsensusStateRequest: object = {connectionId: "", revisionNumber: Long.UZERO, revisionHeight: Long.UZERO};
+function createBaseQueryConnectionConsensusStateRequest(): QueryConnectionConsensusStateRequest {
+  return {connectionId: "", revisionNumber: Long.UZERO, revisionHeight: Long.UZERO};
+}
 
 export const QueryConnectionConsensusStateRequest = {
   encode(message: QueryConnectionConsensusStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -618,7 +617,7 @@ export const QueryConnectionConsensusStateRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionConsensusStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionConsensusStateRequest} as QueryConnectionConsensusStateRequest;
+    const message = createBaseQueryConnectionConsensusStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -640,13 +639,11 @@ export const QueryConnectionConsensusStateRequest = {
   },
 
   fromJSON(object: any): QueryConnectionConsensusStateRequest {
-    const message = {...baseQueryConnectionConsensusStateRequest} as QueryConnectionConsensusStateRequest;
-    message.connectionId = object.connectionId !== undefined && object.connectionId !== null ? String(object.connectionId) : "";
-    message.revisionNumber =
-      object.revisionNumber !== undefined && object.revisionNumber !== null ? Long.fromString(object.revisionNumber) : Long.UZERO;
-    message.revisionHeight =
-      object.revisionHeight !== undefined && object.revisionHeight !== null ? Long.fromString(object.revisionHeight) : Long.UZERO;
-    return message;
+    return {
+      connectionId: isSet(object.connectionId) ? String(object.connectionId) : "",
+      revisionNumber: isSet(object.revisionNumber) ? Long.fromValue(object.revisionNumber) : Long.UZERO,
+      revisionHeight: isSet(object.revisionHeight) ? Long.fromValue(object.revisionHeight) : Long.UZERO
+    };
   },
 
   toJSON(message: QueryConnectionConsensusStateRequest): unknown {
@@ -658,7 +655,7 @@ export const QueryConnectionConsensusStateRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionConsensusStateRequest>, I>>(object: I): QueryConnectionConsensusStateRequest {
-    const message = {...baseQueryConnectionConsensusStateRequest} as QueryConnectionConsensusStateRequest;
+    const message = createBaseQueryConnectionConsensusStateRequest();
     message.connectionId = object.connectionId ?? "";
     message.revisionNumber =
       object.revisionNumber !== undefined && object.revisionNumber !== null ? Long.fromValue(object.revisionNumber) : Long.UZERO;
@@ -668,7 +665,9 @@ export const QueryConnectionConsensusStateRequest = {
   }
 };
 
-const baseQueryConnectionConsensusStateResponse: object = {clientId: ""};
+function createBaseQueryConnectionConsensusStateResponse(): QueryConnectionConsensusStateResponse {
+  return {consensusState: undefined, clientId: "", proof: new Uint8Array(), proofHeight: undefined};
+}
 
 export const QueryConnectionConsensusStateResponse = {
   encode(message: QueryConnectionConsensusStateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -690,8 +689,7 @@ export const QueryConnectionConsensusStateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryConnectionConsensusStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryConnectionConsensusStateResponse} as QueryConnectionConsensusStateResponse;
-    message.proof = new Uint8Array();
+    const message = createBaseQueryConnectionConsensusStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -716,13 +714,12 @@ export const QueryConnectionConsensusStateResponse = {
   },
 
   fromJSON(object: any): QueryConnectionConsensusStateResponse {
-    const message = {...baseQueryConnectionConsensusStateResponse} as QueryConnectionConsensusStateResponse;
-    message.consensusState =
-      object.consensusState !== undefined && object.consensusState !== null ? Any.fromJSON(object.consensusState) : undefined;
-    message.clientId = object.clientId !== undefined && object.clientId !== null ? String(object.clientId) : "";
-    message.proof = object.proof !== undefined && object.proof !== null ? bytesFromBase64(object.proof) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    return message;
+    return {
+      consensusState: isSet(object.consensusState) ? Any.fromJSON(object.consensusState) : undefined,
+      clientId: isSet(object.clientId) ? String(object.clientId) : "",
+      proof: isSet(object.proof) ? bytesFromBase64(object.proof) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined
+    };
   },
 
   toJSON(message: QueryConnectionConsensusStateResponse): unknown {
@@ -735,7 +732,7 @@ export const QueryConnectionConsensusStateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryConnectionConsensusStateResponse>, I>>(object: I): QueryConnectionConsensusStateResponse {
-    const message = {...baseQueryConnectionConsensusStateResponse} as QueryConnectionConsensusStateResponse;
+    const message = createBaseQueryConnectionConsensusStateResponse();
     message.consensusState =
       object.consensusState !== undefined && object.consensusState !== null ? Any.fromPartial(object.consensusState) : undefined;
     message.clientId = object.clientId ?? "";
@@ -771,7 +768,9 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "ibc.core.connection.v1.Query";
     this.rpc = rpc;
     this.Connection = this.Connection.bind(this);
     this.Connections = this.Connections.bind(this);
@@ -781,31 +780,31 @@ export class QueryClientImpl implements Query {
   }
   Connection(request: QueryConnectionRequest): Promise<QueryConnectionResponse> {
     const data = QueryConnectionRequest.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.connection.v1.Query", "Connection", data);
+    const promise = this.rpc.request(this.service, "Connection", data);
     return promise.then((data) => QueryConnectionResponse.decode(new _m0.Reader(data)));
   }
 
   Connections(request: QueryConnectionsRequest): Promise<QueryConnectionsResponse> {
     const data = QueryConnectionsRequest.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.connection.v1.Query", "Connections", data);
+    const promise = this.rpc.request(this.service, "Connections", data);
     return promise.then((data) => QueryConnectionsResponse.decode(new _m0.Reader(data)));
   }
 
   ClientConnections(request: QueryClientConnectionsRequest): Promise<QueryClientConnectionsResponse> {
     const data = QueryClientConnectionsRequest.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.connection.v1.Query", "ClientConnections", data);
+    const promise = this.rpc.request(this.service, "ClientConnections", data);
     return promise.then((data) => QueryClientConnectionsResponse.decode(new _m0.Reader(data)));
   }
 
   ConnectionClientState(request: QueryConnectionClientStateRequest): Promise<QueryConnectionClientStateResponse> {
     const data = QueryConnectionClientStateRequest.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.connection.v1.Query", "ConnectionClientState", data);
+    const promise = this.rpc.request(this.service, "ConnectionClientState", data);
     return promise.then((data) => QueryConnectionClientStateResponse.decode(new _m0.Reader(data)));
   }
 
   ConnectionConsensusState(request: QueryConnectionConsensusStateRequest): Promise<QueryConnectionConsensusStateResponse> {
     const data = QueryConnectionConsensusStateRequest.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.connection.v1.Query", "ConnectionConsensusState", data);
+    const promise = this.rpc.request(this.service, "ConnectionConsensusState", data);
     return promise.then((data) => QueryConnectionConsensusStateResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -818,30 +817,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -861,9 +874,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

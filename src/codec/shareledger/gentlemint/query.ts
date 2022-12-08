@@ -1,9 +1,9 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {LevelFeeDetail} from "../../shareledger/gentlemint/level_fee";
 import {Coin, DecCoin} from "../../cosmos/base/v1beta1/coin";
-import {ActionLevelFee} from "../../shareledger/gentlemint/action_level_fee";
+import {ActionLevelFee} from "./action_level_fee";
+import {LevelFeeDetail} from "./level_fee";
 
 export const protobufPackage = "shareledger.gentlemint";
 
@@ -63,7 +63,9 @@ export interface QueryBalancesResponse {
   coins: DecCoin[];
 }
 
-const baseQueryExchangeRateRequest: object = {};
+function createBaseQueryExchangeRateRequest(): QueryExchangeRateRequest {
+  return {};
+}
 
 export const QueryExchangeRateRequest = {
   encode(_: QueryExchangeRateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -73,7 +75,7 @@ export const QueryExchangeRateRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryExchangeRateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryExchangeRateRequest} as QueryExchangeRateRequest;
+    const message = createBaseQueryExchangeRateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -86,8 +88,7 @@ export const QueryExchangeRateRequest = {
   },
 
   fromJSON(_: any): QueryExchangeRateRequest {
-    const message = {...baseQueryExchangeRateRequest} as QueryExchangeRateRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryExchangeRateRequest): unknown {
@@ -96,12 +97,14 @@ export const QueryExchangeRateRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryExchangeRateRequest>, I>>(_: I): QueryExchangeRateRequest {
-    const message = {...baseQueryExchangeRateRequest} as QueryExchangeRateRequest;
+    const message = createBaseQueryExchangeRateRequest();
     return message;
   }
 };
 
-const baseQueryExchangeRateResponse: object = {rate: ""};
+function createBaseQueryExchangeRateResponse(): QueryExchangeRateResponse {
+  return {rate: ""};
+}
 
 export const QueryExchangeRateResponse = {
   encode(message: QueryExchangeRateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -114,7 +117,7 @@ export const QueryExchangeRateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryExchangeRateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryExchangeRateResponse} as QueryExchangeRateResponse;
+    const message = createBaseQueryExchangeRateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -130,9 +133,7 @@ export const QueryExchangeRateResponse = {
   },
 
   fromJSON(object: any): QueryExchangeRateResponse {
-    const message = {...baseQueryExchangeRateResponse} as QueryExchangeRateResponse;
-    message.rate = object.rate !== undefined && object.rate !== null ? String(object.rate) : "";
-    return message;
+    return {rate: isSet(object.rate) ? String(object.rate) : ""};
   },
 
   toJSON(message: QueryExchangeRateResponse): unknown {
@@ -142,13 +143,15 @@ export const QueryExchangeRateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryExchangeRateResponse>, I>>(object: I): QueryExchangeRateResponse {
-    const message = {...baseQueryExchangeRateResponse} as QueryExchangeRateResponse;
+    const message = createBaseQueryExchangeRateResponse();
     message.rate = object.rate ?? "";
     return message;
   }
 };
 
-const baseQueryLevelFeeRequest: object = {level: ""};
+function createBaseQueryLevelFeeRequest(): QueryLevelFeeRequest {
+  return {level: ""};
+}
 
 export const QueryLevelFeeRequest = {
   encode(message: QueryLevelFeeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -161,7 +164,7 @@ export const QueryLevelFeeRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLevelFeeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLevelFeeRequest} as QueryLevelFeeRequest;
+    const message = createBaseQueryLevelFeeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -177,9 +180,7 @@ export const QueryLevelFeeRequest = {
   },
 
   fromJSON(object: any): QueryLevelFeeRequest {
-    const message = {...baseQueryLevelFeeRequest} as QueryLevelFeeRequest;
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    return message;
+    return {level: isSet(object.level) ? String(object.level) : ""};
   },
 
   toJSON(message: QueryLevelFeeRequest): unknown {
@@ -189,13 +190,15 @@ export const QueryLevelFeeRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLevelFeeRequest>, I>>(object: I): QueryLevelFeeRequest {
-    const message = {...baseQueryLevelFeeRequest} as QueryLevelFeeRequest;
+    const message = createBaseQueryLevelFeeRequest();
     message.level = object.level ?? "";
     return message;
   }
 };
 
-const baseQueryLevelFeeResponse: object = {};
+function createBaseQueryLevelFeeResponse(): QueryLevelFeeResponse {
+  return {levelFee: undefined};
+}
 
 export const QueryLevelFeeResponse = {
   encode(message: QueryLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -208,7 +211,7 @@ export const QueryLevelFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLevelFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLevelFeeResponse} as QueryLevelFeeResponse;
+    const message = createBaseQueryLevelFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -224,9 +227,7 @@ export const QueryLevelFeeResponse = {
   },
 
   fromJSON(object: any): QueryLevelFeeResponse {
-    const message = {...baseQueryLevelFeeResponse} as QueryLevelFeeResponse;
-    message.levelFee = object.levelFee !== undefined && object.levelFee !== null ? LevelFeeDetail.fromJSON(object.levelFee) : undefined;
-    return message;
+    return {levelFee: isSet(object.levelFee) ? LevelFeeDetail.fromJSON(object.levelFee) : undefined};
   },
 
   toJSON(message: QueryLevelFeeResponse): unknown {
@@ -236,13 +237,15 @@ export const QueryLevelFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLevelFeeResponse>, I>>(object: I): QueryLevelFeeResponse {
-    const message = {...baseQueryLevelFeeResponse} as QueryLevelFeeResponse;
+    const message = createBaseQueryLevelFeeResponse();
     message.levelFee = object.levelFee !== undefined && object.levelFee !== null ? LevelFeeDetail.fromPartial(object.levelFee) : undefined;
     return message;
   }
 };
 
-const baseQueryLevelFeesRequest: object = {};
+function createBaseQueryLevelFeesRequest(): QueryLevelFeesRequest {
+  return {};
+}
 
 export const QueryLevelFeesRequest = {
   encode(_: QueryLevelFeesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -252,7 +255,7 @@ export const QueryLevelFeesRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLevelFeesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLevelFeesRequest} as QueryLevelFeesRequest;
+    const message = createBaseQueryLevelFeesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -265,8 +268,7 @@ export const QueryLevelFeesRequest = {
   },
 
   fromJSON(_: any): QueryLevelFeesRequest {
-    const message = {...baseQueryLevelFeesRequest} as QueryLevelFeesRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryLevelFeesRequest): unknown {
@@ -275,12 +277,14 @@ export const QueryLevelFeesRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLevelFeesRequest>, I>>(_: I): QueryLevelFeesRequest {
-    const message = {...baseQueryLevelFeesRequest} as QueryLevelFeesRequest;
+    const message = createBaseQueryLevelFeesRequest();
     return message;
   }
 };
 
-const baseQueryLevelFeesResponse: object = {};
+function createBaseQueryLevelFeesResponse(): QueryLevelFeesResponse {
+  return {levelFees: []};
+}
 
 export const QueryLevelFeesResponse = {
   encode(message: QueryLevelFeesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -293,8 +297,7 @@ export const QueryLevelFeesResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLevelFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryLevelFeesResponse} as QueryLevelFeesResponse;
-    message.levelFees = [];
+    const message = createBaseQueryLevelFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -310,9 +313,9 @@ export const QueryLevelFeesResponse = {
   },
 
   fromJSON(object: any): QueryLevelFeesResponse {
-    const message = {...baseQueryLevelFeesResponse} as QueryLevelFeesResponse;
-    message.levelFees = (object.levelFees ?? []).map((e: any) => LevelFeeDetail.fromJSON(e));
-    return message;
+    return {
+      levelFees: Array.isArray(object?.levelFees) ? object.levelFees.map((e: any) => LevelFeeDetail.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryLevelFeesResponse): unknown {
@@ -326,13 +329,15 @@ export const QueryLevelFeesResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryLevelFeesResponse>, I>>(object: I): QueryLevelFeesResponse {
-    const message = {...baseQueryLevelFeesResponse} as QueryLevelFeesResponse;
+    const message = createBaseQueryLevelFeesResponse();
     message.levelFees = object.levelFees?.map((e) => LevelFeeDetail.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryActionLevelFeeRequest: object = {action: ""};
+function createBaseQueryActionLevelFeeRequest(): QueryActionLevelFeeRequest {
+  return {action: ""};
+}
 
 export const QueryActionLevelFeeRequest = {
   encode(message: QueryActionLevelFeeRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -345,7 +350,7 @@ export const QueryActionLevelFeeRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryActionLevelFeeRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryActionLevelFeeRequest} as QueryActionLevelFeeRequest;
+    const message = createBaseQueryActionLevelFeeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -361,9 +366,7 @@ export const QueryActionLevelFeeRequest = {
   },
 
   fromJSON(object: any): QueryActionLevelFeeRequest {
-    const message = {...baseQueryActionLevelFeeRequest} as QueryActionLevelFeeRequest;
-    message.action = object.action !== undefined && object.action !== null ? String(object.action) : "";
-    return message;
+    return {action: isSet(object.action) ? String(object.action) : ""};
   },
 
   toJSON(message: QueryActionLevelFeeRequest): unknown {
@@ -373,13 +376,15 @@ export const QueryActionLevelFeeRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryActionLevelFeeRequest>, I>>(object: I): QueryActionLevelFeeRequest {
-    const message = {...baseQueryActionLevelFeeRequest} as QueryActionLevelFeeRequest;
+    const message = createBaseQueryActionLevelFeeRequest();
     message.action = object.action ?? "";
     return message;
   }
 };
 
-const baseQueryActionLevelFeeResponse: object = {action: "", level: "", fee: ""};
+function createBaseQueryActionLevelFeeResponse(): QueryActionLevelFeeResponse {
+  return {action: "", level: "", fee: ""};
+}
 
 export const QueryActionLevelFeeResponse = {
   encode(message: QueryActionLevelFeeResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -398,7 +403,7 @@ export const QueryActionLevelFeeResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryActionLevelFeeResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryActionLevelFeeResponse} as QueryActionLevelFeeResponse;
+    const message = createBaseQueryActionLevelFeeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -420,11 +425,11 @@ export const QueryActionLevelFeeResponse = {
   },
 
   fromJSON(object: any): QueryActionLevelFeeResponse {
-    const message = {...baseQueryActionLevelFeeResponse} as QueryActionLevelFeeResponse;
-    message.action = object.action !== undefined && object.action !== null ? String(object.action) : "";
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    message.fee = object.fee !== undefined && object.fee !== null ? String(object.fee) : "";
-    return message;
+    return {
+      action: isSet(object.action) ? String(object.action) : "",
+      level: isSet(object.level) ? String(object.level) : "",
+      fee: isSet(object.fee) ? String(object.fee) : ""
+    };
   },
 
   toJSON(message: QueryActionLevelFeeResponse): unknown {
@@ -436,7 +441,7 @@ export const QueryActionLevelFeeResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryActionLevelFeeResponse>, I>>(object: I): QueryActionLevelFeeResponse {
-    const message = {...baseQueryActionLevelFeeResponse} as QueryActionLevelFeeResponse;
+    const message = createBaseQueryActionLevelFeeResponse();
     message.action = object.action ?? "";
     message.level = object.level ?? "";
     message.fee = object.fee ?? "";
@@ -444,7 +449,9 @@ export const QueryActionLevelFeeResponse = {
   }
 };
 
-const baseQueryActionLevelFeesRequest: object = {};
+function createBaseQueryActionLevelFeesRequest(): QueryActionLevelFeesRequest {
+  return {};
+}
 
 export const QueryActionLevelFeesRequest = {
   encode(_: QueryActionLevelFeesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -454,7 +461,7 @@ export const QueryActionLevelFeesRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryActionLevelFeesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryActionLevelFeesRequest} as QueryActionLevelFeesRequest;
+    const message = createBaseQueryActionLevelFeesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -467,8 +474,7 @@ export const QueryActionLevelFeesRequest = {
   },
 
   fromJSON(_: any): QueryActionLevelFeesRequest {
-    const message = {...baseQueryActionLevelFeesRequest} as QueryActionLevelFeesRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryActionLevelFeesRequest): unknown {
@@ -477,12 +483,14 @@ export const QueryActionLevelFeesRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryActionLevelFeesRequest>, I>>(_: I): QueryActionLevelFeesRequest {
-    const message = {...baseQueryActionLevelFeesRequest} as QueryActionLevelFeesRequest;
+    const message = createBaseQueryActionLevelFeesRequest();
     return message;
   }
 };
 
-const baseQueryActionLevelFeesResponse: object = {};
+function createBaseQueryActionLevelFeesResponse(): QueryActionLevelFeesResponse {
+  return {actionLevelFee: []};
+}
 
 export const QueryActionLevelFeesResponse = {
   encode(message: QueryActionLevelFeesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -495,8 +503,7 @@ export const QueryActionLevelFeesResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryActionLevelFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryActionLevelFeesResponse} as QueryActionLevelFeesResponse;
-    message.actionLevelFee = [];
+    const message = createBaseQueryActionLevelFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -512,9 +519,9 @@ export const QueryActionLevelFeesResponse = {
   },
 
   fromJSON(object: any): QueryActionLevelFeesResponse {
-    const message = {...baseQueryActionLevelFeesResponse} as QueryActionLevelFeesResponse;
-    message.actionLevelFee = (object.actionLevelFee ?? []).map((e: any) => ActionLevelFee.fromJSON(e));
-    return message;
+    return {
+      actionLevelFee: Array.isArray(object?.actionLevelFee) ? object.actionLevelFee.map((e: any) => ActionLevelFee.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryActionLevelFeesResponse): unknown {
@@ -528,13 +535,15 @@ export const QueryActionLevelFeesResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryActionLevelFeesResponse>, I>>(object: I): QueryActionLevelFeesResponse {
-    const message = {...baseQueryActionLevelFeesResponse} as QueryActionLevelFeesResponse;
+    const message = createBaseQueryActionLevelFeesResponse();
     message.actionLevelFee = object.actionLevelFee?.map((e) => ActionLevelFee.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryCheckFeesRequest: object = {address: "", actions: ""};
+function createBaseQueryCheckFeesRequest(): QueryCheckFeesRequest {
+  return {address: "", actions: []};
+}
 
 export const QueryCheckFeesRequest = {
   encode(message: QueryCheckFeesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -550,8 +559,7 @@ export const QueryCheckFeesRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCheckFeesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryCheckFeesRequest} as QueryCheckFeesRequest;
-    message.actions = [];
+    const message = createBaseQueryCheckFeesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -570,10 +578,10 @@ export const QueryCheckFeesRequest = {
   },
 
   fromJSON(object: any): QueryCheckFeesRequest {
-    const message = {...baseQueryCheckFeesRequest} as QueryCheckFeesRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.actions = (object.actions ?? []).map((e: any) => String(e));
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      actions: Array.isArray(object?.actions) ? object.actions.map((e: any) => String(e)) : []
+    };
   },
 
   toJSON(message: QueryCheckFeesRequest): unknown {
@@ -588,14 +596,16 @@ export const QueryCheckFeesRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryCheckFeesRequest>, I>>(object: I): QueryCheckFeesRequest {
-    const message = {...baseQueryCheckFeesRequest} as QueryCheckFeesRequest;
+    const message = createBaseQueryCheckFeesRequest();
     message.address = object.address ?? "";
     message.actions = object.actions?.map((e) => e) || [];
     return message;
   }
 };
 
-const baseQueryCheckFeesResponse: object = {sufficientFee: false, sufficientFundForFee: false};
+function createBaseQueryCheckFeesResponse(): QueryCheckFeesResponse {
+  return {convertedFee: undefined, sufficientFee: false, sufficientFundForFee: false, costLoadingFee: undefined};
+}
 
 export const QueryCheckFeesResponse = {
   encode(message: QueryCheckFeesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -617,7 +627,7 @@ export const QueryCheckFeesResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCheckFeesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryCheckFeesResponse} as QueryCheckFeesResponse;
+    const message = createBaseQueryCheckFeesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -642,15 +652,12 @@ export const QueryCheckFeesResponse = {
   },
 
   fromJSON(object: any): QueryCheckFeesResponse {
-    const message = {...baseQueryCheckFeesResponse} as QueryCheckFeesResponse;
-    message.convertedFee =
-      object.convertedFee !== undefined && object.convertedFee !== null ? Coin.fromJSON(object.convertedFee) : undefined;
-    message.sufficientFee = object.sufficientFee !== undefined && object.sufficientFee !== null ? Boolean(object.sufficientFee) : false;
-    message.sufficientFundForFee =
-      object.sufficientFundForFee !== undefined && object.sufficientFundForFee !== null ? Boolean(object.sufficientFundForFee) : false;
-    message.costLoadingFee =
-      object.costLoadingFee !== undefined && object.costLoadingFee !== null ? DecCoin.fromJSON(object.costLoadingFee) : undefined;
-    return message;
+    return {
+      convertedFee: isSet(object.convertedFee) ? Coin.fromJSON(object.convertedFee) : undefined,
+      sufficientFee: isSet(object.sufficientFee) ? Boolean(object.sufficientFee) : false,
+      sufficientFundForFee: isSet(object.sufficientFundForFee) ? Boolean(object.sufficientFundForFee) : false,
+      costLoadingFee: isSet(object.costLoadingFee) ? DecCoin.fromJSON(object.costLoadingFee) : undefined
+    };
   },
 
   toJSON(message: QueryCheckFeesResponse): unknown {
@@ -664,7 +671,7 @@ export const QueryCheckFeesResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryCheckFeesResponse>, I>>(object: I): QueryCheckFeesResponse {
-    const message = {...baseQueryCheckFeesResponse} as QueryCheckFeesResponse;
+    const message = createBaseQueryCheckFeesResponse();
     message.convertedFee =
       object.convertedFee !== undefined && object.convertedFee !== null ? Coin.fromPartial(object.convertedFee) : undefined;
     message.sufficientFee = object.sufficientFee ?? false;
@@ -675,7 +682,9 @@ export const QueryCheckFeesResponse = {
   }
 };
 
-const baseQueryBalancesRequest: object = {address: ""};
+function createBaseQueryBalancesRequest(): QueryBalancesRequest {
+  return {address: ""};
+}
 
 export const QueryBalancesRequest = {
   encode(message: QueryBalancesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -688,7 +697,7 @@ export const QueryBalancesRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBalancesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBalancesRequest} as QueryBalancesRequest;
+    const message = createBaseQueryBalancesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -704,9 +713,7 @@ export const QueryBalancesRequest = {
   },
 
   fromJSON(object: any): QueryBalancesRequest {
-    const message = {...baseQueryBalancesRequest} as QueryBalancesRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryBalancesRequest): unknown {
@@ -716,13 +723,15 @@ export const QueryBalancesRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBalancesRequest>, I>>(object: I): QueryBalancesRequest {
-    const message = {...baseQueryBalancesRequest} as QueryBalancesRequest;
+    const message = createBaseQueryBalancesRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryBalancesResponse: object = {};
+function createBaseQueryBalancesResponse(): QueryBalancesResponse {
+  return {coins: []};
+}
 
 export const QueryBalancesResponse = {
   encode(message: QueryBalancesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -735,8 +744,7 @@ export const QueryBalancesResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBalancesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBalancesResponse} as QueryBalancesResponse;
-    message.coins = [];
+    const message = createBaseQueryBalancesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -752,9 +760,7 @@ export const QueryBalancesResponse = {
   },
 
   fromJSON(object: any): QueryBalancesResponse {
-    const message = {...baseQueryBalancesResponse} as QueryBalancesResponse;
-    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
-    return message;
+    return {coins: Array.isArray(object?.coins) ? object.coins.map((e: any) => DecCoin.fromJSON(e)) : []};
   },
 
   toJSON(message: QueryBalancesResponse): unknown {
@@ -768,7 +774,7 @@ export const QueryBalancesResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBalancesResponse>, I>>(object: I): QueryBalancesResponse {
-    const message = {...baseQueryBalancesResponse} as QueryBalancesResponse;
+    const message = createBaseQueryBalancesResponse();
     message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
     return message;
   }
@@ -794,7 +800,9 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.gentlemint.Query";
     this.rpc = rpc;
     this.ExchangeRate = this.ExchangeRate.bind(this);
     this.LevelFee = this.LevelFee.bind(this);
@@ -806,43 +814,43 @@ export class QueryClientImpl implements Query {
   }
   ExchangeRate(request: QueryExchangeRateRequest): Promise<QueryExchangeRateResponse> {
     const data = QueryExchangeRateRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "ExchangeRate", data);
+    const promise = this.rpc.request(this.service, "ExchangeRate", data);
     return promise.then((data) => QueryExchangeRateResponse.decode(new _m0.Reader(data)));
   }
 
   LevelFee(request: QueryLevelFeeRequest): Promise<QueryLevelFeeResponse> {
     const data = QueryLevelFeeRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "LevelFee", data);
+    const promise = this.rpc.request(this.service, "LevelFee", data);
     return promise.then((data) => QueryLevelFeeResponse.decode(new _m0.Reader(data)));
   }
 
   LevelFees(request: QueryLevelFeesRequest): Promise<QueryLevelFeesResponse> {
     const data = QueryLevelFeesRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "LevelFees", data);
+    const promise = this.rpc.request(this.service, "LevelFees", data);
     return promise.then((data) => QueryLevelFeesResponse.decode(new _m0.Reader(data)));
   }
 
   ActionLevelFee(request: QueryActionLevelFeeRequest): Promise<QueryActionLevelFeeResponse> {
     const data = QueryActionLevelFeeRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "ActionLevelFee", data);
+    const promise = this.rpc.request(this.service, "ActionLevelFee", data);
     return promise.then((data) => QueryActionLevelFeeResponse.decode(new _m0.Reader(data)));
   }
 
   ActionLevelFees(request: QueryActionLevelFeesRequest): Promise<QueryActionLevelFeesResponse> {
     const data = QueryActionLevelFeesRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "ActionLevelFees", data);
+    const promise = this.rpc.request(this.service, "ActionLevelFees", data);
     return promise.then((data) => QueryActionLevelFeesResponse.decode(new _m0.Reader(data)));
   }
 
   CheckFees(request: QueryCheckFeesRequest): Promise<QueryCheckFeesResponse> {
     const data = QueryCheckFeesRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "CheckFees", data);
+    const promise = this.rpc.request(this.service, "CheckFees", data);
     return promise.then((data) => QueryCheckFeesResponse.decode(new _m0.Reader(data)));
   }
 
   Balances(request: QueryBalancesRequest): Promise<QueryBalancesResponse> {
     const data = QueryBalancesRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Query", "Balances", data);
+    const promise = this.rpc.request(this.service, "Balances", data);
     return promise.then((data) => QueryBalancesResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -868,9 +876,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

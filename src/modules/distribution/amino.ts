@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {AminoMsg, Coin} from "@cosmjs/amino";
-import {AminoConverter} from "../../amino/types";
+import {AminoConverter} from "../../amino";
 import {
   MsgFundCommunityPool,
   MsgSetWithdrawAddress,
   MsgWithdrawDelegatorReward,
   MsgWithdrawValidatorCommission
 } from "../../codec/cosmos/distribution/v1beta1/tx";
-import {EncodeObject, GeneratedType} from "../../signing";
 
 /** Changes the withdraw address for a delegator (or validator self-delegation) */
 export interface AminoMsgSetWithdrawAddress extends AminoMsg {
@@ -25,15 +24,6 @@ export interface AminoMsgSetWithdrawAddress extends AminoMsg {
 export function isAminoMsgSetWithdrawAddress(msg: AminoMsg): msg is AminoMsgSetWithdrawAddress {
   // NOTE: Type string and names diverge here!
   return msg.type === "cosmos-sdk/MsgModifyWithdrawAddress";
-}
-
-export interface MsgSetWithdrawAddressEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress";
-  readonly value: Partial<MsgSetWithdrawAddress>;
-}
-
-export function isMsgSetWithdrawAddressEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSetWithdrawAddressEncodeObject {
-  return (encodeObject as MsgSetWithdrawAddressEncodeObject).typeUrl === "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress";
 }
 
 /** Message for delegation withdraw from a single validator */
@@ -53,17 +43,6 @@ export function isAminoMsgWithdrawDelegatorReward(msg: AminoMsg): msg is AminoMs
   return msg.type === "cosmos-sdk/MsgWithdrawDelegationReward";
 }
 
-export interface MsgWithdrawDelegatorRewardEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward";
-  readonly value: Partial<MsgWithdrawDelegatorReward>;
-}
-
-export function isMsgWithdrawDelegatorRewardEncodeObject(
-  encodeObject: EncodeObject
-): encodeObject is MsgWithdrawDelegatorRewardEncodeObject {
-  return (encodeObject as MsgWithdrawDelegatorRewardEncodeObject).typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward";
-}
-
 /** Message for validator withdraw */
 export interface AminoMsgWithdrawValidatorCommission extends AminoMsg {
   readonly type: "cosmos-sdk/MsgWithdrawValidatorCommission";
@@ -75,19 +54,6 @@ export interface AminoMsgWithdrawValidatorCommission extends AminoMsg {
 
 export function isAminoMsgWithdrawValidatorCommission(msg: AminoMsg): msg is AminoMsgWithdrawValidatorCommission {
   return msg.type === "cosmos-sdk/MsgWithdrawValidatorCommission";
-}
-
-export interface MsgWithdrawValidatorCommissionEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission";
-  readonly value: Partial<MsgWithdrawValidatorCommission>;
-}
-
-export function isMsgWithdrawValidatorCommissionEncodeObject(
-  encodeObject: EncodeObject
-): encodeObject is MsgWithdrawValidatorCommissionEncodeObject {
-  return (
-    (encodeObject as MsgWithdrawValidatorCommissionEncodeObject).typeUrl === "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission"
-  );
 }
 
 /** Allows an account to directly fund the community pool. */
@@ -104,16 +70,7 @@ export function isAminoMsgFundCommunityPool(msg: AminoMsg): msg is AminoMsgFundC
   return msg.type === "cosmos-sdk/MsgFundCommunityPool";
 }
 
-export interface MsgFundCommunityPoolEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.distribution.v1beta1.MsgFundCommunityPool";
-  readonly value: Partial<MsgFundCommunityPool>;
-}
-
-export function isMsgFundCommunityPoolEncodeObject(encodeObject: EncodeObject): encodeObject is MsgFundCommunityPoolEncodeObject {
-  return (encodeObject as MsgFundCommunityPoolEncodeObject).typeUrl === "/cosmos.distribution.v1beta1.MsgFundCommunityPool";
-}
-
-export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
+export function createDistributionAminoConverters(prefix: string): Record<string, AminoConverter | "not_supported_by_chain"> {
   return {
     "/cosmos.distribution.v1beta1.MsgSetWithdrawAddress": {
       aminoType: "cosmos-sdk/MsgModifyWithdrawAddress",
@@ -158,13 +115,4 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       })
     }
   };
-}
-
-export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
-  return [
-    ["/cosmos.distribution.v1beta1.MsgSetWithdrawAddress", MsgSetWithdrawAddress],
-    ["/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward", MsgWithdrawDelegatorReward],
-    ["/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission", MsgWithdrawValidatorCommission],
-    ["/cosmos.distribution.v1beta1.MsgFundCommunityPool", MsgFundCommunityPool]
-  ];
 }

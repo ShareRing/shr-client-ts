@@ -19,7 +19,9 @@ export interface MsgCompleteBooking {
 
 export interface MsgCompleteBookingResponse {}
 
-const baseMsgCreateBooking: object = {booker: "", UUID: "", duration: Long.ZERO};
+function createBaseMsgCreateBooking(): MsgCreateBooking {
+  return {booker: "", UUID: "", duration: Long.ZERO};
+}
 
 export const MsgCreateBooking = {
   encode(message: MsgCreateBooking, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -38,7 +40,7 @@ export const MsgCreateBooking = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateBooking {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateBooking} as MsgCreateBooking;
+    const message = createBaseMsgCreateBooking();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -60,11 +62,11 @@ export const MsgCreateBooking = {
   },
 
   fromJSON(object: any): MsgCreateBooking {
-    const message = {...baseMsgCreateBooking} as MsgCreateBooking;
-    message.booker = object.booker !== undefined && object.booker !== null ? String(object.booker) : "";
-    message.UUID = object.UUID !== undefined && object.UUID !== null ? String(object.UUID) : "";
-    message.duration = object.duration !== undefined && object.duration !== null ? Long.fromString(object.duration) : Long.ZERO;
-    return message;
+    return {
+      booker: isSet(object.booker) ? String(object.booker) : "",
+      UUID: isSet(object.UUID) ? String(object.UUID) : "",
+      duration: isSet(object.duration) ? Long.fromValue(object.duration) : Long.ZERO
+    };
   },
 
   toJSON(message: MsgCreateBooking): unknown {
@@ -76,7 +78,7 @@ export const MsgCreateBooking = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateBooking>, I>>(object: I): MsgCreateBooking {
-    const message = {...baseMsgCreateBooking} as MsgCreateBooking;
+    const message = createBaseMsgCreateBooking();
     message.booker = object.booker ?? "";
     message.UUID = object.UUID ?? "";
     message.duration = object.duration !== undefined && object.duration !== null ? Long.fromValue(object.duration) : Long.ZERO;
@@ -84,7 +86,9 @@ export const MsgCreateBooking = {
   }
 };
 
-const baseMsgCreateBookingResponse: object = {};
+function createBaseMsgCreateBookingResponse(): MsgCreateBookingResponse {
+  return {};
+}
 
 export const MsgCreateBookingResponse = {
   encode(_: MsgCreateBookingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -94,7 +98,7 @@ export const MsgCreateBookingResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateBookingResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateBookingResponse} as MsgCreateBookingResponse;
+    const message = createBaseMsgCreateBookingResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -107,8 +111,7 @@ export const MsgCreateBookingResponse = {
   },
 
   fromJSON(_: any): MsgCreateBookingResponse {
-    const message = {...baseMsgCreateBookingResponse} as MsgCreateBookingResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateBookingResponse): unknown {
@@ -117,12 +120,14 @@ export const MsgCreateBookingResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateBookingResponse>, I>>(_: I): MsgCreateBookingResponse {
-    const message = {...baseMsgCreateBookingResponse} as MsgCreateBookingResponse;
+    const message = createBaseMsgCreateBookingResponse();
     return message;
   }
 };
 
-const baseMsgCompleteBooking: object = {booker: "", bookID: ""};
+function createBaseMsgCompleteBooking(): MsgCompleteBooking {
+  return {booker: "", bookID: ""};
+}
 
 export const MsgCompleteBooking = {
   encode(message: MsgCompleteBooking, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -138,7 +143,7 @@ export const MsgCompleteBooking = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteBooking {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCompleteBooking} as MsgCompleteBooking;
+    const message = createBaseMsgCompleteBooking();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -157,10 +162,10 @@ export const MsgCompleteBooking = {
   },
 
   fromJSON(object: any): MsgCompleteBooking {
-    const message = {...baseMsgCompleteBooking} as MsgCompleteBooking;
-    message.booker = object.booker !== undefined && object.booker !== null ? String(object.booker) : "";
-    message.bookID = object.bookID !== undefined && object.bookID !== null ? String(object.bookID) : "";
-    return message;
+    return {
+      booker: isSet(object.booker) ? String(object.booker) : "",
+      bookID: isSet(object.bookID) ? String(object.bookID) : ""
+    };
   },
 
   toJSON(message: MsgCompleteBooking): unknown {
@@ -171,14 +176,16 @@ export const MsgCompleteBooking = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCompleteBooking>, I>>(object: I): MsgCompleteBooking {
-    const message = {...baseMsgCompleteBooking} as MsgCompleteBooking;
+    const message = createBaseMsgCompleteBooking();
     message.booker = object.booker ?? "";
     message.bookID = object.bookID ?? "";
     return message;
   }
 };
 
-const baseMsgCompleteBookingResponse: object = {};
+function createBaseMsgCompleteBookingResponse(): MsgCompleteBookingResponse {
+  return {};
+}
 
 export const MsgCompleteBookingResponse = {
   encode(_: MsgCompleteBookingResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -188,7 +195,7 @@ export const MsgCompleteBookingResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCompleteBookingResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCompleteBookingResponse} as MsgCompleteBookingResponse;
+    const message = createBaseMsgCompleteBookingResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -201,8 +208,7 @@ export const MsgCompleteBookingResponse = {
   },
 
   fromJSON(_: any): MsgCompleteBookingResponse {
-    const message = {...baseMsgCompleteBookingResponse} as MsgCompleteBookingResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCompleteBookingResponse): unknown {
@@ -211,7 +217,7 @@ export const MsgCompleteBookingResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCompleteBookingResponse>, I>>(_: I): MsgCompleteBookingResponse {
-    const message = {...baseMsgCompleteBookingResponse} as MsgCompleteBookingResponse;
+    const message = createBaseMsgCompleteBookingResponse();
     return message;
   }
 };
@@ -225,20 +231,22 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.booking.Msg";
     this.rpc = rpc;
     this.CreateBooking = this.CreateBooking.bind(this);
     this.CompleteBooking = this.CompleteBooking.bind(this);
   }
   CreateBooking(request: MsgCreateBooking): Promise<MsgCreateBookingResponse> {
     const data = MsgCreateBooking.encode(request).finish();
-    const promise = this.rpc.request("shareledger.booking.Msg", "CreateBooking", data);
+    const promise = this.rpc.request(this.service, "CreateBooking", data);
     return promise.then((data) => MsgCreateBookingResponse.decode(new _m0.Reader(data)));
   }
 
   CompleteBooking(request: MsgCompleteBooking): Promise<MsgCompleteBookingResponse> {
     const data = MsgCompleteBooking.encode(request).finish();
-    const promise = this.rpc.request("shareledger.booking.Msg", "CompleteBooking", data);
+    const promise = this.rpc.request(this.service, "CompleteBooking", data);
     return promise.then((data) => MsgCompleteBookingResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -264,9 +272,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

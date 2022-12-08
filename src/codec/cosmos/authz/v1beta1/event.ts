@@ -26,7 +26,9 @@ export interface EventRevoke {
   grantee: string;
 }
 
-const baseEventGrant: object = {msgTypeUrl: "", granter: "", grantee: ""};
+function createBaseEventGrant(): EventGrant {
+  return {msgTypeUrl: "", granter: "", grantee: ""};
+}
 
 export const EventGrant = {
   encode(message: EventGrant, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -45,7 +47,7 @@ export const EventGrant = {
   decode(input: _m0.Reader | Uint8Array, length?: number): EventGrant {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseEventGrant} as EventGrant;
+    const message = createBaseEventGrant();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -67,11 +69,11 @@ export const EventGrant = {
   },
 
   fromJSON(object: any): EventGrant {
-    const message = {...baseEventGrant} as EventGrant;
-    message.msgTypeUrl = object.msgTypeUrl !== undefined && object.msgTypeUrl !== null ? String(object.msgTypeUrl) : "";
-    message.granter = object.granter !== undefined && object.granter !== null ? String(object.granter) : "";
-    message.grantee = object.grantee !== undefined && object.grantee !== null ? String(object.grantee) : "";
-    return message;
+    return {
+      msgTypeUrl: isSet(object.msgTypeUrl) ? String(object.msgTypeUrl) : "",
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : ""
+    };
   },
 
   toJSON(message: EventGrant): unknown {
@@ -83,7 +85,7 @@ export const EventGrant = {
   },
 
   fromPartial<I extends Exact<DeepPartial<EventGrant>, I>>(object: I): EventGrant {
-    const message = {...baseEventGrant} as EventGrant;
+    const message = createBaseEventGrant();
     message.msgTypeUrl = object.msgTypeUrl ?? "";
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
@@ -91,7 +93,9 @@ export const EventGrant = {
   }
 };
 
-const baseEventRevoke: object = {msgTypeUrl: "", granter: "", grantee: ""};
+function createBaseEventRevoke(): EventRevoke {
+  return {msgTypeUrl: "", granter: "", grantee: ""};
+}
 
 export const EventRevoke = {
   encode(message: EventRevoke, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -110,7 +114,7 @@ export const EventRevoke = {
   decode(input: _m0.Reader | Uint8Array, length?: number): EventRevoke {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseEventRevoke} as EventRevoke;
+    const message = createBaseEventRevoke();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -132,11 +136,11 @@ export const EventRevoke = {
   },
 
   fromJSON(object: any): EventRevoke {
-    const message = {...baseEventRevoke} as EventRevoke;
-    message.msgTypeUrl = object.msgTypeUrl !== undefined && object.msgTypeUrl !== null ? String(object.msgTypeUrl) : "";
-    message.granter = object.granter !== undefined && object.granter !== null ? String(object.granter) : "";
-    message.grantee = object.grantee !== undefined && object.grantee !== null ? String(object.grantee) : "";
-    return message;
+    return {
+      msgTypeUrl: isSet(object.msgTypeUrl) ? String(object.msgTypeUrl) : "",
+      granter: isSet(object.granter) ? String(object.granter) : "",
+      grantee: isSet(object.grantee) ? String(object.grantee) : ""
+    };
   },
 
   toJSON(message: EventRevoke): unknown {
@@ -148,7 +152,7 @@ export const EventRevoke = {
   },
 
   fromPartial<I extends Exact<DeepPartial<EventRevoke>, I>>(object: I): EventRevoke {
-    const message = {...baseEventRevoke} as EventRevoke;
+    const message = createBaseEventRevoke();
     message.msgTypeUrl = object.msgTypeUrl ?? "";
     message.granter = object.granter ?? "";
     message.grantee = object.grantee ?? "";
@@ -173,9 +177,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

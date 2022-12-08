@@ -18,7 +18,9 @@ export interface Fee {
   out?: Coin;
 }
 
-const baseSchema: object = {network: "", creator: "", schema: "", contractExponent: 0};
+function createBaseSchema(): Schema {
+  return {network: "", creator: "", schema: "", contractExponent: 0, fee: undefined};
+}
 
 export const Schema = {
   encode(message: Schema, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -43,7 +45,7 @@ export const Schema = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Schema {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseSchema} as Schema;
+    const message = createBaseSchema();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -71,14 +73,13 @@ export const Schema = {
   },
 
   fromJSON(object: any): Schema {
-    const message = {...baseSchema} as Schema;
-    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.schema = object.schema !== undefined && object.schema !== null ? String(object.schema) : "";
-    message.contractExponent =
-      object.contractExponent !== undefined && object.contractExponent !== null ? Number(object.contractExponent) : 0;
-    message.fee = object.fee !== undefined && object.fee !== null ? Fee.fromJSON(object.fee) : undefined;
-    return message;
+    return {
+      network: isSet(object.network) ? String(object.network) : "",
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      schema: isSet(object.schema) ? String(object.schema) : "",
+      contractExponent: isSet(object.contractExponent) ? Number(object.contractExponent) : 0,
+      fee: isSet(object.fee) ? Fee.fromJSON(object.fee) : undefined
+    };
   },
 
   toJSON(message: Schema): unknown {
@@ -86,13 +87,13 @@ export const Schema = {
     message.network !== undefined && (obj.network = message.network);
     message.creator !== undefined && (obj.creator = message.creator);
     message.schema !== undefined && (obj.schema = message.schema);
-    message.contractExponent !== undefined && (obj.contractExponent = message.contractExponent);
+    message.contractExponent !== undefined && (obj.contractExponent = Math.round(message.contractExponent));
     message.fee !== undefined && (obj.fee = message.fee ? Fee.toJSON(message.fee) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<Schema>, I>>(object: I): Schema {
-    const message = {...baseSchema} as Schema;
+    const message = createBaseSchema();
     message.network = object.network ?? "";
     message.creator = object.creator ?? "";
     message.schema = object.schema ?? "";
@@ -102,7 +103,9 @@ export const Schema = {
   }
 };
 
-const baseFee: object = {};
+function createBaseFee(): Fee {
+  return {in: undefined, out: undefined};
+}
 
 export const Fee = {
   encode(message: Fee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -118,7 +121,7 @@ export const Fee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Fee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseFee} as Fee;
+    const message = createBaseFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -137,10 +140,10 @@ export const Fee = {
   },
 
   fromJSON(object: any): Fee {
-    const message = {...baseFee} as Fee;
-    message.in = object.in !== undefined && object.in !== null ? Coin.fromJSON(object.in) : undefined;
-    message.out = object.out !== undefined && object.out !== null ? Coin.fromJSON(object.out) : undefined;
-    return message;
+    return {
+      in: isSet(object.in) ? Coin.fromJSON(object.in) : undefined,
+      out: isSet(object.out) ? Coin.fromJSON(object.out) : undefined
+    };
   },
 
   toJSON(message: Fee): unknown {
@@ -151,7 +154,7 @@ export const Fee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Fee>, I>>(object: I): Fee {
-    const message = {...baseFee} as Fee;
+    const message = createBaseFee();
     message.in = object.in !== undefined && object.in !== null ? Coin.fromPartial(object.in) : undefined;
     message.out = object.out !== undefined && object.out !== null ? Coin.fromPartial(object.out) : undefined;
     return message;
@@ -175,9 +178,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

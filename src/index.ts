@@ -1,24 +1,37 @@
-export {Bech32} from "@cosmjs/encoding";
+/**
+ * Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Pellentesque nec imperdiet nisi. Pellentesque aliquet turpis vestibulum orci condimentum faucibus
+ *
+ * @group test
+ */
+
+export {fromBech32, toBech32} from "@cosmjs/encoding";
+export {HttpEndpoint} from "@cosmjs/tendermint-rpc";
 export {Account, accountFromAny, AccountParser} from "./account";
-export {StdFee} from "./amino";
-export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
+export {StdFee, AminoConverter, AminoConverters, AminoMsg} from "./amino";
 export {
-  assertIsBroadcastTxSuccess,
+  assertIsDeliverTxFailure,
+  assertIsDeliverTxSuccess,
   Block,
   BlockHeader,
-  BroadcastTxFailure,
-  BroadcastTxResponse,
-  BroadcastTxSuccess,
+  BroadcastTxError,
   Client,
+  DeliverTxResponse,
   IndexedTx,
-  isBroadcastTxFailure,
-  isBroadcastTxSuccess,
+  isDeliverTxFailure,
+  isDeliverTxSuccess,
   SequenceResponse,
   TimeoutError
 } from "./client";
+export {BaseClient} from "./baseclient";
+export type {Coin, DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
+export {Attribute, Event, fromTendermint34Event} from "./events";
 export {calculateFee, GasPrice} from "./fee";
-export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
+export {findAttribute, parseAttribute, parseEvent, parseLog, parseLogs, parseRawLog} from "./logs";
+export * from "./modules";
+export {makeMultisignedTx, makeMultisignedTxBytes} from "./multisig";
+export {decodeCosmosSdkDecFromProto, longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
@@ -30,9 +43,8 @@ export {
   SearchTxQuery
 } from "./search";
 export {ShareledgerClient} from "./shareledgerclient";
-export {actions, registryTypes, ShareledgerSigningClient} from "./shareledgersigningclient";
+export {ShareledgerSigningClient} from "./shareledgersigningclient";
 export {
-  Coin,
   coin,
   coins,
   decodePubkey,
@@ -47,4 +59,4 @@ export {
   Secp256k1HdWalletOptions,
   Secp256k1Wallet
 } from "./signing";
-export {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+export {defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";

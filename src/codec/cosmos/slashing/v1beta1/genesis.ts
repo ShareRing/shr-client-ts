@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Params, ValidatorSigningInfo} from "../../../cosmos/slashing/v1beta1/slashing";
+import {Params, ValidatorSigningInfo} from "./slashing";
 
 export const protobufPackage = "cosmos.slashing.v1beta1";
 
@@ -48,7 +48,9 @@ export interface MissedBlock {
   missed: boolean;
 }
 
-const baseGenesisState: object = {};
+function createBaseGenesisState(): GenesisState {
+  return {params: undefined, signingInfos: [], missedBlocks: []};
+}
 
 export const GenesisState = {
   encode(message: GenesisState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -67,9 +69,7 @@ export const GenesisState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseGenesisState} as GenesisState;
-    message.signingInfos = [];
-    message.missedBlocks = [];
+    const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -91,11 +91,11 @@ export const GenesisState = {
   },
 
   fromJSON(object: any): GenesisState {
-    const message = {...baseGenesisState} as GenesisState;
-    message.params = object.params !== undefined && object.params !== null ? Params.fromJSON(object.params) : undefined;
-    message.signingInfos = (object.signingInfos ?? []).map((e: any) => SigningInfo.fromJSON(e));
-    message.missedBlocks = (object.missedBlocks ?? []).map((e: any) => ValidatorMissedBlocks.fromJSON(e));
-    return message;
+    return {
+      params: isSet(object.params) ? Params.fromJSON(object.params) : undefined,
+      signingInfos: Array.isArray(object?.signingInfos) ? object.signingInfos.map((e: any) => SigningInfo.fromJSON(e)) : [],
+      missedBlocks: Array.isArray(object?.missedBlocks) ? object.missedBlocks.map((e: any) => ValidatorMissedBlocks.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: GenesisState): unknown {
@@ -115,7 +115,7 @@ export const GenesisState = {
   },
 
   fromPartial<I extends Exact<DeepPartial<GenesisState>, I>>(object: I): GenesisState {
-    const message = {...baseGenesisState} as GenesisState;
+    const message = createBaseGenesisState();
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     message.signingInfos = object.signingInfos?.map((e) => SigningInfo.fromPartial(e)) || [];
     message.missedBlocks = object.missedBlocks?.map((e) => ValidatorMissedBlocks.fromPartial(e)) || [];
@@ -123,7 +123,9 @@ export const GenesisState = {
   }
 };
 
-const baseSigningInfo: object = {address: ""};
+function createBaseSigningInfo(): SigningInfo {
+  return {address: "", validatorSigningInfo: undefined};
+}
 
 export const SigningInfo = {
   encode(message: SigningInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -139,7 +141,7 @@ export const SigningInfo = {
   decode(input: _m0.Reader | Uint8Array, length?: number): SigningInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseSigningInfo} as SigningInfo;
+    const message = createBaseSigningInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -158,13 +160,10 @@ export const SigningInfo = {
   },
 
   fromJSON(object: any): SigningInfo {
-    const message = {...baseSigningInfo} as SigningInfo;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.validatorSigningInfo =
-      object.validatorSigningInfo !== undefined && object.validatorSigningInfo !== null
-        ? ValidatorSigningInfo.fromJSON(object.validatorSigningInfo)
-        : undefined;
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      validatorSigningInfo: isSet(object.validatorSigningInfo) ? ValidatorSigningInfo.fromJSON(object.validatorSigningInfo) : undefined
+    };
   },
 
   toJSON(message: SigningInfo): unknown {
@@ -176,7 +175,7 @@ export const SigningInfo = {
   },
 
   fromPartial<I extends Exact<DeepPartial<SigningInfo>, I>>(object: I): SigningInfo {
-    const message = {...baseSigningInfo} as SigningInfo;
+    const message = createBaseSigningInfo();
     message.address = object.address ?? "";
     message.validatorSigningInfo =
       object.validatorSigningInfo !== undefined && object.validatorSigningInfo !== null
@@ -186,7 +185,9 @@ export const SigningInfo = {
   }
 };
 
-const baseValidatorMissedBlocks: object = {address: ""};
+function createBaseValidatorMissedBlocks(): ValidatorMissedBlocks {
+  return {address: "", missedBlocks: []};
+}
 
 export const ValidatorMissedBlocks = {
   encode(message: ValidatorMissedBlocks, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -202,8 +203,7 @@ export const ValidatorMissedBlocks = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorMissedBlocks {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseValidatorMissedBlocks} as ValidatorMissedBlocks;
-    message.missedBlocks = [];
+    const message = createBaseValidatorMissedBlocks();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -222,10 +222,10 @@ export const ValidatorMissedBlocks = {
   },
 
   fromJSON(object: any): ValidatorMissedBlocks {
-    const message = {...baseValidatorMissedBlocks} as ValidatorMissedBlocks;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.missedBlocks = (object.missedBlocks ?? []).map((e: any) => MissedBlock.fromJSON(e));
-    return message;
+    return {
+      address: isSet(object.address) ? String(object.address) : "",
+      missedBlocks: Array.isArray(object?.missedBlocks) ? object.missedBlocks.map((e: any) => MissedBlock.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: ValidatorMissedBlocks): unknown {
@@ -240,14 +240,16 @@ export const ValidatorMissedBlocks = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ValidatorMissedBlocks>, I>>(object: I): ValidatorMissedBlocks {
-    const message = {...baseValidatorMissedBlocks} as ValidatorMissedBlocks;
+    const message = createBaseValidatorMissedBlocks();
     message.address = object.address ?? "";
     message.missedBlocks = object.missedBlocks?.map((e) => MissedBlock.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseMissedBlock: object = {index: Long.ZERO, missed: false};
+function createBaseMissedBlock(): MissedBlock {
+  return {index: Long.ZERO, missed: false};
+}
 
 export const MissedBlock = {
   encode(message: MissedBlock, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -263,7 +265,7 @@ export const MissedBlock = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MissedBlock {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMissedBlock} as MissedBlock;
+    const message = createBaseMissedBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -282,10 +284,10 @@ export const MissedBlock = {
   },
 
   fromJSON(object: any): MissedBlock {
-    const message = {...baseMissedBlock} as MissedBlock;
-    message.index = object.index !== undefined && object.index !== null ? Long.fromString(object.index) : Long.ZERO;
-    message.missed = object.missed !== undefined && object.missed !== null ? Boolean(object.missed) : false;
-    return message;
+    return {
+      index: isSet(object.index) ? Long.fromValue(object.index) : Long.ZERO,
+      missed: isSet(object.missed) ? Boolean(object.missed) : false
+    };
   },
 
   toJSON(message: MissedBlock): unknown {
@@ -296,7 +298,7 @@ export const MissedBlock = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MissedBlock>, I>>(object: I): MissedBlock {
-    const message = {...baseMissedBlock} as MissedBlock;
+    const message = createBaseMissedBlock();
     message.index = object.index !== undefined && object.index !== null ? Long.fromValue(object.index) : Long.ZERO;
     message.missed = object.missed ?? false;
     return message;
@@ -320,9 +322,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {BaseID} from "../../shareledger/id/base_id";
+import {BaseID} from "./base_id";
 
 export const protobufPackage = "shareledger.id";
 
@@ -10,7 +10,9 @@ export interface Id {
   data?: BaseID;
 }
 
-const baseId: object = {id: ""};
+function createBaseId(): Id {
+  return {id: "", data: undefined};
+}
 
 export const Id = {
   encode(message: Id, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -26,7 +28,7 @@ export const Id = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Id {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseId} as Id;
+    const message = createBaseId();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -45,10 +47,10 @@ export const Id = {
   },
 
   fromJSON(object: any): Id {
-    const message = {...baseId} as Id;
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    message.data = object.data !== undefined && object.data !== null ? BaseID.fromJSON(object.data) : undefined;
-    return message;
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      data: isSet(object.data) ? BaseID.fromJSON(object.data) : undefined
+    };
   },
 
   toJSON(message: Id): unknown {
@@ -59,7 +61,7 @@ export const Id = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Id>, I>>(object: I): Id {
-    const message = {...baseId} as Id;
+    const message = createBaseId();
     message.id = object.id ?? "";
     message.data = object.data !== undefined && object.data !== null ? BaseID.fromPartial(object.data) : undefined;
     return message;
@@ -83,9 +85,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -12,7 +12,9 @@ export interface Document {
   version: number;
 }
 
-const baseDocument: object = {holder: "", issuer: "", proof: "", data: "", version: 0};
+function createBaseDocument(): Document {
+  return {holder: "", issuer: "", proof: "", data: "", version: 0};
+}
 
 export const Document = {
   encode(message: Document, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -37,7 +39,7 @@ export const Document = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Document {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDocument} as Document;
+    const message = createBaseDocument();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -65,13 +67,13 @@ export const Document = {
   },
 
   fromJSON(object: any): Document {
-    const message = {...baseDocument} as Document;
-    message.holder = object.holder !== undefined && object.holder !== null ? String(object.holder) : "";
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    message.proof = object.proof !== undefined && object.proof !== null ? String(object.proof) : "";
-    message.data = object.data !== undefined && object.data !== null ? String(object.data) : "";
-    message.version = object.version !== undefined && object.version !== null ? Number(object.version) : 0;
-    return message;
+    return {
+      holder: isSet(object.holder) ? String(object.holder) : "",
+      issuer: isSet(object.issuer) ? String(object.issuer) : "",
+      proof: isSet(object.proof) ? String(object.proof) : "",
+      data: isSet(object.data) ? String(object.data) : "",
+      version: isSet(object.version) ? Number(object.version) : 0
+    };
   },
 
   toJSON(message: Document): unknown {
@@ -80,12 +82,12 @@ export const Document = {
     message.issuer !== undefined && (obj.issuer = message.issuer);
     message.proof !== undefined && (obj.proof = message.proof);
     message.data !== undefined && (obj.data = message.data);
-    message.version !== undefined && (obj.version = message.version);
+    message.version !== undefined && (obj.version = Math.round(message.version));
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<Document>, I>>(object: I): Document {
-    const message = {...baseDocument} as Document;
+    const message = createBaseDocument();
     message.holder = object.holder ?? "";
     message.issuer = object.issuer ?? "";
     message.proof = object.proof ?? "";
@@ -112,9 +114,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

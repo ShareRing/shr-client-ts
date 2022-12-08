@@ -24,7 +24,9 @@ export interface Consensus {
   app: Long;
 }
 
-const baseApp: object = {protocol: Long.UZERO, software: ""};
+function createBaseApp(): App {
+  return {protocol: Long.UZERO, software: ""};
+}
 
 export const App = {
   encode(message: App, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -40,7 +42,7 @@ export const App = {
   decode(input: _m0.Reader | Uint8Array, length?: number): App {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseApp} as App;
+    const message = createBaseApp();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -59,10 +61,10 @@ export const App = {
   },
 
   fromJSON(object: any): App {
-    const message = {...baseApp} as App;
-    message.protocol = object.protocol !== undefined && object.protocol !== null ? Long.fromString(object.protocol) : Long.UZERO;
-    message.software = object.software !== undefined && object.software !== null ? String(object.software) : "";
-    return message;
+    return {
+      protocol: isSet(object.protocol) ? Long.fromValue(object.protocol) : Long.UZERO,
+      software: isSet(object.software) ? String(object.software) : ""
+    };
   },
 
   toJSON(message: App): unknown {
@@ -73,14 +75,16 @@ export const App = {
   },
 
   fromPartial<I extends Exact<DeepPartial<App>, I>>(object: I): App {
-    const message = {...baseApp} as App;
+    const message = createBaseApp();
     message.protocol = object.protocol !== undefined && object.protocol !== null ? Long.fromValue(object.protocol) : Long.UZERO;
     message.software = object.software ?? "";
     return message;
   }
 };
 
-const baseConsensus: object = {block: Long.UZERO, app: Long.UZERO};
+function createBaseConsensus(): Consensus {
+  return {block: Long.UZERO, app: Long.UZERO};
+}
 
 export const Consensus = {
   encode(message: Consensus, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -96,7 +100,7 @@ export const Consensus = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Consensus {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseConsensus} as Consensus;
+    const message = createBaseConsensus();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -115,10 +119,10 @@ export const Consensus = {
   },
 
   fromJSON(object: any): Consensus {
-    const message = {...baseConsensus} as Consensus;
-    message.block = object.block !== undefined && object.block !== null ? Long.fromString(object.block) : Long.UZERO;
-    message.app = object.app !== undefined && object.app !== null ? Long.fromString(object.app) : Long.UZERO;
-    return message;
+    return {
+      block: isSet(object.block) ? Long.fromValue(object.block) : Long.UZERO,
+      app: isSet(object.app) ? Long.fromValue(object.app) : Long.UZERO
+    };
   },
 
   toJSON(message: Consensus): unknown {
@@ -129,7 +133,7 @@ export const Consensus = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Consensus>, I>>(object: I): Consensus {
-    const message = {...baseConsensus} as Consensus;
+    const message = createBaseConsensus();
     message.block = object.block !== undefined && object.block !== null ? Long.fromValue(object.block) : Long.UZERO;
     message.app = object.app !== undefined && object.app !== null ? Long.fromValue(object.app) : Long.UZERO;
     return message;
@@ -153,9 +157,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

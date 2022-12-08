@@ -1,33 +1,33 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Channel, Packet} from "../../../../ibc/core/channel/v1/channel";
-import {Height} from "../../../../ibc/core/client/v1/client";
+import {Height} from "../../client/v1/client";
+import {Channel, Packet} from "./channel";
 
 export const protobufPackage = "ibc.core.channel.v1";
 
 /** ResponseResultType defines the possible outcomes of the execution of a message */
 export enum ResponseResultType {
-  /** RESPONSE_RESULT_UNSPECIFIED - Default zero value enumeration */
-  RESPONSE_RESULT_UNSPECIFIED = 0,
-  /** RESPONSE_RESULT_NOOP - The message did not call the IBC application callbacks (because, for example, the packet had already been relayed) */
-  RESPONSE_RESULT_NOOP = 1,
-  /** RESPONSE_RESULT_SUCCESS - The message was executed successfully */
-  RESPONSE_RESULT_SUCCESS = 2,
+  /** RESPONSE_RESULT_TYPE_UNSPECIFIED - Default zero value enumeration */
+  RESPONSE_RESULT_TYPE_UNSPECIFIED = 0,
+  /** RESPONSE_RESULT_TYPE_NOOP - The message did not call the IBC application callbacks (because, for example, the packet had already been relayed) */
+  RESPONSE_RESULT_TYPE_NOOP = 1,
+  /** RESPONSE_RESULT_TYPE_SUCCESS - The message was executed successfully */
+  RESPONSE_RESULT_TYPE_SUCCESS = 2,
   UNRECOGNIZED = -1
 }
 
 export function responseResultTypeFromJSON(object: any): ResponseResultType {
   switch (object) {
     case 0:
-    case "RESPONSE_RESULT_UNSPECIFIED":
-      return ResponseResultType.RESPONSE_RESULT_UNSPECIFIED;
+    case "RESPONSE_RESULT_TYPE_UNSPECIFIED":
+      return ResponseResultType.RESPONSE_RESULT_TYPE_UNSPECIFIED;
     case 1:
-    case "RESPONSE_RESULT_NOOP":
-      return ResponseResultType.RESPONSE_RESULT_NOOP;
+    case "RESPONSE_RESULT_TYPE_NOOP":
+      return ResponseResultType.RESPONSE_RESULT_TYPE_NOOP;
     case 2:
-    case "RESPONSE_RESULT_SUCCESS":
-      return ResponseResultType.RESPONSE_RESULT_SUCCESS;
+    case "RESPONSE_RESULT_TYPE_SUCCESS":
+      return ResponseResultType.RESPONSE_RESULT_TYPE_SUCCESS;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -37,14 +37,15 @@ export function responseResultTypeFromJSON(object: any): ResponseResultType {
 
 export function responseResultTypeToJSON(object: ResponseResultType): string {
   switch (object) {
-    case ResponseResultType.RESPONSE_RESULT_UNSPECIFIED:
-      return "RESPONSE_RESULT_UNSPECIFIED";
-    case ResponseResultType.RESPONSE_RESULT_NOOP:
-      return "RESPONSE_RESULT_NOOP";
-    case ResponseResultType.RESPONSE_RESULT_SUCCESS:
-      return "RESPONSE_RESULT_SUCCESS";
+    case ResponseResultType.RESPONSE_RESULT_TYPE_UNSPECIFIED:
+      return "RESPONSE_RESULT_TYPE_UNSPECIFIED";
+    case ResponseResultType.RESPONSE_RESULT_TYPE_NOOP:
+      return "RESPONSE_RESULT_TYPE_NOOP";
+    case ResponseResultType.RESPONSE_RESULT_TYPE_SUCCESS:
+      return "RESPONSE_RESULT_TYPE_SUCCESS";
+    case ResponseResultType.UNRECOGNIZED:
     default:
-      return "UNKNOWN";
+      return "UNRECOGNIZED";
   }
 }
 
@@ -61,6 +62,7 @@ export interface MsgChannelOpenInit {
 /** MsgChannelOpenInitResponse defines the Msg/ChannelOpenInit response type. */
 export interface MsgChannelOpenInitResponse {
   channelId: string;
+  version: string;
 }
 
 /**
@@ -71,8 +73,9 @@ export interface MsgChannelOpenInitResponse {
 export interface MsgChannelOpenTry {
   portId: string;
   /**
-   * in the case of crossing hello's, when both chains call OpenInit, we need
-   * the channel identifier of the previous channel in state INIT
+   * Deprecated: this field is unused. Crossing hello's are no longer supported in core IBC.
+   *
+   * @deprecated
    */
   previousChannelId: string;
   /** NOTE: the version field within the channel has been deprecated. Its value will be ignored by core IBC. */
@@ -84,7 +87,9 @@ export interface MsgChannelOpenTry {
 }
 
 /** MsgChannelOpenTryResponse defines the Msg/ChannelOpenTry response type. */
-export interface MsgChannelOpenTryResponse {}
+export interface MsgChannelOpenTryResponse {
+  version: string;
+}
 
 /**
  * MsgChannelOpenAck defines a msg sent by a Relayer to Chain A to acknowledge
@@ -208,7 +213,9 @@ export interface MsgAcknowledgementResponse {
   result: ResponseResultType;
 }
 
-const baseMsgChannelOpenInit: object = {portId: "", signer: ""};
+function createBaseMsgChannelOpenInit(): MsgChannelOpenInit {
+  return {portId: "", channel: undefined, signer: ""};
+}
 
 export const MsgChannelOpenInit = {
   encode(message: MsgChannelOpenInit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -227,7 +234,7 @@ export const MsgChannelOpenInit = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenInit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenInit} as MsgChannelOpenInit;
+    const message = createBaseMsgChannelOpenInit();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -249,11 +256,11 @@ export const MsgChannelOpenInit = {
   },
 
   fromJSON(object: any): MsgChannelOpenInit {
-    const message = {...baseMsgChannelOpenInit} as MsgChannelOpenInit;
-    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
-    message.channel = object.channel !== undefined && object.channel !== null ? Channel.fromJSON(object.channel) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      portId: isSet(object.portId) ? String(object.portId) : "",
+      channel: isSet(object.channel) ? Channel.fromJSON(object.channel) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgChannelOpenInit): unknown {
@@ -265,7 +272,7 @@ export const MsgChannelOpenInit = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenInit>, I>>(object: I): MsgChannelOpenInit {
-    const message = {...baseMsgChannelOpenInit} as MsgChannelOpenInit;
+    const message = createBaseMsgChannelOpenInit();
     message.portId = object.portId ?? "";
     message.channel = object.channel !== undefined && object.channel !== null ? Channel.fromPartial(object.channel) : undefined;
     message.signer = object.signer ?? "";
@@ -273,12 +280,17 @@ export const MsgChannelOpenInit = {
   }
 };
 
-const baseMsgChannelOpenInitResponse: object = {channelId: ""};
+function createBaseMsgChannelOpenInitResponse(): MsgChannelOpenInitResponse {
+  return {channelId: "", version: ""};
+}
 
 export const MsgChannelOpenInitResponse = {
   encode(message: MsgChannelOpenInitResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.channelId !== "") {
       writer.uint32(10).string(message.channelId);
+    }
+    if (message.version !== "") {
+      writer.uint32(18).string(message.version);
     }
     return writer;
   },
@@ -286,12 +298,15 @@ export const MsgChannelOpenInitResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenInitResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenInitResponse} as MsgChannelOpenInitResponse;
+    const message = createBaseMsgChannelOpenInitResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
           message.channelId = reader.string();
+          break;
+        case 2:
+          message.version = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -302,25 +317,38 @@ export const MsgChannelOpenInitResponse = {
   },
 
   fromJSON(object: any): MsgChannelOpenInitResponse {
-    const message = {...baseMsgChannelOpenInitResponse} as MsgChannelOpenInitResponse;
-    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
-    return message;
+    return {
+      channelId: isSet(object.channelId) ? String(object.channelId) : "",
+      version: isSet(object.version) ? String(object.version) : ""
+    };
   },
 
   toJSON(message: MsgChannelOpenInitResponse): unknown {
     const obj: any = {};
     message.channelId !== undefined && (obj.channelId = message.channelId);
+    message.version !== undefined && (obj.version = message.version);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenInitResponse>, I>>(object: I): MsgChannelOpenInitResponse {
-    const message = {...baseMsgChannelOpenInitResponse} as MsgChannelOpenInitResponse;
+    const message = createBaseMsgChannelOpenInitResponse();
     message.channelId = object.channelId ?? "";
+    message.version = object.version ?? "";
     return message;
   }
 };
 
-const baseMsgChannelOpenTry: object = {portId: "", previousChannelId: "", counterpartyVersion: "", signer: ""};
+function createBaseMsgChannelOpenTry(): MsgChannelOpenTry {
+  return {
+    portId: "",
+    previousChannelId: "",
+    channel: undefined,
+    counterpartyVersion: "",
+    proofInit: new Uint8Array(),
+    proofHeight: undefined,
+    signer: ""
+  };
+}
 
 export const MsgChannelOpenTry = {
   encode(message: MsgChannelOpenTry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -351,8 +379,7 @@ export const MsgChannelOpenTry = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenTry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenTry} as MsgChannelOpenTry;
-    message.proofInit = new Uint8Array();
+    const message = createBaseMsgChannelOpenTry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -386,17 +413,15 @@ export const MsgChannelOpenTry = {
   },
 
   fromJSON(object: any): MsgChannelOpenTry {
-    const message = {...baseMsgChannelOpenTry} as MsgChannelOpenTry;
-    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
-    message.previousChannelId =
-      object.previousChannelId !== undefined && object.previousChannelId !== null ? String(object.previousChannelId) : "";
-    message.channel = object.channel !== undefined && object.channel !== null ? Channel.fromJSON(object.channel) : undefined;
-    message.counterpartyVersion =
-      object.counterpartyVersion !== undefined && object.counterpartyVersion !== null ? String(object.counterpartyVersion) : "";
-    message.proofInit = object.proofInit !== undefined && object.proofInit !== null ? bytesFromBase64(object.proofInit) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      portId: isSet(object.portId) ? String(object.portId) : "",
+      previousChannelId: isSet(object.previousChannelId) ? String(object.previousChannelId) : "",
+      channel: isSet(object.channel) ? Channel.fromJSON(object.channel) : undefined,
+      counterpartyVersion: isSet(object.counterpartyVersion) ? String(object.counterpartyVersion) : "",
+      proofInit: isSet(object.proofInit) ? bytesFromBase64(object.proofInit) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgChannelOpenTry): unknown {
@@ -413,7 +438,7 @@ export const MsgChannelOpenTry = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenTry>, I>>(object: I): MsgChannelOpenTry {
-    const message = {...baseMsgChannelOpenTry} as MsgChannelOpenTry;
+    const message = createBaseMsgChannelOpenTry();
     message.portId = object.portId ?? "";
     message.previousChannelId = object.previousChannelId ?? "";
     message.channel = object.channel !== undefined && object.channel !== null ? Channel.fromPartial(object.channel) : undefined;
@@ -426,20 +451,28 @@ export const MsgChannelOpenTry = {
   }
 };
 
-const baseMsgChannelOpenTryResponse: object = {};
+function createBaseMsgChannelOpenTryResponse(): MsgChannelOpenTryResponse {
+  return {version: ""};
+}
 
 export const MsgChannelOpenTryResponse = {
-  encode(_: MsgChannelOpenTryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: MsgChannelOpenTryResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.version !== "") {
+      writer.uint32(10).string(message.version);
+    }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenTryResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenTryResponse} as MsgChannelOpenTryResponse;
+    const message = createBaseMsgChannelOpenTryResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.version = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -448,23 +481,34 @@ export const MsgChannelOpenTryResponse = {
     return message;
   },
 
-  fromJSON(_: any): MsgChannelOpenTryResponse {
-    const message = {...baseMsgChannelOpenTryResponse} as MsgChannelOpenTryResponse;
-    return message;
+  fromJSON(object: any): MsgChannelOpenTryResponse {
+    return {version: isSet(object.version) ? String(object.version) : ""};
   },
 
-  toJSON(_: MsgChannelOpenTryResponse): unknown {
+  toJSON(message: MsgChannelOpenTryResponse): unknown {
     const obj: any = {};
+    message.version !== undefined && (obj.version = message.version);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<MsgChannelOpenTryResponse>, I>>(_: I): MsgChannelOpenTryResponse {
-    const message = {...baseMsgChannelOpenTryResponse} as MsgChannelOpenTryResponse;
+  fromPartial<I extends Exact<DeepPartial<MsgChannelOpenTryResponse>, I>>(object: I): MsgChannelOpenTryResponse {
+    const message = createBaseMsgChannelOpenTryResponse();
+    message.version = object.version ?? "";
     return message;
   }
 };
 
-const baseMsgChannelOpenAck: object = {portId: "", channelId: "", counterpartyChannelId: "", counterpartyVersion: "", signer: ""};
+function createBaseMsgChannelOpenAck(): MsgChannelOpenAck {
+  return {
+    portId: "",
+    channelId: "",
+    counterpartyChannelId: "",
+    counterpartyVersion: "",
+    proofTry: new Uint8Array(),
+    proofHeight: undefined,
+    signer: ""
+  };
+}
 
 export const MsgChannelOpenAck = {
   encode(message: MsgChannelOpenAck, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -495,8 +539,7 @@ export const MsgChannelOpenAck = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenAck {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenAck} as MsgChannelOpenAck;
-    message.proofTry = new Uint8Array();
+    const message = createBaseMsgChannelOpenAck();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -530,17 +573,15 @@ export const MsgChannelOpenAck = {
   },
 
   fromJSON(object: any): MsgChannelOpenAck {
-    const message = {...baseMsgChannelOpenAck} as MsgChannelOpenAck;
-    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
-    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
-    message.counterpartyChannelId =
-      object.counterpartyChannelId !== undefined && object.counterpartyChannelId !== null ? String(object.counterpartyChannelId) : "";
-    message.counterpartyVersion =
-      object.counterpartyVersion !== undefined && object.counterpartyVersion !== null ? String(object.counterpartyVersion) : "";
-    message.proofTry = object.proofTry !== undefined && object.proofTry !== null ? bytesFromBase64(object.proofTry) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      portId: isSet(object.portId) ? String(object.portId) : "",
+      channelId: isSet(object.channelId) ? String(object.channelId) : "",
+      counterpartyChannelId: isSet(object.counterpartyChannelId) ? String(object.counterpartyChannelId) : "",
+      counterpartyVersion: isSet(object.counterpartyVersion) ? String(object.counterpartyVersion) : "",
+      proofTry: isSet(object.proofTry) ? bytesFromBase64(object.proofTry) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgChannelOpenAck): unknown {
@@ -557,7 +598,7 @@ export const MsgChannelOpenAck = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenAck>, I>>(object: I): MsgChannelOpenAck {
-    const message = {...baseMsgChannelOpenAck} as MsgChannelOpenAck;
+    const message = createBaseMsgChannelOpenAck();
     message.portId = object.portId ?? "";
     message.channelId = object.channelId ?? "";
     message.counterpartyChannelId = object.counterpartyChannelId ?? "";
@@ -570,7 +611,9 @@ export const MsgChannelOpenAck = {
   }
 };
 
-const baseMsgChannelOpenAckResponse: object = {};
+function createBaseMsgChannelOpenAckResponse(): MsgChannelOpenAckResponse {
+  return {};
+}
 
 export const MsgChannelOpenAckResponse = {
   encode(_: MsgChannelOpenAckResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -580,7 +623,7 @@ export const MsgChannelOpenAckResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenAckResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenAckResponse} as MsgChannelOpenAckResponse;
+    const message = createBaseMsgChannelOpenAckResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -593,8 +636,7 @@ export const MsgChannelOpenAckResponse = {
   },
 
   fromJSON(_: any): MsgChannelOpenAckResponse {
-    const message = {...baseMsgChannelOpenAckResponse} as MsgChannelOpenAckResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgChannelOpenAckResponse): unknown {
@@ -603,12 +645,14 @@ export const MsgChannelOpenAckResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenAckResponse>, I>>(_: I): MsgChannelOpenAckResponse {
-    const message = {...baseMsgChannelOpenAckResponse} as MsgChannelOpenAckResponse;
+    const message = createBaseMsgChannelOpenAckResponse();
     return message;
   }
 };
 
-const baseMsgChannelOpenConfirm: object = {portId: "", channelId: "", signer: ""};
+function createBaseMsgChannelOpenConfirm(): MsgChannelOpenConfirm {
+  return {portId: "", channelId: "", proofAck: new Uint8Array(), proofHeight: undefined, signer: ""};
+}
 
 export const MsgChannelOpenConfirm = {
   encode(message: MsgChannelOpenConfirm, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -633,8 +677,7 @@ export const MsgChannelOpenConfirm = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenConfirm {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenConfirm} as MsgChannelOpenConfirm;
-    message.proofAck = new Uint8Array();
+    const message = createBaseMsgChannelOpenConfirm();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -662,13 +705,13 @@ export const MsgChannelOpenConfirm = {
   },
 
   fromJSON(object: any): MsgChannelOpenConfirm {
-    const message = {...baseMsgChannelOpenConfirm} as MsgChannelOpenConfirm;
-    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
-    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
-    message.proofAck = object.proofAck !== undefined && object.proofAck !== null ? bytesFromBase64(object.proofAck) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      portId: isSet(object.portId) ? String(object.portId) : "",
+      channelId: isSet(object.channelId) ? String(object.channelId) : "",
+      proofAck: isSet(object.proofAck) ? bytesFromBase64(object.proofAck) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgChannelOpenConfirm): unknown {
@@ -683,7 +726,7 @@ export const MsgChannelOpenConfirm = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenConfirm>, I>>(object: I): MsgChannelOpenConfirm {
-    const message = {...baseMsgChannelOpenConfirm} as MsgChannelOpenConfirm;
+    const message = createBaseMsgChannelOpenConfirm();
     message.portId = object.portId ?? "";
     message.channelId = object.channelId ?? "";
     message.proofAck = object.proofAck ?? new Uint8Array();
@@ -694,7 +737,9 @@ export const MsgChannelOpenConfirm = {
   }
 };
 
-const baseMsgChannelOpenConfirmResponse: object = {};
+function createBaseMsgChannelOpenConfirmResponse(): MsgChannelOpenConfirmResponse {
+  return {};
+}
 
 export const MsgChannelOpenConfirmResponse = {
   encode(_: MsgChannelOpenConfirmResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -704,7 +749,7 @@ export const MsgChannelOpenConfirmResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelOpenConfirmResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelOpenConfirmResponse} as MsgChannelOpenConfirmResponse;
+    const message = createBaseMsgChannelOpenConfirmResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -717,8 +762,7 @@ export const MsgChannelOpenConfirmResponse = {
   },
 
   fromJSON(_: any): MsgChannelOpenConfirmResponse {
-    const message = {...baseMsgChannelOpenConfirmResponse} as MsgChannelOpenConfirmResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgChannelOpenConfirmResponse): unknown {
@@ -727,12 +771,14 @@ export const MsgChannelOpenConfirmResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelOpenConfirmResponse>, I>>(_: I): MsgChannelOpenConfirmResponse {
-    const message = {...baseMsgChannelOpenConfirmResponse} as MsgChannelOpenConfirmResponse;
+    const message = createBaseMsgChannelOpenConfirmResponse();
     return message;
   }
 };
 
-const baseMsgChannelCloseInit: object = {portId: "", channelId: "", signer: ""};
+function createBaseMsgChannelCloseInit(): MsgChannelCloseInit {
+  return {portId: "", channelId: "", signer: ""};
+}
 
 export const MsgChannelCloseInit = {
   encode(message: MsgChannelCloseInit, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -751,7 +797,7 @@ export const MsgChannelCloseInit = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelCloseInit {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelCloseInit} as MsgChannelCloseInit;
+    const message = createBaseMsgChannelCloseInit();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -773,11 +819,11 @@ export const MsgChannelCloseInit = {
   },
 
   fromJSON(object: any): MsgChannelCloseInit {
-    const message = {...baseMsgChannelCloseInit} as MsgChannelCloseInit;
-    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
-    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      portId: isSet(object.portId) ? String(object.portId) : "",
+      channelId: isSet(object.channelId) ? String(object.channelId) : "",
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgChannelCloseInit): unknown {
@@ -789,7 +835,7 @@ export const MsgChannelCloseInit = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelCloseInit>, I>>(object: I): MsgChannelCloseInit {
-    const message = {...baseMsgChannelCloseInit} as MsgChannelCloseInit;
+    const message = createBaseMsgChannelCloseInit();
     message.portId = object.portId ?? "";
     message.channelId = object.channelId ?? "";
     message.signer = object.signer ?? "";
@@ -797,7 +843,9 @@ export const MsgChannelCloseInit = {
   }
 };
 
-const baseMsgChannelCloseInitResponse: object = {};
+function createBaseMsgChannelCloseInitResponse(): MsgChannelCloseInitResponse {
+  return {};
+}
 
 export const MsgChannelCloseInitResponse = {
   encode(_: MsgChannelCloseInitResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -807,7 +855,7 @@ export const MsgChannelCloseInitResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelCloseInitResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelCloseInitResponse} as MsgChannelCloseInitResponse;
+    const message = createBaseMsgChannelCloseInitResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -820,8 +868,7 @@ export const MsgChannelCloseInitResponse = {
   },
 
   fromJSON(_: any): MsgChannelCloseInitResponse {
-    const message = {...baseMsgChannelCloseInitResponse} as MsgChannelCloseInitResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgChannelCloseInitResponse): unknown {
@@ -830,12 +877,14 @@ export const MsgChannelCloseInitResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelCloseInitResponse>, I>>(_: I): MsgChannelCloseInitResponse {
-    const message = {...baseMsgChannelCloseInitResponse} as MsgChannelCloseInitResponse;
+    const message = createBaseMsgChannelCloseInitResponse();
     return message;
   }
 };
 
-const baseMsgChannelCloseConfirm: object = {portId: "", channelId: "", signer: ""};
+function createBaseMsgChannelCloseConfirm(): MsgChannelCloseConfirm {
+  return {portId: "", channelId: "", proofInit: new Uint8Array(), proofHeight: undefined, signer: ""};
+}
 
 export const MsgChannelCloseConfirm = {
   encode(message: MsgChannelCloseConfirm, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -860,8 +909,7 @@ export const MsgChannelCloseConfirm = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelCloseConfirm {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelCloseConfirm} as MsgChannelCloseConfirm;
-    message.proofInit = new Uint8Array();
+    const message = createBaseMsgChannelCloseConfirm();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -889,13 +937,13 @@ export const MsgChannelCloseConfirm = {
   },
 
   fromJSON(object: any): MsgChannelCloseConfirm {
-    const message = {...baseMsgChannelCloseConfirm} as MsgChannelCloseConfirm;
-    message.portId = object.portId !== undefined && object.portId !== null ? String(object.portId) : "";
-    message.channelId = object.channelId !== undefined && object.channelId !== null ? String(object.channelId) : "";
-    message.proofInit = object.proofInit !== undefined && object.proofInit !== null ? bytesFromBase64(object.proofInit) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      portId: isSet(object.portId) ? String(object.portId) : "",
+      channelId: isSet(object.channelId) ? String(object.channelId) : "",
+      proofInit: isSet(object.proofInit) ? bytesFromBase64(object.proofInit) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgChannelCloseConfirm): unknown {
@@ -910,7 +958,7 @@ export const MsgChannelCloseConfirm = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelCloseConfirm>, I>>(object: I): MsgChannelCloseConfirm {
-    const message = {...baseMsgChannelCloseConfirm} as MsgChannelCloseConfirm;
+    const message = createBaseMsgChannelCloseConfirm();
     message.portId = object.portId ?? "";
     message.channelId = object.channelId ?? "";
     message.proofInit = object.proofInit ?? new Uint8Array();
@@ -921,7 +969,9 @@ export const MsgChannelCloseConfirm = {
   }
 };
 
-const baseMsgChannelCloseConfirmResponse: object = {};
+function createBaseMsgChannelCloseConfirmResponse(): MsgChannelCloseConfirmResponse {
+  return {};
+}
 
 export const MsgChannelCloseConfirmResponse = {
   encode(_: MsgChannelCloseConfirmResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -931,7 +981,7 @@ export const MsgChannelCloseConfirmResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgChannelCloseConfirmResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgChannelCloseConfirmResponse} as MsgChannelCloseConfirmResponse;
+    const message = createBaseMsgChannelCloseConfirmResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -944,8 +994,7 @@ export const MsgChannelCloseConfirmResponse = {
   },
 
   fromJSON(_: any): MsgChannelCloseConfirmResponse {
-    const message = {...baseMsgChannelCloseConfirmResponse} as MsgChannelCloseConfirmResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgChannelCloseConfirmResponse): unknown {
@@ -954,12 +1003,14 @@ export const MsgChannelCloseConfirmResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgChannelCloseConfirmResponse>, I>>(_: I): MsgChannelCloseConfirmResponse {
-    const message = {...baseMsgChannelCloseConfirmResponse} as MsgChannelCloseConfirmResponse;
+    const message = createBaseMsgChannelCloseConfirmResponse();
     return message;
   }
 };
 
-const baseMsgRecvPacket: object = {signer: ""};
+function createBaseMsgRecvPacket(): MsgRecvPacket {
+  return {packet: undefined, proofCommitment: new Uint8Array(), proofHeight: undefined, signer: ""};
+}
 
 export const MsgRecvPacket = {
   encode(message: MsgRecvPacket, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -981,8 +1032,7 @@ export const MsgRecvPacket = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRecvPacket {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRecvPacket} as MsgRecvPacket;
-    message.proofCommitment = new Uint8Array();
+    const message = createBaseMsgRecvPacket();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1007,13 +1057,12 @@ export const MsgRecvPacket = {
   },
 
   fromJSON(object: any): MsgRecvPacket {
-    const message = {...baseMsgRecvPacket} as MsgRecvPacket;
-    message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromJSON(object.packet) : undefined;
-    message.proofCommitment =
-      object.proofCommitment !== undefined && object.proofCommitment !== null ? bytesFromBase64(object.proofCommitment) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      packet: isSet(object.packet) ? Packet.fromJSON(object.packet) : undefined,
+      proofCommitment: isSet(object.proofCommitment) ? bytesFromBase64(object.proofCommitment) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgRecvPacket): unknown {
@@ -1027,7 +1076,7 @@ export const MsgRecvPacket = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRecvPacket>, I>>(object: I): MsgRecvPacket {
-    const message = {...baseMsgRecvPacket} as MsgRecvPacket;
+    const message = createBaseMsgRecvPacket();
     message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromPartial(object.packet) : undefined;
     message.proofCommitment = object.proofCommitment ?? new Uint8Array();
     message.proofHeight =
@@ -1037,7 +1086,9 @@ export const MsgRecvPacket = {
   }
 };
 
-const baseMsgRecvPacketResponse: object = {result: 0};
+function createBaseMsgRecvPacketResponse(): MsgRecvPacketResponse {
+  return {result: 0};
+}
 
 export const MsgRecvPacketResponse = {
   encode(message: MsgRecvPacketResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1050,7 +1101,7 @@ export const MsgRecvPacketResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgRecvPacketResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgRecvPacketResponse} as MsgRecvPacketResponse;
+    const message = createBaseMsgRecvPacketResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1066,9 +1117,7 @@ export const MsgRecvPacketResponse = {
   },
 
   fromJSON(object: any): MsgRecvPacketResponse {
-    const message = {...baseMsgRecvPacketResponse} as MsgRecvPacketResponse;
-    message.result = object.result !== undefined && object.result !== null ? responseResultTypeFromJSON(object.result) : 0;
-    return message;
+    return {result: isSet(object.result) ? responseResultTypeFromJSON(object.result) : 0};
   },
 
   toJSON(message: MsgRecvPacketResponse): unknown {
@@ -1078,13 +1127,21 @@ export const MsgRecvPacketResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgRecvPacketResponse>, I>>(object: I): MsgRecvPacketResponse {
-    const message = {...baseMsgRecvPacketResponse} as MsgRecvPacketResponse;
+    const message = createBaseMsgRecvPacketResponse();
     message.result = object.result ?? 0;
     return message;
   }
 };
 
-const baseMsgTimeout: object = {nextSequenceRecv: Long.UZERO, signer: ""};
+function createBaseMsgTimeout(): MsgTimeout {
+  return {
+    packet: undefined,
+    proofUnreceived: new Uint8Array(),
+    proofHeight: undefined,
+    nextSequenceRecv: Long.UZERO,
+    signer: ""
+  };
+}
 
 export const MsgTimeout = {
   encode(message: MsgTimeout, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1109,8 +1166,7 @@ export const MsgTimeout = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeout {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgTimeout} as MsgTimeout;
-    message.proofUnreceived = new Uint8Array();
+    const message = createBaseMsgTimeout();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1138,15 +1194,13 @@ export const MsgTimeout = {
   },
 
   fromJSON(object: any): MsgTimeout {
-    const message = {...baseMsgTimeout} as MsgTimeout;
-    message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromJSON(object.packet) : undefined;
-    message.proofUnreceived =
-      object.proofUnreceived !== undefined && object.proofUnreceived !== null ? bytesFromBase64(object.proofUnreceived) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.nextSequenceRecv =
-      object.nextSequenceRecv !== undefined && object.nextSequenceRecv !== null ? Long.fromString(object.nextSequenceRecv) : Long.UZERO;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      packet: isSet(object.packet) ? Packet.fromJSON(object.packet) : undefined,
+      proofUnreceived: isSet(object.proofUnreceived) ? bytesFromBase64(object.proofUnreceived) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      nextSequenceRecv: isSet(object.nextSequenceRecv) ? Long.fromValue(object.nextSequenceRecv) : Long.UZERO,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgTimeout): unknown {
@@ -1161,7 +1215,7 @@ export const MsgTimeout = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgTimeout>, I>>(object: I): MsgTimeout {
-    const message = {...baseMsgTimeout} as MsgTimeout;
+    const message = createBaseMsgTimeout();
     message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromPartial(object.packet) : undefined;
     message.proofUnreceived = object.proofUnreceived ?? new Uint8Array();
     message.proofHeight =
@@ -1173,7 +1227,9 @@ export const MsgTimeout = {
   }
 };
 
-const baseMsgTimeoutResponse: object = {result: 0};
+function createBaseMsgTimeoutResponse(): MsgTimeoutResponse {
+  return {result: 0};
+}
 
 export const MsgTimeoutResponse = {
   encode(message: MsgTimeoutResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1186,7 +1242,7 @@ export const MsgTimeoutResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeoutResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgTimeoutResponse} as MsgTimeoutResponse;
+    const message = createBaseMsgTimeoutResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1202,9 +1258,7 @@ export const MsgTimeoutResponse = {
   },
 
   fromJSON(object: any): MsgTimeoutResponse {
-    const message = {...baseMsgTimeoutResponse} as MsgTimeoutResponse;
-    message.result = object.result !== undefined && object.result !== null ? responseResultTypeFromJSON(object.result) : 0;
-    return message;
+    return {result: isSet(object.result) ? responseResultTypeFromJSON(object.result) : 0};
   },
 
   toJSON(message: MsgTimeoutResponse): unknown {
@@ -1214,13 +1268,22 @@ export const MsgTimeoutResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgTimeoutResponse>, I>>(object: I): MsgTimeoutResponse {
-    const message = {...baseMsgTimeoutResponse} as MsgTimeoutResponse;
+    const message = createBaseMsgTimeoutResponse();
     message.result = object.result ?? 0;
     return message;
   }
 };
 
-const baseMsgTimeoutOnClose: object = {nextSequenceRecv: Long.UZERO, signer: ""};
+function createBaseMsgTimeoutOnClose(): MsgTimeoutOnClose {
+  return {
+    packet: undefined,
+    proofUnreceived: new Uint8Array(),
+    proofClose: new Uint8Array(),
+    proofHeight: undefined,
+    nextSequenceRecv: Long.UZERO,
+    signer: ""
+  };
+}
 
 export const MsgTimeoutOnClose = {
   encode(message: MsgTimeoutOnClose, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1248,9 +1311,7 @@ export const MsgTimeoutOnClose = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeoutOnClose {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgTimeoutOnClose} as MsgTimeoutOnClose;
-    message.proofUnreceived = new Uint8Array();
-    message.proofClose = new Uint8Array();
+    const message = createBaseMsgTimeoutOnClose();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1281,17 +1342,14 @@ export const MsgTimeoutOnClose = {
   },
 
   fromJSON(object: any): MsgTimeoutOnClose {
-    const message = {...baseMsgTimeoutOnClose} as MsgTimeoutOnClose;
-    message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromJSON(object.packet) : undefined;
-    message.proofUnreceived =
-      object.proofUnreceived !== undefined && object.proofUnreceived !== null ? bytesFromBase64(object.proofUnreceived) : new Uint8Array();
-    message.proofClose =
-      object.proofClose !== undefined && object.proofClose !== null ? bytesFromBase64(object.proofClose) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.nextSequenceRecv =
-      object.nextSequenceRecv !== undefined && object.nextSequenceRecv !== null ? Long.fromString(object.nextSequenceRecv) : Long.UZERO;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      packet: isSet(object.packet) ? Packet.fromJSON(object.packet) : undefined,
+      proofUnreceived: isSet(object.proofUnreceived) ? bytesFromBase64(object.proofUnreceived) : new Uint8Array(),
+      proofClose: isSet(object.proofClose) ? bytesFromBase64(object.proofClose) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      nextSequenceRecv: isSet(object.nextSequenceRecv) ? Long.fromValue(object.nextSequenceRecv) : Long.UZERO,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgTimeoutOnClose): unknown {
@@ -1308,7 +1366,7 @@ export const MsgTimeoutOnClose = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgTimeoutOnClose>, I>>(object: I): MsgTimeoutOnClose {
-    const message = {...baseMsgTimeoutOnClose} as MsgTimeoutOnClose;
+    const message = createBaseMsgTimeoutOnClose();
     message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromPartial(object.packet) : undefined;
     message.proofUnreceived = object.proofUnreceived ?? new Uint8Array();
     message.proofClose = object.proofClose ?? new Uint8Array();
@@ -1321,7 +1379,9 @@ export const MsgTimeoutOnClose = {
   }
 };
 
-const baseMsgTimeoutOnCloseResponse: object = {result: 0};
+function createBaseMsgTimeoutOnCloseResponse(): MsgTimeoutOnCloseResponse {
+  return {result: 0};
+}
 
 export const MsgTimeoutOnCloseResponse = {
   encode(message: MsgTimeoutOnCloseResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1334,7 +1394,7 @@ export const MsgTimeoutOnCloseResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgTimeoutOnCloseResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgTimeoutOnCloseResponse} as MsgTimeoutOnCloseResponse;
+    const message = createBaseMsgTimeoutOnCloseResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1350,9 +1410,7 @@ export const MsgTimeoutOnCloseResponse = {
   },
 
   fromJSON(object: any): MsgTimeoutOnCloseResponse {
-    const message = {...baseMsgTimeoutOnCloseResponse} as MsgTimeoutOnCloseResponse;
-    message.result = object.result !== undefined && object.result !== null ? responseResultTypeFromJSON(object.result) : 0;
-    return message;
+    return {result: isSet(object.result) ? responseResultTypeFromJSON(object.result) : 0};
   },
 
   toJSON(message: MsgTimeoutOnCloseResponse): unknown {
@@ -1362,13 +1420,21 @@ export const MsgTimeoutOnCloseResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgTimeoutOnCloseResponse>, I>>(object: I): MsgTimeoutOnCloseResponse {
-    const message = {...baseMsgTimeoutOnCloseResponse} as MsgTimeoutOnCloseResponse;
+    const message = createBaseMsgTimeoutOnCloseResponse();
     message.result = object.result ?? 0;
     return message;
   }
 };
 
-const baseMsgAcknowledgement: object = {signer: ""};
+function createBaseMsgAcknowledgement(): MsgAcknowledgement {
+  return {
+    packet: undefined,
+    acknowledgement: new Uint8Array(),
+    proofAcked: new Uint8Array(),
+    proofHeight: undefined,
+    signer: ""
+  };
+}
 
 export const MsgAcknowledgement = {
   encode(message: MsgAcknowledgement, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1393,9 +1459,7 @@ export const MsgAcknowledgement = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcknowledgement {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgAcknowledgement} as MsgAcknowledgement;
-    message.acknowledgement = new Uint8Array();
-    message.proofAcked = new Uint8Array();
+    const message = createBaseMsgAcknowledgement();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1423,15 +1487,13 @@ export const MsgAcknowledgement = {
   },
 
   fromJSON(object: any): MsgAcknowledgement {
-    const message = {...baseMsgAcknowledgement} as MsgAcknowledgement;
-    message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromJSON(object.packet) : undefined;
-    message.acknowledgement =
-      object.acknowledgement !== undefined && object.acknowledgement !== null ? bytesFromBase64(object.acknowledgement) : new Uint8Array();
-    message.proofAcked =
-      object.proofAcked !== undefined && object.proofAcked !== null ? bytesFromBase64(object.proofAcked) : new Uint8Array();
-    message.proofHeight = object.proofHeight !== undefined && object.proofHeight !== null ? Height.fromJSON(object.proofHeight) : undefined;
-    message.signer = object.signer !== undefined && object.signer !== null ? String(object.signer) : "";
-    return message;
+    return {
+      packet: isSet(object.packet) ? Packet.fromJSON(object.packet) : undefined,
+      acknowledgement: isSet(object.acknowledgement) ? bytesFromBase64(object.acknowledgement) : new Uint8Array(),
+      proofAcked: isSet(object.proofAcked) ? bytesFromBase64(object.proofAcked) : new Uint8Array(),
+      proofHeight: isSet(object.proofHeight) ? Height.fromJSON(object.proofHeight) : undefined,
+      signer: isSet(object.signer) ? String(object.signer) : ""
+    };
   },
 
   toJSON(message: MsgAcknowledgement): unknown {
@@ -1447,7 +1509,7 @@ export const MsgAcknowledgement = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgAcknowledgement>, I>>(object: I): MsgAcknowledgement {
-    const message = {...baseMsgAcknowledgement} as MsgAcknowledgement;
+    const message = createBaseMsgAcknowledgement();
     message.packet = object.packet !== undefined && object.packet !== null ? Packet.fromPartial(object.packet) : undefined;
     message.acknowledgement = object.acknowledgement ?? new Uint8Array();
     message.proofAcked = object.proofAcked ?? new Uint8Array();
@@ -1458,7 +1520,9 @@ export const MsgAcknowledgement = {
   }
 };
 
-const baseMsgAcknowledgementResponse: object = {result: 0};
+function createBaseMsgAcknowledgementResponse(): MsgAcknowledgementResponse {
+  return {result: 0};
+}
 
 export const MsgAcknowledgementResponse = {
   encode(message: MsgAcknowledgementResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1471,7 +1535,7 @@ export const MsgAcknowledgementResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgAcknowledgementResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgAcknowledgementResponse} as MsgAcknowledgementResponse;
+    const message = createBaseMsgAcknowledgementResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1487,9 +1551,7 @@ export const MsgAcknowledgementResponse = {
   },
 
   fromJSON(object: any): MsgAcknowledgementResponse {
-    const message = {...baseMsgAcknowledgementResponse} as MsgAcknowledgementResponse;
-    message.result = object.result !== undefined && object.result !== null ? responseResultTypeFromJSON(object.result) : 0;
-    return message;
+    return {result: isSet(object.result) ? responseResultTypeFromJSON(object.result) : 0};
   },
 
   toJSON(message: MsgAcknowledgementResponse): unknown {
@@ -1499,7 +1561,7 @@ export const MsgAcknowledgementResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgAcknowledgementResponse>, I>>(object: I): MsgAcknowledgementResponse {
-    const message = {...baseMsgAcknowledgementResponse} as MsgAcknowledgementResponse;
+    const message = createBaseMsgAcknowledgementResponse();
     message.result = object.result ?? 0;
     return message;
   }
@@ -1534,7 +1596,9 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "ibc.core.channel.v1.Msg";
     this.rpc = rpc;
     this.ChannelOpenInit = this.ChannelOpenInit.bind(this);
     this.ChannelOpenTry = this.ChannelOpenTry.bind(this);
@@ -1549,61 +1613,61 @@ export class MsgClientImpl implements Msg {
   }
   ChannelOpenInit(request: MsgChannelOpenInit): Promise<MsgChannelOpenInitResponse> {
     const data = MsgChannelOpenInit.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenInit", data);
+    const promise = this.rpc.request(this.service, "ChannelOpenInit", data);
     return promise.then((data) => MsgChannelOpenInitResponse.decode(new _m0.Reader(data)));
   }
 
   ChannelOpenTry(request: MsgChannelOpenTry): Promise<MsgChannelOpenTryResponse> {
     const data = MsgChannelOpenTry.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenTry", data);
+    const promise = this.rpc.request(this.service, "ChannelOpenTry", data);
     return promise.then((data) => MsgChannelOpenTryResponse.decode(new _m0.Reader(data)));
   }
 
   ChannelOpenAck(request: MsgChannelOpenAck): Promise<MsgChannelOpenAckResponse> {
     const data = MsgChannelOpenAck.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenAck", data);
+    const promise = this.rpc.request(this.service, "ChannelOpenAck", data);
     return promise.then((data) => MsgChannelOpenAckResponse.decode(new _m0.Reader(data)));
   }
 
   ChannelOpenConfirm(request: MsgChannelOpenConfirm): Promise<MsgChannelOpenConfirmResponse> {
     const data = MsgChannelOpenConfirm.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenConfirm", data);
+    const promise = this.rpc.request(this.service, "ChannelOpenConfirm", data);
     return promise.then((data) => MsgChannelOpenConfirmResponse.decode(new _m0.Reader(data)));
   }
 
   ChannelCloseInit(request: MsgChannelCloseInit): Promise<MsgChannelCloseInitResponse> {
     const data = MsgChannelCloseInit.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelCloseInit", data);
+    const promise = this.rpc.request(this.service, "ChannelCloseInit", data);
     return promise.then((data) => MsgChannelCloseInitResponse.decode(new _m0.Reader(data)));
   }
 
   ChannelCloseConfirm(request: MsgChannelCloseConfirm): Promise<MsgChannelCloseConfirmResponse> {
     const data = MsgChannelCloseConfirm.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelCloseConfirm", data);
+    const promise = this.rpc.request(this.service, "ChannelCloseConfirm", data);
     return promise.then((data) => MsgChannelCloseConfirmResponse.decode(new _m0.Reader(data)));
   }
 
   RecvPacket(request: MsgRecvPacket): Promise<MsgRecvPacketResponse> {
     const data = MsgRecvPacket.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "RecvPacket", data);
+    const promise = this.rpc.request(this.service, "RecvPacket", data);
     return promise.then((data) => MsgRecvPacketResponse.decode(new _m0.Reader(data)));
   }
 
   Timeout(request: MsgTimeout): Promise<MsgTimeoutResponse> {
     const data = MsgTimeout.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "Timeout", data);
+    const promise = this.rpc.request(this.service, "Timeout", data);
     return promise.then((data) => MsgTimeoutResponse.decode(new _m0.Reader(data)));
   }
 
   TimeoutOnClose(request: MsgTimeoutOnClose): Promise<MsgTimeoutOnCloseResponse> {
     const data = MsgTimeoutOnClose.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "TimeoutOnClose", data);
+    const promise = this.rpc.request(this.service, "TimeoutOnClose", data);
     return promise.then((data) => MsgTimeoutOnCloseResponse.decode(new _m0.Reader(data)));
   }
 
   Acknowledgement(request: MsgAcknowledgement): Promise<MsgAcknowledgementResponse> {
     const data = MsgAcknowledgement.encode(request).finish();
-    const promise = this.rpc.request("ibc.core.channel.v1.Msg", "Acknowledgement", data);
+    const promise = this.rpc.request(this.service, "Acknowledgement", data);
     return promise.then((data) => MsgAcknowledgementResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -1616,30 +1680,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -1659,9 +1737,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

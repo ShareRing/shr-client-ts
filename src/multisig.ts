@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import {MultisigThresholdPubkey, pubkeyToAddress} from "@cosmjs/amino";
-import {Bech32} from "@cosmjs/encoding";
+import {fromBech32} from "@cosmjs/encoding";
+import {assert} from "@cosmjs/utils";
 import {encodePubkey} from "./signing";
 import {CompactBitArray, MultiSignature} from "./codec/cosmos/crypto/multisig/v1beta1/multisig";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
@@ -25,6 +26,13 @@ export function makeCompactBitArray(bits: readonly boolean[]): CompactBitArray {
   return CompactBitArray.fromPartial({elems: bytes, extraBitsStored: extraBits});
 }
 
+/**
+ * Creates a signed transaction from signer info, transaction body and signatures.
+ * The result can be broadcasted after serialization.
+ *
+ * Consider using `makeMultisignedTxBytes` instead if you want to broadcast the
+ * transaction immediately.
+ */
 export function makeMultisignedTx(
   multisigPubkey: MultisigThresholdPubkey,
   sequence: number,
@@ -32,8 +40,11 @@ export function makeMultisignedTx(
   bodyBytes: Uint8Array,
   signatures: Map<string, Uint8Array>
 ): TxRaw {
+  assert(fee.amount);
+  assert(fee.gas);
+
   const addresses = Array.from(signatures.keys());
-  const prefix = Bech32.decode(addresses[0]).prefix;
+  const prefix = fromBech32(addresses[0]).prefix;
 
   const signers: boolean[] = Array(multisigPubkey.value.pubkeys.length).fill(false);
   const signaturesList = new Array<Uint8Array>();
@@ -74,4 +85,21 @@ export function makeMultisignedTx(
     signatures: [MultiSignature.encode(MultiSignature.fromPartial({signatures: signaturesList})).finish()]
   });
   return signedTx;
+}
+
+/**
+ * Creates a signed transaction from signer info, transaction body and signatures.
+ * The result can be broadcasted.
+ *
+ * This is a wrapper around `makeMultisignedTx` that encodes the transaction for broadcasting.
+ */
+export function makeMultisignedTxBytes(
+  multisigPubkey: MultisigThresholdPubkey,
+  sequence: number,
+  fee: StdFee,
+  bodyBytes: Uint8Array,
+  signatures: Map<string, Uint8Array>
+): Uint8Array {
+  const signedTx = makeMultisignedTx(multisigPubkey, sequence, fee, bodyBytes, signatures);
+  return Uint8Array.from(TxRaw.encode(signedTx).finish());
 }

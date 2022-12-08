@@ -2,8 +2,7 @@ import {AminoMsg, Coin, decodeBech32Pubkey, encodeBech32Pubkey} from "@cosmjs/am
 import {fromBase64, toBase64} from "@cosmjs/encoding";
 import {assertDefinedAndNotNull} from "@cosmjs/utils";
 import {MsgBeginRedelegate, MsgCreateValidator, MsgDelegate, MsgEditValidator, MsgUndelegate} from "../../codec/cosmos/staking/v1beta1/tx";
-import {AminoConverter} from "../../amino/types";
-import {EncodeObject, GeneratedType} from "../../signing";
+import {AminoConverter} from "../../amino";
 
 /** The initial commission rates to be used for creating a validator */
 interface CommissionRates {
@@ -42,15 +41,6 @@ export function isAminoMsgCreateValidator(msg: AminoMsg): msg is AminoMsgCreateV
   return msg.type === "cosmos-sdk/MsgCreateValidator";
 }
 
-export interface MsgCreateValidatorEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.staking.v1beta1.MsgCreateValidator";
-  readonly value: Partial<MsgCreateValidator>;
-}
-
-export function isMsgCreateValidatorEncodeObject(encodeObject: EncodeObject): encodeObject is MsgCreateValidatorEncodeObject {
-  return (encodeObject as MsgCreateValidatorEncodeObject).typeUrl === "/cosmos.staking.v1beta1.MsgCreateValidator";
-}
-
 /** Edits an existing validator. */
 export interface AminoMsgEditValidator extends AminoMsg {
   readonly type: "cosmos-sdk/MsgEditValidator";
@@ -65,15 +55,6 @@ export interface AminoMsgEditValidator extends AminoMsg {
 
 export function isAminoMsgEditValidator(msg: AminoMsg): msg is AminoMsgEditValidator {
   return msg.type === "cosmos-sdk/MsgEditValidator";
-}
-
-export interface MsgEditValidatorEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.staking.v1beta1.MsgEditValidator";
-  readonly value: Partial<MsgUndelegate>;
-}
-
-export function isMsgEditValidatorEncodeObject(encodeObject: EncodeObject): encodeObject is MsgEditValidatorEncodeObject {
-  return (encodeObject as MsgEditValidatorEncodeObject).typeUrl === "/cosmos.staking.v1beta1.MsgEditValidator";
 }
 
 /**
@@ -96,15 +77,6 @@ export function isAminoMsgDelegate(msg: AminoMsg): msg is AminoMsgDelegate {
   return msg.type === "cosmos-sdk/MsgDelegate";
 }
 
-export interface MsgDelegateEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.staking.v1beta1.MsgDelegate";
-  readonly value: Partial<MsgDelegate>;
-}
-
-export function isMsgDelegateEncodeObject(encodeObject: EncodeObject): encodeObject is MsgDelegateEncodeObject {
-  return (encodeObject as MsgDelegateEncodeObject).typeUrl === "/cosmos.staking.v1beta1.MsgDelegate";
-}
-
 /** Performs a redelegation from a delegate and source validator to a destination validator */
 export interface AminoMsgBeginRedelegate extends AminoMsg {
   readonly type: "cosmos-sdk/MsgBeginRedelegate";
@@ -123,15 +95,6 @@ export function isAminoMsgBeginRedelegate(msg: AminoMsg): msg is AminoMsgBeginRe
   return msg.type === "cosmos-sdk/MsgBeginRedelegate";
 }
 
-export interface MsgBeginRedelegateEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.staking.v1beta1.MsgBeginRedelegate";
-  readonly value: Partial<MsgBeginRedelegate>;
-}
-
-export function isMsgBeginRedelegateEncodeObject(encodeObject: EncodeObject): encodeObject is MsgBeginRedelegateEncodeObject {
-  return (encodeObject as MsgBeginRedelegateEncodeObject).typeUrl === "/cosmos.staking.v1beta1.MsgBeginRedelegate";
-}
-
 /** Performs an undelegation from a delegate and a validator */
 export interface AminoMsgUndelegate extends AminoMsg {
   readonly type: "cosmos-sdk/MsgUndelegate";
@@ -148,16 +111,7 @@ export function isAminoMsgUndelegate(msg: AminoMsg): msg is AminoMsgUndelegate {
   return msg.type === "cosmos-sdk/MsgUndelegate";
 }
 
-export interface MsgUndelegateEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.staking.v1beta1.MsgUndelegate";
-  readonly value: Partial<MsgUndelegate>;
-}
-
-export function isMsgUndelegateEncodeObject(encodeObject: EncodeObject): encodeObject is MsgUndelegateEncodeObject {
-  return (encodeObject as MsgUndelegateEncodeObject).typeUrl === "/cosmos.staking.v1beta1.MsgUndelegate";
-}
-
-export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
+export function createStakingAminoConverters(prefix: string): Record<string, AminoConverter | "not_supported_by_chain"> {
   return {
     "/cosmos.staking.v1beta1.MsgCreateValidator": {
       aminoType: "cosmos-sdk/MsgCreateValidator",
@@ -333,14 +287,4 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       })
     }
   };
-}
-
-export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
-  return [
-    ["/cosmos.staking.v1beta1.MsgCreateValidator", MsgCreateValidator],
-    ["/cosmos.staking.v1beta1.MsgEditValidator", MsgEditValidator],
-    ["/cosmos.staking.v1beta1.MsgDelegate", MsgDelegate],
-    ["/cosmos.staking.v1beta1.MsgBeginRedelegate", MsgBeginRedelegate],
-    ["/cosmos.staking.v1beta1.MsgUndelegate", MsgUndelegate]
-  ];
 }

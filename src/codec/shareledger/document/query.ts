@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Document} from "../../shareledger/document/document";
+import {Document} from "./document";
 
 export const protobufPackage = "shareledger.document";
 
@@ -30,7 +30,9 @@ export interface QueryDocumentOfHolderByIssuerResponse {
   documents: Document[];
 }
 
-const baseQueryDocumentByProofRequest: object = {proof: ""};
+function createBaseQueryDocumentByProofRequest(): QueryDocumentByProofRequest {
+  return {proof: ""};
+}
 
 export const QueryDocumentByProofRequest = {
   encode(message: QueryDocumentByProofRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -43,7 +45,7 @@ export const QueryDocumentByProofRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentByProofRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentByProofRequest} as QueryDocumentByProofRequest;
+    const message = createBaseQueryDocumentByProofRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -59,9 +61,7 @@ export const QueryDocumentByProofRequest = {
   },
 
   fromJSON(object: any): QueryDocumentByProofRequest {
-    const message = {...baseQueryDocumentByProofRequest} as QueryDocumentByProofRequest;
-    message.proof = object.proof !== undefined && object.proof !== null ? String(object.proof) : "";
-    return message;
+    return {proof: isSet(object.proof) ? String(object.proof) : ""};
   },
 
   toJSON(message: QueryDocumentByProofRequest): unknown {
@@ -71,13 +71,15 @@ export const QueryDocumentByProofRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentByProofRequest>, I>>(object: I): QueryDocumentByProofRequest {
-    const message = {...baseQueryDocumentByProofRequest} as QueryDocumentByProofRequest;
+    const message = createBaseQueryDocumentByProofRequest();
     message.proof = object.proof ?? "";
     return message;
   }
 };
 
-const baseQueryDocumentByProofResponse: object = {};
+function createBaseQueryDocumentByProofResponse(): QueryDocumentByProofResponse {
+  return {document: undefined};
+}
 
 export const QueryDocumentByProofResponse = {
   encode(message: QueryDocumentByProofResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -90,7 +92,7 @@ export const QueryDocumentByProofResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentByProofResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentByProofResponse} as QueryDocumentByProofResponse;
+    const message = createBaseQueryDocumentByProofResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -106,9 +108,7 @@ export const QueryDocumentByProofResponse = {
   },
 
   fromJSON(object: any): QueryDocumentByProofResponse {
-    const message = {...baseQueryDocumentByProofResponse} as QueryDocumentByProofResponse;
-    message.document = object.document !== undefined && object.document !== null ? Document.fromJSON(object.document) : undefined;
-    return message;
+    return {document: isSet(object.document) ? Document.fromJSON(object.document) : undefined};
   },
 
   toJSON(message: QueryDocumentByProofResponse): unknown {
@@ -118,13 +118,15 @@ export const QueryDocumentByProofResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentByProofResponse>, I>>(object: I): QueryDocumentByProofResponse {
-    const message = {...baseQueryDocumentByProofResponse} as QueryDocumentByProofResponse;
+    const message = createBaseQueryDocumentByProofResponse();
     message.document = object.document !== undefined && object.document !== null ? Document.fromPartial(object.document) : undefined;
     return message;
   }
 };
 
-const baseQueryDocumentByHolderIdRequest: object = {id: ""};
+function createBaseQueryDocumentByHolderIdRequest(): QueryDocumentByHolderIdRequest {
+  return {id: ""};
+}
 
 export const QueryDocumentByHolderIdRequest = {
   encode(message: QueryDocumentByHolderIdRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -137,7 +139,7 @@ export const QueryDocumentByHolderIdRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentByHolderIdRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentByHolderIdRequest} as QueryDocumentByHolderIdRequest;
+    const message = createBaseQueryDocumentByHolderIdRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -153,9 +155,7 @@ export const QueryDocumentByHolderIdRequest = {
   },
 
   fromJSON(object: any): QueryDocumentByHolderIdRequest {
-    const message = {...baseQueryDocumentByHolderIdRequest} as QueryDocumentByHolderIdRequest;
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    return message;
+    return {id: isSet(object.id) ? String(object.id) : ""};
   },
 
   toJSON(message: QueryDocumentByHolderIdRequest): unknown {
@@ -165,13 +165,15 @@ export const QueryDocumentByHolderIdRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentByHolderIdRequest>, I>>(object: I): QueryDocumentByHolderIdRequest {
-    const message = {...baseQueryDocumentByHolderIdRequest} as QueryDocumentByHolderIdRequest;
+    const message = createBaseQueryDocumentByHolderIdRequest();
     message.id = object.id ?? "";
     return message;
   }
 };
 
-const baseQueryDocumentByHolderIdResponse: object = {};
+function createBaseQueryDocumentByHolderIdResponse(): QueryDocumentByHolderIdResponse {
+  return {documents: []};
+}
 
 export const QueryDocumentByHolderIdResponse = {
   encode(message: QueryDocumentByHolderIdResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -184,8 +186,7 @@ export const QueryDocumentByHolderIdResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentByHolderIdResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentByHolderIdResponse} as QueryDocumentByHolderIdResponse;
-    message.documents = [];
+    const message = createBaseQueryDocumentByHolderIdResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -201,9 +202,9 @@ export const QueryDocumentByHolderIdResponse = {
   },
 
   fromJSON(object: any): QueryDocumentByHolderIdResponse {
-    const message = {...baseQueryDocumentByHolderIdResponse} as QueryDocumentByHolderIdResponse;
-    message.documents = (object.documents ?? []).map((e: any) => Document.fromJSON(e));
-    return message;
+    return {
+      documents: Array.isArray(object?.documents) ? object.documents.map((e: any) => Document.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryDocumentByHolderIdResponse): unknown {
@@ -217,13 +218,15 @@ export const QueryDocumentByHolderIdResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentByHolderIdResponse>, I>>(object: I): QueryDocumentByHolderIdResponse {
-    const message = {...baseQueryDocumentByHolderIdResponse} as QueryDocumentByHolderIdResponse;
+    const message = createBaseQueryDocumentByHolderIdResponse();
     message.documents = object.documents?.map((e) => Document.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryDocumentOfHolderByIssuerRequest: object = {holder: "", issuer: ""};
+function createBaseQueryDocumentOfHolderByIssuerRequest(): QueryDocumentOfHolderByIssuerRequest {
+  return {holder: "", issuer: ""};
+}
 
 export const QueryDocumentOfHolderByIssuerRequest = {
   encode(message: QueryDocumentOfHolderByIssuerRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -239,7 +242,7 @@ export const QueryDocumentOfHolderByIssuerRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentOfHolderByIssuerRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentOfHolderByIssuerRequest} as QueryDocumentOfHolderByIssuerRequest;
+    const message = createBaseQueryDocumentOfHolderByIssuerRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -258,10 +261,10 @@ export const QueryDocumentOfHolderByIssuerRequest = {
   },
 
   fromJSON(object: any): QueryDocumentOfHolderByIssuerRequest {
-    const message = {...baseQueryDocumentOfHolderByIssuerRequest} as QueryDocumentOfHolderByIssuerRequest;
-    message.holder = object.holder !== undefined && object.holder !== null ? String(object.holder) : "";
-    message.issuer = object.issuer !== undefined && object.issuer !== null ? String(object.issuer) : "";
-    return message;
+    return {
+      holder: isSet(object.holder) ? String(object.holder) : "",
+      issuer: isSet(object.issuer) ? String(object.issuer) : ""
+    };
   },
 
   toJSON(message: QueryDocumentOfHolderByIssuerRequest): unknown {
@@ -272,14 +275,16 @@ export const QueryDocumentOfHolderByIssuerRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentOfHolderByIssuerRequest>, I>>(object: I): QueryDocumentOfHolderByIssuerRequest {
-    const message = {...baseQueryDocumentOfHolderByIssuerRequest} as QueryDocumentOfHolderByIssuerRequest;
+    const message = createBaseQueryDocumentOfHolderByIssuerRequest();
     message.holder = object.holder ?? "";
     message.issuer = object.issuer ?? "";
     return message;
   }
 };
 
-const baseQueryDocumentOfHolderByIssuerResponse: object = {};
+function createBaseQueryDocumentOfHolderByIssuerResponse(): QueryDocumentOfHolderByIssuerResponse {
+  return {documents: []};
+}
 
 export const QueryDocumentOfHolderByIssuerResponse = {
   encode(message: QueryDocumentOfHolderByIssuerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -292,8 +297,7 @@ export const QueryDocumentOfHolderByIssuerResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryDocumentOfHolderByIssuerResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryDocumentOfHolderByIssuerResponse} as QueryDocumentOfHolderByIssuerResponse;
-    message.documents = [];
+    const message = createBaseQueryDocumentOfHolderByIssuerResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -309,9 +313,9 @@ export const QueryDocumentOfHolderByIssuerResponse = {
   },
 
   fromJSON(object: any): QueryDocumentOfHolderByIssuerResponse {
-    const message = {...baseQueryDocumentOfHolderByIssuerResponse} as QueryDocumentOfHolderByIssuerResponse;
-    message.documents = (object.documents ?? []).map((e: any) => Document.fromJSON(e));
-    return message;
+    return {
+      documents: Array.isArray(object?.documents) ? object.documents.map((e: any) => Document.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryDocumentOfHolderByIssuerResponse): unknown {
@@ -325,7 +329,7 @@ export const QueryDocumentOfHolderByIssuerResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryDocumentOfHolderByIssuerResponse>, I>>(object: I): QueryDocumentOfHolderByIssuerResponse {
-    const message = {...baseQueryDocumentOfHolderByIssuerResponse} as QueryDocumentOfHolderByIssuerResponse;
+    const message = createBaseQueryDocumentOfHolderByIssuerResponse();
     message.documents = object.documents?.map((e) => Document.fromPartial(e)) || [];
     return message;
   }
@@ -343,7 +347,9 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.document.Query";
     this.rpc = rpc;
     this.DocumentByProof = this.DocumentByProof.bind(this);
     this.DocumentByHolderId = this.DocumentByHolderId.bind(this);
@@ -351,19 +357,19 @@ export class QueryClientImpl implements Query {
   }
   DocumentByProof(request: QueryDocumentByProofRequest): Promise<QueryDocumentByProofResponse> {
     const data = QueryDocumentByProofRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Query", "DocumentByProof", data);
+    const promise = this.rpc.request(this.service, "DocumentByProof", data);
     return promise.then((data) => QueryDocumentByProofResponse.decode(new _m0.Reader(data)));
   }
 
   DocumentByHolderId(request: QueryDocumentByHolderIdRequest): Promise<QueryDocumentByHolderIdResponse> {
     const data = QueryDocumentByHolderIdRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Query", "DocumentByHolderId", data);
+    const promise = this.rpc.request(this.service, "DocumentByHolderId", data);
     return promise.then((data) => QueryDocumentByHolderIdResponse.decode(new _m0.Reader(data)));
   }
 
   DocumentOfHolderByIssuer(request: QueryDocumentOfHolderByIssuerRequest): Promise<QueryDocumentOfHolderByIssuerResponse> {
     const data = QueryDocumentOfHolderByIssuerRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.document.Query", "DocumentOfHolderByIssuer", data);
+    const promise = this.rpc.request(this.service, "DocumentOfHolderByIssuer", data);
     return promise.then((data) => QueryDocumentOfHolderByIssuerResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -389,9 +395,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

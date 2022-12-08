@@ -8,7 +8,9 @@ export interface ExchangeRate {
   rate: string;
 }
 
-const baseExchangeRate: object = {rate: ""};
+function createBaseExchangeRate(): ExchangeRate {
+  return {rate: ""};
+}
 
 export const ExchangeRate = {
   encode(message: ExchangeRate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -21,7 +23,7 @@ export const ExchangeRate = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ExchangeRate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseExchangeRate} as ExchangeRate;
+    const message = createBaseExchangeRate();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -37,9 +39,7 @@ export const ExchangeRate = {
   },
 
   fromJSON(object: any): ExchangeRate {
-    const message = {...baseExchangeRate} as ExchangeRate;
-    message.rate = object.rate !== undefined && object.rate !== null ? String(object.rate) : "";
-    return message;
+    return {rate: isSet(object.rate) ? String(object.rate) : ""};
   },
 
   toJSON(message: ExchangeRate): unknown {
@@ -49,7 +49,7 @@ export const ExchangeRate = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ExchangeRate>, I>>(object: I): ExchangeRate {
-    const message = {...baseExchangeRate} as ExchangeRate;
+    const message = createBaseExchangeRate();
     message.rate = object.rate ?? "";
     return message;
   }
@@ -72,9 +72,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -11,7 +11,9 @@ export interface BaseID {
   extraData: string;
 }
 
-const baseBaseID: object = {issuerAddress: "", backupAddress: "", ownerAddress: "", extraData: ""};
+function createBaseBaseID(): BaseID {
+  return {issuerAddress: "", backupAddress: "", ownerAddress: "", extraData: ""};
+}
 
 export const BaseID = {
   encode(message: BaseID, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -33,7 +35,7 @@ export const BaseID = {
   decode(input: _m0.Reader | Uint8Array, length?: number): BaseID {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseBaseID} as BaseID;
+    const message = createBaseBaseID();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -58,12 +60,12 @@ export const BaseID = {
   },
 
   fromJSON(object: any): BaseID {
-    const message = {...baseBaseID} as BaseID;
-    message.issuerAddress = object.issuerAddress !== undefined && object.issuerAddress !== null ? String(object.issuerAddress) : "";
-    message.backupAddress = object.backupAddress !== undefined && object.backupAddress !== null ? String(object.backupAddress) : "";
-    message.ownerAddress = object.ownerAddress !== undefined && object.ownerAddress !== null ? String(object.ownerAddress) : "";
-    message.extraData = object.extraData !== undefined && object.extraData !== null ? String(object.extraData) : "";
-    return message;
+    return {
+      issuerAddress: isSet(object.issuerAddress) ? String(object.issuerAddress) : "",
+      backupAddress: isSet(object.backupAddress) ? String(object.backupAddress) : "",
+      ownerAddress: isSet(object.ownerAddress) ? String(object.ownerAddress) : "",
+      extraData: isSet(object.extraData) ? String(object.extraData) : ""
+    };
   },
 
   toJSON(message: BaseID): unknown {
@@ -76,7 +78,7 @@ export const BaseID = {
   },
 
   fromPartial<I extends Exact<DeepPartial<BaseID>, I>>(object: I): BaseID {
-    const message = {...baseBaseID} as BaseID;
+    const message = createBaseBaseID();
     message.issuerAddress = object.issuerAddress ?? "";
     message.backupAddress = object.backupAddress ?? "";
     message.ownerAddress = object.ownerAddress ?? "";
@@ -102,9 +104,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

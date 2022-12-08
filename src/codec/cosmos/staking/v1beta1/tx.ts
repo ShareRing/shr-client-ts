@@ -2,10 +2,10 @@
 import {Decimal} from "@cosmjs/math";
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Description, CommissionRates} from "../../../cosmos/staking/v1beta1/staking";
 import {Any} from "../../../google/protobuf/any";
-import {Coin} from "../../../cosmos/base/v1beta1/coin";
 import {Timestamp} from "../../../google/protobuf/timestamp";
+import {Coin} from "../../base/v1beta1/coin";
+import {CommissionRates, Description} from "./staking";
 
 export const protobufPackage = "cosmos.staking.v1beta1";
 
@@ -84,7 +84,38 @@ export interface MsgUndelegateResponse {
   completionTime?: Date;
 }
 
-const baseMsgCreateValidator: object = {minSelfDelegation: "", delegatorAddress: "", validatorAddress: ""};
+/**
+ * MsgCancelUnbondingDelegation defines the SDK message for performing a cancel unbonding delegation for delegator
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface MsgCancelUnbondingDelegation {
+  delegatorAddress: string;
+  validatorAddress: string;
+  /** amount is always less than or equal to unbonding delegation entry balance */
+  amount?: Coin;
+  /** creation_height is the height which the unbonding took place. */
+  creationHeight: Long;
+}
+
+/**
+ * MsgCancelUnbondingDelegationResponse
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface MsgCancelUnbondingDelegationResponse {}
+
+function createBaseMsgCreateValidator(): MsgCreateValidator {
+  return {
+    description: undefined,
+    commission: undefined,
+    minSelfDelegation: "",
+    delegatorAddress: "",
+    validatorAddress: "",
+    pubkey: undefined,
+    value: undefined
+  };
+}
 
 export const MsgCreateValidator = {
   encode(message: MsgCreateValidator, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -115,7 +146,7 @@ export const MsgCreateValidator = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateValidator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateValidator} as MsgCreateValidator;
+    const message = createBaseMsgCreateValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -149,20 +180,15 @@ export const MsgCreateValidator = {
   },
 
   fromJSON(object: any): MsgCreateValidator {
-    const message = {...baseMsgCreateValidator} as MsgCreateValidator;
-    message.description =
-      object.description !== undefined && object.description !== null ? Description.fromJSON(object.description) : undefined;
-    message.commission =
-      object.commission !== undefined && object.commission !== null ? CommissionRates.fromJSON(object.commission) : undefined;
-    message.minSelfDelegation =
-      object.minSelfDelegation !== undefined && object.minSelfDelegation !== null ? String(object.minSelfDelegation) : "";
-    message.delegatorAddress =
-      object.delegatorAddress !== undefined && object.delegatorAddress !== null ? String(object.delegatorAddress) : "";
-    message.validatorAddress =
-      object.validatorAddress !== undefined && object.validatorAddress !== null ? String(object.validatorAddress) : "";
-    message.pubkey = object.pubkey !== undefined && object.pubkey !== null ? Any.fromJSON(object.pubkey) : undefined;
-    message.value = object.value !== undefined && object.value !== null ? Coin.fromJSON(object.value) : undefined;
-    return message;
+    return {
+      description: isSet(object.description) ? Description.fromJSON(object.description) : undefined,
+      commission: isSet(object.commission) ? CommissionRates.fromJSON(object.commission) : undefined,
+      minSelfDelegation: isSet(object.minSelfDelegation) ? String(object.minSelfDelegation) : "",
+      delegatorAddress: isSet(object.delegatorAddress) ? String(object.delegatorAddress) : "",
+      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
+      pubkey: isSet(object.pubkey) ? Any.fromJSON(object.pubkey) : undefined,
+      value: isSet(object.value) ? Coin.fromJSON(object.value) : undefined
+    };
   },
 
   toJSON(message: MsgCreateValidator): unknown {
@@ -178,7 +204,7 @@ export const MsgCreateValidator = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateValidator>, I>>(object: I): MsgCreateValidator {
-    const message = {...baseMsgCreateValidator} as MsgCreateValidator;
+    const message = createBaseMsgCreateValidator();
     message.description =
       object.description !== undefined && object.description !== null ? Description.fromPartial(object.description) : undefined;
     message.commission =
@@ -192,7 +218,9 @@ export const MsgCreateValidator = {
   }
 };
 
-const baseMsgCreateValidatorResponse: object = {};
+function createBaseMsgCreateValidatorResponse(): MsgCreateValidatorResponse {
+  return {};
+}
 
 export const MsgCreateValidatorResponse = {
   encode(_: MsgCreateValidatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -202,7 +230,7 @@ export const MsgCreateValidatorResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateValidatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateValidatorResponse} as MsgCreateValidatorResponse;
+    const message = createBaseMsgCreateValidatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -215,8 +243,7 @@ export const MsgCreateValidatorResponse = {
   },
 
   fromJSON(_: any): MsgCreateValidatorResponse {
-    const message = {...baseMsgCreateValidatorResponse} as MsgCreateValidatorResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateValidatorResponse): unknown {
@@ -225,12 +252,14 @@ export const MsgCreateValidatorResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateValidatorResponse>, I>>(_: I): MsgCreateValidatorResponse {
-    const message = {...baseMsgCreateValidatorResponse} as MsgCreateValidatorResponse;
+    const message = createBaseMsgCreateValidatorResponse();
     return message;
   }
 };
 
-const baseMsgEditValidator: object = {validatorAddress: "", commissionRate: "", minSelfDelegation: ""};
+function createBaseMsgEditValidator(): MsgEditValidator {
+  return {description: undefined, validatorAddress: "", commissionRate: "", minSelfDelegation: ""};
+}
 
 export const MsgEditValidator = {
   encode(message: MsgEditValidator, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -252,7 +281,7 @@ export const MsgEditValidator = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgEditValidator {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEditValidator} as MsgEditValidator;
+    const message = createBaseMsgEditValidator();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -277,15 +306,12 @@ export const MsgEditValidator = {
   },
 
   fromJSON(object: any): MsgEditValidator {
-    const message = {...baseMsgEditValidator} as MsgEditValidator;
-    message.description =
-      object.description !== undefined && object.description !== null ? Description.fromJSON(object.description) : undefined;
-    message.validatorAddress =
-      object.validatorAddress !== undefined && object.validatorAddress !== null ? String(object.validatorAddress) : "";
-    message.commissionRate = object.commissionRate !== undefined && object.commissionRate !== null ? String(object.commissionRate) : "";
-    message.minSelfDelegation =
-      object.minSelfDelegation !== undefined && object.minSelfDelegation !== null ? String(object.minSelfDelegation) : "";
-    return message;
+    return {
+      description: isSet(object.description) ? Description.fromJSON(object.description) : undefined,
+      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
+      commissionRate: isSet(object.commissionRate) ? String(object.commissionRate) : "",
+      minSelfDelegation: isSet(object.minSelfDelegation) ? String(object.minSelfDelegation) : ""
+    };
   },
 
   toJSON(message: MsgEditValidator): unknown {
@@ -298,7 +324,7 @@ export const MsgEditValidator = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgEditValidator>, I>>(object: I): MsgEditValidator {
-    const message = {...baseMsgEditValidator} as MsgEditValidator;
+    const message = createBaseMsgEditValidator();
     message.description =
       object.description !== undefined && object.description !== null ? Description.fromPartial(object.description) : undefined;
     message.validatorAddress = object.validatorAddress ?? "";
@@ -308,7 +334,9 @@ export const MsgEditValidator = {
   }
 };
 
-const baseMsgEditValidatorResponse: object = {};
+function createBaseMsgEditValidatorResponse(): MsgEditValidatorResponse {
+  return {};
+}
 
 export const MsgEditValidatorResponse = {
   encode(_: MsgEditValidatorResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -318,7 +346,7 @@ export const MsgEditValidatorResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgEditValidatorResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgEditValidatorResponse} as MsgEditValidatorResponse;
+    const message = createBaseMsgEditValidatorResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -331,8 +359,7 @@ export const MsgEditValidatorResponse = {
   },
 
   fromJSON(_: any): MsgEditValidatorResponse {
-    const message = {...baseMsgEditValidatorResponse} as MsgEditValidatorResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgEditValidatorResponse): unknown {
@@ -341,12 +368,14 @@ export const MsgEditValidatorResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgEditValidatorResponse>, I>>(_: I): MsgEditValidatorResponse {
-    const message = {...baseMsgEditValidatorResponse} as MsgEditValidatorResponse;
+    const message = createBaseMsgEditValidatorResponse();
     return message;
   }
 };
 
-const baseMsgDelegate: object = {delegatorAddress: "", validatorAddress: ""};
+function createBaseMsgDelegate(): MsgDelegate {
+  return {delegatorAddress: "", validatorAddress: "", amount: undefined};
+}
 
 export const MsgDelegate = {
   encode(message: MsgDelegate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -365,7 +394,7 @@ export const MsgDelegate = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDelegate} as MsgDelegate;
+    const message = createBaseMsgDelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -387,13 +416,11 @@ export const MsgDelegate = {
   },
 
   fromJSON(object: any): MsgDelegate {
-    const message = {...baseMsgDelegate} as MsgDelegate;
-    message.delegatorAddress =
-      object.delegatorAddress !== undefined && object.delegatorAddress !== null ? String(object.delegatorAddress) : "";
-    message.validatorAddress =
-      object.validatorAddress !== undefined && object.validatorAddress !== null ? String(object.validatorAddress) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromJSON(object.amount) : undefined;
-    return message;
+    return {
+      delegatorAddress: isSet(object.delegatorAddress) ? String(object.delegatorAddress) : "",
+      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
+      amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined
+    };
   },
 
   toJSON(message: MsgDelegate): unknown {
@@ -405,7 +432,7 @@ export const MsgDelegate = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDelegate>, I>>(object: I): MsgDelegate {
-    const message = {...baseMsgDelegate} as MsgDelegate;
+    const message = createBaseMsgDelegate();
     message.delegatorAddress = object.delegatorAddress ?? "";
     message.validatorAddress = object.validatorAddress ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromPartial(object.amount) : undefined;
@@ -413,7 +440,9 @@ export const MsgDelegate = {
   }
 };
 
-const baseMsgDelegateResponse: object = {};
+function createBaseMsgDelegateResponse(): MsgDelegateResponse {
+  return {};
+}
 
 export const MsgDelegateResponse = {
   encode(_: MsgDelegateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -423,7 +452,7 @@ export const MsgDelegateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDelegateResponse} as MsgDelegateResponse;
+    const message = createBaseMsgDelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -436,8 +465,7 @@ export const MsgDelegateResponse = {
   },
 
   fromJSON(_: any): MsgDelegateResponse {
-    const message = {...baseMsgDelegateResponse} as MsgDelegateResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDelegateResponse): unknown {
@@ -446,12 +474,14 @@ export const MsgDelegateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDelegateResponse>, I>>(_: I): MsgDelegateResponse {
-    const message = {...baseMsgDelegateResponse} as MsgDelegateResponse;
+    const message = createBaseMsgDelegateResponse();
     return message;
   }
 };
 
-const baseMsgBeginRedelegate: object = {delegatorAddress: "", validatorSrcAddress: "", validatorDstAddress: ""};
+function createBaseMsgBeginRedelegate(): MsgBeginRedelegate {
+  return {delegatorAddress: "", validatorSrcAddress: "", validatorDstAddress: "", amount: undefined};
+}
 
 export const MsgBeginRedelegate = {
   encode(message: MsgBeginRedelegate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -473,7 +503,7 @@ export const MsgBeginRedelegate = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBeginRedelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBeginRedelegate} as MsgBeginRedelegate;
+    const message = createBaseMsgBeginRedelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -498,15 +528,12 @@ export const MsgBeginRedelegate = {
   },
 
   fromJSON(object: any): MsgBeginRedelegate {
-    const message = {...baseMsgBeginRedelegate} as MsgBeginRedelegate;
-    message.delegatorAddress =
-      object.delegatorAddress !== undefined && object.delegatorAddress !== null ? String(object.delegatorAddress) : "";
-    message.validatorSrcAddress =
-      object.validatorSrcAddress !== undefined && object.validatorSrcAddress !== null ? String(object.validatorSrcAddress) : "";
-    message.validatorDstAddress =
-      object.validatorDstAddress !== undefined && object.validatorDstAddress !== null ? String(object.validatorDstAddress) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromJSON(object.amount) : undefined;
-    return message;
+    return {
+      delegatorAddress: isSet(object.delegatorAddress) ? String(object.delegatorAddress) : "",
+      validatorSrcAddress: isSet(object.validatorSrcAddress) ? String(object.validatorSrcAddress) : "",
+      validatorDstAddress: isSet(object.validatorDstAddress) ? String(object.validatorDstAddress) : "",
+      amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined
+    };
   },
 
   toJSON(message: MsgBeginRedelegate): unknown {
@@ -519,7 +546,7 @@ export const MsgBeginRedelegate = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgBeginRedelegate>, I>>(object: I): MsgBeginRedelegate {
-    const message = {...baseMsgBeginRedelegate} as MsgBeginRedelegate;
+    const message = createBaseMsgBeginRedelegate();
     message.delegatorAddress = object.delegatorAddress ?? "";
     message.validatorSrcAddress = object.validatorSrcAddress ?? "";
     message.validatorDstAddress = object.validatorDstAddress ?? "";
@@ -528,7 +555,9 @@ export const MsgBeginRedelegate = {
   }
 };
 
-const baseMsgBeginRedelegateResponse: object = {};
+function createBaseMsgBeginRedelegateResponse(): MsgBeginRedelegateResponse {
+  return {completionTime: undefined};
+}
 
 export const MsgBeginRedelegateResponse = {
   encode(message: MsgBeginRedelegateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -541,7 +570,7 @@ export const MsgBeginRedelegateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgBeginRedelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBeginRedelegateResponse} as MsgBeginRedelegateResponse;
+    const message = createBaseMsgBeginRedelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -557,10 +586,7 @@ export const MsgBeginRedelegateResponse = {
   },
 
   fromJSON(object: any): MsgBeginRedelegateResponse {
-    const message = {...baseMsgBeginRedelegateResponse} as MsgBeginRedelegateResponse;
-    message.completionTime =
-      object.completionTime !== undefined && object.completionTime !== null ? fromJsonTimestamp(object.completionTime) : undefined;
-    return message;
+    return {completionTime: isSet(object.completionTime) ? fromJsonTimestamp(object.completionTime) : undefined};
   },
 
   toJSON(message: MsgBeginRedelegateResponse): unknown {
@@ -570,13 +596,15 @@ export const MsgBeginRedelegateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgBeginRedelegateResponse>, I>>(object: I): MsgBeginRedelegateResponse {
-    const message = {...baseMsgBeginRedelegateResponse} as MsgBeginRedelegateResponse;
+    const message = createBaseMsgBeginRedelegateResponse();
     message.completionTime = object.completionTime ?? undefined;
     return message;
   }
 };
 
-const baseMsgUndelegate: object = {delegatorAddress: "", validatorAddress: ""};
+function createBaseMsgUndelegate(): MsgUndelegate {
+  return {delegatorAddress: "", validatorAddress: "", amount: undefined};
+}
 
 export const MsgUndelegate = {
   encode(message: MsgUndelegate, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -595,7 +623,7 @@ export const MsgUndelegate = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUndelegate {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUndelegate} as MsgUndelegate;
+    const message = createBaseMsgUndelegate();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -617,13 +645,11 @@ export const MsgUndelegate = {
   },
 
   fromJSON(object: any): MsgUndelegate {
-    const message = {...baseMsgUndelegate} as MsgUndelegate;
-    message.delegatorAddress =
-      object.delegatorAddress !== undefined && object.delegatorAddress !== null ? String(object.delegatorAddress) : "";
-    message.validatorAddress =
-      object.validatorAddress !== undefined && object.validatorAddress !== null ? String(object.validatorAddress) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromJSON(object.amount) : undefined;
-    return message;
+    return {
+      delegatorAddress: isSet(object.delegatorAddress) ? String(object.delegatorAddress) : "",
+      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
+      amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined
+    };
   },
 
   toJSON(message: MsgUndelegate): unknown {
@@ -635,7 +661,7 @@ export const MsgUndelegate = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUndelegate>, I>>(object: I): MsgUndelegate {
-    const message = {...baseMsgUndelegate} as MsgUndelegate;
+    const message = createBaseMsgUndelegate();
     message.delegatorAddress = object.delegatorAddress ?? "";
     message.validatorAddress = object.validatorAddress ?? "";
     message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromPartial(object.amount) : undefined;
@@ -643,7 +669,9 @@ export const MsgUndelegate = {
   }
 };
 
-const baseMsgUndelegateResponse: object = {};
+function createBaseMsgUndelegateResponse(): MsgUndelegateResponse {
+  return {completionTime: undefined};
+}
 
 export const MsgUndelegateResponse = {
   encode(message: MsgUndelegateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -656,7 +684,7 @@ export const MsgUndelegateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUndelegateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUndelegateResponse} as MsgUndelegateResponse;
+    const message = createBaseMsgUndelegateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -672,10 +700,7 @@ export const MsgUndelegateResponse = {
   },
 
   fromJSON(object: any): MsgUndelegateResponse {
-    const message = {...baseMsgUndelegateResponse} as MsgUndelegateResponse;
-    message.completionTime =
-      object.completionTime !== undefined && object.completionTime !== null ? fromJsonTimestamp(object.completionTime) : undefined;
-    return message;
+    return {completionTime: isSet(object.completionTime) ? fromJsonTimestamp(object.completionTime) : undefined};
   },
 
   toJSON(message: MsgUndelegateResponse): unknown {
@@ -685,8 +710,124 @@ export const MsgUndelegateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUndelegateResponse>, I>>(object: I): MsgUndelegateResponse {
-    const message = {...baseMsgUndelegateResponse} as MsgUndelegateResponse;
+    const message = createBaseMsgUndelegateResponse();
     message.completionTime = object.completionTime ?? undefined;
+    return message;
+  }
+};
+
+function createBaseMsgCancelUnbondingDelegation(): MsgCancelUnbondingDelegation {
+  return {delegatorAddress: "", validatorAddress: "", amount: undefined, creationHeight: Long.ZERO};
+}
+
+export const MsgCancelUnbondingDelegation = {
+  encode(message: MsgCancelUnbondingDelegation, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.delegatorAddress !== "") {
+      writer.uint32(10).string(message.delegatorAddress);
+    }
+    if (message.validatorAddress !== "") {
+      writer.uint32(18).string(message.validatorAddress);
+    }
+    if (message.amount !== undefined) {
+      Coin.encode(message.amount, writer.uint32(26).fork()).ldelim();
+    }
+    if (!message.creationHeight.isZero()) {
+      writer.uint32(32).int64(message.creationHeight);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelUnbondingDelegation {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCancelUnbondingDelegation();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.delegatorAddress = reader.string();
+          break;
+        case 2:
+          message.validatorAddress = reader.string();
+          break;
+        case 3:
+          message.amount = Coin.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.creationHeight = reader.int64() as Long;
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgCancelUnbondingDelegation {
+    return {
+      delegatorAddress: isSet(object.delegatorAddress) ? String(object.delegatorAddress) : "",
+      validatorAddress: isSet(object.validatorAddress) ? String(object.validatorAddress) : "",
+      amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined,
+      creationHeight: isSet(object.creationHeight) ? Long.fromValue(object.creationHeight) : Long.ZERO
+    };
+  },
+
+  toJSON(message: MsgCancelUnbondingDelegation): unknown {
+    const obj: any = {};
+    message.delegatorAddress !== undefined && (obj.delegatorAddress = message.delegatorAddress);
+    message.validatorAddress !== undefined && (obj.validatorAddress = message.validatorAddress);
+    message.amount !== undefined && (obj.amount = message.amount ? Coin.toJSON(message.amount) : undefined);
+    message.creationHeight !== undefined && (obj.creationHeight = (message.creationHeight || Long.ZERO).toString());
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgCancelUnbondingDelegation>, I>>(object: I): MsgCancelUnbondingDelegation {
+    const message = createBaseMsgCancelUnbondingDelegation();
+    message.delegatorAddress = object.delegatorAddress ?? "";
+    message.validatorAddress = object.validatorAddress ?? "";
+    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromPartial(object.amount) : undefined;
+    message.creationHeight =
+      object.creationHeight !== undefined && object.creationHeight !== null ? Long.fromValue(object.creationHeight) : Long.ZERO;
+    return message;
+  }
+};
+
+function createBaseMsgCancelUnbondingDelegationResponse(): MsgCancelUnbondingDelegationResponse {
+  return {};
+}
+
+export const MsgCancelUnbondingDelegationResponse = {
+  encode(_: MsgCancelUnbondingDelegationResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgCancelUnbondingDelegationResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgCancelUnbondingDelegationResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgCancelUnbondingDelegationResponse {
+    return {};
+  },
+
+  toJSON(_: MsgCancelUnbondingDelegationResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgCancelUnbondingDelegationResponse>, I>>(_: I): MsgCancelUnbondingDelegationResponse {
+    const message = createBaseMsgCancelUnbondingDelegationResponse();
     return message;
   }
 };
@@ -712,46 +853,62 @@ export interface Msg {
    * delegate and a validator.
    */
   Undelegate(request: MsgUndelegate): Promise<MsgUndelegateResponse>;
+  /**
+   * CancelUnbondingDelegation defines a method for performing canceling the unbonding delegation
+   * and delegate back to previous validator.
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  CancelUnbondingDelegation(request: MsgCancelUnbondingDelegation): Promise<MsgCancelUnbondingDelegationResponse>;
 }
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "cosmos.staking.v1beta1.Msg";
     this.rpc = rpc;
     this.CreateValidator = this.CreateValidator.bind(this);
     this.EditValidator = this.EditValidator.bind(this);
     this.Delegate = this.Delegate.bind(this);
     this.BeginRedelegate = this.BeginRedelegate.bind(this);
     this.Undelegate = this.Undelegate.bind(this);
+    this.CancelUnbondingDelegation = this.CancelUnbondingDelegation.bind(this);
   }
   CreateValidator(request: MsgCreateValidator): Promise<MsgCreateValidatorResponse> {
     const data = MsgCreateValidator.encode(request).finish();
-    const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "CreateValidator", data);
+    const promise = this.rpc.request(this.service, "CreateValidator", data);
     return promise.then((data) => MsgCreateValidatorResponse.decode(new _m0.Reader(data)));
   }
 
   EditValidator(request: MsgEditValidator): Promise<MsgEditValidatorResponse> {
     const data = MsgEditValidator.encode(request).finish();
-    const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "EditValidator", data);
+    const promise = this.rpc.request(this.service, "EditValidator", data);
     return promise.then((data) => MsgEditValidatorResponse.decode(new _m0.Reader(data)));
   }
 
   Delegate(request: MsgDelegate): Promise<MsgDelegateResponse> {
     const data = MsgDelegate.encode(request).finish();
-    const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "Delegate", data);
+    const promise = this.rpc.request(this.service, "Delegate", data);
     return promise.then((data) => MsgDelegateResponse.decode(new _m0.Reader(data)));
   }
 
   BeginRedelegate(request: MsgBeginRedelegate): Promise<MsgBeginRedelegateResponse> {
     const data = MsgBeginRedelegate.encode(request).finish();
-    const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "BeginRedelegate", data);
+    const promise = this.rpc.request(this.service, "BeginRedelegate", data);
     return promise.then((data) => MsgBeginRedelegateResponse.decode(new _m0.Reader(data)));
   }
 
   Undelegate(request: MsgUndelegate): Promise<MsgUndelegateResponse> {
     const data = MsgUndelegate.encode(request).finish();
-    const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "Undelegate", data);
+    const promise = this.rpc.request(this.service, "Undelegate", data);
     return promise.then((data) => MsgUndelegateResponse.decode(new _m0.Reader(data)));
+  }
+
+  CancelUnbondingDelegation(request: MsgCancelUnbondingDelegation): Promise<MsgCancelUnbondingDelegationResponse> {
+    const data = MsgCancelUnbondingDelegation.encode(request).finish();
+    const promise = this.rpc.request(this.service, "CancelUnbondingDelegation", data);
+    return promise.then((data) => MsgCancelUnbondingDelegationResponse.decode(new _m0.Reader(data)));
   }
 }
 
@@ -776,7 +933,7 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = numberToLong(date.getTime() / 1_000);
@@ -807,4 +964,8 @@ function numberToLong(number: number) {
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

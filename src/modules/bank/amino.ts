@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
 
 import {AminoMsg} from "@cosmjs/amino";
-import {AminoConverter} from "../../amino/types";
+import {AminoConverter} from "../../amino";
 import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
 import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
 import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
-import {EncodeObject, GeneratedType} from "../../signing";
 
 export interface AminoMsgSend extends AminoMsg {
   readonly type: "cosmos-sdk/MsgSend";
@@ -22,15 +21,6 @@ export function isAminoMsgSend(msg: AminoMsg): msg is AminoMsgSend {
   return msg.type === "cosmos-sdk/MsgSend";
 }
 
-export interface MsgSendEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.bank.v1beta1.MsgSend";
-  readonly value: Partial<MsgSend>;
-}
-
-export function isMsgSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgSendEncodeObject {
-  return (encodeObject as MsgSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgSend";
-}
-
 /** A high level transaction of the coin module */
 export interface AminoMsgMultiSend extends AminoMsg {
   readonly type: "cosmos-sdk/MsgMultiSend";
@@ -44,16 +34,7 @@ export function isAminoMsgMultiSend(msg: AminoMsg): msg is AminoMsgMultiSend {
   return msg.type === "cosmos-sdk/MsgMultiSend";
 }
 
-export interface MsgMultiSendEncodeObject extends EncodeObject {
-  readonly typeUrl: "/cosmos.bank.v1beta1.MsgMuliSend";
-  readonly value: Partial<MsgMultiSend>;
-}
-
-export function isMsgMultiSendEncodeObject(encodeObject: EncodeObject): encodeObject is MsgMultiSendEncodeObject {
-  return (encodeObject as MsgMultiSendEncodeObject).typeUrl === "/cosmos.bank.v1beta1.MsgMuliSend";
-}
-
-export function createAminoTypes(prefix: string): Record<string, AminoConverter> {
+export function createBankAminoConverters(prefix: string): Record<string, AminoConverter | "not_supported_by_chain"> {
   return {
     "/cosmos.bank.v1beta1.MsgSend": {
       aminoType: "cosmos-sdk/MsgSend",
@@ -92,12 +73,4 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
       })
     }
   };
-}
-
-export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
-  return [
-    ["/cosmos.base.v1beta1.Coin", Coin],
-    ["/cosmos.bank.v1beta1.MsgSend", MsgSend],
-    ["/cosmos.bank.v1beta1.MsgMultiSend", MsgMultiSend]
-  ];
 }

@@ -31,7 +31,9 @@ export interface MsgDeleteAsset {
 
 export interface MsgDeleteAssetResponse {}
 
-const baseMsgCreateAsset: object = {creator: "", UUID: "", status: false, rate: Long.ZERO};
+function createBaseMsgCreateAsset(): MsgCreateAsset {
+  return {creator: "", hash: new Uint8Array(), UUID: "", status: false, rate: Long.ZERO};
+}
 
 export const MsgCreateAsset = {
   encode(message: MsgCreateAsset, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -56,8 +58,7 @@ export const MsgCreateAsset = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateAsset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateAsset} as MsgCreateAsset;
-    message.hash = new Uint8Array();
+    const message = createBaseMsgCreateAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -85,13 +86,13 @@ export const MsgCreateAsset = {
   },
 
   fromJSON(object: any): MsgCreateAsset {
-    const message = {...baseMsgCreateAsset} as MsgCreateAsset;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.hash = object.hash !== undefined && object.hash !== null ? bytesFromBase64(object.hash) : new Uint8Array();
-    message.UUID = object.UUID !== undefined && object.UUID !== null ? String(object.UUID) : "";
-    message.status = object.status !== undefined && object.status !== null ? Boolean(object.status) : false;
-    message.rate = object.rate !== undefined && object.rate !== null ? Long.fromString(object.rate) : Long.ZERO;
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      hash: isSet(object.hash) ? bytesFromBase64(object.hash) : new Uint8Array(),
+      UUID: isSet(object.UUID) ? String(object.UUID) : "",
+      status: isSet(object.status) ? Boolean(object.status) : false,
+      rate: isSet(object.rate) ? Long.fromValue(object.rate) : Long.ZERO
+    };
   },
 
   toJSON(message: MsgCreateAsset): unknown {
@@ -105,7 +106,7 @@ export const MsgCreateAsset = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateAsset>, I>>(object: I): MsgCreateAsset {
-    const message = {...baseMsgCreateAsset} as MsgCreateAsset;
+    const message = createBaseMsgCreateAsset();
     message.creator = object.creator ?? "";
     message.hash = object.hash ?? new Uint8Array();
     message.UUID = object.UUID ?? "";
@@ -115,7 +116,9 @@ export const MsgCreateAsset = {
   }
 };
 
-const baseMsgCreateAssetResponse: object = {};
+function createBaseMsgCreateAssetResponse(): MsgCreateAssetResponse {
+  return {};
+}
 
 export const MsgCreateAssetResponse = {
   encode(_: MsgCreateAssetResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -125,7 +128,7 @@ export const MsgCreateAssetResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateAssetResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateAssetResponse} as MsgCreateAssetResponse;
+    const message = createBaseMsgCreateAssetResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -138,8 +141,7 @@ export const MsgCreateAssetResponse = {
   },
 
   fromJSON(_: any): MsgCreateAssetResponse {
-    const message = {...baseMsgCreateAssetResponse} as MsgCreateAssetResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateAssetResponse): unknown {
@@ -148,12 +150,14 @@ export const MsgCreateAssetResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateAssetResponse>, I>>(_: I): MsgCreateAssetResponse {
-    const message = {...baseMsgCreateAssetResponse} as MsgCreateAssetResponse;
+    const message = createBaseMsgCreateAssetResponse();
     return message;
   }
 };
 
-const baseMsgUpdateAsset: object = {creator: "", UUID: "", status: false, rate: Long.ZERO};
+function createBaseMsgUpdateAsset(): MsgUpdateAsset {
+  return {creator: "", hash: new Uint8Array(), UUID: "", status: false, rate: Long.ZERO};
+}
 
 export const MsgUpdateAsset = {
   encode(message: MsgUpdateAsset, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -178,8 +182,7 @@ export const MsgUpdateAsset = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateAsset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateAsset} as MsgUpdateAsset;
-    message.hash = new Uint8Array();
+    const message = createBaseMsgUpdateAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -207,13 +210,13 @@ export const MsgUpdateAsset = {
   },
 
   fromJSON(object: any): MsgUpdateAsset {
-    const message = {...baseMsgUpdateAsset} as MsgUpdateAsset;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.hash = object.hash !== undefined && object.hash !== null ? bytesFromBase64(object.hash) : new Uint8Array();
-    message.UUID = object.UUID !== undefined && object.UUID !== null ? String(object.UUID) : "";
-    message.status = object.status !== undefined && object.status !== null ? Boolean(object.status) : false;
-    message.rate = object.rate !== undefined && object.rate !== null ? Long.fromString(object.rate) : Long.ZERO;
-    return message;
+    return {
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      hash: isSet(object.hash) ? bytesFromBase64(object.hash) : new Uint8Array(),
+      UUID: isSet(object.UUID) ? String(object.UUID) : "",
+      status: isSet(object.status) ? Boolean(object.status) : false,
+      rate: isSet(object.rate) ? Long.fromValue(object.rate) : Long.ZERO
+    };
   },
 
   toJSON(message: MsgUpdateAsset): unknown {
@@ -227,7 +230,7 @@ export const MsgUpdateAsset = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUpdateAsset>, I>>(object: I): MsgUpdateAsset {
-    const message = {...baseMsgUpdateAsset} as MsgUpdateAsset;
+    const message = createBaseMsgUpdateAsset();
     message.creator = object.creator ?? "";
     message.hash = object.hash ?? new Uint8Array();
     message.UUID = object.UUID ?? "";
@@ -237,7 +240,9 @@ export const MsgUpdateAsset = {
   }
 };
 
-const baseMsgUpdateAssetResponse: object = {};
+function createBaseMsgUpdateAssetResponse(): MsgUpdateAssetResponse {
+  return {};
+}
 
 export const MsgUpdateAssetResponse = {
   encode(_: MsgUpdateAssetResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -247,7 +252,7 @@ export const MsgUpdateAssetResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateAssetResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateAssetResponse} as MsgUpdateAssetResponse;
+    const message = createBaseMsgUpdateAssetResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -260,8 +265,7 @@ export const MsgUpdateAssetResponse = {
   },
 
   fromJSON(_: any): MsgUpdateAssetResponse {
-    const message = {...baseMsgUpdateAssetResponse} as MsgUpdateAssetResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgUpdateAssetResponse): unknown {
@@ -270,12 +274,14 @@ export const MsgUpdateAssetResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUpdateAssetResponse>, I>>(_: I): MsgUpdateAssetResponse {
-    const message = {...baseMsgUpdateAssetResponse} as MsgUpdateAssetResponse;
+    const message = createBaseMsgUpdateAssetResponse();
     return message;
   }
 };
 
-const baseMsgDeleteAsset: object = {owner: "", UUID: ""};
+function createBaseMsgDeleteAsset(): MsgDeleteAsset {
+  return {owner: "", UUID: ""};
+}
 
 export const MsgDeleteAsset = {
   encode(message: MsgDeleteAsset, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -291,7 +297,7 @@ export const MsgDeleteAsset = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteAsset {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteAsset} as MsgDeleteAsset;
+    const message = createBaseMsgDeleteAsset();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -310,10 +316,10 @@ export const MsgDeleteAsset = {
   },
 
   fromJSON(object: any): MsgDeleteAsset {
-    const message = {...baseMsgDeleteAsset} as MsgDeleteAsset;
-    message.owner = object.owner !== undefined && object.owner !== null ? String(object.owner) : "";
-    message.UUID = object.UUID !== undefined && object.UUID !== null ? String(object.UUID) : "";
-    return message;
+    return {
+      owner: isSet(object.owner) ? String(object.owner) : "",
+      UUID: isSet(object.UUID) ? String(object.UUID) : ""
+    };
   },
 
   toJSON(message: MsgDeleteAsset): unknown {
@@ -324,14 +330,16 @@ export const MsgDeleteAsset = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDeleteAsset>, I>>(object: I): MsgDeleteAsset {
-    const message = {...baseMsgDeleteAsset} as MsgDeleteAsset;
+    const message = createBaseMsgDeleteAsset();
     message.owner = object.owner ?? "";
     message.UUID = object.UUID ?? "";
     return message;
   }
 };
 
-const baseMsgDeleteAssetResponse: object = {};
+function createBaseMsgDeleteAssetResponse(): MsgDeleteAssetResponse {
+  return {};
+}
 
 export const MsgDeleteAssetResponse = {
   encode(_: MsgDeleteAssetResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -341,7 +349,7 @@ export const MsgDeleteAssetResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgDeleteAssetResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgDeleteAssetResponse} as MsgDeleteAssetResponse;
+    const message = createBaseMsgDeleteAssetResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -354,8 +362,7 @@ export const MsgDeleteAssetResponse = {
   },
 
   fromJSON(_: any): MsgDeleteAssetResponse {
-    const message = {...baseMsgDeleteAssetResponse} as MsgDeleteAssetResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgDeleteAssetResponse): unknown {
@@ -364,7 +371,7 @@ export const MsgDeleteAssetResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgDeleteAssetResponse>, I>>(_: I): MsgDeleteAssetResponse {
-    const message = {...baseMsgDeleteAssetResponse} as MsgDeleteAssetResponse;
+    const message = createBaseMsgDeleteAssetResponse();
     return message;
   }
 };
@@ -379,7 +386,9 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.asset.Msg";
     this.rpc = rpc;
     this.CreateAsset = this.CreateAsset.bind(this);
     this.UpdateAsset = this.UpdateAsset.bind(this);
@@ -387,19 +396,19 @@ export class MsgClientImpl implements Msg {
   }
   CreateAsset(request: MsgCreateAsset): Promise<MsgCreateAssetResponse> {
     const data = MsgCreateAsset.encode(request).finish();
-    const promise = this.rpc.request("shareledger.asset.Msg", "CreateAsset", data);
+    const promise = this.rpc.request(this.service, "CreateAsset", data);
     return promise.then((data) => MsgCreateAssetResponse.decode(new _m0.Reader(data)));
   }
 
   UpdateAsset(request: MsgUpdateAsset): Promise<MsgUpdateAssetResponse> {
     const data = MsgUpdateAsset.encode(request).finish();
-    const promise = this.rpc.request("shareledger.asset.Msg", "UpdateAsset", data);
+    const promise = this.rpc.request(this.service, "UpdateAsset", data);
     return promise.then((data) => MsgUpdateAssetResponse.decode(new _m0.Reader(data)));
   }
 
   DeleteAsset(request: MsgDeleteAsset): Promise<MsgDeleteAssetResponse> {
     const data = MsgDeleteAsset.encode(request).finish();
-    const promise = this.rpc.request("shareledger.asset.Msg", "DeleteAsset", data);
+    const promise = this.rpc.request(this.service, "DeleteAsset", data);
     return promise.then((data) => MsgDeleteAssetResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -412,30 +421,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -455,9 +478,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

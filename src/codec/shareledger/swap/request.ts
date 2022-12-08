@@ -25,7 +25,20 @@ export interface TxEvent {
   logIndex: Long;
 }
 
-const baseRequest: object = {id: Long.UZERO, srcAddr: "", destAddr: "", srcNetwork: "", destNetwork: "", status: "", batchId: Long.UZERO};
+function createBaseRequest(): Request {
+  return {
+    id: Long.UZERO,
+    srcAddr: "",
+    destAddr: "",
+    srcNetwork: "",
+    destNetwork: "",
+    amount: undefined,
+    fee: undefined,
+    status: "",
+    batchId: Long.UZERO,
+    txEvents: []
+  };
+}
 
 export const Request = {
   encode(message: Request, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -65,8 +78,7 @@ export const Request = {
   decode(input: _m0.Reader | Uint8Array, length?: number): Request {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseRequest} as Request;
-    message.txEvents = [];
+    const message = createBaseRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -109,18 +121,18 @@ export const Request = {
   },
 
   fromJSON(object: any): Request {
-    const message = {...baseRequest} as Request;
-    message.id = object.id !== undefined && object.id !== null ? Long.fromString(object.id) : Long.UZERO;
-    message.srcAddr = object.srcAddr !== undefined && object.srcAddr !== null ? String(object.srcAddr) : "";
-    message.destAddr = object.destAddr !== undefined && object.destAddr !== null ? String(object.destAddr) : "";
-    message.srcNetwork = object.srcNetwork !== undefined && object.srcNetwork !== null ? String(object.srcNetwork) : "";
-    message.destNetwork = object.destNetwork !== undefined && object.destNetwork !== null ? String(object.destNetwork) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? Coin.fromJSON(object.amount) : undefined;
-    message.fee = object.fee !== undefined && object.fee !== null ? Coin.fromJSON(object.fee) : undefined;
-    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    message.batchId = object.batchId !== undefined && object.batchId !== null ? Long.fromString(object.batchId) : Long.UZERO;
-    message.txEvents = (object.txEvents ?? []).map((e: any) => TxEvent.fromJSON(e));
-    return message;
+    return {
+      id: isSet(object.id) ? Long.fromValue(object.id) : Long.UZERO,
+      srcAddr: isSet(object.srcAddr) ? String(object.srcAddr) : "",
+      destAddr: isSet(object.destAddr) ? String(object.destAddr) : "",
+      srcNetwork: isSet(object.srcNetwork) ? String(object.srcNetwork) : "",
+      destNetwork: isSet(object.destNetwork) ? String(object.destNetwork) : "",
+      amount: isSet(object.amount) ? Coin.fromJSON(object.amount) : undefined,
+      fee: isSet(object.fee) ? Coin.fromJSON(object.fee) : undefined,
+      status: isSet(object.status) ? String(object.status) : "",
+      batchId: isSet(object.batchId) ? Long.fromValue(object.batchId) : Long.UZERO,
+      txEvents: Array.isArray(object?.txEvents) ? object.txEvents.map((e: any) => TxEvent.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: Request): unknown {
@@ -143,7 +155,7 @@ export const Request = {
   },
 
   fromPartial<I extends Exact<DeepPartial<Request>, I>>(object: I): Request {
-    const message = {...baseRequest} as Request;
+    const message = createBaseRequest();
     message.id = object.id !== undefined && object.id !== null ? Long.fromValue(object.id) : Long.UZERO;
     message.srcAddr = object.srcAddr ?? "";
     message.destAddr = object.destAddr ?? "";
@@ -158,7 +170,9 @@ export const Request = {
   }
 };
 
-const baseTxEvent: object = {txHash: "", sender: "", logIndex: Long.UZERO};
+function createBaseTxEvent(): TxEvent {
+  return {txHash: "", sender: "", logIndex: Long.UZERO};
+}
 
 export const TxEvent = {
   encode(message: TxEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -177,7 +191,7 @@ export const TxEvent = {
   decode(input: _m0.Reader | Uint8Array, length?: number): TxEvent {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseTxEvent} as TxEvent;
+    const message = createBaseTxEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -199,11 +213,11 @@ export const TxEvent = {
   },
 
   fromJSON(object: any): TxEvent {
-    const message = {...baseTxEvent} as TxEvent;
-    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
-    message.sender = object.sender !== undefined && object.sender !== null ? String(object.sender) : "";
-    message.logIndex = object.logIndex !== undefined && object.logIndex !== null ? Long.fromString(object.logIndex) : Long.UZERO;
-    return message;
+    return {
+      txHash: isSet(object.txHash) ? String(object.txHash) : "",
+      sender: isSet(object.sender) ? String(object.sender) : "",
+      logIndex: isSet(object.logIndex) ? Long.fromValue(object.logIndex) : Long.UZERO
+    };
   },
 
   toJSON(message: TxEvent): unknown {
@@ -215,7 +229,7 @@ export const TxEvent = {
   },
 
   fromPartial<I extends Exact<DeepPartial<TxEvent>, I>>(object: I): TxEvent {
-    const message = {...baseTxEvent} as TxEvent;
+    const message = createBaseTxEvent();
     message.txHash = object.txHash ?? "";
     message.sender = object.sender ?? "";
     message.logIndex = object.logIndex !== undefined && object.logIndex !== null ? Long.fromValue(object.logIndex) : Long.UZERO;
@@ -240,9 +254,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

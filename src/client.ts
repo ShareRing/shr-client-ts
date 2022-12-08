@@ -3,19 +3,15 @@
 import {sha256} from "@cosmjs/crypto";
 import {toHex} from "@cosmjs/encoding";
 import {Uint53} from "@cosmjs/math";
-import {Tendermint34Client, toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
+import {toRfc3339WithNanoseconds} from "@cosmjs/tendermint-rpc";
 import {sleep} from "@cosmjs/utils";
-import {Account, accountFromAny, AccountParser} from "./account";
+import {Account} from "./account";
+import {BaseClient} from "./baseclient";
 import {MsgData} from "./codec/cosmos/base/abci/v1beta1/abci";
-import {AuthExtension} from "./modules/auth/module";
-import {TxExtension} from "./modules/tx/module";
-import {QueryClient} from "./query";
+import {Event, fromTendermint34Event} from "./events";
+import {AuthExtension} from "./modules/auth";
+import {TxExtension} from "./modules/tx";
 import {isSearchByHeightQuery, isSearchBySentFromOrToQuery, isSearchByTagsQuery, SearchTxFilter, SearchTxQuery} from "./search";
-// import { BankExtension } from "./modules/bank";
-// import { DistributionExtension } from "./modules/distribution";
-// import { GovExtension } from "./modules/gov";
-// import { SlashingExtension } from "./modules/slashing";
-// import { StakingExtension } from "./modules/staking";
 
 export class TimeoutError extends Error {
   public readonly txId: string;
@@ -58,6 +54,15 @@ export interface IndexedTx {
   readonly hash: string;
   /** Transaction execution error code. 0 on success. */
   readonly code: number;
+  readonly events: readonly Event[];
+  /**
+   * A string-based log document.
+   *
+   * This currently seems to merge attributes of multiple events into one event per type
+   * (https://github.com/tendermint/tendermint/issues/9595). You might want to use the `events`
+   * field instead.
+   */
+
   readonly rawLog: string;
   /**
    * Raw transaction bytes stored in Tendermint.
@@ -83,103 +88,83 @@ export interface SequenceResponse {
   readonly sequence: number;
 }
 
-export interface BroadcastTxFailure {
+/**
+ * The response after successfully broadcasting a transaction.
+ * Success or failure refer to the execution result.
+ */
+export interface DeliverTxResponse {
   readonly height: number;
+  /** Error code. The transaction suceeded iff code is 0. */
   readonly code: number;
   readonly transactionHash: string;
-  readonly rawLog?: string;
-  readonly data?: readonly MsgData[];
-}
-
-export interface BroadcastTxSuccess {
-  readonly height: number;
-  readonly transactionHash: string;
+  readonly events: readonly Event[];
+  /**
+   * A string-based log document.
+   *
+   * This currently seems to merge attributes of multiple events into one event per type
+   * (https://github.com/tendermint/tendermint/issues/9595). You might want to use the `events`
+   * field instead.
+   */
   readonly rawLog?: string;
   readonly data?: readonly MsgData[];
   readonly gasUsed: number;
   readonly gasWanted: number;
 }
 
-/**
- * The response after successfully broadcasting a transaction.
- * Success or failure refer to the execution result.
- *
- * The name is a bit misleading as this contains the result of the execution
- * in a block. Both `BroadcastTxSuccess` and `BroadcastTxFailure` contain a height
- * field, which is the height of the block that contains the transaction. This means
- * transactions that were never included in a block cannot be expressed with this type.
- */
-export type BroadcastTxResponse = BroadcastTxSuccess | BroadcastTxFailure;
-
-export function isBroadcastTxFailure(result: BroadcastTxResponse): result is BroadcastTxFailure {
-  return !!(result as BroadcastTxFailure).code;
+export function isDeliverTxFailure(result: DeliverTxResponse): boolean {
+  return !!result.code;
 }
 
-export function isBroadcastTxSuccess(result: BroadcastTxResponse): result is BroadcastTxSuccess {
-  return !isBroadcastTxFailure(result);
+export function isDeliverTxSuccess(result: DeliverTxResponse): boolean {
+  return !isDeliverTxFailure(result);
 }
 
 /**
  * Ensures the given result is a success. Throws a detailed error message otherwise.
  */
-export function assertIsBroadcastTxSuccess(result: BroadcastTxResponse): asserts result is BroadcastTxSuccess {
-  if (isBroadcastTxFailure(result)) {
+export function assertIsDeliverTxSuccess(result: DeliverTxResponse): void {
+  if (isDeliverTxFailure(result)) {
     throw new Error(
       `Error when broadcasting tx ${result.transactionHash} at height ${result.height}. Code: ${result.code}; Raw log: ${result.rawLog}`
     );
   }
 }
 
-export interface ClientOptions {
-  readonly accountParser?: AccountParser;
+/**
+ * Ensures the given result is a failure. Throws a detailed error message otherwise.
+ */
+export function assertIsDeliverTxFailure(result: DeliverTxResponse): void {
+  if (isDeliverTxSuccess(result)) {
+    throw new Error(
+      `Transaction ${result.transactionHash} did not fail at height ${result.height}. Code: ${result.code}; Raw log: ${result.rawLog}`
+    );
+  }
 }
 
-// export interface Client extends AuthExtension, BankExtension, DistributionExtension, GovExtension, SlashingExtension, StakingExtension {}
+/**
+ * An error when broadcasting the transaction. This contains the CheckTx errors
+ * from the blockchain. Once a transaction is included in a block no BroadcastTxError
+ * is thrown, even if the execution fails (DeliverTx errors).
+ */
+export class BroadcastTxError extends Error {
+  public readonly code: number;
+  public readonly codespace: string;
+  public readonly log: string | undefined;
+
+  public constructor(code: number, codespace: string, log: string | undefined) {
+    super(`Broadcasting transaction failed with code ${code} (codespace: ${codespace}). Log: ${log}`);
+    this.code = code;
+    this.codespace = codespace;
+    this.log = log;
+  }
+}
+
 export interface Client extends AuthExtension, TxExtension {} // eslint-disable-line @typescript-eslint/no-empty-interface
 
 @AuthExtension
 @TxExtension
-// @BankExtension
-// @DistributionExtension
-// @GovExtension
-// @SlashingExtension
-// @StakingExtension
-export class Client {
-  private readonly tmClient: Tendermint34Client | undefined;
-  private readonly queryClient: QueryClient | undefined;
+export class Client extends BaseClient {
   private chainId: string | undefined;
-  private readonly accountParser: AccountParser;
-
-  public constructor(tmClient: Tendermint34Client | undefined, options: ClientOptions) {
-    if (tmClient) {
-      this.tmClient = tmClient;
-      this.queryClient = new QueryClient(tmClient);
-    }
-    const {accountParser = accountFromAny} = options;
-    this.accountParser = accountParser;
-  }
-
-  protected getTmClient(): Tendermint34Client | undefined {
-    return this.tmClient;
-  }
-
-  protected forceGetTmClient(): Tendermint34Client {
-    if (!this.tmClient) {
-      throw new Error("Tendermint client not available. You cannot use online functionality in offline mode.");
-    }
-    return this.tmClient;
-  }
-
-  protected getQueryClient(): QueryClient | undefined {
-    return this.queryClient;
-  }
-
-  protected forceGetQueryClient(): QueryClient {
-    if (!this.queryClient) {
-      throw new Error("Query client not available. You cannot use online functionality in offline mode.");
-    }
-    return this.queryClient;
-  }
 
   public async getChainId(): Promise<string> {
     if (!this.chainId) {
@@ -218,8 +203,8 @@ export class Client {
     try {
       const account = await this.auth.account(searchAddress);
       return account ? this.accountParser(account) : null;
-    } catch (error) {
-      if (/rpc error: code = NotFound/i.test(error)) {
+    } catch (error: any) {
+      if (/rpc error: code = NotFound/i.test(error.toString())) {
         return null;
       }
       throw error;
@@ -252,6 +237,7 @@ export class Client {
           gasWanted: result.txResponse.gasWanted.toNumber(),
           hash: result.txResponse.txhash,
           height: result.txResponse.height.toNumber(),
+          events: result.txResponse.events.map(fromTendermint34Event),
           rawLog: result.txResponse.rawLog,
           tx: result.txResponse.tx?.value
         }
@@ -305,22 +291,22 @@ export class Client {
    *
    * If the transaction is not included in a block before the provided timeout, this errors with a `TimeoutError`.
    *
-   * If the transaction is included in a block, a `BroadcastTxResponse` is returned. The caller then
+   * If the transaction is included in a block, a `DeliverTxResponse` is returned. The caller then
    * usually needs to check for execution success or failure.
    */
-  public async broadcastTx(tx: Uint8Array, timeoutMs = 60_000, pollIntervalMs = 3_000): Promise<BroadcastTxResponse> {
+  public async broadcastTx(tx: Uint8Array, timeoutMs = 60_000, pollIntervalMs = 3_000): Promise<DeliverTxResponse> {
     let timedOut = false;
     const txPollTimeout = setTimeout(() => {
       timedOut = true;
     }, timeoutMs);
 
-    const pollForTx = async (txId: string): Promise<BroadcastTxResponse> => {
+    const pollForTx = async (txId: string): Promise<DeliverTxResponse> => {
       if (timedOut) {
-        return Promise.reject(
-          new TimeoutError(
-            `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later.`,
-            txId
-          )
+        throw new TimeoutError(
+          `Transaction with ID ${txId} was submitted but was not yet found on the chain. You might want to check later. There was a wait of ${
+            timeoutMs / 1000
+          } seconds.`,
+          txId
         );
       }
       await sleep(pollIntervalMs);
@@ -329,6 +315,7 @@ export class Client {
         ? {
             code: result.code,
             height: result.height,
+            events: result.events,
             rawLog: result.rawLog,
             transactionHash: txId,
             gasUsed: result.gasUsed,
@@ -339,11 +326,7 @@ export class Client {
 
     const broadcasted = await this.forceGetTmClient().broadcastTxSync({tx});
     if (broadcasted.code) {
-      return Promise.reject(
-        new Error(
-          `Broadcasting transaction failed with code ${broadcasted.code} (codespace: ${broadcasted.codeSpace}). Log: ${broadcasted.log}`
-        )
-      );
+      return Promise.reject(new BroadcastTxError(broadcasted.code, broadcasted.codespace ?? "", broadcasted.log));
     }
     const transactionId = toHex(broadcasted.hash).toUpperCase();
     return new Promise((resolve, reject) =>
@@ -367,6 +350,7 @@ export class Client {
         height: tx.height,
         hash: toHex(tx.hash).toUpperCase(),
         code: tx.result.code,
+        events: tx.result.events.map(fromTendermint34Event),
         rawLog: tx.result.log || "",
         tx: tx.tx,
         gasUsed: tx.result.gasUsed,

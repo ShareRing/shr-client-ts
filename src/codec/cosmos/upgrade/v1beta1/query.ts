@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Plan, ModuleVersion} from "../../../cosmos/upgrade/v1beta1/upgrade";
+import {ModuleVersion, Plan} from "./upgrade";
 
 export const protobufPackage = "cosmos.upgrade.v1beta1";
 
@@ -89,7 +89,25 @@ export interface QueryModuleVersionsResponse {
   moduleVersions: ModuleVersion[];
 }
 
-const baseQueryCurrentPlanRequest: object = {};
+/**
+ * QueryAuthorityRequest is the request type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityRequest {}
+
+/**
+ * QueryAuthorityResponse is the response type for Query/Authority
+ *
+ * Since: cosmos-sdk 0.46
+ */
+export interface QueryAuthorityResponse {
+  address: string;
+}
+
+function createBaseQueryCurrentPlanRequest(): QueryCurrentPlanRequest {
+  return {};
+}
 
 export const QueryCurrentPlanRequest = {
   encode(_: QueryCurrentPlanRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -99,7 +117,7 @@ export const QueryCurrentPlanRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCurrentPlanRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryCurrentPlanRequest} as QueryCurrentPlanRequest;
+    const message = createBaseQueryCurrentPlanRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -112,8 +130,7 @@ export const QueryCurrentPlanRequest = {
   },
 
   fromJSON(_: any): QueryCurrentPlanRequest {
-    const message = {...baseQueryCurrentPlanRequest} as QueryCurrentPlanRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryCurrentPlanRequest): unknown {
@@ -122,12 +139,14 @@ export const QueryCurrentPlanRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryCurrentPlanRequest>, I>>(_: I): QueryCurrentPlanRequest {
-    const message = {...baseQueryCurrentPlanRequest} as QueryCurrentPlanRequest;
+    const message = createBaseQueryCurrentPlanRequest();
     return message;
   }
 };
 
-const baseQueryCurrentPlanResponse: object = {};
+function createBaseQueryCurrentPlanResponse(): QueryCurrentPlanResponse {
+  return {plan: undefined};
+}
 
 export const QueryCurrentPlanResponse = {
   encode(message: QueryCurrentPlanResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -140,7 +159,7 @@ export const QueryCurrentPlanResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryCurrentPlanResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryCurrentPlanResponse} as QueryCurrentPlanResponse;
+    const message = createBaseQueryCurrentPlanResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -156,9 +175,7 @@ export const QueryCurrentPlanResponse = {
   },
 
   fromJSON(object: any): QueryCurrentPlanResponse {
-    const message = {...baseQueryCurrentPlanResponse} as QueryCurrentPlanResponse;
-    message.plan = object.plan !== undefined && object.plan !== null ? Plan.fromJSON(object.plan) : undefined;
-    return message;
+    return {plan: isSet(object.plan) ? Plan.fromJSON(object.plan) : undefined};
   },
 
   toJSON(message: QueryCurrentPlanResponse): unknown {
@@ -168,13 +185,15 @@ export const QueryCurrentPlanResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryCurrentPlanResponse>, I>>(object: I): QueryCurrentPlanResponse {
-    const message = {...baseQueryCurrentPlanResponse} as QueryCurrentPlanResponse;
+    const message = createBaseQueryCurrentPlanResponse();
     message.plan = object.plan !== undefined && object.plan !== null ? Plan.fromPartial(object.plan) : undefined;
     return message;
   }
 };
 
-const baseQueryAppliedPlanRequest: object = {name: ""};
+function createBaseQueryAppliedPlanRequest(): QueryAppliedPlanRequest {
+  return {name: ""};
+}
 
 export const QueryAppliedPlanRequest = {
   encode(message: QueryAppliedPlanRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -187,7 +206,7 @@ export const QueryAppliedPlanRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAppliedPlanRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAppliedPlanRequest} as QueryAppliedPlanRequest;
+    const message = createBaseQueryAppliedPlanRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -203,9 +222,7 @@ export const QueryAppliedPlanRequest = {
   },
 
   fromJSON(object: any): QueryAppliedPlanRequest {
-    const message = {...baseQueryAppliedPlanRequest} as QueryAppliedPlanRequest;
-    message.name = object.name !== undefined && object.name !== null ? String(object.name) : "";
-    return message;
+    return {name: isSet(object.name) ? String(object.name) : ""};
   },
 
   toJSON(message: QueryAppliedPlanRequest): unknown {
@@ -215,13 +232,15 @@ export const QueryAppliedPlanRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAppliedPlanRequest>, I>>(object: I): QueryAppliedPlanRequest {
-    const message = {...baseQueryAppliedPlanRequest} as QueryAppliedPlanRequest;
+    const message = createBaseQueryAppliedPlanRequest();
     message.name = object.name ?? "";
     return message;
   }
 };
 
-const baseQueryAppliedPlanResponse: object = {height: Long.ZERO};
+function createBaseQueryAppliedPlanResponse(): QueryAppliedPlanResponse {
+  return {height: Long.ZERO};
+}
 
 export const QueryAppliedPlanResponse = {
   encode(message: QueryAppliedPlanResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -234,7 +253,7 @@ export const QueryAppliedPlanResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryAppliedPlanResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryAppliedPlanResponse} as QueryAppliedPlanResponse;
+    const message = createBaseQueryAppliedPlanResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -250,9 +269,7 @@ export const QueryAppliedPlanResponse = {
   },
 
   fromJSON(object: any): QueryAppliedPlanResponse {
-    const message = {...baseQueryAppliedPlanResponse} as QueryAppliedPlanResponse;
-    message.height = object.height !== undefined && object.height !== null ? Long.fromString(object.height) : Long.ZERO;
-    return message;
+    return {height: isSet(object.height) ? Long.fromValue(object.height) : Long.ZERO};
   },
 
   toJSON(message: QueryAppliedPlanResponse): unknown {
@@ -262,13 +279,15 @@ export const QueryAppliedPlanResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryAppliedPlanResponse>, I>>(object: I): QueryAppliedPlanResponse {
-    const message = {...baseQueryAppliedPlanResponse} as QueryAppliedPlanResponse;
+    const message = createBaseQueryAppliedPlanResponse();
     message.height = object.height !== undefined && object.height !== null ? Long.fromValue(object.height) : Long.ZERO;
     return message;
   }
 };
 
-const baseQueryUpgradedConsensusStateRequest: object = {lastHeight: Long.ZERO};
+function createBaseQueryUpgradedConsensusStateRequest(): QueryUpgradedConsensusStateRequest {
+  return {lastHeight: Long.ZERO};
+}
 
 export const QueryUpgradedConsensusStateRequest = {
   encode(message: QueryUpgradedConsensusStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -281,7 +300,7 @@ export const QueryUpgradedConsensusStateRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryUpgradedConsensusStateRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryUpgradedConsensusStateRequest} as QueryUpgradedConsensusStateRequest;
+    const message = createBaseQueryUpgradedConsensusStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -297,9 +316,7 @@ export const QueryUpgradedConsensusStateRequest = {
   },
 
   fromJSON(object: any): QueryUpgradedConsensusStateRequest {
-    const message = {...baseQueryUpgradedConsensusStateRequest} as QueryUpgradedConsensusStateRequest;
-    message.lastHeight = object.lastHeight !== undefined && object.lastHeight !== null ? Long.fromString(object.lastHeight) : Long.ZERO;
-    return message;
+    return {lastHeight: isSet(object.lastHeight) ? Long.fromValue(object.lastHeight) : Long.ZERO};
   },
 
   toJSON(message: QueryUpgradedConsensusStateRequest): unknown {
@@ -309,13 +326,15 @@ export const QueryUpgradedConsensusStateRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryUpgradedConsensusStateRequest>, I>>(object: I): QueryUpgradedConsensusStateRequest {
-    const message = {...baseQueryUpgradedConsensusStateRequest} as QueryUpgradedConsensusStateRequest;
+    const message = createBaseQueryUpgradedConsensusStateRequest();
     message.lastHeight = object.lastHeight !== undefined && object.lastHeight !== null ? Long.fromValue(object.lastHeight) : Long.ZERO;
     return message;
   }
 };
 
-const baseQueryUpgradedConsensusStateResponse: object = {};
+function createBaseQueryUpgradedConsensusStateResponse(): QueryUpgradedConsensusStateResponse {
+  return {upgradedConsensusState: new Uint8Array()};
+}
 
 export const QueryUpgradedConsensusStateResponse = {
   encode(message: QueryUpgradedConsensusStateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -328,8 +347,7 @@ export const QueryUpgradedConsensusStateResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryUpgradedConsensusStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryUpgradedConsensusStateResponse} as QueryUpgradedConsensusStateResponse;
-    message.upgradedConsensusState = new Uint8Array();
+    const message = createBaseQueryUpgradedConsensusStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -345,12 +363,9 @@ export const QueryUpgradedConsensusStateResponse = {
   },
 
   fromJSON(object: any): QueryUpgradedConsensusStateResponse {
-    const message = {...baseQueryUpgradedConsensusStateResponse} as QueryUpgradedConsensusStateResponse;
-    message.upgradedConsensusState =
-      object.upgradedConsensusState !== undefined && object.upgradedConsensusState !== null
-        ? bytesFromBase64(object.upgradedConsensusState)
-        : new Uint8Array();
-    return message;
+    return {
+      upgradedConsensusState: isSet(object.upgradedConsensusState) ? bytesFromBase64(object.upgradedConsensusState) : new Uint8Array()
+    };
   },
 
   toJSON(message: QueryUpgradedConsensusStateResponse): unknown {
@@ -363,13 +378,15 @@ export const QueryUpgradedConsensusStateResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryUpgradedConsensusStateResponse>, I>>(object: I): QueryUpgradedConsensusStateResponse {
-    const message = {...baseQueryUpgradedConsensusStateResponse} as QueryUpgradedConsensusStateResponse;
+    const message = createBaseQueryUpgradedConsensusStateResponse();
     message.upgradedConsensusState = object.upgradedConsensusState ?? new Uint8Array();
     return message;
   }
 };
 
-const baseQueryModuleVersionsRequest: object = {moduleName: ""};
+function createBaseQueryModuleVersionsRequest(): QueryModuleVersionsRequest {
+  return {moduleName: ""};
+}
 
 export const QueryModuleVersionsRequest = {
   encode(message: QueryModuleVersionsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -382,7 +399,7 @@ export const QueryModuleVersionsRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryModuleVersionsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryModuleVersionsRequest} as QueryModuleVersionsRequest;
+    const message = createBaseQueryModuleVersionsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -398,9 +415,7 @@ export const QueryModuleVersionsRequest = {
   },
 
   fromJSON(object: any): QueryModuleVersionsRequest {
-    const message = {...baseQueryModuleVersionsRequest} as QueryModuleVersionsRequest;
-    message.moduleName = object.moduleName !== undefined && object.moduleName !== null ? String(object.moduleName) : "";
-    return message;
+    return {moduleName: isSet(object.moduleName) ? String(object.moduleName) : ""};
   },
 
   toJSON(message: QueryModuleVersionsRequest): unknown {
@@ -410,13 +425,15 @@ export const QueryModuleVersionsRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryModuleVersionsRequest>, I>>(object: I): QueryModuleVersionsRequest {
-    const message = {...baseQueryModuleVersionsRequest} as QueryModuleVersionsRequest;
+    const message = createBaseQueryModuleVersionsRequest();
     message.moduleName = object.moduleName ?? "";
     return message;
   }
 };
 
-const baseQueryModuleVersionsResponse: object = {};
+function createBaseQueryModuleVersionsResponse(): QueryModuleVersionsResponse {
+  return {moduleVersions: []};
+}
 
 export const QueryModuleVersionsResponse = {
   encode(message: QueryModuleVersionsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -429,8 +446,7 @@ export const QueryModuleVersionsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryModuleVersionsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryModuleVersionsResponse} as QueryModuleVersionsResponse;
-    message.moduleVersions = [];
+    const message = createBaseQueryModuleVersionsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -446,9 +462,9 @@ export const QueryModuleVersionsResponse = {
   },
 
   fromJSON(object: any): QueryModuleVersionsResponse {
-    const message = {...baseQueryModuleVersionsResponse} as QueryModuleVersionsResponse;
-    message.moduleVersions = (object.moduleVersions ?? []).map((e: any) => ModuleVersion.fromJSON(e));
-    return message;
+    return {
+      moduleVersions: Array.isArray(object?.moduleVersions) ? object.moduleVersions.map((e: any) => ModuleVersion.fromJSON(e)) : []
+    };
   },
 
   toJSON(message: QueryModuleVersionsResponse): unknown {
@@ -462,8 +478,94 @@ export const QueryModuleVersionsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryModuleVersionsResponse>, I>>(object: I): QueryModuleVersionsResponse {
-    const message = {...baseQueryModuleVersionsResponse} as QueryModuleVersionsResponse;
+    const message = createBaseQueryModuleVersionsResponse();
     message.moduleVersions = object.moduleVersions?.map((e) => ModuleVersion.fromPartial(e)) || [];
+    return message;
+  }
+};
+
+function createBaseQueryAuthorityRequest(): QueryAuthorityRequest {
+  return {};
+}
+
+export const QueryAuthorityRequest = {
+  encode(_: QueryAuthorityRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAuthorityRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAuthorityRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): QueryAuthorityRequest {
+    return {};
+  },
+
+  toJSON(_: QueryAuthorityRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryAuthorityRequest>, I>>(_: I): QueryAuthorityRequest {
+    const message = createBaseQueryAuthorityRequest();
+    return message;
+  }
+};
+
+function createBaseQueryAuthorityResponse(): QueryAuthorityResponse {
+  return {address: ""};
+}
+
+export const QueryAuthorityResponse = {
+  encode(message: QueryAuthorityResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryAuthorityResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryAuthorityResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): QueryAuthorityResponse {
+    return {address: isSet(object.address) ? String(object.address) : ""};
+  },
+
+  toJSON(message: QueryAuthorityResponse): unknown {
+    const obj: any = {};
+    message.address !== undefined && (obj.address = message.address);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<QueryAuthorityResponse>, I>>(object: I): QueryAuthorityResponse {
+    const message = createBaseQueryAuthorityResponse();
+    message.address = object.address ?? "";
     return message;
   }
 };
@@ -491,39 +593,54 @@ export interface Query {
    * Since: cosmos-sdk 0.43
    */
   ModuleVersions(request: QueryModuleVersionsRequest): Promise<QueryModuleVersionsResponse>;
+  /**
+   * Returns the account with authority to conduct upgrades
+   *
+   * Since: cosmos-sdk 0.46
+   */
+  Authority(request: QueryAuthorityRequest): Promise<QueryAuthorityResponse>;
 }
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "cosmos.upgrade.v1beta1.Query";
     this.rpc = rpc;
     this.CurrentPlan = this.CurrentPlan.bind(this);
     this.AppliedPlan = this.AppliedPlan.bind(this);
     this.UpgradedConsensusState = this.UpgradedConsensusState.bind(this);
     this.ModuleVersions = this.ModuleVersions.bind(this);
+    this.Authority = this.Authority.bind(this);
   }
   CurrentPlan(request: QueryCurrentPlanRequest): Promise<QueryCurrentPlanResponse> {
     const data = QueryCurrentPlanRequest.encode(request).finish();
-    const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "CurrentPlan", data);
+    const promise = this.rpc.request(this.service, "CurrentPlan", data);
     return promise.then((data) => QueryCurrentPlanResponse.decode(new _m0.Reader(data)));
   }
 
   AppliedPlan(request: QueryAppliedPlanRequest): Promise<QueryAppliedPlanResponse> {
     const data = QueryAppliedPlanRequest.encode(request).finish();
-    const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "AppliedPlan", data);
+    const promise = this.rpc.request(this.service, "AppliedPlan", data);
     return promise.then((data) => QueryAppliedPlanResponse.decode(new _m0.Reader(data)));
   }
 
   UpgradedConsensusState(request: QueryUpgradedConsensusStateRequest): Promise<QueryUpgradedConsensusStateResponse> {
     const data = QueryUpgradedConsensusStateRequest.encode(request).finish();
-    const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "UpgradedConsensusState", data);
+    const promise = this.rpc.request(this.service, "UpgradedConsensusState", data);
     return promise.then((data) => QueryUpgradedConsensusStateResponse.decode(new _m0.Reader(data)));
   }
 
   ModuleVersions(request: QueryModuleVersionsRequest): Promise<QueryModuleVersionsResponse> {
     const data = QueryModuleVersionsRequest.encode(request).finish();
-    const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "ModuleVersions", data);
+    const promise = this.rpc.request(this.service, "ModuleVersions", data);
     return promise.then((data) => QueryModuleVersionsResponse.decode(new _m0.Reader(data)));
+  }
+
+  Authority(request: QueryAuthorityRequest): Promise<QueryAuthorityResponse> {
+    const data = QueryAuthorityRequest.encode(request).finish();
+    const promise = this.rpc.request(this.service, "Authority", data);
+    return promise.then((data) => QueryAuthorityResponse.decode(new _m0.Reader(data)));
   }
 }
 
@@ -535,30 +652,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -578,9 +709,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -15,7 +15,7 @@ protoc \
   --ts_proto_out="$OUT_DIR" \
   --proto_path="$COSMOS_PROTO_DIR" \
   --proto_path="$THIRD_PARTY_PROTO_DIR" \
-  --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=true" \
+  --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=messages" \
   "$COSMOS_PROTO_DIR/cosmos/auth/v1beta1/auth.proto" \
   "$COSMOS_PROTO_DIR/cosmos/auth/v1beta1/genesis.proto" \
   "$COSMOS_PROTO_DIR/cosmos/auth/v1beta1/query.proto" \
@@ -36,8 +36,8 @@ protoc \
   "$COSMOS_PROTO_DIR/cosmos/base/snapshots/v1beta1/snapshot.proto" \
   "$COSMOS_PROTO_DIR/cosmos/base/store/v1beta1/commit_info.proto" \
   "$COSMOS_PROTO_DIR/cosmos/base/store/v1beta1/listening.proto" \
-  "$COSMOS_PROTO_DIR/cosmos/base/store/v1beta1/snapshot.proto" \
   "$COSMOS_PROTO_DIR/cosmos/base/tendermint/v1beta1/query.proto" \
+  "$COSMOS_PROTO_DIR/cosmos/base/tendermint/v1beta1/types.proto" \
   "$COSMOS_PROTO_DIR/cosmos/base/v1beta1/coin.proto" \
   "$COSMOS_PROTO_DIR/cosmos/capability/v1beta1/capability.proto" \
   "$COSMOS_PROTO_DIR/cosmos/capability/v1beta1/genesis.proto" \
@@ -110,17 +110,17 @@ protoc \
   "$COSMOS_PROTO_DIR/ibc/lightclients/solomachine/v2/solomachine.proto" \
   "$COSMOS_PROTO_DIR/ibc/lightclients/tendermint/v1/tendermint.proto" \
   "$THIRD_PARTY_PROTO_DIR/proofs.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/abci/types.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/crypto/keys.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/crypto/proof.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/libs/bits/types.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/p2p/types.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/types/block.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/types/evidence.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/types/params.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/types/types.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/types/validator.proto" \
-  "$THIRD_PARTY_PROTO_DIR/tendermint/version/types.proto"
+  "$COSMOS_PROTO_DIR/tendermint/abci/types.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/crypto/keys.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/crypto/proof.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/libs/bits/types.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/p2p/types.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/types/block.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/types/evidence.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/types/params.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/types/types.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/types/validator.proto" \
+  "$COSMOS_PROTO_DIR/tendermint/version/types.proto"
 
 sed -i "" 's/import "asset\//import "shareledger\/asset\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
 sed -i "" 's/import "booking\//import "shareledger\/booking\//' $SHARELEDGER_PROTO_DIR/shareledger/**/*.proto
@@ -136,7 +136,7 @@ protoc \
   --proto_path="$COSMOS_PROTO_DIR" \
   --proto_path="$THIRD_PARTY_PROTO_DIR" \
   --proto_path="$SHARELEDGER_PROTO_DIR" \
-  --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=true" \
+  --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=messages" \
   "$SHARELEDGER_PROTO_DIR/shareledger/asset/asset.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/asset/genesis.proto" \
   "$SHARELEDGER_PROTO_DIR/shareledger/asset/query.proto" \

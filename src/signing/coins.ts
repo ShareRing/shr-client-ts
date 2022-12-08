@@ -1,6 +1,5 @@
-import {Coin} from "@cosmjs/amino";
 import {Decimal, Uint64} from "@cosmjs/math";
-import {DecCoin} from "../codec/cosmos/base/v1beta1/coin";
+import {Coin, DecCoin} from "../codec/cosmos/base/v1beta1/coin";
 
 /**
  * Takes a coins list like "819966000ucosm,700000000ustake" and parses it.

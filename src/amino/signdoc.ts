@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {toUtf8} from "@cosmjs/encoding";
 import {Uint53} from "@cosmjs/math";
-import {Coin} from "@cosmjs/amino";
+import {Coin} from "../codec/cosmos/base/v1beta1/coin";
 
 export interface AminoMsg {
   readonly type: string;
@@ -9,8 +9,8 @@ export interface AminoMsg {
 }
 
 export interface StdFee {
-  readonly amount: readonly Coin[];
-  readonly gas: string;
+  readonly amount?: readonly Coin[];
+  readonly gas?: string;
   readonly payer?: string;
   readonly granter?: string;
 }

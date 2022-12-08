@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {DecCoin, Coin} from "../../cosmos/base/v1beta1/coin";
+import {Coin, DecCoin} from "../../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "shareledger.gentlemint";
 
@@ -18,7 +18,9 @@ export interface LevelFeeDetail {
   convertedFee?: Coin;
 }
 
-const baseLevelFee: object = {level: "", creator: ""};
+function createBaseLevelFee(): LevelFee {
+  return {level: "", fee: undefined, creator: ""};
+}
 
 export const LevelFee = {
   encode(message: LevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -37,7 +39,7 @@ export const LevelFee = {
   decode(input: _m0.Reader | Uint8Array, length?: number): LevelFee {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseLevelFee} as LevelFee;
+    const message = createBaseLevelFee();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -59,11 +61,11 @@ export const LevelFee = {
   },
 
   fromJSON(object: any): LevelFee {
-    const message = {...baseLevelFee} as LevelFee;
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    return message;
+    return {
+      level: isSet(object.level) ? String(object.level) : "",
+      fee: isSet(object.fee) ? DecCoin.fromJSON(object.fee) : undefined,
+      creator: isSet(object.creator) ? String(object.creator) : ""
+    };
   },
 
   toJSON(message: LevelFee): unknown {
@@ -75,7 +77,7 @@ export const LevelFee = {
   },
 
   fromPartial<I extends Exact<DeepPartial<LevelFee>, I>>(object: I): LevelFee {
-    const message = {...baseLevelFee} as LevelFee;
+    const message = createBaseLevelFee();
     message.level = object.level ?? "";
     message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
     message.creator = object.creator ?? "";
@@ -83,7 +85,9 @@ export const LevelFee = {
   }
 };
 
-const baseLevelFeeDetail: object = {level: "", creator: ""};
+function createBaseLevelFeeDetail(): LevelFeeDetail {
+  return {level: "", creator: "", originalFee: undefined, convertedFee: undefined};
+}
 
 export const LevelFeeDetail = {
   encode(message: LevelFeeDetail, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -105,7 +109,7 @@ export const LevelFeeDetail = {
   decode(input: _m0.Reader | Uint8Array, length?: number): LevelFeeDetail {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseLevelFeeDetail} as LevelFeeDetail;
+    const message = createBaseLevelFeeDetail();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -130,14 +134,12 @@ export const LevelFeeDetail = {
   },
 
   fromJSON(object: any): LevelFeeDetail {
-    const message = {...baseLevelFeeDetail} as LevelFeeDetail;
-    message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.originalFee =
-      object.originalFee !== undefined && object.originalFee !== null ? DecCoin.fromJSON(object.originalFee) : undefined;
-    message.convertedFee =
-      object.convertedFee !== undefined && object.convertedFee !== null ? Coin.fromJSON(object.convertedFee) : undefined;
-    return message;
+    return {
+      level: isSet(object.level) ? String(object.level) : "",
+      creator: isSet(object.creator) ? String(object.creator) : "",
+      originalFee: isSet(object.originalFee) ? DecCoin.fromJSON(object.originalFee) : undefined,
+      convertedFee: isSet(object.convertedFee) ? Coin.fromJSON(object.convertedFee) : undefined
+    };
   },
 
   toJSON(message: LevelFeeDetail): unknown {
@@ -150,7 +152,7 @@ export const LevelFeeDetail = {
   },
 
   fromPartial<I extends Exact<DeepPartial<LevelFeeDetail>, I>>(object: I): LevelFeeDetail {
-    const message = {...baseLevelFeeDetail} as LevelFeeDetail;
+    const message = createBaseLevelFeeDetail();
     message.level = object.level ?? "";
     message.creator = object.creator ?? "";
     message.originalFee =
@@ -178,9 +180,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

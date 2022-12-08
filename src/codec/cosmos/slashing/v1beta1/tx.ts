@@ -12,7 +12,9 @@ export interface MsgUnjail {
 /** MsgUnjailResponse defines the Msg/Unjail response type */
 export interface MsgUnjailResponse {}
 
-const baseMsgUnjail: object = {validatorAddr: ""};
+function createBaseMsgUnjail(): MsgUnjail {
+  return {validatorAddr: ""};
+}
 
 export const MsgUnjail = {
   encode(message: MsgUnjail, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -25,7 +27,7 @@ export const MsgUnjail = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUnjail {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUnjail} as MsgUnjail;
+    const message = createBaseMsgUnjail();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -41,9 +43,7 @@ export const MsgUnjail = {
   },
 
   fromJSON(object: any): MsgUnjail {
-    const message = {...baseMsgUnjail} as MsgUnjail;
-    message.validatorAddr = object.validatorAddr !== undefined && object.validatorAddr !== null ? String(object.validatorAddr) : "";
-    return message;
+    return {validatorAddr: isSet(object.validatorAddr) ? String(object.validatorAddr) : ""};
   },
 
   toJSON(message: MsgUnjail): unknown {
@@ -53,13 +53,15 @@ export const MsgUnjail = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUnjail>, I>>(object: I): MsgUnjail {
-    const message = {...baseMsgUnjail} as MsgUnjail;
+    const message = createBaseMsgUnjail();
     message.validatorAddr = object.validatorAddr ?? "";
     return message;
   }
 };
 
-const baseMsgUnjailResponse: object = {};
+function createBaseMsgUnjailResponse(): MsgUnjailResponse {
+  return {};
+}
 
 export const MsgUnjailResponse = {
   encode(_: MsgUnjailResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -69,7 +71,7 @@ export const MsgUnjailResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUnjailResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUnjailResponse} as MsgUnjailResponse;
+    const message = createBaseMsgUnjailResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -82,8 +84,7 @@ export const MsgUnjailResponse = {
   },
 
   fromJSON(_: any): MsgUnjailResponse {
-    const message = {...baseMsgUnjailResponse} as MsgUnjailResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgUnjailResponse): unknown {
@@ -92,7 +93,7 @@ export const MsgUnjailResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUnjailResponse>, I>>(_: I): MsgUnjailResponse {
-    const message = {...baseMsgUnjailResponse} as MsgUnjailResponse;
+    const message = createBaseMsgUnjailResponse();
     return message;
   }
 };
@@ -109,13 +110,15 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "cosmos.slashing.v1beta1.Msg";
     this.rpc = rpc;
     this.Unjail = this.Unjail.bind(this);
   }
   Unjail(request: MsgUnjail): Promise<MsgUnjailResponse> {
     const data = MsgUnjail.encode(request).finish();
-    const promise = this.rpc.request("cosmos.slashing.v1beta1.Msg", "Unjail", data);
+    const promise = this.rpc.request(this.service, "Unjail", data);
     return promise.then((data) => MsgUnjailResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -141,9 +144,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

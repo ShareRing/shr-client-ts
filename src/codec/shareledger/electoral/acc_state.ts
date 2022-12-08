@@ -10,7 +10,9 @@ export interface AccState {
   status: string;
 }
 
-const baseAccState: object = {key: "", address: "", status: ""};
+function createBaseAccState(): AccState {
+  return {key: "", address: "", status: ""};
+}
 
 export const AccState = {
   encode(message: AccState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -29,7 +31,7 @@ export const AccState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): AccState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseAccState} as AccState;
+    const message = createBaseAccState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -51,11 +53,11 @@ export const AccState = {
   },
 
   fromJSON(object: any): AccState {
-    const message = {...baseAccState} as AccState;
-    message.key = object.key !== undefined && object.key !== null ? String(object.key) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    return message;
+    return {
+      key: isSet(object.key) ? String(object.key) : "",
+      address: isSet(object.address) ? String(object.address) : "",
+      status: isSet(object.status) ? String(object.status) : ""
+    };
   },
 
   toJSON(message: AccState): unknown {
@@ -67,7 +69,7 @@ export const AccState = {
   },
 
   fromPartial<I extends Exact<DeepPartial<AccState>, I>>(object: I): AccState {
-    const message = {...baseAccState} as AccState;
+    const message = createBaseAccState();
     message.key = object.key ?? "";
     message.address = object.address ?? "";
     message.status = object.status ?? "";
@@ -92,9 +94,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

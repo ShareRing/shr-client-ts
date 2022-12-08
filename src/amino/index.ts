@@ -2,18 +2,17 @@
 
 import {AminoMsg} from "./signdoc";
 import {EncodeObject} from "../signing";
-import {AminoConverter, AminoTypesOptions} from "./types";
+export interface AminoConverter {
+  readonly aminoType: string;
+  readonly toAmino: (value: any) => any;
+  readonly fromAmino: (value: any) => any;
+}
 
-import {createAminoTypes as A} from "../modules/auth";
-import {createAminoTypes as B} from "../modules/bank";
-import {createAminoTypes as C} from "../modules/distribution";
-import {createAminoTypes as D} from "../modules/staking";
-import {createAminoTypes as E} from "../modules/gov";
+/** A map from protobuf type URL to the AminoConverter implementation if supported on chain */
+export type AminoConverters = Record<string, AminoConverter | "not_supported_by_chain">;
 
-const defaultAminoTypes = [A, B, C, D, E];
-
-function createDefaultAminoTypes(prefix: string): Record<string, AminoConverter> {
-  return defaultAminoTypes.reduce((prev, curr) => ({...prev, ...curr(prefix)}), {});
+function isAminoConverter(converter: [string, AminoConverter | "not_supported_by_chain"]): converter is [string, AminoConverter] {
+  return typeof converter[1] !== "string";
 }
 
 /**
@@ -25,15 +24,19 @@ export class AminoTypes {
   // There is no uniqueness guarantee of the Amino type identifier in the type
   // system or constructor. Instead it's the user's responsibility to ensure
   // there is no overlap when fromAmino is called.
-  private readonly register: Record<string, AminoConverter>;
+  private readonly register: Record<string, AminoConverter | "not_supported_by_chain">;
 
-  public constructor({prefix, additions = {}}: AminoTypesOptions) {
-    const defaultTypes = createDefaultAminoTypes(prefix);
-    this.register = {...defaultTypes, ...additions};
+  public constructor(types: AminoConverters) {
+    this.register = types;
   }
 
   public toAmino({typeUrl, value}: EncodeObject): AminoMsg {
     const converter = this.register[typeUrl];
+    if (converter === "not_supported_by_chain") {
+      throw new Error(
+        `The message type '${typeUrl}' cannot be signed using the Amino JSON sign mode because this is not supported by chain.`
+      );
+    }
     if (!converter) {
       throw new Error(
         `Type URL '${typeUrl}' does not exist in the Amino message type register. ` +
@@ -48,7 +51,10 @@ export class AminoTypes {
   }
 
   public fromAmino({type, value}: AminoMsg): EncodeObject {
-    const matches = Object.entries(this.register).filter(([_typeUrl, {aminoType}]) => aminoType === type);
+    const matches = Object.entries(this.register)
+      .filter(isAminoConverter)
+      .filter(([_typeUrl, {aminoType}]) => aminoType === type);
+
     switch (matches.length) {
       case 0: {
         throw new Error(

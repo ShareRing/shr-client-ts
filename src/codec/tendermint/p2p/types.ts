@@ -32,7 +32,9 @@ export interface DefaultNodeInfoOther {
   rpcAddress: string;
 }
 
-const baseNetAddress: object = {id: "", ip: "", port: 0};
+function createBaseNetAddress(): NetAddress {
+  return {id: "", ip: "", port: 0};
+}
 
 export const NetAddress = {
   encode(message: NetAddress, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -51,7 +53,7 @@ export const NetAddress = {
   decode(input: _m0.Reader | Uint8Array, length?: number): NetAddress {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseNetAddress} as NetAddress;
+    const message = createBaseNetAddress();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -73,23 +75,23 @@ export const NetAddress = {
   },
 
   fromJSON(object: any): NetAddress {
-    const message = {...baseNetAddress} as NetAddress;
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    message.ip = object.ip !== undefined && object.ip !== null ? String(object.ip) : "";
-    message.port = object.port !== undefined && object.port !== null ? Number(object.port) : 0;
-    return message;
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      ip: isSet(object.ip) ? String(object.ip) : "",
+      port: isSet(object.port) ? Number(object.port) : 0
+    };
   },
 
   toJSON(message: NetAddress): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
     message.ip !== undefined && (obj.ip = message.ip);
-    message.port !== undefined && (obj.port = message.port);
+    message.port !== undefined && (obj.port = Math.round(message.port));
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<NetAddress>, I>>(object: I): NetAddress {
-    const message = {...baseNetAddress} as NetAddress;
+    const message = createBaseNetAddress();
     message.id = object.id ?? "";
     message.ip = object.ip ?? "";
     message.port = object.port ?? 0;
@@ -97,7 +99,9 @@ export const NetAddress = {
   }
 };
 
-const baseProtocolVersion: object = {p2p: Long.UZERO, block: Long.UZERO, app: Long.UZERO};
+function createBaseProtocolVersion(): ProtocolVersion {
+  return {p2p: Long.UZERO, block: Long.UZERO, app: Long.UZERO};
+}
 
 export const ProtocolVersion = {
   encode(message: ProtocolVersion, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -116,7 +120,7 @@ export const ProtocolVersion = {
   decode(input: _m0.Reader | Uint8Array, length?: number): ProtocolVersion {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseProtocolVersion} as ProtocolVersion;
+    const message = createBaseProtocolVersion();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -138,11 +142,11 @@ export const ProtocolVersion = {
   },
 
   fromJSON(object: any): ProtocolVersion {
-    const message = {...baseProtocolVersion} as ProtocolVersion;
-    message.p2p = object.p2p !== undefined && object.p2p !== null ? Long.fromString(object.p2p) : Long.UZERO;
-    message.block = object.block !== undefined && object.block !== null ? Long.fromString(object.block) : Long.UZERO;
-    message.app = object.app !== undefined && object.app !== null ? Long.fromString(object.app) : Long.UZERO;
-    return message;
+    return {
+      p2p: isSet(object.p2p) ? Long.fromValue(object.p2p) : Long.UZERO,
+      block: isSet(object.block) ? Long.fromValue(object.block) : Long.UZERO,
+      app: isSet(object.app) ? Long.fromValue(object.app) : Long.UZERO
+    };
   },
 
   toJSON(message: ProtocolVersion): unknown {
@@ -154,7 +158,7 @@ export const ProtocolVersion = {
   },
 
   fromPartial<I extends Exact<DeepPartial<ProtocolVersion>, I>>(object: I): ProtocolVersion {
-    const message = {...baseProtocolVersion} as ProtocolVersion;
+    const message = createBaseProtocolVersion();
     message.p2p = object.p2p !== undefined && object.p2p !== null ? Long.fromValue(object.p2p) : Long.UZERO;
     message.block = object.block !== undefined && object.block !== null ? Long.fromValue(object.block) : Long.UZERO;
     message.app = object.app !== undefined && object.app !== null ? Long.fromValue(object.app) : Long.UZERO;
@@ -162,7 +166,18 @@ export const ProtocolVersion = {
   }
 };
 
-const baseDefaultNodeInfo: object = {defaultNodeId: "", listenAddr: "", network: "", version: "", moniker: ""};
+function createBaseDefaultNodeInfo(): DefaultNodeInfo {
+  return {
+    protocolVersion: undefined,
+    defaultNodeId: "",
+    listenAddr: "",
+    network: "",
+    version: "",
+    channels: new Uint8Array(),
+    moniker: "",
+    other: undefined
+  };
+}
 
 export const DefaultNodeInfo = {
   encode(message: DefaultNodeInfo, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -196,8 +211,7 @@ export const DefaultNodeInfo = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DefaultNodeInfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDefaultNodeInfo} as DefaultNodeInfo;
-    message.channels = new Uint8Array();
+    const message = createBaseDefaultNodeInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -234,19 +248,16 @@ export const DefaultNodeInfo = {
   },
 
   fromJSON(object: any): DefaultNodeInfo {
-    const message = {...baseDefaultNodeInfo} as DefaultNodeInfo;
-    message.protocolVersion =
-      object.protocolVersion !== undefined && object.protocolVersion !== null
-        ? ProtocolVersion.fromJSON(object.protocolVersion)
-        : undefined;
-    message.defaultNodeId = object.defaultNodeId !== undefined && object.defaultNodeId !== null ? String(object.defaultNodeId) : "";
-    message.listenAddr = object.listenAddr !== undefined && object.listenAddr !== null ? String(object.listenAddr) : "";
-    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
-    message.version = object.version !== undefined && object.version !== null ? String(object.version) : "";
-    message.channels = object.channels !== undefined && object.channels !== null ? bytesFromBase64(object.channels) : new Uint8Array();
-    message.moniker = object.moniker !== undefined && object.moniker !== null ? String(object.moniker) : "";
-    message.other = object.other !== undefined && object.other !== null ? DefaultNodeInfoOther.fromJSON(object.other) : undefined;
-    return message;
+    return {
+      protocolVersion: isSet(object.protocolVersion) ? ProtocolVersion.fromJSON(object.protocolVersion) : undefined,
+      defaultNodeId: isSet(object.defaultNodeId) ? String(object.defaultNodeId) : "",
+      listenAddr: isSet(object.listenAddr) ? String(object.listenAddr) : "",
+      network: isSet(object.network) ? String(object.network) : "",
+      version: isSet(object.version) ? String(object.version) : "",
+      channels: isSet(object.channels) ? bytesFromBase64(object.channels) : new Uint8Array(),
+      moniker: isSet(object.moniker) ? String(object.moniker) : "",
+      other: isSet(object.other) ? DefaultNodeInfoOther.fromJSON(object.other) : undefined
+    };
   },
 
   toJSON(message: DefaultNodeInfo): unknown {
@@ -265,7 +276,7 @@ export const DefaultNodeInfo = {
   },
 
   fromPartial<I extends Exact<DeepPartial<DefaultNodeInfo>, I>>(object: I): DefaultNodeInfo {
-    const message = {...baseDefaultNodeInfo} as DefaultNodeInfo;
+    const message = createBaseDefaultNodeInfo();
     message.protocolVersion =
       object.protocolVersion !== undefined && object.protocolVersion !== null
         ? ProtocolVersion.fromPartial(object.protocolVersion)
@@ -281,7 +292,9 @@ export const DefaultNodeInfo = {
   }
 };
 
-const baseDefaultNodeInfoOther: object = {txIndex: "", rpcAddress: ""};
+function createBaseDefaultNodeInfoOther(): DefaultNodeInfoOther {
+  return {txIndex: "", rpcAddress: ""};
+}
 
 export const DefaultNodeInfoOther = {
   encode(message: DefaultNodeInfoOther, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -297,7 +310,7 @@ export const DefaultNodeInfoOther = {
   decode(input: _m0.Reader | Uint8Array, length?: number): DefaultNodeInfoOther {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseDefaultNodeInfoOther} as DefaultNodeInfoOther;
+    const message = createBaseDefaultNodeInfoOther();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -316,10 +329,10 @@ export const DefaultNodeInfoOther = {
   },
 
   fromJSON(object: any): DefaultNodeInfoOther {
-    const message = {...baseDefaultNodeInfoOther} as DefaultNodeInfoOther;
-    message.txIndex = object.txIndex !== undefined && object.txIndex !== null ? String(object.txIndex) : "";
-    message.rpcAddress = object.rpcAddress !== undefined && object.rpcAddress !== null ? String(object.rpcAddress) : "";
-    return message;
+    return {
+      txIndex: isSet(object.txIndex) ? String(object.txIndex) : "",
+      rpcAddress: isSet(object.rpcAddress) ? String(object.rpcAddress) : ""
+    };
   },
 
   toJSON(message: DefaultNodeInfoOther): unknown {
@@ -330,7 +343,7 @@ export const DefaultNodeInfoOther = {
   },
 
   fromPartial<I extends Exact<DeepPartial<DefaultNodeInfoOther>, I>>(object: I): DefaultNodeInfoOther {
-    const message = {...baseDefaultNodeInfoOther} as DefaultNodeInfoOther;
+    const message = createBaseDefaultNodeInfoOther();
     message.txIndex = object.txIndex ?? "";
     message.rpcAddress = object.rpcAddress ?? "";
     return message;
@@ -341,30 +354,44 @@ declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
 var globalThis: any = (() => {
-  if (typeof globalThis !== "undefined") return globalThis;
-  if (typeof self !== "undefined") return self;
-  if (typeof window !== "undefined") return window;
-  if (typeof global !== "undefined") return global;
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
   throw "Unable to locate global object";
 })();
 
-const atob: (b64: string) => string = globalThis.atob || ((b64) => globalThis.Buffer.from(b64, "base64").toString("binary"));
 function bytesFromBase64(b64: string): Uint8Array {
-  const bin = atob(b64);
-  const arr = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; ++i) {
-    arr[i] = bin.charCodeAt(i);
+  if (globalThis.Buffer) {
+    return Uint8Array.from(globalThis.Buffer.from(b64, "base64"));
+  } else {
+    const bin = globalThis.atob(b64);
+    const arr = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; ++i) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return arr;
   }
-  return arr;
 }
 
-const btoa: (bin: string) => string = globalThis.btoa || ((bin) => globalThis.Buffer.from(bin, "binary").toString("base64"));
 function base64FromBytes(arr: Uint8Array): string {
-  const bin: string[] = [];
-  for (const byte of arr) {
-    bin.push(String.fromCharCode(byte));
+  if (globalThis.Buffer) {
+    return globalThis.Buffer.from(arr).toString("base64");
+  } else {
+    const bin: string[] = [];
+    arr.forEach((byte) => {
+      bin.push(String.fromCharCode(byte));
+    });
+    return globalThis.btoa(bin.join(""));
   }
-  return btoa(bin.join(""));
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
@@ -384,9 +411,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

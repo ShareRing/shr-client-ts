@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Id} from "../../shareledger/id/id";
+import {Id} from "./id";
 
 export const protobufPackage = "shareledger.id";
 
@@ -21,7 +21,9 @@ export interface QueryIdByIdResponse {
   id?: Id;
 }
 
-const baseQueryIdByAddressRequest: object = {address: ""};
+function createBaseQueryIdByAddressRequest(): QueryIdByAddressRequest {
+  return {address: ""};
+}
 
 export const QueryIdByAddressRequest = {
   encode(message: QueryIdByAddressRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -34,7 +36,7 @@ export const QueryIdByAddressRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdByAddressRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdByAddressRequest} as QueryIdByAddressRequest;
+    const message = createBaseQueryIdByAddressRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -50,9 +52,7 @@ export const QueryIdByAddressRequest = {
   },
 
   fromJSON(object: any): QueryIdByAddressRequest {
-    const message = {...baseQueryIdByAddressRequest} as QueryIdByAddressRequest;
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    return message;
+    return {address: isSet(object.address) ? String(object.address) : ""};
   },
 
   toJSON(message: QueryIdByAddressRequest): unknown {
@@ -62,13 +62,15 @@ export const QueryIdByAddressRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdByAddressRequest>, I>>(object: I): QueryIdByAddressRequest {
-    const message = {...baseQueryIdByAddressRequest} as QueryIdByAddressRequest;
+    const message = createBaseQueryIdByAddressRequest();
     message.address = object.address ?? "";
     return message;
   }
 };
 
-const baseQueryIdByAddressResponse: object = {};
+function createBaseQueryIdByAddressResponse(): QueryIdByAddressResponse {
+  return {id: undefined};
+}
 
 export const QueryIdByAddressResponse = {
   encode(message: QueryIdByAddressResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -81,7 +83,7 @@ export const QueryIdByAddressResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdByAddressResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdByAddressResponse} as QueryIdByAddressResponse;
+    const message = createBaseQueryIdByAddressResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -97,9 +99,7 @@ export const QueryIdByAddressResponse = {
   },
 
   fromJSON(object: any): QueryIdByAddressResponse {
-    const message = {...baseQueryIdByAddressResponse} as QueryIdByAddressResponse;
-    message.id = object.id !== undefined && object.id !== null ? Id.fromJSON(object.id) : undefined;
-    return message;
+    return {id: isSet(object.id) ? Id.fromJSON(object.id) : undefined};
   },
 
   toJSON(message: QueryIdByAddressResponse): unknown {
@@ -109,13 +109,15 @@ export const QueryIdByAddressResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdByAddressResponse>, I>>(object: I): QueryIdByAddressResponse {
-    const message = {...baseQueryIdByAddressResponse} as QueryIdByAddressResponse;
+    const message = createBaseQueryIdByAddressResponse();
     message.id = object.id !== undefined && object.id !== null ? Id.fromPartial(object.id) : undefined;
     return message;
   }
 };
 
-const baseQueryIdByIdRequest: object = {id: ""};
+function createBaseQueryIdByIdRequest(): QueryIdByIdRequest {
+  return {id: ""};
+}
 
 export const QueryIdByIdRequest = {
   encode(message: QueryIdByIdRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -128,7 +130,7 @@ export const QueryIdByIdRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdByIdRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdByIdRequest} as QueryIdByIdRequest;
+    const message = createBaseQueryIdByIdRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -144,9 +146,7 @@ export const QueryIdByIdRequest = {
   },
 
   fromJSON(object: any): QueryIdByIdRequest {
-    const message = {...baseQueryIdByIdRequest} as QueryIdByIdRequest;
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    return message;
+    return {id: isSet(object.id) ? String(object.id) : ""};
   },
 
   toJSON(message: QueryIdByIdRequest): unknown {
@@ -156,13 +156,15 @@ export const QueryIdByIdRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdByIdRequest>, I>>(object: I): QueryIdByIdRequest {
-    const message = {...baseQueryIdByIdRequest} as QueryIdByIdRequest;
+    const message = createBaseQueryIdByIdRequest();
     message.id = object.id ?? "";
     return message;
   }
 };
 
-const baseQueryIdByIdResponse: object = {};
+function createBaseQueryIdByIdResponse(): QueryIdByIdResponse {
+  return {id: undefined};
+}
 
 export const QueryIdByIdResponse = {
   encode(message: QueryIdByIdResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -175,7 +177,7 @@ export const QueryIdByIdResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryIdByIdResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryIdByIdResponse} as QueryIdByIdResponse;
+    const message = createBaseQueryIdByIdResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -191,9 +193,7 @@ export const QueryIdByIdResponse = {
   },
 
   fromJSON(object: any): QueryIdByIdResponse {
-    const message = {...baseQueryIdByIdResponse} as QueryIdByIdResponse;
-    message.id = object.id !== undefined && object.id !== null ? Id.fromJSON(object.id) : undefined;
-    return message;
+    return {id: isSet(object.id) ? Id.fromJSON(object.id) : undefined};
   },
 
   toJSON(message: QueryIdByIdResponse): unknown {
@@ -203,7 +203,7 @@ export const QueryIdByIdResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryIdByIdResponse>, I>>(object: I): QueryIdByIdResponse {
-    const message = {...baseQueryIdByIdResponse} as QueryIdByIdResponse;
+    const message = createBaseQueryIdByIdResponse();
     message.id = object.id !== undefined && object.id !== null ? Id.fromPartial(object.id) : undefined;
     return message;
   }
@@ -219,20 +219,22 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.id.Query";
     this.rpc = rpc;
     this.IdByAddress = this.IdByAddress.bind(this);
     this.IdById = this.IdById.bind(this);
   }
   IdByAddress(request: QueryIdByAddressRequest): Promise<QueryIdByAddressResponse> {
     const data = QueryIdByAddressRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Query", "IdByAddress", data);
+    const promise = this.rpc.request(this.service, "IdByAddress", data);
     return promise.then((data) => QueryIdByAddressResponse.decode(new _m0.Reader(data)));
   }
 
   IdById(request: QueryIdByIdRequest): Promise<QueryIdByIdResponse> {
     const data = QueryIdByIdRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Query", "IdById", data);
+    const promise = this.rpc.request(this.service, "IdById", data);
     return promise.then((data) => QueryIdByIdResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -258,9 +260,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

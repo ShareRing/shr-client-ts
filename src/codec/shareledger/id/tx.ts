@@ -40,7 +40,9 @@ export interface MsgReplaceIdOwner {
 
 export interface MsgReplaceIdOwnerResponse {}
 
-const baseMsgCreateId: object = {issuerAddress: "", backupAddress: "", extraData: "", id: "", ownerAddress: ""};
+function createBaseMsgCreateId(): MsgCreateId {
+  return {issuerAddress: "", backupAddress: "", extraData: "", id: "", ownerAddress: ""};
+}
 
 export const MsgCreateId = {
   encode(message: MsgCreateId, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -65,7 +67,7 @@ export const MsgCreateId = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateId {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateId} as MsgCreateId;
+    const message = createBaseMsgCreateId();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -93,13 +95,13 @@ export const MsgCreateId = {
   },
 
   fromJSON(object: any): MsgCreateId {
-    const message = {...baseMsgCreateId} as MsgCreateId;
-    message.issuerAddress = object.issuerAddress !== undefined && object.issuerAddress !== null ? String(object.issuerAddress) : "";
-    message.backupAddress = object.backupAddress !== undefined && object.backupAddress !== null ? String(object.backupAddress) : "";
-    message.extraData = object.extraData !== undefined && object.extraData !== null ? String(object.extraData) : "";
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    message.ownerAddress = object.ownerAddress !== undefined && object.ownerAddress !== null ? String(object.ownerAddress) : "";
-    return message;
+    return {
+      issuerAddress: isSet(object.issuerAddress) ? String(object.issuerAddress) : "",
+      backupAddress: isSet(object.backupAddress) ? String(object.backupAddress) : "",
+      extraData: isSet(object.extraData) ? String(object.extraData) : "",
+      id: isSet(object.id) ? String(object.id) : "",
+      ownerAddress: isSet(object.ownerAddress) ? String(object.ownerAddress) : ""
+    };
   },
 
   toJSON(message: MsgCreateId): unknown {
@@ -113,7 +115,7 @@ export const MsgCreateId = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateId>, I>>(object: I): MsgCreateId {
-    const message = {...baseMsgCreateId} as MsgCreateId;
+    const message = createBaseMsgCreateId();
     message.issuerAddress = object.issuerAddress ?? "";
     message.backupAddress = object.backupAddress ?? "";
     message.extraData = object.extraData ?? "";
@@ -123,7 +125,9 @@ export const MsgCreateId = {
   }
 };
 
-const baseMsgCreateIdResponse: object = {};
+function createBaseMsgCreateIdResponse(): MsgCreateIdResponse {
+  return {};
+}
 
 export const MsgCreateIdResponse = {
   encode(_: MsgCreateIdResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -133,7 +137,7 @@ export const MsgCreateIdResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIdResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateIdResponse} as MsgCreateIdResponse;
+    const message = createBaseMsgCreateIdResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -146,8 +150,7 @@ export const MsgCreateIdResponse = {
   },
 
   fromJSON(_: any): MsgCreateIdResponse {
-    const message = {...baseMsgCreateIdResponse} as MsgCreateIdResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateIdResponse): unknown {
@@ -156,12 +159,14 @@ export const MsgCreateIdResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateIdResponse>, I>>(_: I): MsgCreateIdResponse {
-    const message = {...baseMsgCreateIdResponse} as MsgCreateIdResponse;
+    const message = createBaseMsgCreateIdResponse();
     return message;
   }
 };
 
-const baseMsgCreateIds: object = {issuerAddress: "", backupAddress: "", extraData: "", id: "", ownerAddress: ""};
+function createBaseMsgCreateIds(): MsgCreateIds {
+  return {issuerAddress: "", backupAddress: [], extraData: [], id: [], ownerAddress: []};
+}
 
 export const MsgCreateIds = {
   encode(message: MsgCreateIds, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -186,11 +191,7 @@ export const MsgCreateIds = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIds {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateIds} as MsgCreateIds;
-    message.backupAddress = [];
-    message.extraData = [];
-    message.id = [];
-    message.ownerAddress = [];
+    const message = createBaseMsgCreateIds();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -218,13 +219,13 @@ export const MsgCreateIds = {
   },
 
   fromJSON(object: any): MsgCreateIds {
-    const message = {...baseMsgCreateIds} as MsgCreateIds;
-    message.issuerAddress = object.issuerAddress !== undefined && object.issuerAddress !== null ? String(object.issuerAddress) : "";
-    message.backupAddress = (object.backupAddress ?? []).map((e: any) => String(e));
-    message.extraData = (object.extraData ?? []).map((e: any) => String(e));
-    message.id = (object.id ?? []).map((e: any) => String(e));
-    message.ownerAddress = (object.ownerAddress ?? []).map((e: any) => String(e));
-    return message;
+    return {
+      issuerAddress: isSet(object.issuerAddress) ? String(object.issuerAddress) : "",
+      backupAddress: Array.isArray(object?.backupAddress) ? object.backupAddress.map((e: any) => String(e)) : [],
+      extraData: Array.isArray(object?.extraData) ? object.extraData.map((e: any) => String(e)) : [],
+      id: Array.isArray(object?.id) ? object.id.map((e: any) => String(e)) : [],
+      ownerAddress: Array.isArray(object?.ownerAddress) ? object.ownerAddress.map((e: any) => String(e)) : []
+    };
   },
 
   toJSON(message: MsgCreateIds): unknown {
@@ -254,7 +255,7 @@ export const MsgCreateIds = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateIds>, I>>(object: I): MsgCreateIds {
-    const message = {...baseMsgCreateIds} as MsgCreateIds;
+    const message = createBaseMsgCreateIds();
     message.issuerAddress = object.issuerAddress ?? "";
     message.backupAddress = object.backupAddress?.map((e) => e) || [];
     message.extraData = object.extraData?.map((e) => e) || [];
@@ -264,7 +265,9 @@ export const MsgCreateIds = {
   }
 };
 
-const baseMsgCreateIdsResponse: object = {};
+function createBaseMsgCreateIdsResponse(): MsgCreateIdsResponse {
+  return {};
+}
 
 export const MsgCreateIdsResponse = {
   encode(_: MsgCreateIdsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -274,7 +277,7 @@ export const MsgCreateIdsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgCreateIdsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgCreateIdsResponse} as MsgCreateIdsResponse;
+    const message = createBaseMsgCreateIdsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -287,8 +290,7 @@ export const MsgCreateIdsResponse = {
   },
 
   fromJSON(_: any): MsgCreateIdsResponse {
-    const message = {...baseMsgCreateIdsResponse} as MsgCreateIdsResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgCreateIdsResponse): unknown {
@@ -297,12 +299,14 @@ export const MsgCreateIdsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgCreateIdsResponse>, I>>(_: I): MsgCreateIdsResponse {
-    const message = {...baseMsgCreateIdsResponse} as MsgCreateIdsResponse;
+    const message = createBaseMsgCreateIdsResponse();
     return message;
   }
 };
 
-const baseMsgUpdateId: object = {issuerAddress: "", id: "", extraData: ""};
+function createBaseMsgUpdateId(): MsgUpdateId {
+  return {issuerAddress: "", id: "", extraData: ""};
+}
 
 export const MsgUpdateId = {
   encode(message: MsgUpdateId, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -321,7 +325,7 @@ export const MsgUpdateId = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateId {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateId} as MsgUpdateId;
+    const message = createBaseMsgUpdateId();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -343,11 +347,11 @@ export const MsgUpdateId = {
   },
 
   fromJSON(object: any): MsgUpdateId {
-    const message = {...baseMsgUpdateId} as MsgUpdateId;
-    message.issuerAddress = object.issuerAddress !== undefined && object.issuerAddress !== null ? String(object.issuerAddress) : "";
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    message.extraData = object.extraData !== undefined && object.extraData !== null ? String(object.extraData) : "";
-    return message;
+    return {
+      issuerAddress: isSet(object.issuerAddress) ? String(object.issuerAddress) : "",
+      id: isSet(object.id) ? String(object.id) : "",
+      extraData: isSet(object.extraData) ? String(object.extraData) : ""
+    };
   },
 
   toJSON(message: MsgUpdateId): unknown {
@@ -359,7 +363,7 @@ export const MsgUpdateId = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUpdateId>, I>>(object: I): MsgUpdateId {
-    const message = {...baseMsgUpdateId} as MsgUpdateId;
+    const message = createBaseMsgUpdateId();
     message.issuerAddress = object.issuerAddress ?? "";
     message.id = object.id ?? "";
     message.extraData = object.extraData ?? "";
@@ -367,7 +371,9 @@ export const MsgUpdateId = {
   }
 };
 
-const baseMsgUpdateIdResponse: object = {};
+function createBaseMsgUpdateIdResponse(): MsgUpdateIdResponse {
+  return {};
+}
 
 export const MsgUpdateIdResponse = {
   encode(_: MsgUpdateIdResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -377,7 +383,7 @@ export const MsgUpdateIdResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgUpdateIdResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgUpdateIdResponse} as MsgUpdateIdResponse;
+    const message = createBaseMsgUpdateIdResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -390,8 +396,7 @@ export const MsgUpdateIdResponse = {
   },
 
   fromJSON(_: any): MsgUpdateIdResponse {
-    const message = {...baseMsgUpdateIdResponse} as MsgUpdateIdResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgUpdateIdResponse): unknown {
@@ -400,12 +405,14 @@ export const MsgUpdateIdResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgUpdateIdResponse>, I>>(_: I): MsgUpdateIdResponse {
-    const message = {...baseMsgUpdateIdResponse} as MsgUpdateIdResponse;
+    const message = createBaseMsgUpdateIdResponse();
     return message;
   }
 };
 
-const baseMsgReplaceIdOwner: object = {backupAddress: "", id: "", ownerAddress: ""};
+function createBaseMsgReplaceIdOwner(): MsgReplaceIdOwner {
+  return {backupAddress: "", id: "", ownerAddress: ""};
+}
 
 export const MsgReplaceIdOwner = {
   encode(message: MsgReplaceIdOwner, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -424,7 +431,7 @@ export const MsgReplaceIdOwner = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgReplaceIdOwner {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgReplaceIdOwner} as MsgReplaceIdOwner;
+    const message = createBaseMsgReplaceIdOwner();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -446,11 +453,11 @@ export const MsgReplaceIdOwner = {
   },
 
   fromJSON(object: any): MsgReplaceIdOwner {
-    const message = {...baseMsgReplaceIdOwner} as MsgReplaceIdOwner;
-    message.backupAddress = object.backupAddress !== undefined && object.backupAddress !== null ? String(object.backupAddress) : "";
-    message.id = object.id !== undefined && object.id !== null ? String(object.id) : "";
-    message.ownerAddress = object.ownerAddress !== undefined && object.ownerAddress !== null ? String(object.ownerAddress) : "";
-    return message;
+    return {
+      backupAddress: isSet(object.backupAddress) ? String(object.backupAddress) : "",
+      id: isSet(object.id) ? String(object.id) : "",
+      ownerAddress: isSet(object.ownerAddress) ? String(object.ownerAddress) : ""
+    };
   },
 
   toJSON(message: MsgReplaceIdOwner): unknown {
@@ -462,7 +469,7 @@ export const MsgReplaceIdOwner = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgReplaceIdOwner>, I>>(object: I): MsgReplaceIdOwner {
-    const message = {...baseMsgReplaceIdOwner} as MsgReplaceIdOwner;
+    const message = createBaseMsgReplaceIdOwner();
     message.backupAddress = object.backupAddress ?? "";
     message.id = object.id ?? "";
     message.ownerAddress = object.ownerAddress ?? "";
@@ -470,7 +477,9 @@ export const MsgReplaceIdOwner = {
   }
 };
 
-const baseMsgReplaceIdOwnerResponse: object = {};
+function createBaseMsgReplaceIdOwnerResponse(): MsgReplaceIdOwnerResponse {
+  return {};
+}
 
 export const MsgReplaceIdOwnerResponse = {
   encode(_: MsgReplaceIdOwnerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -480,7 +489,7 @@ export const MsgReplaceIdOwnerResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): MsgReplaceIdOwnerResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgReplaceIdOwnerResponse} as MsgReplaceIdOwnerResponse;
+    const message = createBaseMsgReplaceIdOwnerResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -493,8 +502,7 @@ export const MsgReplaceIdOwnerResponse = {
   },
 
   fromJSON(_: any): MsgReplaceIdOwnerResponse {
-    const message = {...baseMsgReplaceIdOwnerResponse} as MsgReplaceIdOwnerResponse;
-    return message;
+    return {};
   },
 
   toJSON(_: MsgReplaceIdOwnerResponse): unknown {
@@ -503,7 +511,7 @@ export const MsgReplaceIdOwnerResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgReplaceIdOwnerResponse>, I>>(_: I): MsgReplaceIdOwnerResponse {
-    const message = {...baseMsgReplaceIdOwnerResponse} as MsgReplaceIdOwnerResponse;
+    const message = createBaseMsgReplaceIdOwnerResponse();
     return message;
   }
 };
@@ -519,7 +527,9 @@ export interface Msg {
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.id.Msg";
     this.rpc = rpc;
     this.CreateId = this.CreateId.bind(this);
     this.CreateIds = this.CreateIds.bind(this);
@@ -528,25 +538,25 @@ export class MsgClientImpl implements Msg {
   }
   CreateId(request: MsgCreateId): Promise<MsgCreateIdResponse> {
     const data = MsgCreateId.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Msg", "CreateId", data);
+    const promise = this.rpc.request(this.service, "CreateId", data);
     return promise.then((data) => MsgCreateIdResponse.decode(new _m0.Reader(data)));
   }
 
   CreateIds(request: MsgCreateIds): Promise<MsgCreateIdsResponse> {
     const data = MsgCreateIds.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Msg", "CreateIds", data);
+    const promise = this.rpc.request(this.service, "CreateIds", data);
     return promise.then((data) => MsgCreateIdsResponse.decode(new _m0.Reader(data)));
   }
 
   UpdateId(request: MsgUpdateId): Promise<MsgUpdateIdResponse> {
     const data = MsgUpdateId.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Msg", "UpdateId", data);
+    const promise = this.rpc.request(this.service, "UpdateId", data);
     return promise.then((data) => MsgUpdateIdResponse.decode(new _m0.Reader(data)));
   }
 
   ReplaceIdOwner(request: MsgReplaceIdOwner): Promise<MsgReplaceIdOwnerResponse> {
     const data = MsgReplaceIdOwner.encode(request).finish();
-    const promise = this.rpc.request("shareledger.id.Msg", "ReplaceIdOwner", data);
+    const promise = this.rpc.request(this.service, "ReplaceIdOwner", data);
     return promise.then((data) => MsgReplaceIdOwnerResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -572,9 +582,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -1,47 +1,71 @@
-import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
+import {HttpEndpoint, Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
-import {BroadcastTxResponse} from "./client";
+import {AminoConverters, AminoTypes, StdFee} from "./amino";
+import {DeliverTxResponse} from "./client";
 import {toNshr} from "./denoms";
-import {StdFee} from "./amino";
-import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
+import {AssetExtension, createAssetActions, createAssetTypes} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
 import {DistributionExtension} from "./modules/distribution";
-import {createActions as BB, createRegistryTypes as B, DocumentExtension} from "./modules/document";
-import {createActions as CC, createRegistryTypes as C, ElectoralExtension} from "./modules/electoral";
-import {createActions as DD, createRegistryTypes as D, GentlemintExtension} from "./modules/gentlemint";
+import {createDocumentActions, createDocumentTypes, DocumentExtension} from "./modules/document";
+import {createElectoralActions, createElectoralTypes, ElectoralExtension} from "./modules/electoral";
+import {createFeegrantActions, createFeegrantTypes, FeegrantExtension} from "./modules/feegrant";
+import {createGentlemintActions, createGentlemintTypes, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
-import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modules/id";
+import {createIdActions, createIdTypes, IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
-import {createActions as FF, createRegistryTypes as F, SwapExtension} from "./modules/swap";
+import {createSwapActions, createSwapTypes, SwapExtension} from "./modules/swap";
 import {TxExtension} from "./modules/tx";
+import {createWasmActions, createWasmTypes, WasmExtension} from "./modules/wasm";
 import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
-import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+import {defaultRegistryTypes, createDefaultAminoTypes, SignerData, SigningClient, SigningOptions, defaultActions} from "./signingclient";
 
-export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
+const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E, F].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[
+    createAssetTypes,
+    createDocumentTypes,
+    createElectoralTypes,
+    createGentlemintTypes,
+    createIdTypes,
+    createSwapTypes,
+    createFeegrantTypes,
+    createWasmTypes
+  ].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
 
-export const actions: Record<string, string> = {
-  ...defaultActions,
-  ...[AA, BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {})
-};
-
 function createRegistry(): Registry {
-  const registry = new Registry();
-  registryTypes.forEach(([typeUrl, type]) => {
-    registry.register(typeUrl, type);
-  });
-  return registry;
+  return new Registry(registryTypes);
 }
+
+function createAminoTypes(prefix: string): AminoConverters {
+  return [
+    createDefaultAminoTypes
+    // not support amino
+  ].reduce((prev, curr) => ({...prev, ...curr(prefix)}), {});
+}
+
+const actions: Record<string, string> = {
+  ...defaultActions,
+  ...[
+    createAssetActions,
+    createDocumentActions,
+    createElectoralActions,
+    createGentlemintActions,
+    createIdActions,
+    createSwapActions,
+    createFeegrantActions,
+    createWasmActions
+  ].reduce((prev, curr) => ({...prev, ...curr()}), {})
+};
 
 export interface ShareledgerSigningClient
   extends AuthExtension,
     BankExtension,
     DistributionExtension,
     GovExtension,
+    FeegrantExtension,
     SlashingExtension,
     StakingExtension,
     TxExtension,
@@ -50,12 +74,14 @@ export interface ShareledgerSigningClient
     ElectoralExtension,
     GentlemintExtension,
     IdExtension,
-    SwapExtension {}
+    SwapExtension,
+    WasmExtension {}
 
 @AuthExtension
 @BankExtension
 @DistributionExtension
 @GovExtension
+@FeegrantExtension
 @SlashingExtension
 @StakingExtension
 @TxExtension
@@ -65,12 +91,17 @@ export interface ShareledgerSigningClient
 @GentlemintExtension
 @IdExtension
 @SwapExtension
+@WasmExtension
 export class ShareledgerSigningClient extends SigningClient {
   public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
-    super(tmClient, signer, {...options, registry: createRegistry()});
+    super(tmClient, signer, {
+      ...options,
+      aminoTypes: new AminoTypes(createAminoTypes(options.prefix ?? "shareledger")),
+      registry: createRegistry()
+    });
   }
 
-  public static async connect(endpoint: string, options?: SigningOptions): Promise<ShareledgerSigningClient> {
+  public static async connect(endpoint: string | HttpEndpoint, options?: SigningOptions): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
     return new ShareledgerSigningClient(tmClient, undefined, options);
   }
@@ -81,7 +112,11 @@ export class ShareledgerSigningClient extends SigningClient {
    * @param mnemonic Mnemonic
    * @param options Signing options
    */
-  public static async connectWithSigner(endpoint: string, mnemonic: string, options?: SigningOptions): Promise<ShareledgerSigningClient>;
+  public static async connectWithSigner(
+    endpoint: string | HttpEndpoint,
+    mnemonic: string,
+    options?: SigningOptions
+  ): Promise<ShareledgerSigningClient>;
   /**
    * Connect with blockchain RPC using private key
    * @param endpoint RPC endpoint
@@ -89,7 +124,7 @@ export class ShareledgerSigningClient extends SigningClient {
    * @param options Signing options
    */
   public static async connectWithSigner(
-    endpoint: string,
+    endpoint: string | HttpEndpoint,
     privKey: string | Uint8Array,
     options?: SigningOptions
   ): Promise<ShareledgerSigningClient>;
@@ -100,7 +135,7 @@ export class ShareledgerSigningClient extends SigningClient {
    * @param options Signing options
    */
   public static async connectWithSigner(
-    endpoint: string,
+    endpoint: string | HttpEndpoint,
     signer: OfflineSigner,
     options?: SigningOptions
   ): Promise<ShareledgerSigningClient>;
@@ -152,12 +187,12 @@ export class ShareledgerSigningClient extends SigningClient {
   public async signAndBroadcast(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: Partial<StdFee>,
+    fee?: StdFee | number,
     memo?: string
-  ): Promise<BroadcastTxResponse> {
-    if (!fee || (!fee.amount && !fee.gas)) {
-      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
-      fee = {...fee, amount, gas};
+  ): Promise<DeliverTxResponse> {
+    if (typeof fee === "number" || !fee || (!fee.amount && !fee.gas)) {
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee);
+      fee = typeof fee === "number" ? {amount, gas} : {...fee, amount, gas};
     }
     return super.signAndBroadcast(signerAddress, messages, fee, memo);
   }
@@ -165,32 +200,31 @@ export class ShareledgerSigningClient extends SigningClient {
   public async sign(
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee?: Partial<StdFee>,
+    fee?: StdFee | number,
     memo?: string,
     explicitSignerData?: SignerData
   ): Promise<Uint8Array> {
-    if (!fee || (!fee.amount && !fee.gas)) {
-      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
-      fee = {...fee, amount, gas};
+    if (typeof fee === "number" || !fee || (!fee.amount && !fee.gas)) {
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee);
+      fee = typeof fee === "number" ? {amount, gas} : {...fee, amount, gas};
     }
     return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
   }
 
-  public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, granter?: string, payer?: string) {
+  public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, fee?: StdFee | number) {
     const feeEstimation = await this.gentlemint.estimateFee(
       signerAddress,
       messages.map((msg) => actions[msg.typeUrl])
     );
     let feeByNshr = feeEstimation.fee;
     if (!feeByNshr) {
-      feeByNshr = this.minTxFee;
-      if (!feeByNshr) {
-        const fees = await this.gentlemint.feeLevels();
-        feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
-      }
+      const fees = await this.gentlemint.feeLevels();
+      feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
     }
-    const gasEstimation = await this.simulate(signerAddress, messages, memo, {amount: [feeByNshr], granter, payer});
-    const buff = Math.round(gasEstimation * 1.275);
+    const multiplier = typeof fee === "number" ? fee : 1.275;
+    fee = typeof fee === "number" ? {amount: [feeByNshr]} : {...fee, amount: [feeByNshr]};
+    const gasEstimation = await this.simulate(signerAddress, messages, memo, fee);
+    const buff = Math.round(gasEstimation * multiplier);
     return {
       gas: buff.toString(),
       amount: [feeByNshr]

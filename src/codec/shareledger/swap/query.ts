@@ -1,13 +1,13 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Params} from "../../shareledger/swap/params";
 import {PageRequest, PageResponse} from "../../cosmos/base/query/v1beta1/pagination";
 import {Coin} from "../../cosmos/base/v1beta1/coin";
-import {Schema} from "../../shareledger/swap/schema";
-import {PastTxEvent} from "../../shareledger/swap/past_tx_event";
-import {Request} from "../../shareledger/swap/request";
-import {Batch} from "../../shareledger/swap/batch";
+import {Batch} from "./batch";
+import {Params} from "./params";
+import {PastTxEvent} from "./past_tx_event";
+import {Request} from "./request";
+import {Schema} from "./schema";
 
 export const protobufPackage = "shareledger.swap";
 
@@ -95,7 +95,9 @@ export interface QueryPastTxEventsResponse {
   pagination?: PageResponse;
 }
 
-const baseQueryParamsRequest: object = {};
+function createBaseQueryParamsRequest(): QueryParamsRequest {
+  return {};
+}
 
 export const QueryParamsRequest = {
   encode(_: QueryParamsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -105,7 +107,7 @@ export const QueryParamsRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryParamsRequest} as QueryParamsRequest;
+    const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -118,8 +120,7 @@ export const QueryParamsRequest = {
   },
 
   fromJSON(_: any): QueryParamsRequest {
-    const message = {...baseQueryParamsRequest} as QueryParamsRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryParamsRequest): unknown {
@@ -128,12 +129,14 @@ export const QueryParamsRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryParamsRequest>, I>>(_: I): QueryParamsRequest {
-    const message = {...baseQueryParamsRequest} as QueryParamsRequest;
+    const message = createBaseQueryParamsRequest();
     return message;
   }
 };
 
-const baseQueryParamsResponse: object = {};
+function createBaseQueryParamsResponse(): QueryParamsResponse {
+  return {params: undefined};
+}
 
 export const QueryParamsResponse = {
   encode(message: QueryParamsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -146,7 +149,7 @@ export const QueryParamsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryParamsResponse} as QueryParamsResponse;
+    const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -162,9 +165,7 @@ export const QueryParamsResponse = {
   },
 
   fromJSON(object: any): QueryParamsResponse {
-    const message = {...baseQueryParamsResponse} as QueryParamsResponse;
-    message.params = object.params !== undefined && object.params !== null ? Params.fromJSON(object.params) : undefined;
-    return message;
+    return {params: isSet(object.params) ? Params.fromJSON(object.params) : undefined};
   },
 
   toJSON(message: QueryParamsResponse): unknown {
@@ -174,13 +175,15 @@ export const QueryParamsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryParamsResponse>, I>>(object: I): QueryParamsResponse {
-    const message = {...baseQueryParamsResponse} as QueryParamsResponse;
+    const message = createBaseQueryParamsResponse();
     message.params = object.params !== undefined && object.params !== null ? Params.fromPartial(object.params) : undefined;
     return message;
   }
 };
 
-const baseQuerySwapRequest: object = {status: "", ids: Long.UZERO, srcAddr: "", destAddr: "", srcNetwork: "", destNetwork: ""};
+function createBaseQuerySwapRequest(): QuerySwapRequest {
+  return {status: "", ids: [], srcAddr: "", destAddr: "", srcNetwork: "", destNetwork: "", pagination: undefined};
+}
 
 export const QuerySwapRequest = {
   encode(message: QuerySwapRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -213,8 +216,7 @@ export const QuerySwapRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySwapRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQuerySwapRequest} as QuerySwapRequest;
-    message.ids = [];
+    const message = createBaseQuerySwapRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -255,16 +257,15 @@ export const QuerySwapRequest = {
   },
 
   fromJSON(object: any): QuerySwapRequest {
-    const message = {...baseQuerySwapRequest} as QuerySwapRequest;
-    message.status = object.status !== undefined && object.status !== null ? String(object.status) : "";
-    message.ids = (object.ids ?? []).map((e: any) => Long.fromString(e));
-    message.srcAddr = object.srcAddr !== undefined && object.srcAddr !== null ? String(object.srcAddr) : "";
-    message.destAddr = object.destAddr !== undefined && object.destAddr !== null ? String(object.destAddr) : "";
-    message.srcNetwork = object.srcNetwork !== undefined && object.srcNetwork !== null ? String(object.srcNetwork) : "";
-    message.destNetwork = object.destNetwork !== undefined && object.destNetwork !== null ? String(object.destNetwork) : "";
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageRequest.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      status: isSet(object.status) ? String(object.status) : "",
+      ids: Array.isArray(object?.ids) ? object.ids.map((e: any) => Long.fromValue(e)) : [],
+      srcAddr: isSet(object.srcAddr) ? String(object.srcAddr) : "",
+      destAddr: isSet(object.destAddr) ? String(object.destAddr) : "",
+      srcNetwork: isSet(object.srcNetwork) ? String(object.srcNetwork) : "",
+      destNetwork: isSet(object.destNetwork) ? String(object.destNetwork) : "",
+      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QuerySwapRequest): unknown {
@@ -284,7 +285,7 @@ export const QuerySwapRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QuerySwapRequest>, I>>(object: I): QuerySwapRequest {
-    const message = {...baseQuerySwapRequest} as QuerySwapRequest;
+    const message = createBaseQuerySwapRequest();
     message.status = object.status ?? "";
     message.ids = object.ids?.map((e) => Long.fromValue(e)) || [];
     message.srcAddr = object.srcAddr ?? "";
@@ -297,7 +298,9 @@ export const QuerySwapRequest = {
   }
 };
 
-const baseQuerySwapResponse: object = {};
+function createBaseQuerySwapResponse(): QuerySwapResponse {
+  return {swaps: [], pagination: undefined};
+}
 
 export const QuerySwapResponse = {
   encode(message: QuerySwapResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -313,8 +316,7 @@ export const QuerySwapResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySwapResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQuerySwapResponse} as QuerySwapResponse;
-    message.swaps = [];
+    const message = createBaseQuerySwapResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -333,11 +335,10 @@ export const QuerySwapResponse = {
   },
 
   fromJSON(object: any): QuerySwapResponse {
-    const message = {...baseQuerySwapResponse} as QuerySwapResponse;
-    message.swaps = (object.swaps ?? []).map((e: any) => Request.fromJSON(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageResponse.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      swaps: Array.isArray(object?.swaps) ? object.swaps.map((e: any) => Request.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QuerySwapResponse): unknown {
@@ -352,7 +353,7 @@ export const QuerySwapResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QuerySwapResponse>, I>>(object: I): QuerySwapResponse {
-    const message = {...baseQuerySwapResponse} as QuerySwapResponse;
+    const message = createBaseQuerySwapResponse();
     message.swaps = object.swaps?.map((e) => Request.fromPartial(e)) || [];
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -360,7 +361,9 @@ export const QuerySwapResponse = {
   }
 };
 
-const baseQueryBatchesResponse: object = {};
+function createBaseQueryBatchesResponse(): QueryBatchesResponse {
+  return {batches: [], pagination: undefined};
+}
 
 export const QueryBatchesResponse = {
   encode(message: QueryBatchesResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -376,8 +379,7 @@ export const QueryBatchesResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBatchesResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBatchesResponse} as QueryBatchesResponse;
-    message.batches = [];
+    const message = createBaseQueryBatchesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -396,11 +398,10 @@ export const QueryBatchesResponse = {
   },
 
   fromJSON(object: any): QueryBatchesResponse {
-    const message = {...baseQueryBatchesResponse} as QueryBatchesResponse;
-    message.batches = (object.batches ?? []).map((e: any) => Batch.fromJSON(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageResponse.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      batches: Array.isArray(object?.batches) ? object.batches.map((e: any) => Batch.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QueryBatchesResponse): unknown {
@@ -415,7 +416,7 @@ export const QueryBatchesResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBatchesResponse>, I>>(object: I): QueryBatchesResponse {
-    const message = {...baseQueryBatchesResponse} as QueryBatchesResponse;
+    const message = createBaseQueryBatchesResponse();
     message.batches = object.batches?.map((e) => Batch.fromPartial(e)) || [];
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -423,7 +424,9 @@ export const QueryBatchesResponse = {
   }
 };
 
-const baseQueryBalanceRequest: object = {};
+function createBaseQueryBalanceRequest(): QueryBalanceRequest {
+  return {};
+}
 
 export const QueryBalanceRequest = {
   encode(_: QueryBalanceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -433,7 +436,7 @@ export const QueryBalanceRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBalanceRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBalanceRequest} as QueryBalanceRequest;
+    const message = createBaseQueryBalanceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -446,8 +449,7 @@ export const QueryBalanceRequest = {
   },
 
   fromJSON(_: any): QueryBalanceRequest {
-    const message = {...baseQueryBalanceRequest} as QueryBalanceRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QueryBalanceRequest): unknown {
@@ -456,12 +458,14 @@ export const QueryBalanceRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBalanceRequest>, I>>(_: I): QueryBalanceRequest {
-    const message = {...baseQueryBalanceRequest} as QueryBalanceRequest;
+    const message = createBaseQueryBalanceRequest();
     return message;
   }
 };
 
-const baseQueryBalanceResponse: object = {};
+function createBaseQueryBalanceResponse(): QueryBalanceResponse {
+  return {balance: undefined};
+}
 
 export const QueryBalanceResponse = {
   encode(message: QueryBalanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -474,7 +478,7 @@ export const QueryBalanceResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBalanceResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBalanceResponse} as QueryBalanceResponse;
+    const message = createBaseQueryBalanceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -490,9 +494,7 @@ export const QueryBalanceResponse = {
   },
 
   fromJSON(object: any): QueryBalanceResponse {
-    const message = {...baseQueryBalanceResponse} as QueryBalanceResponse;
-    message.balance = object.balance !== undefined && object.balance !== null ? Coin.fromJSON(object.balance) : undefined;
-    return message;
+    return {balance: isSet(object.balance) ? Coin.fromJSON(object.balance) : undefined};
   },
 
   toJSON(message: QueryBalanceResponse): unknown {
@@ -502,13 +504,15 @@ export const QueryBalanceResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBalanceResponse>, I>>(object: I): QueryBalanceResponse {
-    const message = {...baseQueryBalanceResponse} as QueryBalanceResponse;
+    const message = createBaseQueryBalanceResponse();
     message.balance = object.balance !== undefined && object.balance !== null ? Coin.fromPartial(object.balance) : undefined;
     return message;
   }
 };
 
-const baseQuerySchemaRequest: object = {network: ""};
+function createBaseQuerySchemaRequest(): QuerySchemaRequest {
+  return {network: ""};
+}
 
 export const QuerySchemaRequest = {
   encode(message: QuerySchemaRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -521,7 +525,7 @@ export const QuerySchemaRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySchemaRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQuerySchemaRequest} as QuerySchemaRequest;
+    const message = createBaseQuerySchemaRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -537,9 +541,7 @@ export const QuerySchemaRequest = {
   },
 
   fromJSON(object: any): QuerySchemaRequest {
-    const message = {...baseQuerySchemaRequest} as QuerySchemaRequest;
-    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
-    return message;
+    return {network: isSet(object.network) ? String(object.network) : ""};
   },
 
   toJSON(message: QuerySchemaRequest): unknown {
@@ -549,13 +551,15 @@ export const QuerySchemaRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QuerySchemaRequest>, I>>(object: I): QuerySchemaRequest {
-    const message = {...baseQuerySchemaRequest} as QuerySchemaRequest;
+    const message = createBaseQuerySchemaRequest();
     message.network = object.network ?? "";
     return message;
   }
 };
 
-const baseQuerySchemaResponse: object = {};
+function createBaseQuerySchemaResponse(): QuerySchemaResponse {
+  return {schema: undefined};
+}
 
 export const QuerySchemaResponse = {
   encode(message: QuerySchemaResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -568,7 +572,7 @@ export const QuerySchemaResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySchemaResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQuerySchemaResponse} as QuerySchemaResponse;
+    const message = createBaseQuerySchemaResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -584,9 +588,7 @@ export const QuerySchemaResponse = {
   },
 
   fromJSON(object: any): QuerySchemaResponse {
-    const message = {...baseQuerySchemaResponse} as QuerySchemaResponse;
-    message.schema = object.schema !== undefined && object.schema !== null ? Schema.fromJSON(object.schema) : undefined;
-    return message;
+    return {schema: isSet(object.schema) ? Schema.fromJSON(object.schema) : undefined};
   },
 
   toJSON(message: QuerySchemaResponse): unknown {
@@ -596,13 +598,15 @@ export const QuerySchemaResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QuerySchemaResponse>, I>>(object: I): QuerySchemaResponse {
-    const message = {...baseQuerySchemaResponse} as QuerySchemaResponse;
+    const message = createBaseQuerySchemaResponse();
     message.schema = object.schema !== undefined && object.schema !== null ? Schema.fromPartial(object.schema) : undefined;
     return message;
   }
 };
 
-const baseQuerySchemasRequest: object = {};
+function createBaseQuerySchemasRequest(): QuerySchemasRequest {
+  return {pagination: undefined};
+}
 
 export const QuerySchemasRequest = {
   encode(message: QuerySchemasRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -615,7 +619,7 @@ export const QuerySchemasRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySchemasRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQuerySchemasRequest} as QuerySchemasRequest;
+    const message = createBaseQuerySchemasRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -631,10 +635,7 @@ export const QuerySchemasRequest = {
   },
 
   fromJSON(object: any): QuerySchemasRequest {
-    const message = {...baseQuerySchemasRequest} as QuerySchemasRequest;
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageRequest.fromJSON(object.pagination) : undefined;
-    return message;
+    return {pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined};
   },
 
   toJSON(message: QuerySchemasRequest): unknown {
@@ -644,14 +645,16 @@ export const QuerySchemasRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QuerySchemasRequest>, I>>(object: I): QuerySchemasRequest {
-    const message = {...baseQuerySchemasRequest} as QuerySchemasRequest;
+    const message = createBaseQuerySchemasRequest();
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   }
 };
 
-const baseQuerySchemasResponse: object = {};
+function createBaseQuerySchemasResponse(): QuerySchemasResponse {
+  return {schemas: [], pagination: undefined};
+}
 
 export const QuerySchemasResponse = {
   encode(message: QuerySchemasResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -667,8 +670,7 @@ export const QuerySchemasResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySchemasResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQuerySchemasResponse} as QuerySchemasResponse;
-    message.schemas = [];
+    const message = createBaseQuerySchemasResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -687,11 +689,10 @@ export const QuerySchemasResponse = {
   },
 
   fromJSON(object: any): QuerySchemasResponse {
-    const message = {...baseQuerySchemasResponse} as QuerySchemasResponse;
-    message.schemas = (object.schemas ?? []).map((e: any) => Schema.fromJSON(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageResponse.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      schemas: Array.isArray(object?.schemas) ? object.schemas.map((e: any) => Schema.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QuerySchemasResponse): unknown {
@@ -706,7 +707,7 @@ export const QuerySchemasResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QuerySchemasResponse>, I>>(object: I): QuerySchemasResponse {
-    const message = {...baseQuerySchemasResponse} as QuerySchemasResponse;
+    const message = createBaseQuerySchemasResponse();
     message.schemas = object.schemas?.map((e) => Schema.fromPartial(e)) || [];
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -714,7 +715,9 @@ export const QuerySchemasResponse = {
   }
 };
 
-const baseQueryBatchesRequest: object = {network: "", ids: Long.UZERO};
+function createBaseQueryBatchesRequest(): QueryBatchesRequest {
+  return {network: "", ids: [], pagination: undefined};
+}
 
 export const QueryBatchesRequest = {
   encode(message: QueryBatchesRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -735,8 +738,7 @@ export const QueryBatchesRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryBatchesRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryBatchesRequest} as QueryBatchesRequest;
-    message.ids = [];
+    const message = createBaseQueryBatchesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -765,12 +767,11 @@ export const QueryBatchesRequest = {
   },
 
   fromJSON(object: any): QueryBatchesRequest {
-    const message = {...baseQueryBatchesRequest} as QueryBatchesRequest;
-    message.network = object.network !== undefined && object.network !== null ? String(object.network) : "";
-    message.ids = (object.ids ?? []).map((e: any) => Long.fromString(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageRequest.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      network: isSet(object.network) ? String(object.network) : "",
+      ids: Array.isArray(object?.ids) ? object.ids.map((e: any) => Long.fromValue(e)) : [],
+      pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QueryBatchesRequest): unknown {
@@ -786,7 +787,7 @@ export const QueryBatchesRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryBatchesRequest>, I>>(object: I): QueryBatchesRequest {
-    const message = {...baseQueryBatchesRequest} as QueryBatchesRequest;
+    const message = createBaseQueryBatchesRequest();
     message.network = object.network ?? "";
     message.ids = object.ids?.map((e) => Long.fromValue(e)) || [];
     message.pagination =
@@ -795,7 +796,9 @@ export const QueryBatchesRequest = {
   }
 };
 
-const baseQueryPastTxEventRequest: object = {txHash: "", logIndex: Long.UZERO};
+function createBaseQueryPastTxEventRequest(): QueryPastTxEventRequest {
+  return {txHash: "", logIndex: Long.UZERO};
+}
 
 export const QueryPastTxEventRequest = {
   encode(message: QueryPastTxEventRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -811,7 +814,7 @@ export const QueryPastTxEventRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPastTxEventRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryPastTxEventRequest} as QueryPastTxEventRequest;
+    const message = createBaseQueryPastTxEventRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -830,10 +833,10 @@ export const QueryPastTxEventRequest = {
   },
 
   fromJSON(object: any): QueryPastTxEventRequest {
-    const message = {...baseQueryPastTxEventRequest} as QueryPastTxEventRequest;
-    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
-    message.logIndex = object.logIndex !== undefined && object.logIndex !== null ? Long.fromString(object.logIndex) : Long.UZERO;
-    return message;
+    return {
+      txHash: isSet(object.txHash) ? String(object.txHash) : "",
+      logIndex: isSet(object.logIndex) ? Long.fromValue(object.logIndex) : Long.UZERO
+    };
   },
 
   toJSON(message: QueryPastTxEventRequest): unknown {
@@ -844,14 +847,16 @@ export const QueryPastTxEventRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryPastTxEventRequest>, I>>(object: I): QueryPastTxEventRequest {
-    const message = {...baseQueryPastTxEventRequest} as QueryPastTxEventRequest;
+    const message = createBaseQueryPastTxEventRequest();
     message.txHash = object.txHash ?? "";
     message.logIndex = object.logIndex !== undefined && object.logIndex !== null ? Long.fromValue(object.logIndex) : Long.UZERO;
     return message;
   }
 };
 
-const baseQueryPastTxEventResponse: object = {};
+function createBaseQueryPastTxEventResponse(): QueryPastTxEventResponse {
+  return {event: undefined};
+}
 
 export const QueryPastTxEventResponse = {
   encode(message: QueryPastTxEventResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -864,7 +869,7 @@ export const QueryPastTxEventResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPastTxEventResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryPastTxEventResponse} as QueryPastTxEventResponse;
+    const message = createBaseQueryPastTxEventResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -880,9 +885,7 @@ export const QueryPastTxEventResponse = {
   },
 
   fromJSON(object: any): QueryPastTxEventResponse {
-    const message = {...baseQueryPastTxEventResponse} as QueryPastTxEventResponse;
-    message.event = object.event !== undefined && object.event !== null ? PastTxEvent.fromJSON(object.event) : undefined;
-    return message;
+    return {event: isSet(object.event) ? PastTxEvent.fromJSON(object.event) : undefined};
   },
 
   toJSON(message: QueryPastTxEventResponse): unknown {
@@ -892,13 +895,15 @@ export const QueryPastTxEventResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryPastTxEventResponse>, I>>(object: I): QueryPastTxEventResponse {
-    const message = {...baseQueryPastTxEventResponse} as QueryPastTxEventResponse;
+    const message = createBaseQueryPastTxEventResponse();
     message.event = object.event !== undefined && object.event !== null ? PastTxEvent.fromPartial(object.event) : undefined;
     return message;
   }
 };
 
-const baseQueryPastTxEventsByTxHashRequest: object = {txHash: ""};
+function createBaseQueryPastTxEventsByTxHashRequest(): QueryPastTxEventsByTxHashRequest {
+  return {txHash: ""};
+}
 
 export const QueryPastTxEventsByTxHashRequest = {
   encode(message: QueryPastTxEventsByTxHashRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -911,7 +916,7 @@ export const QueryPastTxEventsByTxHashRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPastTxEventsByTxHashRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryPastTxEventsByTxHashRequest} as QueryPastTxEventsByTxHashRequest;
+    const message = createBaseQueryPastTxEventsByTxHashRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -927,9 +932,7 @@ export const QueryPastTxEventsByTxHashRequest = {
   },
 
   fromJSON(object: any): QueryPastTxEventsByTxHashRequest {
-    const message = {...baseQueryPastTxEventsByTxHashRequest} as QueryPastTxEventsByTxHashRequest;
-    message.txHash = object.txHash !== undefined && object.txHash !== null ? String(object.txHash) : "";
-    return message;
+    return {txHash: isSet(object.txHash) ? String(object.txHash) : ""};
   },
 
   toJSON(message: QueryPastTxEventsByTxHashRequest): unknown {
@@ -939,13 +942,15 @@ export const QueryPastTxEventsByTxHashRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryPastTxEventsByTxHashRequest>, I>>(object: I): QueryPastTxEventsByTxHashRequest {
-    const message = {...baseQueryPastTxEventsByTxHashRequest} as QueryPastTxEventsByTxHashRequest;
+    const message = createBaseQueryPastTxEventsByTxHashRequest();
     message.txHash = object.txHash ?? "";
     return message;
   }
 };
 
-const baseQueryPastTxEventsByTxHashResponse: object = {};
+function createBaseQueryPastTxEventsByTxHashResponse(): QueryPastTxEventsByTxHashResponse {
+  return {events: []};
+}
 
 export const QueryPastTxEventsByTxHashResponse = {
   encode(message: QueryPastTxEventsByTxHashResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -958,8 +963,7 @@ export const QueryPastTxEventsByTxHashResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPastTxEventsByTxHashResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryPastTxEventsByTxHashResponse} as QueryPastTxEventsByTxHashResponse;
-    message.events = [];
+    const message = createBaseQueryPastTxEventsByTxHashResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -975,9 +979,7 @@ export const QueryPastTxEventsByTxHashResponse = {
   },
 
   fromJSON(object: any): QueryPastTxEventsByTxHashResponse {
-    const message = {...baseQueryPastTxEventsByTxHashResponse} as QueryPastTxEventsByTxHashResponse;
-    message.events = (object.events ?? []).map((e: any) => PastTxEvent.fromJSON(e));
-    return message;
+    return {events: Array.isArray(object?.events) ? object.events.map((e: any) => PastTxEvent.fromJSON(e)) : []};
   },
 
   toJSON(message: QueryPastTxEventsByTxHashResponse): unknown {
@@ -991,13 +993,15 @@ export const QueryPastTxEventsByTxHashResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryPastTxEventsByTxHashResponse>, I>>(object: I): QueryPastTxEventsByTxHashResponse {
-    const message = {...baseQueryPastTxEventsByTxHashResponse} as QueryPastTxEventsByTxHashResponse;
+    const message = createBaseQueryPastTxEventsByTxHashResponse();
     message.events = object.events?.map((e) => PastTxEvent.fromPartial(e)) || [];
     return message;
   }
 };
 
-const baseQueryPastTxEventsRequest: object = {};
+function createBaseQueryPastTxEventsRequest(): QueryPastTxEventsRequest {
+  return {pagination: undefined};
+}
 
 export const QueryPastTxEventsRequest = {
   encode(message: QueryPastTxEventsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1010,7 +1014,7 @@ export const QueryPastTxEventsRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPastTxEventsRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryPastTxEventsRequest} as QueryPastTxEventsRequest;
+    const message = createBaseQueryPastTxEventsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1026,10 +1030,7 @@ export const QueryPastTxEventsRequest = {
   },
 
   fromJSON(object: any): QueryPastTxEventsRequest {
-    const message = {...baseQueryPastTxEventsRequest} as QueryPastTxEventsRequest;
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageRequest.fromJSON(object.pagination) : undefined;
-    return message;
+    return {pagination: isSet(object.pagination) ? PageRequest.fromJSON(object.pagination) : undefined};
   },
 
   toJSON(message: QueryPastTxEventsRequest): unknown {
@@ -1039,14 +1040,16 @@ export const QueryPastTxEventsRequest = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryPastTxEventsRequest>, I>>(object: I): QueryPastTxEventsRequest {
-    const message = {...baseQueryPastTxEventsRequest} as QueryPastTxEventsRequest;
+    const message = createBaseQueryPastTxEventsRequest();
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageRequest.fromPartial(object.pagination) : undefined;
     return message;
   }
 };
 
-const baseQueryPastTxEventsResponse: object = {};
+function createBaseQueryPastTxEventsResponse(): QueryPastTxEventsResponse {
+  return {events: [], pagination: undefined};
+}
 
 export const QueryPastTxEventsResponse = {
   encode(message: QueryPastTxEventsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1062,8 +1065,7 @@ export const QueryPastTxEventsResponse = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryPastTxEventsResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseQueryPastTxEventsResponse} as QueryPastTxEventsResponse;
-    message.events = [];
+    const message = createBaseQueryPastTxEventsResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1082,11 +1084,10 @@ export const QueryPastTxEventsResponse = {
   },
 
   fromJSON(object: any): QueryPastTxEventsResponse {
-    const message = {...baseQueryPastTxEventsResponse} as QueryPastTxEventsResponse;
-    message.events = (object.events ?? []).map((e: any) => PastTxEvent.fromJSON(e));
-    message.pagination =
-      object.pagination !== undefined && object.pagination !== null ? PageResponse.fromJSON(object.pagination) : undefined;
-    return message;
+    return {
+      events: Array.isArray(object?.events) ? object.events.map((e: any) => PastTxEvent.fromJSON(e)) : [],
+      pagination: isSet(object.pagination) ? PageResponse.fromJSON(object.pagination) : undefined
+    };
   },
 
   toJSON(message: QueryPastTxEventsResponse): unknown {
@@ -1101,7 +1102,7 @@ export const QueryPastTxEventsResponse = {
   },
 
   fromPartial<I extends Exact<DeepPartial<QueryPastTxEventsResponse>, I>>(object: I): QueryPastTxEventsResponse {
-    const message = {...baseQueryPastTxEventsResponse} as QueryPastTxEventsResponse;
+    const message = createBaseQueryPastTxEventsResponse();
     message.events = object.events?.map((e) => PastTxEvent.fromPartial(e)) || [];
     message.pagination =
       object.pagination !== undefined && object.pagination !== null ? PageResponse.fromPartial(object.pagination) : undefined;
@@ -1133,7 +1134,9 @@ export interface Query {
 
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
-  constructor(rpc: Rpc) {
+  private readonly service: string;
+  constructor(rpc: Rpc, opts?: {service?: string}) {
+    this.service = opts?.service || "shareledger.swap.Query";
     this.rpc = rpc;
     this.Params = this.Params.bind(this);
     this.Swap = this.Swap.bind(this);
@@ -1147,55 +1150,55 @@ export class QueryClientImpl implements Query {
   }
   Params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "Params", data);
+    const promise = this.rpc.request(this.service, "Params", data);
     return promise.then((data) => QueryParamsResponse.decode(new _m0.Reader(data)));
   }
 
   Swap(request: QuerySwapRequest): Promise<QuerySwapResponse> {
     const data = QuerySwapRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "Swap", data);
+    const promise = this.rpc.request(this.service, "Swap", data);
     return promise.then((data) => QuerySwapResponse.decode(new _m0.Reader(data)));
   }
 
   Balance(request: QueryBalanceRequest): Promise<QueryBalanceResponse> {
     const data = QueryBalanceRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "Balance", data);
+    const promise = this.rpc.request(this.service, "Balance", data);
     return promise.then((data) => QueryBalanceResponse.decode(new _m0.Reader(data)));
   }
 
   Schema(request: QuerySchemaRequest): Promise<QuerySchemaResponse> {
     const data = QuerySchemaRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "Schema", data);
+    const promise = this.rpc.request(this.service, "Schema", data);
     return promise.then((data) => QuerySchemaResponse.decode(new _m0.Reader(data)));
   }
 
   Schemas(request: QuerySchemasRequest): Promise<QuerySchemasResponse> {
     const data = QuerySchemasRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "Schemas", data);
+    const promise = this.rpc.request(this.service, "Schemas", data);
     return promise.then((data) => QuerySchemasResponse.decode(new _m0.Reader(data)));
   }
 
   Batches(request: QueryBatchesRequest): Promise<QueryBatchesResponse> {
     const data = QueryBatchesRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "Batches", data);
+    const promise = this.rpc.request(this.service, "Batches", data);
     return promise.then((data) => QueryBatchesResponse.decode(new _m0.Reader(data)));
   }
 
   PastTxEvent(request: QueryPastTxEventRequest): Promise<QueryPastTxEventResponse> {
     const data = QueryPastTxEventRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "PastTxEvent", data);
+    const promise = this.rpc.request(this.service, "PastTxEvent", data);
     return promise.then((data) => QueryPastTxEventResponse.decode(new _m0.Reader(data)));
   }
 
   PastTxEventsByTxHash(request: QueryPastTxEventsByTxHashRequest): Promise<QueryPastTxEventsByTxHashResponse> {
     const data = QueryPastTxEventsByTxHashRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "PastTxEventsByTxHash", data);
+    const promise = this.rpc.request(this.service, "PastTxEventsByTxHash", data);
     return promise.then((data) => QueryPastTxEventsByTxHashResponse.decode(new _m0.Reader(data)));
   }
 
   PastTxEvents(request: QueryPastTxEventsRequest): Promise<QueryPastTxEventsResponse> {
     const data = QueryPastTxEventsRequest.encode(request).finish();
-    const promise = this.rpc.request("shareledger.swap.Query", "PastTxEvents", data);
+    const promise = this.rpc.request(this.service, "PastTxEvents", data);
     return promise.then((data) => QueryPastTxEventsResponse.decode(new _m0.Reader(data)));
   }
 }
@@ -1221,9 +1224,13 @@ export type DeepPartial<T> = T extends Builtin
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin
   ? P
-  : P & {[K in keyof P]: Exact<P[K], I[K]>} & Record<Exclude<keyof I, KeysOfUnion<P>>, never>;
+  : P & {[K in keyof P]: Exact<P[K], I[K]>} & {[K in Exclude<keyof I, KeysOfUnion<P>>]: never};
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }
