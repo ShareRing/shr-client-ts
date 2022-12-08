@@ -35,7 +35,7 @@ export function makeAuthInfoBytes(
   feePayer?: string,
   signMode = SignMode.SIGN_MODE_DIRECT
 ): Uint8Array {
-  const authInfo = {
+  const authInfo = AuthInfo.fromPartial({
     signerInfos: makeSignerInfos(signers, signMode),
     fee: {
       amount: [...feeAmount],
@@ -43,8 +43,8 @@ export function makeAuthInfoBytes(
       granter: feeGranter,
       payer: feePayer
     }
-  };
-  return AuthInfo.encode(AuthInfo.fromPartial(authInfo)).finish();
+  });
+  return AuthInfo.encode(authInfo).finish();
 }
 
 export function makeSignDoc(bodyBytes: Uint8Array, authInfoBytes: Uint8Array, chainId: string, accountNumber: number): SignDoc {
