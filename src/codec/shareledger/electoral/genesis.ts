@@ -1,9 +1,9 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Authority} from "../electoral/authority";
-import {Treasurer} from "../electoral/treasurer";
-import {AccState} from "../electoral/acc_state";
+import {Authority} from "../../shareledger/electoral/authority";
+import {Treasurer} from "../../shareledger/electoral/treasurer";
+import {AccState} from "../../shareledger/electoral/acc_state";
 
 export const protobufPackage = "shareledger.electoral";
 

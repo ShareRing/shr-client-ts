@@ -1,4 +1,4 @@
-import {Bech32, fromAscii} from "@cosmjs/encoding";
+import {fromAscii, Bech32} from "@cosmjs/encoding";
 import {Decimal, Uint64} from "@cosmjs/math";
 import Long from "long";
 import {PageRequest} from "../codec/cosmos/base/query/v1beta1/pagination";
@@ -17,6 +17,14 @@ export function toBech32Address(pubkey: Uint8Array, prefix = "shareledger") {
   return Bech32.encode(prefix, pubkey);
 }
 
+export function toBech32ValAddress(pubkey: Uint8Array, prefix = "shareledgervaloper") {
+  return toBech32Address(pubkey, prefix);
+}
+
+export function toBech32ConsAddress(pubkey: Uint8Array, prefix = "shareledgervalcons") {
+  return toBech32Address(pubkey, prefix);
+}
+
 export function createPagination(paginationKey?: Uint8Array): PageRequest | undefined {
   return paginationKey
     ? {
@@ -31,15 +39,27 @@ export function createPagination(paginationKey?: Uint8Array): PageRequest | unde
 
 export interface ProtobufRpcClient {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+  withHeight(height?: number): ProtobufRpcClient;
+}
+
+export class ProtobufRpcClientImpl implements ProtobufRpcClient {
+  private _height?: number = undefined;
+
+  constructor(private readonly base: QueryClient) {}
+
+  request(service: string, method: string, data: Uint8Array, height?: number): Promise<Uint8Array> {
+    const path = `/${service}/${method}`;
+    return this.base.queryUnverified(path, data, height || this._height).finally(() => this.withHeight(undefined));
+  }
+
+  withHeight(height?: number): ProtobufRpcClient {
+    this._height = height;
+    return this;
+  }
 }
 
 export function createProtobufRpcClient(base: QueryClient): ProtobufRpcClient {
-  return {
-    request: (service: string, method: string, data: Uint8Array): Promise<Uint8Array> => {
-      const path = `/${service}/${method}`;
-      return base.queryUnverified(path, data);
-    }
-  };
+  return new ProtobufRpcClientImpl(base);
 }
 
 /**

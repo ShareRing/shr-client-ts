@@ -1,6 +1,7 @@
-export {StdFee} from "@cosmjs/amino";
 export {Bech32} from "@cosmjs/encoding";
-export {Account, accountFromAny} from "./account";
+export {Account, accountFromAny, AccountParser} from "./account";
+export {StdFee} from "./amino";
+export {DecCoin} from "./codec/cosmos/base/v1beta1/coin";
 export {
   assertIsBroadcastTxSuccess,
   Block,
@@ -15,8 +16,9 @@ export {
   SequenceResponse,
   TimeoutError
 } from "./client";
+export {fromCent, fromNshr, toCent, toNshr} from "./denoms";
 export {calculateFee, GasPrice} from "./fee";
-export {toAccAddress, toBech32Address} from "./query";
+export {longify, toAccAddress, toBech32Address, toBech32ConsAddress, toBech32ValAddress} from "./query";
 export {
   isSearchByHeightQuery,
   isSearchBySentFromOrToQuery,
@@ -28,16 +30,21 @@ export {
   SearchTxQuery
 } from "./search";
 export {ShareledgerClient} from "./shareledgerclient";
-export {ShareledgerSigningClient} from "./shareledgersigningclient";
+export {actions, registryTypes, ShareledgerSigningClient} from "./shareledgersigningclient";
 export {
   Coin,
   coin,
   coins,
+  decodePubkey,
+  decodeTxRaw,
+  encodePubkey,
   makeShareledgerPath,
   parseCoins,
+  parseDecCoins,
+  pubkeyToAddress,
   Registry,
   Secp256k1HdWallet,
   Secp256k1HdWalletOptions,
   Secp256k1Wallet
 } from "./signing";
-export {defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+export {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";

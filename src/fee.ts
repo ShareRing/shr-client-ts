@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {StdFee} from "@cosmjs/amino";
+import {StdFee} from "./amino/signdoc";
 import {Decimal, Uint53} from "@cosmjs/math";
 import {coins} from "./signing";
 

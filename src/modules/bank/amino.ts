@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-unused-vars */
 
-import {AminoMsg, Coin} from "@cosmjs/amino";
+import {AminoMsg} from "@cosmjs/amino";
 import {AminoConverter} from "../../amino/types";
 import {Input, Output} from "../../codec/cosmos/bank/v1beta1/bank";
 import {MsgMultiSend, MsgSend} from "../../codec/cosmos/bank/v1beta1/tx";
+import {Coin} from "../../codec/cosmos/base/v1beta1/coin";
 import {EncodeObject, GeneratedType} from "../../signing";
 
 export interface AminoMsgSend extends AminoMsg {
@@ -95,6 +96,7 @@ export function createAminoTypes(prefix: string): Record<string, AminoConverter>
 
 export function createRegistryTypes(): ReadonlyArray<[string, GeneratedType]> {
   return [
+    ["/cosmos.base.v1beta1.Coin", Coin],
     ["/cosmos.bank.v1beta1.MsgSend", MsgSend],
     ["/cosmos.bank.v1beta1.MsgMultiSend", MsgMultiSend]
   ];

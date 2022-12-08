@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Booking} from "../booking/booking";
+import {Booking} from "../../shareledger/booking/booking";
 
 export const protobufPackage = "shareledger.booking";
 

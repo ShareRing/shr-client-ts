@@ -7,48 +7,56 @@ import {
   MsgEnrollIdSigners,
   MsgEnrollLoaders,
   MsgEnrollVoter,
+  MsgEnrollApprovers,
+  MsgEnrollRelayers,
+  MsgEnrollSwapManagers,
   MsgRevokeAccountOperators,
   MsgRevokeDocIssuers,
   MsgRevokeIdSigners,
   MsgRevokeLoaders,
-  MsgRevokeVoter
+  MsgRevokeVoter,
+  MsgRevokeApprovers,
+  MsgRevokeRelayers,
+  MsgRevokeSwapManagers
 } from "../../codec/shareledger/electoral/tx";
-import {createProtobufRpcClient} from "../../query";
+import {createProtobufRpcClient, ProtobufRpcClient} from "../../query";
 import {
   MsgEnrollAccountOperatorsEncodeObject,
   MsgEnrollDocIssuersEncodeObject,
   MsgEnrollIdSignersEncodeObject,
   MsgEnrollLoadersEncodeObject,
   MsgEnrollVoterEncodeObject,
+  MsgEnrollApproversEncodeObject,
+  MsgEnrollRelayersEncodeObject,
+  MsgEnrollSwapManagersEncodeObject,
   MsgRevokeAccountOperatorsEncodeObject,
   MsgRevokeDocIssuersEncodeObject,
   MsgRevokeIdSignersEncodeObject,
   MsgRevokeLoadersEncodeObject,
-  MsgRevokeVoterEncodeObject
+  MsgRevokeVoterEncodeObject,
+  MsgRevokeApproversEncodeObject,
+  MsgRevokeRelayersEncodeObject,
+  MsgRevokeSwapManagersEncodeObject
 } from "./amino";
 
 export type ElectoralQueryExtension = {
   get electoral(): {
-    readonly accountOperator: (address: string) => Promise<AccState | undefined>;
-    readonly accountOperators: () => Promise<AccState[]>;
-    readonly docIssuer: (address: string) => Promise<AccState | undefined>;
-    readonly docIssuers: () => Promise<AccState[]>;
-    readonly loader: (address: string) => Promise<AccState | undefined>;
-    readonly loaders: () => Promise<AccState[]>;
-    readonly voter: (address: string) => Promise<AccState | undefined>;
-    readonly voters: () => Promise<AccState[]>;
-    readonly idSigner: (address: string) => Promise<AccState | undefined>;
-    readonly idSigners: () => Promise<AccState[]>;
-    readonly enrollAccountOperators: (addresses: string[], creator: string) => MsgEnrollAccountOperatorsEncodeObject;
-    readonly revokeAccountOperators: (addresses: string[], creator: string) => MsgRevokeAccountOperatorsEncodeObject;
-    readonly enrollDocIssuers: (addresses: string[], creator: string) => MsgEnrollDocIssuersEncodeObject;
-    readonly revokeDocIssuers: (addresses: string[], creator: string) => MsgRevokeDocIssuersEncodeObject;
-    readonly enrollLoaders: (addresses: string[], creator: string) => MsgEnrollLoadersEncodeObject;
-    readonly revokeLoaders: (addresses: string[], creator: string) => MsgRevokeLoadersEncodeObject;
-    readonly enrollVoter: (address: string, creator: string) => MsgEnrollVoterEncodeObject;
-    readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
-    readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
-    readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
+    readonly accountOperator: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly accountOperators: (height?: number) => Promise<AccState[]>;
+    readonly docIssuer: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly docIssuers: (height?: number) => Promise<AccState[]>;
+    readonly loader: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly loaders: (height?: number) => Promise<AccState[]>;
+    readonly voter: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly voters: (height?: number) => Promise<AccState[]>;
+    readonly idSigner: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly idSigners: (height?: number) => Promise<AccState[]>;
+    readonly approver: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly approvers: (height?: number) => Promise<AccState[]>;
+    readonly relayer: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly relayers: (height?: number) => Promise<AccState[]>;
+    readonly swapManager: (address: string, height?: number) => Promise<AccState | undefined>;
+    readonly swapManagers: (height?: number) => Promise<AccState[]>;
   };
 };
 
@@ -64,6 +72,12 @@ export type ElectoralTxExtension = {
     readonly revokeVoter: (address: string, creator: string) => MsgRevokeVoterEncodeObject;
     readonly enrollIdSigners: (addresses: string[], creator: string) => MsgEnrollIdSignersEncodeObject;
     readonly revokeIdSigners: (addresses: string[], creator: string) => MsgRevokeIdSignersEncodeObject;
+    readonly enrollRelayers: (addresses: string[], creator: string) => MsgEnrollRelayersEncodeObject;
+    readonly revokeRelayers: (addresses: string[], creator: string) => MsgRevokeRelayersEncodeObject;
+    readonly enrollApprovers: (addresses: string[], creator: string) => MsgEnrollApproversEncodeObject;
+    readonly revokeApprovers: (addresses: string[], creator: string) => MsgRevokeApproversEncodeObject;
+    readonly enrollSwapManagers: (addresses: string[], creator: string) => MsgEnrollSwapManagersEncodeObject;
+    readonly revokeSwapManagers: (addresses: string[], creator: string) => MsgRevokeSwapManagersEncodeObject;
   };
 };
 
@@ -71,55 +85,87 @@ export type ElectoralExtension = ElectoralQueryExtension & ElectoralTxExtension;
 
 export function ElectoralQueryExtension<T extends {new (...args: any[]): Client & ElectoralQueryExtension}>(constructor: T): T {
   let queryService: QueryClientImpl;
+  let rpcClient: ProtobufRpcClient;
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
       // Use this service to get easy typed access to query methods
       // This cannot be used for proof verification
-      queryService = new QueryClientImpl(createProtobufRpcClient(this.forceGetQueryClient()));
+      rpcClient = createProtobufRpcClient(this.forceGetQueryClient());
+      queryService = new QueryClientImpl(rpcClient);
     }
     get electoral() {
       return {
         ...super["electoral"],
-        accountOperator: async (address: string) => {
+        accountOperator: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.AccountOperator({address});
           return accState;
         },
-        accountOperators: async () => {
+        accountOperators: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {accStates} = await queryService.AccountOperators({});
           return accStates;
         },
-        docIssuer: async (address: string) => {
+        docIssuer: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.DocumentIssuer({address});
           return accState;
         },
-        docIssuers: async () => {
+        docIssuers: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {accStates} = await queryService.DocumentIssuers({});
           return accStates;
         },
-        loader: async (address: string) => {
+        loader: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.Loader({address});
           return accState;
         },
-        loaders: async () => {
+        loaders: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {loaders} = await queryService.Loaders({});
           return loaders;
         },
-        voter: async (address: string) => {
+        voter: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {voter} = await queryService.Voter({address});
           return voter;
         },
-        voters: async () => {
+        voters: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {voters} = await queryService.Voters({});
           return voters;
         },
-        idSigner: async (address: string) => {
+        idSigner: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
           const {accState} = await queryService.IdSigner({address});
           return accState;
         },
-        idSigners: async () => {
+        idSigners: async (height?: number) => {
+          rpcClient.withHeight(height);
           const {accStates} = await queryService.IdSigners({});
           return accStates;
+        },
+        approver: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
+          const {accState} = await queryService.Approver({address});
+          return accState;
+        },
+        approvers: async (height?: number) => {
+          rpcClient.withHeight(height);
+          const {approvers} = await queryService.Approvers({});
+          return approvers;
+        },
+        relayer: async (address: string, height?: number) => {
+          rpcClient.withHeight(height);
+          const {accState} = await queryService.Relayer({address});
+          return accState;
+        },
+        relayers: async (height?: number) => {
+          rpcClient.withHeight(height);
+          const {relayers} = await queryService.Relayers({});
+          return relayers;
         }
       };
     }
@@ -220,6 +266,60 @@ export function ElectoralTxExtension<T extends {new (...args: any[]): Client & E
               creator
             })
           };
+        },
+        enrollApprovers: (addresses: string[], creator: string): MsgEnrollApproversEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgEnrollApprovers",
+            value: MsgEnrollApprovers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        revokeApprovers: (addresses: string[], creator: string): MsgRevokeApproversEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgRevokeApprovers",
+            value: MsgRevokeApprovers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        enrollRelayers: (addresses: string[], creator: string): MsgEnrollRelayersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgEnrollRelayers",
+            value: MsgEnrollRelayers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        revokeRelayers: (addresses: string[], creator: string): MsgRevokeRelayersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgRevokeRelayers",
+            value: MsgRevokeRelayers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        enrollSwapManagers: (addresses: string[], creator: string): MsgEnrollSwapManagersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgEnrollSwapManagers",
+            value: MsgEnrollSwapManagers.fromPartial({
+              addresses,
+              creator
+            })
+          };
+        },
+        revokeSwapManagers: (addresses: string[], creator: string): MsgRevokeSwapManagersEncodeObject => {
+          return {
+            typeUrl: "/shareledger.electoral.MsgRevokeSwapManagers",
+            value: MsgRevokeSwapManagers.fromPartial({
+              addresses,
+              creator
+            })
+          };
         }
       };
     }
@@ -228,4 +328,25 @@ export function ElectoralTxExtension<T extends {new (...args: any[]): Client & E
 
 export function ElectoralExtension<T extends {new (...args: any[]): Client & ElectoralExtension}>(constructor: T): T {
   return class extends ElectoralTxExtension(ElectoralQueryExtension(constructor)) {};
+}
+
+export function createActions(): Record<string, string> {
+  return {
+    "/shareledger.electoral.MsgEnrollAccountOperators": "electoral_enroll-account-operators",
+    "/shareledger.electoral.MsgRevokeAccountOperators": "electoral_revoke-account-operators",
+    "/shareledger.electoral.MsgEnrollDocIssuers": "electoral_enroll-doc-issuers",
+    "/shareledger.electoral.MsgRevokeDocIssuers": "electoral_revoke-doc-issuers",
+    "/shareledger.electoral.MsgEnrollIdSigners": "electoral_enroll-id-signers",
+    "/shareledger.electoral.MsgRevokeIdSigners": "electoral_revoke-id-signers",
+    "/shareledger.electoral.MsgEnrollLoaders": "electoral_enroll-loaders",
+    "/shareledger.electoral.MsgRevokeLoaders": "electoral_revoke-loaders",
+    "/shareledger.electoral.MsgEnrollVoter": "electoral_enroll-voter",
+    "/shareledger.electoral.MsgRevokeVoter": "electoral_revoke-voter",
+    "/shareledger.electoral.MsgEnrollApprovers": "electoral_enroll-approvers",
+    "/shareledger.electoral.MsgRevokeApprovers": "electoral_revoke-approvers",
+    "/shareledger.electoral.MsgEnrollRelayers": "electoral_enroll-relayers",
+    "/shareledger.electoral.MsgRevokeRelayers": "electoral_revoke-relayers",
+    "/shareledger.electoral.MsgEnrollSwapManagers": "electoral_enroll-swap-managers",
+    "/shareledger.electoral.MsgRevokeSwapManagers": "electoral_revoke-swap-managers"
+  };
 }

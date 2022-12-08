@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Document} from "../document/document";
+import {Document} from "../../shareledger/document/document";
 
 export const protobufPackage = "shareledger.document";
 

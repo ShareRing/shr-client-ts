@@ -1,5 +1,5 @@
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
-import {Client} from "./client";
+import {Client, ClientOptions} from "./client";
 import {AssetQueryExtension} from "./modules/asset";
 import {AuthQueryExtension} from "./modules/auth";
 import {BankQueryExtension} from "./modules/bank";
@@ -11,6 +11,7 @@ import {GovQueryExtension} from "./modules/gov";
 import {IdQueryExtension} from "./modules/id";
 import {SlashingQueryExtension} from "./modules/slashing";
 import {StakingQueryExtension} from "./modules/staking";
+import {SwapQueryExtension} from "./modules/swap";
 import {TxQueryExtension} from "./modules/tx";
 
 export interface ShareledgerClient
@@ -25,7 +26,8 @@ export interface ShareledgerClient
     DocumentQueryExtension,
     ElectoralQueryExtension,
     GentlemintQueryExtension,
-    IdQueryExtension {}
+    IdQueryExtension,
+    SwapQueryExtension {}
 
 @AuthQueryExtension
 @BankQueryExtension
@@ -39,9 +41,10 @@ export interface ShareledgerClient
 @ElectoralQueryExtension
 @GentlemintQueryExtension
 @IdQueryExtension
+@SwapQueryExtension
 export class ShareledgerClient extends Client {
-  public static async connect(endpoint: string): Promise<ShareledgerClient> {
+  public static async connect(endpoint: string, options: ClientOptions = {}): Promise<ShareledgerClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    return new ShareledgerClient(tmClient);
+    return new ShareledgerClient(tmClient, options);
   }
 }

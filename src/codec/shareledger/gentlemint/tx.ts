@@ -1,28 +1,9 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
+import {DecCoin} from "../../cosmos/base/v1beta1/coin";
 
 export const protobufPackage = "shareledger.gentlemint";
-
-export interface MsgLoadShr {
-  creator: string;
-  address: string;
-  amount: string;
-}
-
-export interface MsgLoadShrResponse {
-  log: string;
-}
-
-export interface MsgLoadShrp {
-  creator: string;
-  address: string;
-  amount: string;
-}
-
-export interface MsgLoadShrpResponse {
-  log: string;
-}
 
 export interface MsgBuyShr {
   creator: string;
@@ -30,53 +11,6 @@ export interface MsgBuyShr {
 }
 
 export interface MsgBuyShrResponse {
-  log: string;
-}
-
-export interface MsgSendShr {
-  creator: string;
-  address: string;
-  amount: string;
-}
-
-export interface MsgSendShrResponse {
-  log: string;
-}
-
-export interface MsgSendShrp {
-  creator: string;
-  address: string;
-  amount: string;
-}
-
-export interface MsgSendShrpResponse {
-  log: string;
-}
-
-export interface MsgBuyCent {
-  creator: string;
-  amount: string;
-}
-
-export interface MsgBuyCentResponse {
-  log: string;
-}
-
-export interface MsgBurnShrp {
-  creator: string;
-  amount: string;
-}
-
-export interface MsgBurnShrpResponse {
-  log: string;
-}
-
-export interface MsgBurnShr {
-  creator: string;
-  amount: string;
-}
-
-export interface MsgBurnShrResponse {
   log: string;
 }
 
@@ -90,7 +24,7 @@ export interface MsgSetExchangeResponse {}
 export interface MsgSetLevelFee {
   creator: string;
   level: string;
-  fee: string;
+  fee?: DecCoin;
 }
 
 export interface MsgSetLevelFeeResponse {}
@@ -119,234 +53,33 @@ export interface MsgDeleteActionLevelFeeResponse {}
 
 export interface MsgLoadFee {
   creator: string;
-  shrp: string;
+  shrp?: DecCoin;
 }
 
 export interface MsgLoadFeeResponse {}
 
-const baseMsgLoadShr: object = {creator: "", address: "", amount: ""};
+export interface MsgLoad {
+  creator: string;
+  address: string;
+  coins: DecCoin[];
+}
 
-export const MsgLoadShr = {
-  encode(message: MsgLoadShr, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
-    }
-    if (message.amount !== "") {
-      writer.uint32(26).string(message.amount);
-    }
-    return writer;
-  },
+export interface MsgLoadResponse {}
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadShr {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadShr} as MsgLoadShr;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.address = reader.string();
-          break;
-        case 3:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
+export interface MsgSend {
+  creator: string;
+  address: string;
+  coins: DecCoin[];
+}
 
-  fromJSON(object: any): MsgLoadShr {
-    const message = {...baseMsgLoadShr} as MsgLoadShr;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
+export interface MsgSendResponse {}
 
-  toJSON(message: MsgLoadShr): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
+export interface MsgBurn {
+  creator: string;
+  coins: DecCoin[];
+}
 
-  fromPartial<I extends Exact<DeepPartial<MsgLoadShr>, I>>(object: I): MsgLoadShr {
-    const message = {...baseMsgLoadShr} as MsgLoadShr;
-    message.creator = object.creator ?? "";
-    message.address = object.address ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgLoadShrResponse: object = {log: ""};
-
-export const MsgLoadShrResponse = {
-  encode(message: MsgLoadShrResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadShrResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadShrResponse} as MsgLoadShrResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgLoadShrResponse {
-    const message = {...baseMsgLoadShrResponse} as MsgLoadShrResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgLoadShrResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgLoadShrResponse>, I>>(object: I): MsgLoadShrResponse {
-    const message = {...baseMsgLoadShrResponse} as MsgLoadShrResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
-
-const baseMsgLoadShrp: object = {creator: "", address: "", amount: ""};
-
-export const MsgLoadShrp = {
-  encode(message: MsgLoadShrp, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
-    }
-    if (message.amount !== "") {
-      writer.uint32(26).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadShrp {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadShrp} as MsgLoadShrp;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.address = reader.string();
-          break;
-        case 3:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgLoadShrp {
-    const message = {...baseMsgLoadShrp} as MsgLoadShrp;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
-
-  toJSON(message: MsgLoadShrp): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgLoadShrp>, I>>(object: I): MsgLoadShrp {
-    const message = {...baseMsgLoadShrp} as MsgLoadShrp;
-    message.creator = object.creator ?? "";
-    message.address = object.address ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgLoadShrpResponse: object = {log: ""};
-
-export const MsgLoadShrpResponse = {
-  encode(message: MsgLoadShrpResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadShrpResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgLoadShrpResponse} as MsgLoadShrpResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgLoadShrpResponse {
-    const message = {...baseMsgLoadShrpResponse} as MsgLoadShrpResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgLoadShrpResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgLoadShrpResponse>, I>>(object: I): MsgLoadShrpResponse {
-    const message = {...baseMsgLoadShrpResponse} as MsgLoadShrpResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
+export interface MsgBurnResponse {}
 
 const baseMsgBuyShr: object = {creator: "", amount: ""};
 
@@ -451,539 +184,6 @@ export const MsgBuyShrResponse = {
   }
 };
 
-const baseMsgSendShr: object = {creator: "", address: "", amount: ""};
-
-export const MsgSendShr = {
-  encode(message: MsgSendShr, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
-    }
-    if (message.amount !== "") {
-      writer.uint32(26).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendShr {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSendShr} as MsgSendShr;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.address = reader.string();
-          break;
-        case 3:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgSendShr {
-    const message = {...baseMsgSendShr} as MsgSendShr;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
-
-  toJSON(message: MsgSendShr): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgSendShr>, I>>(object: I): MsgSendShr {
-    const message = {...baseMsgSendShr} as MsgSendShr;
-    message.creator = object.creator ?? "";
-    message.address = object.address ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgSendShrResponse: object = {log: ""};
-
-export const MsgSendShrResponse = {
-  encode(message: MsgSendShrResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendShrResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSendShrResponse} as MsgSendShrResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgSendShrResponse {
-    const message = {...baseMsgSendShrResponse} as MsgSendShrResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgSendShrResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgSendShrResponse>, I>>(object: I): MsgSendShrResponse {
-    const message = {...baseMsgSendShrResponse} as MsgSendShrResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
-
-const baseMsgSendShrp: object = {creator: "", address: "", amount: ""};
-
-export const MsgSendShrp = {
-  encode(message: MsgSendShrp, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
-    }
-    if (message.amount !== "") {
-      writer.uint32(26).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendShrp {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSendShrp} as MsgSendShrp;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.address = reader.string();
-          break;
-        case 3:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgSendShrp {
-    const message = {...baseMsgSendShrp} as MsgSendShrp;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
-
-  toJSON(message: MsgSendShrp): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.address !== undefined && (obj.address = message.address);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgSendShrp>, I>>(object: I): MsgSendShrp {
-    const message = {...baseMsgSendShrp} as MsgSendShrp;
-    message.creator = object.creator ?? "";
-    message.address = object.address ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgSendShrpResponse: object = {log: ""};
-
-export const MsgSendShrpResponse = {
-  encode(message: MsgSendShrpResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendShrpResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgSendShrpResponse} as MsgSendShrpResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgSendShrpResponse {
-    const message = {...baseMsgSendShrpResponse} as MsgSendShrpResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgSendShrpResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgSendShrpResponse>, I>>(object: I): MsgSendShrpResponse {
-    const message = {...baseMsgSendShrpResponse} as MsgSendShrpResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
-
-const baseMsgBuyCent: object = {creator: "", amount: ""};
-
-export const MsgBuyCent = {
-  encode(message: MsgBuyCent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.amount !== "") {
-      writer.uint32(18).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBuyCent {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBuyCent} as MsgBuyCent;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgBuyCent {
-    const message = {...baseMsgBuyCent} as MsgBuyCent;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
-
-  toJSON(message: MsgBuyCent): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgBuyCent>, I>>(object: I): MsgBuyCent {
-    const message = {...baseMsgBuyCent} as MsgBuyCent;
-    message.creator = object.creator ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgBuyCentResponse: object = {log: ""};
-
-export const MsgBuyCentResponse = {
-  encode(message: MsgBuyCentResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBuyCentResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBuyCentResponse} as MsgBuyCentResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgBuyCentResponse {
-    const message = {...baseMsgBuyCentResponse} as MsgBuyCentResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgBuyCentResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgBuyCentResponse>, I>>(object: I): MsgBuyCentResponse {
-    const message = {...baseMsgBuyCentResponse} as MsgBuyCentResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
-
-const baseMsgBurnShrp: object = {creator: "", amount: ""};
-
-export const MsgBurnShrp = {
-  encode(message: MsgBurnShrp, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.amount !== "") {
-      writer.uint32(18).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnShrp {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBurnShrp} as MsgBurnShrp;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgBurnShrp {
-    const message = {...baseMsgBurnShrp} as MsgBurnShrp;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
-
-  toJSON(message: MsgBurnShrp): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgBurnShrp>, I>>(object: I): MsgBurnShrp {
-    const message = {...baseMsgBurnShrp} as MsgBurnShrp;
-    message.creator = object.creator ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgBurnShrpResponse: object = {log: ""};
-
-export const MsgBurnShrpResponse = {
-  encode(message: MsgBurnShrpResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnShrpResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBurnShrpResponse} as MsgBurnShrpResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgBurnShrpResponse {
-    const message = {...baseMsgBurnShrpResponse} as MsgBurnShrpResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgBurnShrpResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgBurnShrpResponse>, I>>(object: I): MsgBurnShrpResponse {
-    const message = {...baseMsgBurnShrpResponse} as MsgBurnShrpResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
-
-const baseMsgBurnShr: object = {creator: "", amount: ""};
-
-export const MsgBurnShr = {
-  encode(message: MsgBurnShr, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.creator !== "") {
-      writer.uint32(10).string(message.creator);
-    }
-    if (message.amount !== "") {
-      writer.uint32(18).string(message.amount);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnShr {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBurnShr} as MsgBurnShr;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.creator = reader.string();
-          break;
-        case 2:
-          message.amount = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgBurnShr {
-    const message = {...baseMsgBurnShr} as MsgBurnShr;
-    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.amount = object.amount !== undefined && object.amount !== null ? String(object.amount) : "";
-    return message;
-  },
-
-  toJSON(message: MsgBurnShr): unknown {
-    const obj: any = {};
-    message.creator !== undefined && (obj.creator = message.creator);
-    message.amount !== undefined && (obj.amount = message.amount);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgBurnShr>, I>>(object: I): MsgBurnShr {
-    const message = {...baseMsgBurnShr} as MsgBurnShr;
-    message.creator = object.creator ?? "";
-    message.amount = object.amount ?? "";
-    return message;
-  }
-};
-
-const baseMsgBurnShrResponse: object = {log: ""};
-
-export const MsgBurnShrResponse = {
-  encode(message: MsgBurnShrResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.log !== "") {
-      writer.uint32(10).string(message.log);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnShrResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {...baseMsgBurnShrResponse} as MsgBurnShrResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.log = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): MsgBurnShrResponse {
-    const message = {...baseMsgBurnShrResponse} as MsgBurnShrResponse;
-    message.log = object.log !== undefined && object.log !== null ? String(object.log) : "";
-    return message;
-  },
-
-  toJSON(message: MsgBurnShrResponse): unknown {
-    const obj: any = {};
-    message.log !== undefined && (obj.log = message.log);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<MsgBurnShrResponse>, I>>(object: I): MsgBurnShrResponse {
-    const message = {...baseMsgBurnShrResponse} as MsgBurnShrResponse;
-    message.log = object.log ?? "";
-    return message;
-  }
-};
-
 const baseMsgSetExchange: object = {creator: "", rate: ""};
 
 export const MsgSetExchange = {
@@ -1078,7 +278,7 @@ export const MsgSetExchangeResponse = {
   }
 };
 
-const baseMsgSetLevelFee: object = {creator: "", level: "", fee: ""};
+const baseMsgSetLevelFee: object = {creator: "", level: ""};
 
 export const MsgSetLevelFee = {
   encode(message: MsgSetLevelFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
@@ -1088,8 +288,8 @@ export const MsgSetLevelFee = {
     if (message.level !== "") {
       writer.uint32(18).string(message.level);
     }
-    if (message.fee !== "") {
-      writer.uint32(26).string(message.fee);
+    if (message.fee !== undefined) {
+      DecCoin.encode(message.fee, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -1108,7 +308,7 @@ export const MsgSetLevelFee = {
           message.level = reader.string();
           break;
         case 3:
-          message.fee = reader.string();
+          message.fee = DecCoin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -1122,7 +322,7 @@ export const MsgSetLevelFee = {
     const message = {...baseMsgSetLevelFee} as MsgSetLevelFee;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
     message.level = object.level !== undefined && object.level !== null ? String(object.level) : "";
-    message.fee = object.fee !== undefined && object.fee !== null ? String(object.fee) : "";
+    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromJSON(object.fee) : undefined;
     return message;
   },
 
@@ -1130,7 +330,7 @@ export const MsgSetLevelFee = {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
     message.level !== undefined && (obj.level = message.level);
-    message.fee !== undefined && (obj.fee = message.fee);
+    message.fee !== undefined && (obj.fee = message.fee ? DecCoin.toJSON(message.fee) : undefined);
     return obj;
   },
 
@@ -1138,7 +338,7 @@ export const MsgSetLevelFee = {
     const message = {...baseMsgSetLevelFee} as MsgSetLevelFee;
     message.creator = object.creator ?? "";
     message.level = object.level ?? "";
-    message.fee = object.fee ?? "";
+    message.fee = object.fee !== undefined && object.fee !== null ? DecCoin.fromPartial(object.fee) : undefined;
     return message;
   }
 };
@@ -1472,15 +672,15 @@ export const MsgDeleteActionLevelFeeResponse = {
   }
 };
 
-const baseMsgLoadFee: object = {creator: "", shrp: ""};
+const baseMsgLoadFee: object = {creator: ""};
 
 export const MsgLoadFee = {
   encode(message: MsgLoadFee, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.creator !== "") {
       writer.uint32(10).string(message.creator);
     }
-    if (message.shrp !== "") {
-      writer.uint32(18).string(message.shrp);
+    if (message.shrp !== undefined) {
+      DecCoin.encode(message.shrp, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
@@ -1496,7 +696,7 @@ export const MsgLoadFee = {
           message.creator = reader.string();
           break;
         case 2:
-          message.shrp = reader.string();
+          message.shrp = DecCoin.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -1509,21 +709,21 @@ export const MsgLoadFee = {
   fromJSON(object: any): MsgLoadFee {
     const message = {...baseMsgLoadFee} as MsgLoadFee;
     message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
-    message.shrp = object.shrp !== undefined && object.shrp !== null ? String(object.shrp) : "";
+    message.shrp = object.shrp !== undefined && object.shrp !== null ? DecCoin.fromJSON(object.shrp) : undefined;
     return message;
   },
 
   toJSON(message: MsgLoadFee): unknown {
     const obj: any = {};
     message.creator !== undefined && (obj.creator = message.creator);
-    message.shrp !== undefined && (obj.shrp = message.shrp);
+    message.shrp !== undefined && (obj.shrp = message.shrp ? DecCoin.toJSON(message.shrp) : undefined);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<MsgLoadFee>, I>>(object: I): MsgLoadFee {
     const message = {...baseMsgLoadFee} as MsgLoadFee;
     message.creator = object.creator ?? "";
-    message.shrp = object.shrp ?? "";
+    message.shrp = object.shrp !== undefined && object.shrp !== null ? DecCoin.fromPartial(object.shrp) : undefined;
     return message;
   }
 };
@@ -1566,90 +766,355 @@ export const MsgLoadFeeResponse = {
   }
 };
 
+const baseMsgLoad: object = {creator: "", address: ""};
+
+export const MsgLoad = {
+  encode(message: MsgLoad, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.address !== "") {
+      writer.uint32(18).string(message.address);
+    }
+    for (const v of message.coins) {
+      DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoad {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgLoad} as MsgLoad;
+    message.coins = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.address = reader.string();
+          break;
+        case 3:
+          message.coins.push(DecCoin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgLoad {
+    const message = {...baseMsgLoad} as MsgLoad;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
+    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
+    return message;
+  },
+
+  toJSON(message: MsgLoad): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.address !== undefined && (obj.address = message.address);
+    if (message.coins) {
+      obj.coins = message.coins.map((e) => (e ? DecCoin.toJSON(e) : undefined));
+    } else {
+      obj.coins = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgLoad>, I>>(object: I): MsgLoad {
+    const message = {...baseMsgLoad} as MsgLoad;
+    message.creator = object.creator ?? "";
+    message.address = object.address ?? "";
+    message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
+    return message;
+  }
+};
+
+const baseMsgLoadResponse: object = {};
+
+export const MsgLoadResponse = {
+  encode(_: MsgLoadResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgLoadResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgLoadResponse} as MsgLoadResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgLoadResponse {
+    const message = {...baseMsgLoadResponse} as MsgLoadResponse;
+    return message;
+  },
+
+  toJSON(_: MsgLoadResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgLoadResponse>, I>>(_: I): MsgLoadResponse {
+    const message = {...baseMsgLoadResponse} as MsgLoadResponse;
+    return message;
+  }
+};
+
+const baseMsgSend: object = {creator: "", address: ""};
+
+export const MsgSend = {
+  encode(message: MsgSend, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    if (message.address !== "") {
+      writer.uint32(18).string(message.address);
+    }
+    for (const v of message.coins) {
+      DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSend {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgSend} as MsgSend;
+    message.coins = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.address = reader.string();
+          break;
+        case 3:
+          message.coins.push(DecCoin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgSend {
+    const message = {...baseMsgSend} as MsgSend;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.address = object.address !== undefined && object.address !== null ? String(object.address) : "";
+    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
+    return message;
+  },
+
+  toJSON(message: MsgSend): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    message.address !== undefined && (obj.address = message.address);
+    if (message.coins) {
+      obj.coins = message.coins.map((e) => (e ? DecCoin.toJSON(e) : undefined));
+    } else {
+      obj.coins = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSend>, I>>(object: I): MsgSend {
+    const message = {...baseMsgSend} as MsgSend;
+    message.creator = object.creator ?? "";
+    message.address = object.address ?? "";
+    message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
+    return message;
+  }
+};
+
+const baseMsgSendResponse: object = {};
+
+export const MsgSendResponse = {
+  encode(_: MsgSendResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgSendResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgSendResponse} as MsgSendResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgSendResponse {
+    const message = {...baseMsgSendResponse} as MsgSendResponse;
+    return message;
+  },
+
+  toJSON(_: MsgSendResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgSendResponse>, I>>(_: I): MsgSendResponse {
+    const message = {...baseMsgSendResponse} as MsgSendResponse;
+    return message;
+  }
+};
+
+const baseMsgBurn: object = {creator: ""};
+
+export const MsgBurn = {
+  encode(message: MsgBurn, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.creator !== "") {
+      writer.uint32(10).string(message.creator);
+    }
+    for (const v of message.coins) {
+      DecCoin.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurn {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgBurn} as MsgBurn;
+    message.coins = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.creator = reader.string();
+          break;
+        case 2:
+          message.coins.push(DecCoin.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): MsgBurn {
+    const message = {...baseMsgBurn} as MsgBurn;
+    message.creator = object.creator !== undefined && object.creator !== null ? String(object.creator) : "";
+    message.coins = (object.coins ?? []).map((e: any) => DecCoin.fromJSON(e));
+    return message;
+  },
+
+  toJSON(message: MsgBurn): unknown {
+    const obj: any = {};
+    message.creator !== undefined && (obj.creator = message.creator);
+    if (message.coins) {
+      obj.coins = message.coins.map((e) => (e ? DecCoin.toJSON(e) : undefined));
+    } else {
+      obj.coins = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgBurn>, I>>(object: I): MsgBurn {
+    const message = {...baseMsgBurn} as MsgBurn;
+    message.creator = object.creator ?? "";
+    message.coins = object.coins?.map((e) => DecCoin.fromPartial(e)) || [];
+    return message;
+  }
+};
+
+const baseMsgBurnResponse: object = {};
+
+export const MsgBurnResponse = {
+  encode(_: MsgBurnResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): MsgBurnResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {...baseMsgBurnResponse} as MsgBurnResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): MsgBurnResponse {
+    const message = {...baseMsgBurnResponse} as MsgBurnResponse;
+    return message;
+  },
+
+  toJSON(_: MsgBurnResponse): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<MsgBurnResponse>, I>>(_: I): MsgBurnResponse {
+    const message = {...baseMsgBurnResponse} as MsgBurnResponse;
+    return message;
+  }
+};
+
 /** Msg defines the Msg service. */
 export interface Msg {
-  LoadShr(request: MsgLoadShr): Promise<MsgLoadShrResponse>;
-  LoadShrp(request: MsgLoadShrp): Promise<MsgLoadShrpResponse>;
   BuyShr(request: MsgBuyShr): Promise<MsgBuyShrResponse>;
-  SendShr(request: MsgSendShr): Promise<MsgSendShrResponse>;
-  BuyCent(request: MsgBuyCent): Promise<MsgBuyCentResponse>;
-  BurnShrp(request: MsgBurnShrp): Promise<MsgBurnShrpResponse>;
-  SendShrp(request: MsgSendShrp): Promise<MsgSendShrpResponse>;
-  BurnShr(request: MsgBurnShr): Promise<MsgBurnShrResponse>;
   SetExchange(request: MsgSetExchange): Promise<MsgSetExchangeResponse>;
   SetLevelFee(request: MsgSetLevelFee): Promise<MsgSetLevelFeeResponse>;
   DeleteLevelFee(request: MsgDeleteLevelFee): Promise<MsgDeleteLevelFeeResponse>;
   SetActionLevelFee(request: MsgSetActionLevelFee): Promise<MsgSetActionLevelFeeResponse>;
   DeleteActionLevelFee(request: MsgDeleteActionLevelFee): Promise<MsgDeleteActionLevelFeeResponse>;
-  /** this line is used by starport scaffolding # proto/tx/rpc */
   LoadFee(request: MsgLoadFee): Promise<MsgLoadFeeResponse>;
+  Load(request: MsgLoad): Promise<MsgLoadResponse>;
+  Send(request: MsgSend): Promise<MsgSendResponse>;
+  /** this line is used by starport scaffolding # proto/tx/rpc */
+  Burn(request: MsgBurn): Promise<MsgBurnResponse>;
 }
 
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
   constructor(rpc: Rpc) {
     this.rpc = rpc;
-    this.LoadShr = this.LoadShr.bind(this);
-    this.LoadShrp = this.LoadShrp.bind(this);
     this.BuyShr = this.BuyShr.bind(this);
-    this.SendShr = this.SendShr.bind(this);
-    this.BuyCent = this.BuyCent.bind(this);
-    this.BurnShrp = this.BurnShrp.bind(this);
-    this.SendShrp = this.SendShrp.bind(this);
-    this.BurnShr = this.BurnShr.bind(this);
     this.SetExchange = this.SetExchange.bind(this);
     this.SetLevelFee = this.SetLevelFee.bind(this);
     this.DeleteLevelFee = this.DeleteLevelFee.bind(this);
     this.SetActionLevelFee = this.SetActionLevelFee.bind(this);
     this.DeleteActionLevelFee = this.DeleteActionLevelFee.bind(this);
     this.LoadFee = this.LoadFee.bind(this);
+    this.Load = this.Load.bind(this);
+    this.Send = this.Send.bind(this);
+    this.Burn = this.Burn.bind(this);
   }
-  LoadShr(request: MsgLoadShr): Promise<MsgLoadShrResponse> {
-    const data = MsgLoadShr.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "LoadShr", data);
-    return promise.then((data) => MsgLoadShrResponse.decode(new _m0.Reader(data)));
-  }
-
-  LoadShrp(request: MsgLoadShrp): Promise<MsgLoadShrpResponse> {
-    const data = MsgLoadShrp.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "LoadShrp", data);
-    return promise.then((data) => MsgLoadShrpResponse.decode(new _m0.Reader(data)));
-  }
-
   BuyShr(request: MsgBuyShr): Promise<MsgBuyShrResponse> {
     const data = MsgBuyShr.encode(request).finish();
     const promise = this.rpc.request("shareledger.gentlemint.Msg", "BuyShr", data);
     return promise.then((data) => MsgBuyShrResponse.decode(new _m0.Reader(data)));
-  }
-
-  SendShr(request: MsgSendShr): Promise<MsgSendShrResponse> {
-    const data = MsgSendShr.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "SendShr", data);
-    return promise.then((data) => MsgSendShrResponse.decode(new _m0.Reader(data)));
-  }
-
-  BuyCent(request: MsgBuyCent): Promise<MsgBuyCentResponse> {
-    const data = MsgBuyCent.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "BuyCent", data);
-    return promise.then((data) => MsgBuyCentResponse.decode(new _m0.Reader(data)));
-  }
-
-  BurnShrp(request: MsgBurnShrp): Promise<MsgBurnShrpResponse> {
-    const data = MsgBurnShrp.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "BurnShrp", data);
-    return promise.then((data) => MsgBurnShrpResponse.decode(new _m0.Reader(data)));
-  }
-
-  SendShrp(request: MsgSendShrp): Promise<MsgSendShrpResponse> {
-    const data = MsgSendShrp.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "SendShrp", data);
-    return promise.then((data) => MsgSendShrpResponse.decode(new _m0.Reader(data)));
-  }
-
-  BurnShr(request: MsgBurnShr): Promise<MsgBurnShrResponse> {
-    const data = MsgBurnShr.encode(request).finish();
-    const promise = this.rpc.request("shareledger.gentlemint.Msg", "BurnShr", data);
-    return promise.then((data) => MsgBurnShrResponse.decode(new _m0.Reader(data)));
   }
 
   SetExchange(request: MsgSetExchange): Promise<MsgSetExchangeResponse> {
@@ -1686,6 +1151,24 @@ export class MsgClientImpl implements Msg {
     const data = MsgLoadFee.encode(request).finish();
     const promise = this.rpc.request("shareledger.gentlemint.Msg", "LoadFee", data);
     return promise.then((data) => MsgLoadFeeResponse.decode(new _m0.Reader(data)));
+  }
+
+  Load(request: MsgLoad): Promise<MsgLoadResponse> {
+    const data = MsgLoad.encode(request).finish();
+    const promise = this.rpc.request("shareledger.gentlemint.Msg", "Load", data);
+    return promise.then((data) => MsgLoadResponse.decode(new _m0.Reader(data)));
+  }
+
+  Send(request: MsgSend): Promise<MsgSendResponse> {
+    const data = MsgSend.encode(request).finish();
+    const promise = this.rpc.request("shareledger.gentlemint.Msg", "Send", data);
+    return promise.then((data) => MsgSendResponse.decode(new _m0.Reader(data)));
+  }
+
+  Burn(request: MsgBurn): Promise<MsgBurnResponse> {
+    const data = MsgBurn.encode(request).finish();
+    const promise = this.rpc.request("shareledger.gentlemint.Msg", "Burn", data);
+    return promise.then((data) => MsgBurnResponse.decode(new _m0.Reader(data)));
   }
 }
 

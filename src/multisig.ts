@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {MultisigThresholdPubkey, pubkeyToAddress, StdFee} from "@cosmjs/amino";
+import {MultisigThresholdPubkey, pubkeyToAddress} from "@cosmjs/amino";
 import {Bech32} from "@cosmjs/encoding";
 import {encodePubkey} from "./signing";
 import {CompactBitArray, MultiSignature} from "./codec/cosmos/crypto/multisig/v1beta1/multisig";
 import {SignMode} from "./codec/cosmos/tx/signing/v1beta1/signing";
 import {AuthInfo, SignerInfo} from "./codec/cosmos/tx/v1beta1/tx";
 import {TxRaw} from "./codec/cosmos/tx/v1beta1/tx";
+import {StdFee} from "./amino";
 import Long from "long";
 
 export function makeCompactBitArray(bits: readonly boolean[]): CompactBitArray {
@@ -60,7 +61,9 @@ export function makeMultisignedTx(
     signerInfos: [signerInfo],
     fee: {
       amount: [...fee.amount],
-      gasLimit: Long.fromString(fee.gas)
+      gasLimit: Long.fromString(fee.gas),
+      granter: fee.granter,
+      payer: fee.payer
     }
   });
 

@@ -6,5 +6,5 @@ export interface AminoConverter {
 
 export interface AminoTypesOptions {
   readonly additions?: Record<string, AminoConverter>;
-  readonly prefix?: string;
+  readonly prefix: string;
 }

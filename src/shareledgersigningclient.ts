@@ -1,32 +1,33 @@
 import {Tendermint34Client} from "@cosmjs/tendermint-rpc";
 import {isUint8Array} from "@cosmjs/utils";
-import {AssetExtension} from "./modules/asset";
+import {BroadcastTxResponse} from "./client";
+import {toNshr} from "./denoms";
+import {StdFee} from "./amino";
+import {AssetExtension, createActions as AA, createRegistryTypes as A} from "./modules/asset";
 import {AuthExtension} from "./modules/auth";
 import {BankExtension} from "./modules/bank";
 import {DistributionExtension} from "./modules/distribution";
-import {DocumentExtension} from "./modules/document";
-import {ElectoralExtension} from "./modules/electoral";
-import {GentlemintExtension} from "./modules/gentlemint";
+import {createActions as BB, createRegistryTypes as B, DocumentExtension} from "./modules/document";
+import {createActions as CC, createRegistryTypes as C, ElectoralExtension} from "./modules/electoral";
+import {createActions as DD, createRegistryTypes as D, GentlemintExtension} from "./modules/gentlemint";
 import {GovExtension} from "./modules/gov";
-import {IdExtension, IdTxExtension} from "./modules/id";
+import {createActions as EE, createRegistryTypes as E, IdExtension} from "./modules/id";
 import {SlashingExtension} from "./modules/slashing";
 import {StakingExtension} from "./modules/staking";
+import {createActions as FF, createRegistryTypes as F, SwapExtension} from "./modules/swap";
 import {TxExtension} from "./modules/tx";
-import {GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
-import {defaultRegistryTypes, SigningClient, SigningOptions} from "./signingclient";
-
-/** */
-import {createRegistryTypes as A} from "./modules/asset";
-import {createRegistryTypes as B} from "./modules/document";
-import {createRegistryTypes as C} from "./modules/electoral";
-import {createRegistryTypes as D} from "./modules/gentlemint";
-import {createRegistryTypes as E} from "./modules/id";
-/** */
+import {EncodeObject, GeneratedType, OfflineSigner, Registry, Secp256k1HdWallet, Secp256k1Wallet} from "./signing";
+import {defaultActions, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
 
 export const registryTypes: ReadonlyArray<[string, GeneratedType]> = [
   ...defaultRegistryTypes,
-  ...[A, B, C, D, E].reduce((prev, curr) => [...prev, ...curr()], [])
+  ...[A, B, C, D, E, F].reduce((prev, curr) => [...prev, ...curr()], [])
 ];
+
+export const actions: Record<string, string> = {
+  ...defaultActions,
+  ...[AA, BB, CC, DD, EE, FF].reduce((prev, curr) => ({...prev, ...curr()}), {})
+};
 
 function createRegistry(): Registry {
   const registry = new Registry();
@@ -48,7 +49,8 @@ export interface ShareledgerSigningClient
     DocumentExtension,
     ElectoralExtension,
     GentlemintExtension,
-    IdExtension {}
+    IdExtension,
+    SwapExtension {}
 
 @AuthExtension
 @BankExtension
@@ -61,10 +63,16 @@ export interface ShareledgerSigningClient
 @DocumentExtension
 @ElectoralExtension
 @GentlemintExtension
-@IdTxExtension
+@IdExtension
+@SwapExtension
 export class ShareledgerSigningClient extends SigningClient {
-  public constructor(tmClient: Tendermint34Client | undefined, signer: OfflineSigner, options: SigningOptions) {
+  public constructor(tmClient: Tendermint34Client | undefined, signer?: OfflineSigner, options: SigningOptions = {}) {
     super(tmClient, signer, {...options, registry: createRegistry()});
+  }
+
+  public static async connect(endpoint: string, options?: SigningOptions): Promise<ShareledgerSigningClient> {
+    const tmClient = await Tendermint34Client.connect(endpoint);
+    return new ShareledgerSigningClient(tmClient, undefined, options);
   }
 
   /**
@@ -102,7 +110,7 @@ export class ShareledgerSigningClient extends SigningClient {
     options: SigningOptions = {}
   ): Promise<ShareledgerSigningClient> {
     const tmClient = await Tendermint34Client.connect(endpoint);
-    signer = typeof signer === "string" || isUint8Array(signer) ? await this.createSigner(signer) : signer;
+    signer = typeof signer === "string" || isUint8Array(signer) || Buffer.isBuffer(signer) ? await this.createSigner(signer) : signer;
     return new ShareledgerSigningClient(tmClient, signer, options);
   }
 
@@ -113,7 +121,7 @@ export class ShareledgerSigningClient extends SigningClient {
     signer: string | Uint8Array | OfflineSigner,
     options: SigningOptions = {}
   ): Promise<ShareledgerSigningClient> {
-    signer = typeof signer === "string" || isUint8Array(signer) ? await this.createSigner(signer) : signer;
+    signer = typeof signer === "string" || isUint8Array(signer) || Buffer.isBuffer(signer) ? await this.createSigner(signer) : signer;
     return new ShareledgerSigningClient(undefined, signer, options);
   }
 
@@ -122,8 +130,70 @@ export class ShareledgerSigningClient extends SigningClient {
     if (typeof input === "string" && !/^[A-F0-9]+$/i.test(input)) {
       signer = await Secp256k1HdWallet.fromMnemonic(input);
     } else {
-      signer = await Secp256k1Wallet.fromKey(isUint8Array(input) ? input : Buffer.from(input, "hex"));
+      signer = await Secp256k1Wallet.fromKey(isUint8Array(input) || Buffer.isBuffer(input) ? input : Buffer.from(input, "hex"));
     }
     return signer;
+  }
+
+  public async withSigner(signer: string | Uint8Array | OfflineSigner): Promise<ShareledgerSigningClient> {
+    signer =
+      typeof signer === "string" || isUint8Array(signer) || Buffer.isBuffer(signer)
+        ? await ShareledgerSigningClient.createSigner(signer)
+        : signer;
+    await super.withSigner(signer);
+    return this;
+  }
+
+  public withoutSigner(): ShareledgerSigningClient {
+    super.withoutSigner();
+    return this;
+  }
+
+  public async signAndBroadcast(
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee?: Partial<StdFee>,
+    memo?: string
+  ): Promise<BroadcastTxResponse> {
+    if (!fee || (!fee.amount && !fee.gas)) {
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
+      fee = {...fee, amount, gas};
+    }
+    return super.signAndBroadcast(signerAddress, messages, fee, memo);
+  }
+
+  public async sign(
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee?: Partial<StdFee>,
+    memo?: string,
+    explicitSignerData?: SignerData
+  ): Promise<Uint8Array> {
+    if (!fee || (!fee.amount && !fee.gas)) {
+      const {amount, gas} = await this.estimate(signerAddress, messages, memo, fee?.granter, fee?.payer);
+      fee = {...fee, amount, gas};
+    }
+    return super.sign(signerAddress, messages, fee, memo, explicitSignerData);
+  }
+
+  public async estimate(signerAddress: string, messages: readonly EncodeObject[], memo?: string, granter?: string, payer?: string) {
+    const feeEstimation = await this.gentlemint.estimateFee(
+      signerAddress,
+      messages.map((msg) => actions[msg.typeUrl])
+    );
+    let feeByNshr = feeEstimation.fee;
+    if (!feeByNshr) {
+      feeByNshr = this.minTxFee;
+      if (!feeByNshr) {
+        const fees = await this.gentlemint.feeLevels();
+        feeByNshr = fees.low || fees.medium || fees.high || toNshr(1);
+      }
+    }
+    const gasEstimation = await this.simulate(signerAddress, messages, memo, {amount: [feeByNshr], granter, payer});
+    const buff = Math.round(gasEstimation * 1.275);
+    return {
+      gas: buff.toString(),
+      amount: [feeByNshr]
+    };
   }
 }

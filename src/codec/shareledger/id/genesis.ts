@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import _m0 from "protobufjs/minimal";
-import {Id} from "../id/id";
+import {Id} from "../../shareledger/id/id";
 
 export const protobufPackage = "shareledger.id";
 
