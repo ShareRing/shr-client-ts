@@ -1,0 +1,58 @@
+{
+  "name": "@shareledgerjs/types",
+  "version": "0.29.5",
+  "description": "JS and TS types relating to Protocol Buffers used by Cosmos-SDK and other related projects",
+  "author": "Tan Do (Alex) <tan.do@sharering.network>",
+  "files": [
+    "/build",
+    "/scripts",
+    "*.md",
+    "!*.spec.*"
+  ],
+  "scripts": {
+    "build": "yarn clean && tsc --project ./tsconfig.build.json",
+    "build:umd": "webpack --config webpack.config.js",
+    "clean": "rm -rf build/",
+    "lint": "eslint . --ext .ts --max-warnings 0",
+    "lint:fix": "yarn lint --fix",
+    "prettier": "prettier --write --loglevel warn \"./src/**/*.ts\""
+  },
+  "dependencies": {
+    "long": "^5.2.1",
+    "protobufjs": "^7.1.2"
+  },
+  "devDependencies": {
+    "@osmonauts/telescope": "^0.80.0",
+    "@types/chai": "^4.3.0",
+    "@types/chai-as-promised": "^7.1.4",
+    "@types/long": "^4.0.1",
+    "@types/mocha": "^9.0.0",
+    "@types/node": "^16.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.7.0",
+    "@typescript-eslint/parser": "^5.7.0",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "chai-bytes": "^0.1.2",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-simple-import-sort": "^8.0.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
+    "mocha": "^9.0.1",
+    "node-polyfill-webpack-plugin": "^1.1.4",
+    "nyc": "^15.1.0",
+    "prettier": "^2.8.1",
+    "stream-browserify": "^3.0.0",
+    "ts-loader": "^9.2.6",
+    "ts-node": "^10.9.1",
+    "ts-proto": "^1.131.0",
+    "tsconfig-paths": "^4.1.1",
+    "tsconfig-paths-webpack-plugin": "^3.5.2",
+    "tslib": "^2.3.1",
+    "typescript": "^4.9.4",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1"
+  }
+}

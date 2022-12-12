@@ -50,5 +50,14 @@ test/**/*.js.map
 
 # Project
 /public
-/dist
+/build
 /proto
+
+# Yarn PnP
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
