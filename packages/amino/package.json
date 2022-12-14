@@ -24,9 +24,9 @@
     "prettier": "prettier --write --loglevel warn \"./src/**/*.ts\""
   },
   "dependencies": {
-    "@cosmjs/amino": "0.29.5",
-    "@cosmjs/encoding": "0.29.5",
-    "@cosmjs/math": "0.29.5",
+    "@cosmjs/amino": "^0.29.5",
+    "@cosmjs/encoding": "^0.29.5",
+    "@cosmjs/math": "^0.29.5",
     "@shareledgerjs/signing": "workspace:^",
     "@shareledgerjs/types": "workspace:^",
     "long": "^5.2.1"

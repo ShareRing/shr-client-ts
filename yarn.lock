@@ -1578,19 +1578,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@confio/ics23@npm:0.6.5":
-  version: 0.6.5
-  resolution: "@confio/ics23@npm:0.6.5"
+"@confio/ics23@npm:^0.6.8":
+  version: 0.6.8
+  resolution: "@confio/ics23@npm:0.6.8"
   dependencies:
-    js-sha512: ^0.8.0
+    "@noble/hashes": ^1.0.0
     protobufjs: ^6.8.8
-    ripemd160: ^2.0.2
-    sha.js: ^2.4.11
-  checksum: dc658795ec67ef60e281985463848e9f46e6804a4fa9a96fbb39809bf646b98f7e0e38e3fa4a8c683fd96e1a7e14a29cad5c14e8b3685da2cab3369ed66e7fe8
+  checksum: 376d72f6440db60611b002b00a13e3a5bfd0d3503e7682358dbcf79641e74d8c26c234c321452fb4a758baf66eecef25d950e08bdea270486d9d03ee489e2960
   languageName: node
   linkType: hard
 
-"@cosmjs/amino@npm:0.29.5":
+"@cosmjs/amino@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/amino@npm:0.29.5"
   dependencies:
@@ -1602,7 +1600,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/crypto@npm:0.29.5, @cosmjs/crypto@npm:^0.29.5":
+"@cosmjs/crypto@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/crypto@npm:0.29.5"
   dependencies:
@@ -1617,7 +1615,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/encoding@npm:0.29.5, @cosmjs/encoding@npm:^0.29.5":
+"@cosmjs/encoding@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/encoding@npm:0.29.5"
   dependencies:
@@ -1638,7 +1636,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/math@npm:0.29.5, @cosmjs/math@npm:^0.29.5":
+"@cosmjs/math@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/math@npm:0.29.5"
   dependencies:
@@ -1659,7 +1657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/stream@npm:0.29.5, @cosmjs/stream@npm:^0.29.5":
+"@cosmjs/stream@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/stream@npm:0.29.5"
   dependencies:
@@ -1668,7 +1666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/tendermint-rpc@npm:0.29.5":
+"@cosmjs/tendermint-rpc@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/tendermint-rpc@npm:0.29.5"
   dependencies:
@@ -1686,7 +1684,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cosmjs/utils@npm:0.29.5, @cosmjs/utils@npm:^0.29.5":
+"@cosmjs/utils@npm:^0.29.5":
   version: 0.29.5
   resolution: "@cosmjs/utils@npm:0.29.5"
   checksum: 7939a6d324607efddfc20212995b426123a9c35913a19fb6b82e2a9012ee8375190060a2950956f41300e9b041a11f1f2e39ae76ee3368f8ff369fc526d80557
@@ -1940,7 +1938,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/hashes@npm:^1":
+"@noble/hashes@npm:^1, @noble/hashes@npm:^1.0.0":
   version: 1.1.4
   resolution: "@noble/hashes@npm:1.1.4"
   checksum: 663c1e7ebaa3ca4ff836c799a9dd697fda861ae8b9923a4850659fbf5c3d5f7cf541e77aee3c1bcc6f81a815b7f88fad75c004c0f30eda301deeedc2c9435368
@@ -2222,9 +2220,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@shareledgerjs/amino@workspace:packages/amino"
   dependencies:
-    "@cosmjs/amino": 0.29.5
-    "@cosmjs/encoding": 0.29.5
-    "@cosmjs/math": 0.29.5
+    "@cosmjs/amino": ^0.29.5
+    "@cosmjs/encoding": ^0.29.5
+    "@cosmjs/math": ^0.29.5
     "@shareledgerjs/signing": "workspace:^"
     "@shareledgerjs/types": "workspace:^"
     "@types/chai": ^4.3.0
@@ -2266,14 +2264,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@shareledgerjs/client@workspace:packages/client"
   dependencies:
-    "@confio/ics23": 0.6.5
-    "@cosmjs/amino": 0.29.5
-    "@cosmjs/crypto": 0.29.5
-    "@cosmjs/encoding": 0.29.5
-    "@cosmjs/math": 0.29.5
-    "@cosmjs/stream": 0.29.5
-    "@cosmjs/tendermint-rpc": 0.29.5
-    "@cosmjs/utils": 0.29.5
+    "@confio/ics23": ^0.6.8
+    "@cosmjs/amino": ^0.29.5
+    "@cosmjs/crypto": ^0.29.5
+    "@cosmjs/encoding": ^0.29.5
+    "@cosmjs/math": ^0.29.5
+    "@cosmjs/stream": ^0.29.5
+    "@cosmjs/tendermint-rpc": ^0.29.5
+    "@cosmjs/utils": ^0.29.5
     "@shareledgerjs/amino": "workspace:^"
     "@shareledgerjs/signing": "workspace:^"
     "@shareledgerjs/types": "workspace:^"
@@ -2319,12 +2317,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@shareledgerjs/signing@workspace:packages/signing"
   dependencies:
-    "@cosmjs/amino": 0.29.5
-    "@cosmjs/crypto": 0.29.5
-    "@cosmjs/encoding": 0.29.5
-    "@cosmjs/math": 0.29.5
-    "@cosmjs/stream": 0.29.5
-    "@cosmjs/utils": 0.29.5
+    "@cosmjs/amino": ^0.29.5
+    "@cosmjs/crypto": ^0.29.5
+    "@cosmjs/encoding": ^0.29.5
+    "@cosmjs/math": ^0.29.5
+    "@cosmjs/stream": ^0.29.5
+    "@cosmjs/utils": ^0.29.5
     "@shareledgerjs/types": "workspace:^"
     "@types/chai": ^4.3.0
     "@types/chai-as-promised": ^7.1.4
@@ -6251,13 +6249,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-sha512@npm:^0.8.0":
-  version: 0.8.0
-  resolution: "js-sha512@npm:0.8.0"
-  checksum: 32ca371ebd14c6c5c83360fd8b036cad2211537bef546b199ac8b901917299cab4c68f7f7c26ae72f836bbce0349cb463df9a62cdb4c90e38090fdb4db89ee87
-  languageName: node
-  linkType: hard
-
 "js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -7879,7 +7870,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ripemd160@npm:^2.0.0, ripemd160@npm:^2.0.1, ripemd160@npm:^2.0.2":
+"ripemd160@npm:^2.0.0, ripemd160@npm:^2.0.1":
   version: 2.0.2
   resolution: "ripemd160@npm:2.0.2"
   dependencies:
@@ -8025,7 +8016,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sha.js@npm:^2.4.0, sha.js@npm:^2.4.11, sha.js@npm:^2.4.8":
+"sha.js@npm:^2.4.0, sha.js@npm:^2.4.8":
   version: 2.4.11
   resolution: "sha.js@npm:2.4.11"
   dependencies:
