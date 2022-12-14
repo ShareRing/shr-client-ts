@@ -3,6 +3,7 @@
   "version": "0.29.5",
   "description": "Utilities for protobuf based signing (Cosmos SDK 0.40+)",
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
+  "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [

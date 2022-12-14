@@ -3,6 +3,7 @@
   "version": "0.29.5",
   "description": "JS and TS types relating to Protocol Buffers used by Cosmos-SDK and other related projects",
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
+  "license": "Apache-2.0",
   "files": [
     "/build",
     "/scripts",

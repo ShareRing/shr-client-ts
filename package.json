@@ -5,6 +5,7 @@
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
   "packageManager": "yarn@3.3.0",
   "private": true,
+  "license": "Apache-2.0",
   "workspaces": [
     "packages/*"
   ],

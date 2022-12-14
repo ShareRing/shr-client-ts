@@ -3,6 +3,7 @@
   "version": "0.29.5",
   "description": "Amino based signing helper methods",
   "author": "Tan Do (Alex) <tan.do@sharering.network>",
+  "license": "Apache-2.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "files": [
