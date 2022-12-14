@@ -1,10 +1,3 @@
-/**
- * Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Pellentesque nec imperdiet nisi. Pellentesque aliquet turpis vestibulum orci condimentum faucibus
- *
- * @group test
- */
-
 export {Account, accountFromAny, AccountParser} from "./account";
 export {BaseClient, ClientOptions} from "./baseclient";
 export {
