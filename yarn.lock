@@ -2260,7 +2260,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@shareledgerjs/client@workspace:packages/client":
+"@shareledgerjs/client@workspace:^, @shareledgerjs/client@workspace:packages/client":
   version: 0.0.0-use.local
   resolution: "@shareledgerjs/client@workspace:packages/client"
   dependencies:
@@ -2372,6 +2372,7 @@ __metadata:
     "@cosmjs/tendermint-rpc": ^0.29.5
     "@cosmjs/utils": ^0.29.5
     "@shareledgerjs/amino": "workspace:^"
+    "@shareledgerjs/client": "workspace:^"
     "@shareledgerjs/signing": "workspace:^"
     "@shareledgerjs/types": "workspace:^"
     "@types/chai": ^4.3.0

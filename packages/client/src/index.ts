@@ -6,7 +6,7 @@
  */
 
 export {Account, accountFromAny, AccountParser} from "./account";
-export {BaseClient} from "./baseclient";
+export {BaseClient, ClientOptions} from "./baseclient";
 export {
   assertIsDeliverTxFailure,
   assertIsDeliverTxSuccess,
@@ -28,6 +28,8 @@ export {findAttribute, parseAttribute, parseEvent, parseLog, parseLogs, parseRaw
 export * from "./modules";
 export {makeMultisignedTx, makeMultisignedTxBytes} from "./multisig";
 export {
+  createPagination,
+  createProtobufRpcClient,
   decodeCosmosSdkDecFromProto,
   longify,
   QueryAbciResponse,
@@ -50,7 +52,7 @@ export {
 } from "./search";
 export {ShareledgerClient} from "./shareledgerclient";
 export {ShareledgerSigningClient} from "./shareledgersigningclient";
-export {defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
+export {createDefaultAminoTypes, defaultRegistryTypes, SignerData, SigningClient, SigningOptions} from "./signingclient";
 export {fromBech32, toBech32} from "@cosmjs/encoding";
 export {HttpEndpoint} from "@cosmjs/tendermint-rpc";
 export {AminoConverter, AminoConverters, AminoMsg, StdFee} from "@shareledgerjs/amino";
